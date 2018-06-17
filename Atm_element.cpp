@@ -39,7 +39,7 @@ int Atm_element::event( int id ) {
     case EVT_TIMER:
       return timer.expired( this );
     case EVT_LIT:
-      return led->active( light_led );
+      return light_led > -1 ? led->active( light_led ) : 0;
   }
   return 0;
 }

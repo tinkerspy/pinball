@@ -43,7 +43,7 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   Atm_zone& persistent( uint8_t l, bool v = true );
   Atm_zone& disable();
   Atm_zone& enable();
-  Atm_element& element( int switch_no, int light_led, int coil_led, int pulse_time );
+  Atm_element& element( int switch_no, int light_led, int coil_led, int pulse_time = -1 );
   Atm_element& element( int switch_no );
 
 

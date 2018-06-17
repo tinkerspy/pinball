@@ -114,75 +114,85 @@ Atm_apa102& Atm_apa102::level( uint8_t v ) {
 
 Atm_apa102& Atm_apa102::level( uint8_t ledno, uint8_t v ) {
 
-  meta[ledno].rgb = v << 16 | v << 8 | v;     
+  if ( ledno > -1 ) meta[ledno].rgb = v << 16 | v << 8 | v;     
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::rgb( int ledno, uint32_t rgb ) {
 
-  meta[ledno].rgb = rgb;
+  if ( ledno > -1 ) meta[ledno].rgb = rgb;
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::rgb( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
   
-  meta[ledno].rgb = r << 16 | g << 8 | b;     
+  if ( ledno > -1 ) meta[ledno].rgb = r << 16 | g << 8 | b;     
   return *this;
 }
 
 Atm_apa102& Atm_apa102::set( int ledno, uint32_t rgb ) {
 
-  leds[ledno] = rgb;
-  meta[ledno].status = rgb > 0 ? 1 : 0;  
-  refresh = 1; 
-  trigger( EVT_UPDATE ); 
+  if ( ledno > -1 ) {
+    leds[ledno] = rgb;
+    meta[ledno].status = rgb > 0 ? 1 : 0;  
+    refresh = 1; 
+    trigger( EVT_UPDATE ); 
+  }
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::set( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
   
-  leds[ledno] = CRGB( r, g, b );
-  meta[ledno].status = r > 0 || g > 0 || b > 0 ? 1 : 0;  
-  refresh = 1; 
-  trigger( EVT_UPDATE );  
+  if ( ledno > -1 ) {
+    leds[ledno] = CRGB( r, g, b );
+    meta[ledno].status = r > 0 || g > 0 || b > 0 ? 1 : 0;  
+    refresh = 1; 
+    trigger( EVT_UPDATE );
+  }  
   return *this;
 }
 
 Atm_apa102& Atm_apa102::on( int ledno ) {
 
-  leds[ledno] = meta[ledno].rgb;
-  meta[ledno].status = 1;  
-  refresh = 1; 
-  trigger( EVT_UPDATE );  
+  if ( ledno > -1 ) {
+    leds[ledno] = meta[ledno].rgb;
+    meta[ledno].status = 1;  
+    refresh = 1; 
+    trigger( EVT_UPDATE ); 
+  } 
   return *this;
 }
 
 Atm_apa102& Atm_apa102::off( int ledno ) {
   
-  leds[ledno] = 0;
-  meta[ledno].status = 0;  
-  refresh = 1; 
-  trigger( EVT_UPDATE );  
+  if ( ledno > -1 ) {
+    leds[ledno] = 0;
+    meta[ledno].status = 0;  
+    refresh = 1; 
+    trigger( EVT_UPDATE );
+  }  
   return *this;
 }
 
 Atm_apa102& Atm_apa102::pulse( int ledno, uint16_t duration ) {
 
-  set( ledno, meta[ledno].rgb ); // Set to default brightness (no fade)
-  if ( duration != 0xFFFF ) {
-    // Set up pulse monitoring
-    meta[ledno].pulsing = 1;
-    meta[ledno].last_millis = millis();
-    meta[ledno].pulse_millis = duration;
-    running = 1;
-    sleep( 0 );
+  if ( ledno > -1 ) {
+    set( ledno, meta[ledno].rgb ); // Set to default brightness (no fade)
+    if ( duration != 0xFFFF ) {
+      // Set up pulse monitoring
+      meta[ledno].pulsing = 1;
+      meta[ledno].last_millis = millis();
+      meta[ledno].pulse_millis = duration;
+      running = 1;
+      sleep( 0 );
+    }
   }
   return *this;
 }
 
 int Atm_apa102::active( int ledno ) {
 
-  return meta[ledno].status;  
+  return ledno > -1 ? meta[ledno].status : 0;  
 }
 
 /* Nothing customizable below this line                          

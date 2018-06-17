@@ -16,6 +16,8 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
 
 #define LEFT_BUMPER_LIGHT 8
 #define LEFT_BUMPER_COIL 9
+#define LEFT_FLIPPER_COIL 5
+#define RIGHT_FLIPPER_COIL 6
 
 void setup() {
   Serial.begin( 9600 );
@@ -35,17 +37,23 @@ void setup() {
   playfield.begin( led, rows, cols, 4, 4 );
 
   playfield.element( LEFT_BUMPER, LEFT_BUMPER_LIGHT, LEFT_BUMPER_COIL, 50 ) // optional pulse, lead, force arguments
-    .onKick(  [] ( int idx, int v, int up ) { // Creates duplicate callbacks
+    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );
       Serial.println( " Left bumper kicked" );
     });
- 
-
+   playfield.element( LEFT_FLIPPER, -1, LEFT_FLIPPER_COIL ) // optional pulse, lead, force arguments
+    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
+      Serial.print( millis() );
+      Serial.println( " Left flipper kicked" );
+    });
+   playfield.element( RIGHT_FLIPPER, -1, RIGHT_FLIPPER_COIL ) // optional pulse, lead, force arguments
+    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
+      Serial.print( millis() );
+      Serial.println( " Right flipper kicked" );
+    });
 }
-
 
 void loop() {
   automaton.run();
-  //if ( millis() % 10000 == 0 ) Serial.println( led.active( LEFT_BUMPER_LIGHT ) );
 }
 

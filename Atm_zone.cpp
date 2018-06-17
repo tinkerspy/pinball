@@ -10,7 +10,7 @@ Atm_zone& Atm_zone::begin( Atm_apa102& led, int8_t* rows, int8_t* cols, uint8_t 
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE      ELSE */
     /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,     SCAN,
     /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,     SCAN,
-    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN, DISABLED,
+    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN, DISABLED, // Add INIT state!!! (send init events to all elements)
   };
   // clang-format on
   Machine::begin( state_table, ELSE );

@@ -33,6 +33,7 @@ void setup() {
     Serial.println( i );
     delay( 100 );
   }
+  
   led.begin( 10 );
   playfield.begin( led, rows, cols, 4, 4 );
 
@@ -40,7 +41,7 @@ void setup() {
     .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );
       Serial.println( " Left bumper kicked" );
-    });
+    }).autoLite();
    playfield.element( LEFT_FLIPPER, -1, LEFT_FLIPPER_COIL ) // optional pulse, lead, force arguments
     .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );

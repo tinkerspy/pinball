@@ -58,6 +58,7 @@ void Atm_element::action( int id ) {
   switch ( id ) {
     case ENT_KICKING:
       led->pulse( coil_led, pulse_time );
+      if ( autolite) led->on( light_led );
       connectors[ON_KICK+2].push( 1 );
       if ( led->active( light_led ) ) {  
         connectors[ON_KICK+1].push( 1 );
@@ -162,6 +163,11 @@ Atm_element& Atm_element::toggle() {
   trigger( EVT_TOGGLE );
   return *this;
 }
+
+Atm_element& Atm_element::autoLite( int v ) {
+  autolite = v ? 1 : 0;
+}
+
 
 /*
  * onInit() push connector variants ( slots 3, autostore 0, broadcast 0 )

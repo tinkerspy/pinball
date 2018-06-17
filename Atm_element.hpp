@@ -36,6 +36,7 @@ class Atm_element: public Machine {
   Atm_element& disable( void );
   Atm_element& enable( void );
   Atm_element& toggle( void );
+  Atm_element& autoLite( int v = 1 );
 
  private:
   enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF }; // ACTIONS
@@ -44,7 +45,7 @@ class Atm_element: public Machine {
   int event( int id ); 
   void action( int id ); 
   atm_timer_millis timer;
-  int light_led, coil_led;
+  int light_led, coil_led, autolite;
   uint16_t pulse_time;
   Atm_apa102 *led;
 

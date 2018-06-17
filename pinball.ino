@@ -37,17 +37,18 @@ void setup() {
   led.begin( 10 );
   playfield.begin( led, rows, cols, 4, 4 );
 
-  playfield.element( LEFT_BUMPER, LEFT_BUMPER_LIGHT, LEFT_BUMPER_COIL, 50 ) // optional pulse, lead, force arguments
+  playfield.element( LEFT_BUMPER, LEFT_BUMPER_LIGHT, LEFT_BUMPER_COIL, 50 ) 
     .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );
       Serial.println( " Left bumper kicked" );
-    }).autoLite();
-   playfield.element( LEFT_FLIPPER, -1, LEFT_FLIPPER_COIL ) // optional pulse, lead, force arguments
+    })
+    .autoLite();
+   playfield.element( LEFT_FLIPPER, -1, LEFT_FLIPPER_COIL ) 
     .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );
       Serial.println( " Left flipper kicked" );
     });
-   playfield.element( RIGHT_FLIPPER, -1, RIGHT_FLIPPER_COIL ) // optional pulse, lead, force arguments
+   playfield.element( RIGHT_FLIPPER, -1, RIGHT_FLIPPER_COIL )
     .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
       Serial.print( millis() );
       Serial.println( " Right flipper kicked" );

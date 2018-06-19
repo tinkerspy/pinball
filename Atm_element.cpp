@@ -11,6 +11,7 @@ Atm_element& Atm_element::begin( Atm_apa102& led, int light, int coil, int pulse
     /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,    DELAY,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,       -1,
     /*     DELAY */            -1,        -1,      -1,       -1,        -1,         -1,       -1,        IDLE,        -1,       -1,          -1,         -1,   KICKING,        -1,       -1,
     /*   KICKING */   ENT_KICKING,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
+/* Insert extra wait state to stop machine gunning (retrigger) */    
     /*  DISABLED */            -1, ATM_SLEEP,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,       IDLE,        -1,        -1,       -1,
     /*      INIT */      ENT_INIT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
     /* INPUTTING */     ENT_INPUT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
@@ -166,6 +167,7 @@ Atm_element& Atm_element::toggle() {
 
 Atm_element& Atm_element::autoLite( int v ) {
   autolite = v ? 1 : 0;
+  return *this;
 }
 
 

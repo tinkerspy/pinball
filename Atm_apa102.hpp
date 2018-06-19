@@ -5,6 +5,14 @@
 
 #define MAX_LEDS 100
 
+#define MOSI0 11
+#define SCK0 13
+#define MOSI1 21
+#define SCK1 20
+
+#define GLOBAL_BRIGHTNESS 255 
+
+enum{ SPI_11_13, SPI_11_20, SPI_21_13, SPI_21_20 };
 
 struct led_meta_data {
     uint32_t rgb; 
@@ -25,7 +33,7 @@ class Atm_apa102: public Machine {
   enum { IDLE, WAITING, RUNNING, UPDATING }; // STATES
   enum { EVT_DONE, EVT_RUN, EVT_UPDATE, EVT_MILLI, ELSE }; // EVENTS
   Atm_apa102( void ) : Machine() {};
-  Atm_apa102& begin( int number_of_leds );
+  Atm_apa102& begin( int number_of_leds, int idx = 0 );
   Atm_apa102& trace( Stream & stream );
   Atm_apa102& trigger( int event );
   int state( void );
@@ -54,6 +62,7 @@ class Atm_apa102: public Machine {
   int number_of_leds;
   uint8_t refresh, running;
   uint8_t last_milli;
+  CLEDController *controller;
 
 };
 

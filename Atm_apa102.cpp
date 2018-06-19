@@ -4,7 +4,13 @@
  * Add extra initialization code
  */
 
-Atm_apa102& Atm_apa102::begin( int number_of_leds ) {
+/* Note: you can update led strips individually like this: 
+ *  
+ *  https://github.com/FastLED/FastLED/wiki/Multiple-Controller-Examples
+ *  (which is what we want)
+ */
+
+Atm_apa102& Atm_apa102::begin( int number_of_leds, int idx ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -16,9 +22,22 @@ Atm_apa102& Atm_apa102::begin( int number_of_leds ) {
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->number_of_leds = number_of_leds;
-  FastLED.addLeds<APA102, RGB>(leds, number_of_leds);
+  switch ( idx ) {
+    case SPI_11_13: 
+      controller = &FastLED.addLeds<APA102, 11, 13>(leds, number_of_leds);
+      break;
+    case SPI_11_20: 
+      controller = &FastLED.addLeds<APA102, 11, 20>(leds, number_of_leds);
+      break;
+    case SPI_21_13: 
+      controller = &FastLED.addLeds<APA102, 21, 13>(leds, number_of_leds);
+      break;
+    case SPI_21_20: 
+      controller = &FastLED.addLeds<APA102, 21, 20>(leds, number_of_leds);
+      break;
+  }
   rgb( 0x050505 ); // Safe default
-  FastLED.show();
+  controller->showLeds();
   return *this;          
 }
 
@@ -66,12 +85,12 @@ void Atm_apa102::action( int id ) {
         }
       }
       if ( refresh ) {
-        FastLED.show();
+        controller->showLeds();
         refresh = 0;
       }
       return;
     case ENT_UPDATING:
-      FastLED.show();      
+      controller->showLeds();
       refresh = 0;
       return;
     case ENT_IDLE:

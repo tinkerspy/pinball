@@ -4,6 +4,8 @@
  * Add extra initialization code
  */
 
+// TODO: Move retrigger to element() level
+
 Atm_zone& Atm_zone::begin( Atm_apa102& led, int8_t* rows, int8_t* cols, uint8_t no_of_rows, uint8_t no_of_cols) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -121,15 +123,15 @@ void Atm_zone::switch_changed( uint8_t logical, uint8_t v ) {
   if ( millis_passed > prof[logical].debounce_delay ) {
     if ( v ) {
       if ( millis_passed > prof[logical].retrigger_delay ) {
-        prof[logical].last_change = millis();
         prof[logical].switch_state = 1;
-//        push( connectors, ON_PRESS, logical, logical, 1 ); Delete dont forget connector
+        prof[logical].last_change = millis();
+        push( connectors, ON_PRESS, logical, logical, 1 ); 
         if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_KICK );
       }
     } else {
-      prof[logical].last_change = millis();
       prof[logical].switch_state = 0;      
-//      push( connectors, ON_RELEASE, logical, logical, 0 ); Delete dont forget connector
+      prof[logical].last_change = millis();
+      push( connectors, ON_RELEASE, logical, logical, 0 ); 
       if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_RELEASE );
     }
   }

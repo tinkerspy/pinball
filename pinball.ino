@@ -58,9 +58,9 @@ void setup() {
     .onPress( 5, oxo, Atm_widget_oxo::EVT_3O )
     .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT );
 
-  led_strip_oxo.begin( 10, SPI_11_13 ); 
+  //led_strip_oxo.begin( 10, SPI_11_13 ); 
 
-  oxo.begin( led_strip_oxo, oxo_leds )
+  oxo.begin( led_strip_oxo.begin( 10, SPI_11_13 ), oxo_leds )
     .onMatch( [] ( int idx, int v, int up ) {
       led_strip_oxo.on( 9 );
       Serial.println( "You win!" );

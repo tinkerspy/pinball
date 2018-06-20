@@ -33,6 +33,7 @@ class Atm_widget_oxo: public Machine {
   Atm_widget_oxo& toggle( void );
   char set( int cell );
   void set( int cell, char v );
+  void set_to_active( int cell );
 
  private:
   enum { ENT_1X, ENT_1O, ENT_2X, ENT_2O, ENT_3X, ENT_3O, ENT_4, ENT_5, ENT_6, ENT_7, ENT_8, ENT_9, ENT_MATCH, ENT_INIT, ENT_TOGGLE }; // ACTIONS
@@ -41,7 +42,6 @@ class Atm_widget_oxo: public Machine {
   int event( int id ); 
   void action( int id ); 
   Atm_apa102 *led;
-  char default_char = 'X'; // We should really store this state in the X-O leds (27 & 28)
   bool matched;
   int8_t *led_map;
 };

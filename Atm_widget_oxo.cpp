@@ -4,9 +4,6 @@
  * Add extra initialization code
  */
 
-// I'm not sure this works proper
-
-
 Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
   // clang-format off
   const static state_t state_table[] PROGMEM = { 
@@ -32,15 +29,13 @@ Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // E
   Machine::begin( state_table, ELSE );
   this->led_map = led_map;
   this->led = &led;
-  led.on( led_map[27] );
+  led.on( led_map[27] ); // Default selector: X
   return *this;          
 }
 
 /* Add C++ code for each internally handled event (input) 
  * The code must return 1 to trigger the event
  */
-
-
 
 int Atm_widget_oxo::event( int id ) {
   switch ( id ) {
@@ -70,99 +65,78 @@ int Atm_widget_oxo::event( int id ) {
  *   push( connectors, ON_SET, 0, <v>, <up> );
  */
 
-void Atm_widget_oxo::set( int cell, char v ) {
-  switch ( v ) {
-    case 'X':
-      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
-      return;
-    case 'O':
-      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
-      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
-      return;
-  }
-  led->off( led_map[ ( cell - 1 ) * 3 + 1 ] );
-  led->off( led_map[ ( cell - 1 ) * 3 + 0 ] );
-  led->off( led_map[ ( cell - 1 ) * 3 + 2 ] );
-}
-
-char Atm_widget_oxo::set( int cell ) {
-  if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
-  if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
-  return 0;
-}
-
 void Atm_widget_oxo::action( int id ) {
   switch ( id ) {
     case ENT_1X:
       if ( !set( 1 ) ) {
         set( 1, 'X' );
-        push( connectors, ON_SET, 0, 1, 1 );;
+        push( connectors, ON_SET, 0, 1, 1 );
       }
       return;
     case ENT_1O:
       if ( !set( 1 ) ) {
         set( 1, 'O' );
-        push( connectors, ON_SET, 0, 2, 0 );;
+        push( connectors, ON_SET, 0, 2, 0 );
       }
       return;
     case ENT_2X:
       if ( !set( 2 ) ) {
         set( 2, 'X' );
-        push( connectors, ON_SET, 0, 2, 1 );;
+        push( connectors, ON_SET, 0, 2, 1 );
       }
       return;
     case ENT_2O:
       if ( !set( 2 ) ) {
         set( 2, 'O' );
-        push( connectors, ON_SET, 0, 2, 0 );;
+        push( connectors, ON_SET, 0, 2, 0 );
       }
       return;
     case ENT_3X:
       if ( !set( 3 ) ) {
         set( 3, 'X' );
-        push( connectors, ON_SET, 0, 3, 1 );;
+        push( connectors, ON_SET, 0, 3, 1 );
       }
       return;
     case ENT_3O:
       if ( !set( 3 ) ) {
         set( 3, 'O' );
-        push( connectors, ON_SET, 0, 3, 0 );;
+        push( connectors, ON_SET, 0, 3, 0 );
       }
       return;
     case ENT_4:
       if ( !set( 4 ) ) {
-        set( 4, default_char ); // Read the status of led(27) instead of default_char...
-        push( connectors, ON_SET, 0, 4, default_char == 'X' ? 1 : 0 );
+        set_to_active( 4 );
+        push( connectors, ON_SET, 0, 4, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_5:
       if ( !set( 5 ) ) {
-        set( 5, default_char );
-        push( connectors, ON_SET, 0, 5, default_char == 'X' ? 1 : 0 );
+        set_to_active( 5 );
+        push( connectors, ON_SET, 0, 5, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_6:
       if ( !set( 6 ) ) {
-        set( 6, default_char );
-        push( connectors, ON_SET, 0, 6, default_char == 'X' ? 1 : 0 );
+        set_to_active( 6 );
+        push( connectors, ON_SET, 0, 6, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_7:
       if ( !set( 7 ) ) {
-        set( 7, default_char );
-        push( connectors, ON_SET, 0, 7, default_char == 'X' ? 1 : 0 );
+        set_to_active( 7 );
+        push( connectors, ON_SET, 0, 7, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_8:
       if ( !set( 8 ) ) {
-        set( 8, default_char );
-        push( connectors, ON_SET, 0, 8, default_char == 'X' ? 1 : 0 );
+        set_to_active( 8 );
+        push( connectors, ON_SET, 0, 8, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_9:
       if ( !set( 9 ) ) {
-        set( 9, default_char );
-        push( connectors, ON_SET, 0, 9, default_char == 'X' ? 1 : 0 );
+        set_to_active( 9 );
+        push( connectors, ON_SET, 0, 9, led->active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_MATCH:
@@ -176,12 +150,9 @@ void Atm_widget_oxo::action( int id ) {
       matched = false;
       return;
     case ENT_TOGGLE:
-      if ( default_char == 'X' ) {
-        default_char = 'O';
-        led->off( led_map[ 27 ] );
-        led->on( led_map[ 28 ] );
+      if ( led->active( led_map[ 27 ] ) ) {
+        led->off( led_map[ 27 ] ).on( led_map[ 28 ] );
       } else {
-        default_char = 'X';
         led->off( led_map[ 28 ] ).on( led_map[ 27 ] );
       }
       return;
@@ -202,7 +173,37 @@ Atm_widget_oxo& Atm_widget_oxo::trigger( int event ) {
  */
 
 int Atm_widget_oxo::state( void ) {
-  return Machine::state();
+  return matched ? 1 : 0;
+}
+
+void Atm_widget_oxo::set( int cell, char v ) {
+  switch ( v ) {
+    case 'X':
+      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
+      return;
+    case 'O':
+      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
+      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
+      return;
+  }
+  led->off( led_map[ ( cell - 1 ) * 3 + 1 ] );
+  led->off( led_map[ ( cell - 1 ) * 3 + 0 ] );
+  led->off( led_map[ ( cell - 1 ) * 3 + 2 ] );
+}
+
+void Atm_widget_oxo::set_to_active( int cell ) {
+  if ( led->active( led_map[ 27 ] ) ) {
+      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
+  } else {
+      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
+      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
+  }
+}
+
+char Atm_widget_oxo::set( int cell ) {
+  if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
+  if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
+  return 0;
 }
 
 /* Nothing customizable below this line                          

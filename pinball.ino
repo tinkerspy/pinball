@@ -72,7 +72,7 @@ void setup() {
       Serial.println( up );
     });
 
- // oxo.trace( Serial );
+  oxo.trace( Serial );
 }
 
 uint32_t cnt = 0;

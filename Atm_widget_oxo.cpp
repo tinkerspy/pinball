@@ -21,9 +21,9 @@ Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // E
     /*  OXO_7 */      ENT_7,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
     /*  OXO_8 */      ENT_8,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
     /*  OXO_9 */      ENT_9,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
-    /*  MATCH */  ENT_MATCH,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  MATCH */  ENT_MATCH, ATM_SLEEP,      -1,        -1, OXO_1X, OXO_1O, OXO_2X, OXO_2O, OXO_3X, OXO_3O, OXO_4, OXO_5, OXO_6, OXO_7, OXO_8, OXO_9,     INIT,     TOGGLE,   -1,
     /*   INIT */   ENT_INIT,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
-    /* TOGGLE */ ENT_TOGGLE,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* TOGGLE */ ENT_TOGGLE,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -40,7 +40,6 @@ Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // E
 int Atm_widget_oxo::event( int id ) {
   switch ( id ) {
     case EVT_MATCH:
-      if ( matched ) return 0;
       char s1 = set( 1 ), s2 = set( 2 ), s3 = set( 3 );
       char s4 = set( 4 ), s5 = set( 5 ), s6 = set( 6 );
       char s7 = set( 7 ), s8 = set( 8 ), s9 = set( 9 );
@@ -140,14 +139,12 @@ void Atm_widget_oxo::action( int id ) {
       }
       return;
     case ENT_MATCH:
-      matched = true;
       push( connectors, ON_MATCH, 0, 1, 1 );
       return;
     case ENT_INIT:
       for ( int i = 0; i < 9; i++ ) {
         set( i + 1, 0 );
       }
-      matched = false;
       return;
     case ENT_TOGGLE:
       if ( led->active( led_map[ 27 ] ) ) {
@@ -173,7 +170,7 @@ Atm_widget_oxo& Atm_widget_oxo::trigger( int event ) {
  */
 
 int Atm_widget_oxo::state( void ) {
-  return matched ? 1 : 0;
+  return current == MATCH ? 1 : 0;
 }
 
 void Atm_widget_oxo::set( int cell, char v ) {

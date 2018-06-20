@@ -42,7 +42,6 @@ class Atm_widget_oxo: public Machine {
   int event( int id ); 
   void action( int id ); 
   Atm_apa102 *led;
-  bool matched;
   int8_t *led_map;
 };
 

@@ -60,9 +60,19 @@ void setup() {
 
   led_strip_oxo.begin( 10, SPI_11_13 ); 
 
-  oxo.begin( led_strip_oxo, oxo_leds );
+  oxo.begin( led_strip_oxo, oxo_leds )
+    .onMatch( [] ( int idx, int v, int up ) {
+      led_strip_oxo.on( 9 );
+      Serial.println( "You win!" );
+    } )
+    .onSet( [] ( int idx, int v, int up ) {
+      Serial.print( "Set cell " );
+      Serial.print( v );
+      Serial.print( " to " );
+      Serial.println( up );
+    });
 
-  oxo.trace( Serial );
+ // oxo.trace( Serial );
 }
 
 uint32_t cnt = 0;

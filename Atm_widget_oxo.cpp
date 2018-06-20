@@ -94,43 +94,80 @@ char Atm_widget_oxo::set( int cell ) {
 void Atm_widget_oxo::action( int id ) {
   switch ( id ) {
     case ENT_1X:
-      if ( !set( 1 ) ) set( 1, 'X' );
+      if ( !set( 1 ) ) {
+        set( 1, 'X' );
+        push( connectors, ON_SET, 0, 1, 1 );;
+      }
       return;
     case ENT_1O:
-      if ( !set( 1 ) ) set( 1, 'O' );
+      if ( !set( 1 ) ) {
+        set( 1, 'O' );
+        push( connectors, ON_SET, 0, 2, 0 );;
+      }
       return;
     case ENT_2X:
-      if ( !set( 2 ) ) set( 2, 'X' );
+      if ( !set( 2 ) ) {
+        set( 2, 'X' );
+        push( connectors, ON_SET, 0, 2, 1 );;
+      }
       return;
     case ENT_2O:
-      if ( !set( 2 ) ) set( 2, 'O' );
+      if ( !set( 2 ) ) {
+        set( 2, 'O' );
+        push( connectors, ON_SET, 0, 2, 0 );;
+      }
       return;
     case ENT_3X:
-      if ( !set( 3 ) ) set( 3, 'X' );
+      if ( !set( 3 ) ) {
+        set( 3, 'X' );
+        push( connectors, ON_SET, 0, 3, 1 );;
+      }
       return;
     case ENT_3O:
-      if ( !set( 3 ) ) set( 3, 'O' );
+      if ( !set( 3 ) ) {
+        set( 3, 'O' );
+        push( connectors, ON_SET, 0, 3, 0 );;
+      }
       return;
     case ENT_4:
-      if ( !set( 4 ) ) set( 4, default_char ); // Read the status of led(27) instead of default_char...
+      if ( !set( 4 ) ) {
+        set( 4, default_char ); // Read the status of led(27) instead of default_char...
+        push( connectors, ON_SET, 0, 4, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_5:
-      if ( !set( 5 ) ) set( 5, default_char );
+      if ( !set( 5 ) ) {
+        set( 5, default_char );
+        push( connectors, ON_SET, 0, 5, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_6:
-      if ( !set( 6 ) ) set( 6, default_char );
+      if ( !set( 6 ) ) {
+        set( 6, default_char );
+        push( connectors, ON_SET, 0, 6, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_7:
-      if ( !set( 7 ) ) set( 7, default_char );
+      if ( !set( 7 ) ) {
+        set( 7, default_char );
+        push( connectors, ON_SET, 0, 7, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_8:
-      if ( !set( 8 ) ) set( 8, default_char );
+      if ( !set( 8 ) ) {
+        set( 8, default_char );
+        push( connectors, ON_SET, 0, 8, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_9:
-      if ( !set( 9 ) ) set( 9, default_char );
+      if ( !set( 9 ) ) {
+        set( 9, default_char );
+        push( connectors, ON_SET, 0, 9, default_char == 'X' ? 1 : 0 );
+      }
       return;
     case ENT_MATCH:
       matched = true;
+      push( connectors, ON_MATCH, 0, 1, 1 );
       return;
     case ENT_INIT:
       for ( int i = 0; i < 9; i++ ) {

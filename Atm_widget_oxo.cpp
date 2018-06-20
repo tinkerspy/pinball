@@ -1,0 +1,288 @@
+#include "Atm_widget_oxo.hpp"
+
+/* Add optional parameters for the state machine to begin()
+ * Add extra initialization code
+ */
+
+// I'm not sure this works proper
+
+
+Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
+  // clang-format off
+  const static state_t state_table[] PROGMEM = { 
+    /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_MATCH  EVT_1X  EVT_1O  EVT_2X  EVT_2O  EVT_3X  EVT_3O  EVT_4  EVT_5  EVT_6  EVT_7  EVT_8  EVT_9  EVT_INIT  EVT_TOGGLE  ELSE */
+    /*   IDLE */         -1, ATM_SLEEP,      -1,        -1, OXO_1X, OXO_1O, OXO_2X, OXO_2O, OXO_3X, OXO_3O, OXO_4, OXO_5, OXO_6, OXO_7, OXO_8, OXO_9,     INIT,     TOGGLE,   -1,
+    /* OXO_1X */     ENT_1X,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* OXO_1O */     ENT_1O,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* OXO_2X */     ENT_2X,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* OXO_2O */     ENT_2O,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* OXO_3X */     ENT_3X,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* OXO_3O */     ENT_3O,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_4 */      ENT_4,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_5 */      ENT_5,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_6 */      ENT_6,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_7 */      ENT_7,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_8 */      ENT_8,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  OXO_9 */      ENT_9,        -1,      -1,     MATCH,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*  MATCH */  ENT_MATCH,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /*   INIT */   ENT_INIT,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+    /* TOGGLE */ ENT_TOGGLE,        -1,      -1,        -1,     -1,     -1,     -1,     -1,     -1,     -1,    -1,    -1,    -1,    -1,    -1,    -1,       -1,         -1, IDLE,
+  };
+  // clang-format on
+  Machine::begin( state_table, ELSE );
+  this->led_map = led_map;
+  this->led = &led;
+  led.on( led_map[27] );
+  return *this;          
+}
+
+/* Add C++ code for each internally handled event (input) 
+ * The code must return 1 to trigger the event
+ */
+
+
+
+int Atm_widget_oxo::event( int id ) {
+  switch ( id ) {
+    case EVT_MATCH:
+      if ( matched ) return 0;
+      char s1 = set( 1 ), s2 = set( 2 ), s3 = set( 3 );
+      char s4 = set( 4 ), s5 = set( 5 ), s6 = set( 6 );
+      char s7 = set( 7 ), s8 = set( 8 ), s9 = set( 9 );
+      if ( s1 && s1 == s2 && s2 == s3 ) return 1; // Horizontal
+      if ( s4 && s4 == s5 && s5 == s6 ) return 1;
+      if ( s7 && s7 == s8 && s8 == s9 ) return 1;
+      if ( s1 && s1 == s4 && s4 == s7 ) return 1; // Vertical
+      if ( s2 && s2 == s5 && s5 == s8 ) return 1;
+      if ( s3 && s3 == s6 && s6 == s9 ) return 1;
+      if ( s1 && s1 == s5 && s5 == s9 ) return 1; // Diagonal
+      if ( s7 && s7 == s5 && s5 == s3 ) return 1;
+      return 0;
+  }
+  return 0;
+}
+
+/* Add C++ code for each action
+ * This generates the 'output' for the state machine
+ *
+ * Available connectors:
+ *   push( connectors, ON_MATCH, 0, <v>, <up> );
+ *   push( connectors, ON_SET, 0, <v>, <up> );
+ */
+
+void Atm_widget_oxo::set( int cell, char v ) {
+  switch ( v ) {
+    case 'X':
+      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
+      return;
+    case 'O':
+      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
+      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
+      return;
+  }
+  led->off( led_map[ ( cell - 1 ) * 3 + 1 ] );
+  led->off( led_map[ ( cell - 1 ) * 3 + 0 ] );
+  led->off( led_map[ ( cell - 1 ) * 3 + 2 ] );
+}
+
+char Atm_widget_oxo::set( int cell ) {
+  if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
+  if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
+  return 0;
+}
+
+void Atm_widget_oxo::action( int id ) {
+  switch ( id ) {
+    case ENT_1X:
+      if ( !set( 1 ) ) set( 1, 'X' );
+      return;
+    case ENT_1O:
+      if ( !set( 1 ) ) set( 1, 'O' );
+      return;
+    case ENT_2X:
+      if ( !set( 2 ) ) set( 2, 'X' );
+      return;
+    case ENT_2O:
+      if ( !set( 2 ) ) set( 2, 'O' );
+      return;
+    case ENT_3X:
+      if ( !set( 3 ) ) set( 3, 'X' );
+      return;
+    case ENT_3O:
+      if ( !set( 3 ) ) set( 3, 'O' );
+      return;
+    case ENT_4:
+      if ( !set( 4 ) ) set( 4, default_char ); // Read the status of led(27) instead of default_char...
+      return;
+    case ENT_5:
+      if ( !set( 5 ) ) set( 5, default_char );
+      return;
+    case ENT_6:
+      if ( !set( 6 ) ) set( 6, default_char );
+      return;
+    case ENT_7:
+      if ( !set( 7 ) ) set( 7, default_char );
+      return;
+    case ENT_8:
+      if ( !set( 8 ) ) set( 8, default_char );
+      return;
+    case ENT_9:
+      if ( !set( 9 ) ) set( 9, default_char );
+      return;
+    case ENT_MATCH:
+      matched = true;
+      return;
+    case ENT_INIT:
+      for ( int i = 0; i < 9; i++ ) {
+        set( i + 1, 0 );
+      }
+      matched = false;
+      return;
+    case ENT_TOGGLE:
+      if ( default_char == 'X' ) {
+        default_char = 'O';
+        led->off( led_map[ 27 ] );
+        led->on( led_map[ 28 ] );
+      } else {
+        default_char = 'X';
+        led->off( led_map[ 28 ] ).on( led_map[ 27 ] );
+      }
+      return;
+  }
+}
+
+/* Optionally override the default trigger() method
+ * Control how your machine processes triggers
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::trigger( int event ) {
+  Machine::trigger( event );
+  return *this;
+}
+
+/* Optionally override the default state() method
+ * Control what the machine returns when another process requests its state
+ */
+
+int Atm_widget_oxo::state( void ) {
+  return Machine::state();
+}
+
+/* Nothing customizable below this line                          
+ ************************************************************************************************
+*/
+
+/* Public event methods
+ *
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_1x() {
+  trigger( EVT_1X );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_1o() {
+  trigger( EVT_1O );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_2x() {
+  trigger( EVT_2X );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_2o() {
+  trigger( EVT_2O );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_3x() {
+  trigger( EVT_3X );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_3o() {
+  trigger( EVT_3O );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_4() {
+  trigger( EVT_4 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_5() {
+  trigger( EVT_5 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_6() {
+  trigger( EVT_6 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_7() {
+  trigger( EVT_7 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_8() {
+  trigger( EVT_8 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::oxo_9() {
+  trigger( EVT_9 );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::toggle() {
+  trigger( EVT_TOGGLE );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::init() {
+  trigger( EVT_INIT );
+  return *this;
+}
+
+/*
+ * onMatch() push connector variants ( slots 1, autostore 0, broadcast 0 )
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::onMatch( Machine& machine, int event ) {
+  onPush( connectors, ON_MATCH, 0, 1, 1, machine, event );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::onMatch( atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_MATCH, 0, 1, 1, callback, idx );
+  return *this;
+}
+
+/*
+ * onSet() push connector variants ( slots 1, autostore 0, broadcast 0 )
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::onSet( Machine& machine, int event ) {
+  onPush( connectors, ON_SET, 0, 1, 1, machine, event );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::onSet( atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_SET, 0, 1, 1, callback, idx );
+  return *this;
+}
+
+/* State trace method
+ * Sets the symbol table and the default logging method for serial monitoring
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::trace( Stream & stream ) {
+  Machine::setTrace( &stream, atm_serial_debug::trace,
+    "WIDGET_OXO\0EVT_MATCH\0EVT_1X\0EVT_1O\0EVT_2X\0EVT_2O\0EVT_3X\0EVT_3O\0EVT_4\0EVT_5\0EVT_6\0EVT_7\0EVT_8\0EVT_9\0EVT_INIT\0EVT_TOGGLE\0ELSE\0IDLE\0OXO_1X\0OXO_1O\0OXO_2X\0OXO_2O\0OXO_3X\0OXO_3O\0OXO_4\0OXO_5\0OXO_6\0OXO_7\0OXO_8\0OXO_9\0MATCH\0INIT\0TOGGLE" );
+  return *this;
+}
+
+
+

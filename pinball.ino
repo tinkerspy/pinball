@@ -2,9 +2,11 @@
 #include "Atm_zone.hpp"
 #include "Atm_apa102.hpp"
 #include "Atm_element.hpp"
+#include "Atm_widget_oxo.hpp"
 
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
+Atm_widget_oxo oxo;
 Atm_timer timer;
 
 int8_t rows[] = { 20, 21, 22, 23 };
@@ -18,6 +20,19 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
 #define LEFT_BUMPER_COIL 9
 #define LEFT_FLIPPER_COIL 5
 #define RIGHT_FLIPPER_COIL 6
+
+  enum { // Maps OXO lights on led strip
+    OXO_LIGHT_1_OA, OXO_LIGHT_1_X, OXO_LIGHT_1_OB, OXO_LIGHT_2_OA, OXO_LIGHT_2_X, OXO_LIGHT_2_OB, OXO_LIGHT_3_OA, OXO_LIGHT_3_X, OXO_LIGHT_3_OB,
+    OXO_LIGHT_4_OA, OXO_LIGHT_4_X, OXO_LIGHT_4_OB, OXO_LIGHT_5_OA, OXO_LIGHT_5_X, OXO_LIGHT_5_OB, OXO_LIGHT_6_OA, OXO_LIGHT_6_X, OXO_LIGHT_6_OB,
+    OXO_LIGHT_7_OA, OXO_LIGHT_7_X, OXO_LIGHT_7_OB, OXO_LIGHT_8_OA, OXO_LIGHT_8_X, OXO_LIGHT_8_OB, OXO_LIGHT_9_OA, OXO_LIGHT_9_X, OXO_LIGHT_9_OB,
+    OXO_LIGHT_X, OXO_LIGHT_O }; 
+
+  int8_t oxo_leds[] =  {
+    OXO_LIGHT_1_OA, OXO_LIGHT_1_X, OXO_LIGHT_1_OB, OXO_LIGHT_2_OA, OXO_LIGHT_2_X, OXO_LIGHT_2_OB, OXO_LIGHT_3_OA, OXO_LIGHT_3_X, OXO_LIGHT_3_OB,
+    OXO_LIGHT_4_OA, OXO_LIGHT_4_X, OXO_LIGHT_4_OB, OXO_LIGHT_5_OA, OXO_LIGHT_5_X, OXO_LIGHT_5_OB, OXO_LIGHT_6_OA, OXO_LIGHT_6_X, OXO_LIGHT_6_OB,
+    OXO_LIGHT_7_OA, OXO_LIGHT_7_X, OXO_LIGHT_7_OB, OXO_LIGHT_8_OA, OXO_LIGHT_8_X, OXO_LIGHT_8_OB, OXO_LIGHT_9_OA, OXO_LIGHT_9_X, OXO_LIGHT_9_OB,
+    OXO_LIGHT_X, OXO_LIGHT_O }; 
+
 
 void setup() {
   Serial.begin( 9600 );
@@ -33,37 +48,21 @@ void setup() {
     Serial.println( i );
     delay( 100 );
   }
-  
-  led_strip_pf.begin( 10, SPI_11_13 ); 
-  //led_strip_bb.begin( 10, SPI_11_20 ); 
-  //led_strip_cb.begin( 10, SPI_21_13 ); 
-  //led_strip_oxo.begin( 10, SPI_21_20 );
-  
-  playfield.begin( led_strip_pf, rows, cols, 4, 4 );
 
-  playfield.element( LEFT_BUMPER, LEFT_BUMPER_LIGHT, LEFT_BUMPER_COIL, 50 ) 
-//  .onScore( true, player, player.EVT_1000 )
-    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
-      Serial.print( millis() );
-      Serial.println( " Left bumper kicked" );
-    })
-    .autoLite();
-//    .retrigger( 200 );
-  playfield.element( LEFT_FLIPPER, -1, LEFT_FLIPPER_COIL ) 
-    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
-      Serial.print( millis() );
-      Serial.println( " Left flipper kicked" );
-    });
-  playfield.element( RIGHT_FLIPPER, -1, RIGHT_FLIPPER_COIL )
-    .onKick( [] ( int idx, int v, int up ) { // Creates duplicate callbacks
-      Serial.print( millis() );
-      Serial.println( " Right flipper kicked" );
-    });
-  playfield.onPress( 0, [] ( int idx, int v, int up ) { // Creates duplicate callbacks
-      Serial.print( millis() );
-      Serial.println( " Switch pressed" );
-    });
-    
+  playfield.begin( led_strip_pf, cols, rows, 4, 4 )
+    .onPress( 0, oxo, Atm_widget_oxo::EVT_1X )
+    .onPress( 1, oxo, Atm_widget_oxo::EVT_1O )
+    .onPress( 2, oxo, Atm_widget_oxo::EVT_2X )
+    .onPress( 3, oxo, Atm_widget_oxo::EVT_2O )
+    .onPress( 4, oxo, Atm_widget_oxo::EVT_3X )
+    .onPress( 5, oxo, Atm_widget_oxo::EVT_3O )
+    .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT );
+
+  led_strip_oxo.begin( 10, SPI_11_13 ); 
+
+  oxo.begin( led_strip_oxo, oxo_leds );
+
+  oxo.trace( Serial );
 }
 
 uint32_t cnt = 0;

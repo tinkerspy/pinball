@@ -37,8 +37,6 @@ class Atm_apa102: public Machine {
   Atm_apa102& trace( Stream & stream );
   Atm_apa102& trigger( int event );
   int state( void );
-  Atm_apa102& done( void );
-  Atm_apa102& run( void );
   Atm_apa102& update( void );
   Atm_apa102& level( uint8_t v );
   Atm_apa102& level( uint8_t ledno, uint8_t v );
@@ -49,7 +47,7 @@ class Atm_apa102: public Machine {
   Atm_apa102& set( int ledno, uint8_t r, uint8_t g, uint8_t b );
   Atm_apa102& on( int ledno );
   Atm_apa102& off( int ledno );
-  Atm_apa102& pulse( int ledno, uint16_t duration );
+  Atm_apa102& pulse( int ledno, uint16_t duration ); // ledno, pulse_time, delay_time, intensity
   int active( int ledno );
   uint8_t debug;
 

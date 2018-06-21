@@ -60,7 +60,7 @@ void Atm_element::action( int id ) {
     case ENT_KICKING:
       led->pulse( coil_led, pulse_time );
       if ( autolite) led->on( light_led );
-      connectors[ON_KICK+2].push( 1 );
+      //connectors[ON_KICK+2].push( 1 );
       if ( led->active( light_led ) ) {  
         connectors[ON_KICK+1].push( 1 );
       } else {
@@ -72,7 +72,7 @@ void Atm_element::action( int id ) {
       led->off( light_led );
       return;
     case ENT_INPUT:
-      connectors[ON_INPUT+2].push( 1 );
+      //connectors[ON_INPUT+2].push( 1 );
       if ( led->active( light_led ) ) {  
         connectors[ON_INPUT+1].push( 1 );
       } else {
@@ -84,12 +84,12 @@ void Atm_element::action( int id ) {
       return;
     case ENT_LIGHT_ON:
       led->on( light_led );
-      connectors[ON_LIGHT+2].push( 1 );
+      //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+1].push( 1 );
       return;
     case ENT_LIGHT_OFF:
       led->off( light_led );
-      connectors[ON_LIGHT+2].push( 1 );
+      //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+0].push( 1 );
       return;
   }

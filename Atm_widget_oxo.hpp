@@ -34,6 +34,8 @@ class Atm_widget_oxo: public Machine {
   char set( int cell );
   void set( int cell, char v );
   void set_to_active( int cell );
+  Atm_widget_oxo& dump( Stream & stream );
+
 
  private:
   enum { ENT_1X, ENT_1O, ENT_2X, ENT_2O, ENT_3X, ENT_3O, ENT_4, ENT_5, ENT_6, ENT_7, ENT_8, ENT_9, ENT_MATCH, ENT_INIT, ENT_TOGGLE }; // ACTIONS

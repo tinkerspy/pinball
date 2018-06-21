@@ -4,10 +4,9 @@
  * Add extra initialization code
  */
 
-/* Note: you can update led strips individually like this: 
- *  
- *  https://github.com/FastLED/FastLED/wiki/Multiple-Controller-Examples
- *  (which is what we want)
+/* 
+ *  TODO: add pulse delay (before pulse starts)
+ *
  */
 
 Atm_apa102& Atm_apa102::begin( int number_of_leds, int idx ) {
@@ -222,15 +221,6 @@ int Atm_apa102::active( int ledno ) {
  *
  */
 
-Atm_apa102& Atm_apa102::done() {
-  trigger( EVT_DONE );
-  return *this;
-}
-
-Atm_apa102& Atm_apa102::run() {
-  trigger( EVT_RUN );
-  return *this;
-}
 
 Atm_apa102& Atm_apa102::update() {
   trigger( EVT_UPDATE );

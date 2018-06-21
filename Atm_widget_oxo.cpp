@@ -4,6 +4,13 @@
  * Add extra initialization code
  */
 
+/* TODO: Add ASCII print state method
+ *  - - X
+ *  - X -
+ *  O O X
+ */
+
+
 Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
   // clang-format off
   const static state_t state_table[] PROGMEM = { 
@@ -139,7 +146,7 @@ void Atm_widget_oxo::action( int id ) {
       }
       return;
     case ENT_MATCH:
-      push( connectors, ON_MATCH, 0, 1, 1 );
+      push( connectors, ON_MATCH, 0, 1, 1 ); // FIXME: This fires multiple times per game
       return;
     case ENT_INIT:
       for ( int i = 0; i < 9; i++ ) {
@@ -189,18 +196,29 @@ void Atm_widget_oxo::set( int cell, char v ) {
 }
 
 void Atm_widget_oxo::set_to_active( int cell ) {
-  if ( led->active( led_map[ 27 ] ) ) {
-      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
-  } else {
-      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
-      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
-  }
+  set( cell, led->active( led_map[27] ) ? 'X' : 'O' );
 }
 
 char Atm_widget_oxo::set( int cell ) {
   if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
   if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
   return 0;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
+  stream.print( set( 1 ) ? set( 1 ) : '-' );
+  stream.print( set( 2 ) ? set( 2 ) : '-' );
+  stream.print( set( 3 ) ? set( 3 ) : '-' );
+  stream.println();
+  stream.print( set( 4 ) ? set( 4 ) : '-' );
+  stream.print( set( 5 ) ? set( 5 ) : '-' );
+  stream.print( set( 6 ) ? set( 6 ) : '-' );
+  stream.println();
+  stream.print( set( 7 ) ? set( 7 ) : '-' );
+  stream.print( set( 8 ) ? set( 8 ) : '-' );
+  stream.print( set( 9 ) ? set( 9 ) : '-' );
+  stream.println();
+  return *this;  
 }
 
 /* Nothing customizable below this line                          

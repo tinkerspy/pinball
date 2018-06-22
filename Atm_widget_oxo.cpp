@@ -4,10 +4,10 @@
  * Add extra initialization code
  */
 
-/* TODO: Add ASCII print state method
- *  - - X
- *  - X -
- *  O O X
+/* TODO: OXO-Bot mode
+ *  toggle disabled (player is O)
+ *  OXO_1X, OXO_2X, AOX_3X select corresponding O event
+ *  First event is ignored (extra wait state?)
  */
 
 
@@ -152,6 +152,7 @@ void Atm_widget_oxo::action( int id ) {
       for ( int i = 0; i < 9; i++ ) {
         set( i + 1, 0 );
       }
+      push( connectors, ON_INIT, 0, 9, led->active( led_map[ 27 ] ) ? 1 : 0 );
       return;
     case ENT_TOGGLE:
       if ( led->active( led_map[ 27 ] ) ) {
@@ -324,6 +325,20 @@ Atm_widget_oxo& Atm_widget_oxo::onSet( Machine& machine, int event ) {
 
 Atm_widget_oxo& Atm_widget_oxo::onSet( atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_SET, 0, 1, 1, callback, idx );
+  return *this;
+}
+
+/*
+ * onSet() push connector variants ( slots 1, autostore 0, broadcast 0 )
+ */
+
+Atm_widget_oxo& Atm_widget_oxo::onInit( Machine& machine, int event ) {
+  onPush( connectors, ON_INIT, 0, 1, 1, machine, event );
+  return *this;
+}
+
+Atm_widget_oxo& Atm_widget_oxo::onInit( atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_INIT, 0, 1, 1, callback, idx );
   return *this;
 }
 

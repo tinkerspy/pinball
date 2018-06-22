@@ -17,6 +17,8 @@ class Atm_widget_oxo: public Machine {
   Atm_widget_oxo& onMatch( atm_cb_push_t callback, int idx = 0 );
   Atm_widget_oxo& onSet( Machine& machine, int event = 0 );
   Atm_widget_oxo& onSet( atm_cb_push_t callback, int idx = 0 );
+  Atm_widget_oxo& onInit( Machine& machine, int event = 0 );
+  Atm_widget_oxo& onInit( atm_cb_push_t callback, int idx = 0 );
   Atm_widget_oxo& oxo_1x( void );
   Atm_widget_oxo& oxo_1o( void );
   Atm_widget_oxo& oxo_2x( void );
@@ -39,7 +41,7 @@ class Atm_widget_oxo: public Machine {
 
  private:
   enum { ENT_1X, ENT_1O, ENT_2X, ENT_2O, ENT_3X, ENT_3O, ENT_4, ENT_5, ENT_6, ENT_7, ENT_8, ENT_9, ENT_MATCH, ENT_INIT, ENT_TOGGLE }; // ACTIONS
-  enum { ON_MATCH, ON_SET, CONN_MAX }; // CONNECTORS
+  enum { ON_MATCH, ON_SET, ON_INIT, CONN_MAX }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 

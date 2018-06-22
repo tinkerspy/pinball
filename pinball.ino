@@ -7,7 +7,7 @@
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
 Atm_widget_oxo oxo;
-Atm_timer timer;
+Atm_led led;
 
 int8_t rows[] = { 20, 21, 22, 23 };
 int8_t cols[] = { 16, 17, 18, 19 };
@@ -57,15 +57,17 @@ void setup() {
     delay( 100 );
   }
 
+  led.begin( 2 );
+
   playfield.begin( led_strip_pf, cols, rows, 4, 4 )
-    .onPress( 0, oxo, Atm_widget_oxo::EVT_1X )
-    .onPress( 1, oxo, Atm_widget_oxo::EVT_2X )
-    .onPress( 2, oxo, Atm_widget_oxo::EVT_3X )
-    .onPress( 4, oxo, Atm_widget_oxo::EVT_1O )
-    .onPress( 5, oxo, Atm_widget_oxo::EVT_2O )
-    .onPress( 6, oxo, Atm_widget_oxo::EVT_3O )
-    .onPress( 8, oxo, Atm_widget_oxo::EVT_4 )
-    .onPress( 9, oxo, Atm_widget_oxo::EVT_5 )
+    .onPress(  0, oxo, Atm_widget_oxo::EVT_1X )
+    .onPress(  1, oxo, Atm_widget_oxo::EVT_2X )
+    .onPress(  2, oxo, Atm_widget_oxo::EVT_3X )
+    .onPress(  4, oxo, Atm_widget_oxo::EVT_1O )
+    .onPress(  5, oxo, Atm_widget_oxo::EVT_2O )
+    .onPress(  6, oxo, Atm_widget_oxo::EVT_3O )
+    .onPress(  8, oxo, Atm_widget_oxo::EVT_4 )
+    .onPress(  9, oxo, Atm_widget_oxo::EVT_5 )
     .onPress( 10, oxo, Atm_widget_oxo::EVT_6 )
     .onPress( 12, oxo, Atm_widget_oxo::EVT_7 )
     .onPress( 13, oxo, Atm_widget_oxo::EVT_8 )
@@ -76,16 +78,9 @@ void setup() {
   led_strip_oxo.begin( 29, SPI_11_13 ).rgb( 0xffffff );
 
   oxo.begin( led_strip_oxo, oxo_leds )
-    .onMatch( [] ( int idx, int v, int up ) {
-      //led_strip_oxo.on( 9 );
-      Serial.println( "You win!" );
-      oxo.dump( Serial );
-    } )
+    .onInit( led, led.EVT_OFF )
+    .onMatch( led, led.EVT_ON )
     .onSet( [] ( int idx, int v, int up ) {
-      Serial.print( "Set cell " );
-      Serial.print( v );
-      Serial.print( " to " );
-      Serial.println( up );
       oxo.dump( Serial );
     });
 

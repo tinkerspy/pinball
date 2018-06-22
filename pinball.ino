@@ -22,9 +22,17 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
 #define RIGHT_FLIPPER_COIL 6
 
   enum { // Leds in led strip order
-    OXO_LED_1_OA, OXO_LED_1_X, OXO_LED_1_OB, OXO_LED_2_OA, OXO_LED_2_X, OXO_LED_2_OB, OXO_LED_3_OA, OXO_LED_3_X, OXO_LED_3_OB,
-    OXO_LED_4_OA, OXO_LED_4_X, OXO_LED_4_OB, OXO_LED_5_OA, OXO_LED_5_X, OXO_LED_5_OB, OXO_LED_6_OA, OXO_LED_6_X, OXO_LED_6_OB,
-    OXO_LED_7_OA, OXO_LED_7_X, OXO_LED_7_OB, OXO_LED_8_OA, OXO_LED_8_X, OXO_LED_8_OB, OXO_LED_9_OA, OXO_LED_9_X, OXO_LED_9_OB,
+    OXO_LED_9_OA, OXO_LED_9_X, OXO_LED_9_OB,
+    OXO_LED_8_OA, OXO_LED_8_X, OXO_LED_8_OB, 
+    OXO_LED_7_OA, OXO_LED_7_X, OXO_LED_7_OB, 
+    
+    OXO_LED_4_OA, OXO_LED_4_X, OXO_LED_4_OB, 
+    OXO_LED_5_OA, OXO_LED_5_X, OXO_LED_5_OB, 
+    OXO_LED_6_OA, OXO_LED_6_X, OXO_LED_6_OB,
+    
+    OXO_LED_3_OA, OXO_LED_3_X, OXO_LED_3_OB,
+    OXO_LED_2_OA, OXO_LED_2_X, OXO_LED_2_OB, 
+    OXO_LED_1_OA, OXO_LED_1_X, OXO_LED_1_OB, 
     OXO_LED_X, OXO_LED_O }; 
 
   int8_t oxo_leds[] =  { // Leds in OXO game order
@@ -51,16 +59,25 @@ void setup() {
 
   playfield.begin( led_strip_pf, cols, rows, 4, 4 )
     .onPress( 0, oxo, Atm_widget_oxo::EVT_1X )
-    .onPress( 1, oxo, Atm_widget_oxo::EVT_1O )
-    .onPress( 2, oxo, Atm_widget_oxo::EVT_2X )
-    .onPress( 3, oxo, Atm_widget_oxo::EVT_2O )
-    .onPress( 4, oxo, Atm_widget_oxo::EVT_3X )
-    .onPress( 5, oxo, Atm_widget_oxo::EVT_3O )
-    .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT );
+    .onPress( 1, oxo, Atm_widget_oxo::EVT_2X )
+    .onPress( 2, oxo, Atm_widget_oxo::EVT_3X )
+    .onPress( 4, oxo, Atm_widget_oxo::EVT_1O )
+    .onPress( 5, oxo, Atm_widget_oxo::EVT_2O )
+    .onPress( 6, oxo, Atm_widget_oxo::EVT_3O )
+    .onPress( 8, oxo, Atm_widget_oxo::EVT_4 )
+    .onPress( 9, oxo, Atm_widget_oxo::EVT_5 )
+    .onPress( 10, oxo, Atm_widget_oxo::EVT_6 )
+    .onPress( 12, oxo, Atm_widget_oxo::EVT_7 )
+    .onPress( 13, oxo, Atm_widget_oxo::EVT_8 )
+    .onPress( 14, oxo, Atm_widget_oxo::EVT_9 )
+    .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT )
+    .onPress( 11, oxo, Atm_widget_oxo::EVT_TOGGLE );
+    
+  led_strip_oxo.begin( 29, SPI_11_13 ).rgb( 0xffffff );
 
-  oxo.begin( led_strip_oxo.begin( 10, SPI_11_13 ), oxo_leds )
+  oxo.begin( led_strip_oxo, oxo_leds )
     .onMatch( [] ( int idx, int v, int up ) {
-      led_strip_oxo.on( 9 );
+      //led_strip_oxo.on( 9 );
       Serial.println( "You win!" );
       oxo.dump( Serial );
     } )

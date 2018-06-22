@@ -5,7 +5,7 @@
  */
 
 /* 
- *  TODO: add pulse delay (before pulse starts)
+ *  TODO: pulse method: add delay_time (before pulse starts) and intensity arguments
  *
  */
 

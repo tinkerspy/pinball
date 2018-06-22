@@ -5,6 +5,8 @@
  */
 
 // TODO: Move retrigger to element() level
+// TODO: Allow for active HIGH switches
+// TODO: Add catchall on onPress()/onRelease()
 
 Atm_zone& Atm_zone::begin( Atm_apa102& led, int8_t* rows, int8_t* cols, uint8_t no_of_rows, uint8_t no_of_cols) {
   // clang-format off

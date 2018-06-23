@@ -222,6 +222,58 @@ Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
   return *this;  
 }
 
+uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) {
+  // Winning patterns 123 456 789 147 258 369 159 357
+  uint16_t r = 0;
+  wins[0][0] = wins[3][0] = wins[6][0] = cell( 1 );
+  wins[0][1] = wins[4][0] = cell( 2 );
+  wins[0][2] = wins[7][0] = wins[5][0] = cell( 3 );
+  wins[1][0] = wins[3][1] = cell( 4 );
+  wins[6][1] = wins[7][1] = wins[4][1] = wins[1][1] = cell( 5 );
+  wins[1][2] = wins[5][1] = cell( 6 );
+  wins[3][2] = wins[2][0] = wins[7][2] = cell( 7 );
+  wins[2][1] = wins[4][2] = cell( 8 );  
+  wins[2][2] = wins[6][2] = wins[5][2] = cell( 9 );  
+  if ( wins[0][0] <= 9 ) r |= 1 << 1 ;
+  if ( wins[0][1] <= 9 ) r |= 1 << 2 ;
+  if ( wins[0][2] <= 9 ) r |= 1 << 3 ;
+  if ( wins[1][0] <= 9 ) r |= 1 << 4 ;
+  if ( wins[1][1] <= 9 ) r |= 1 << 5 ;
+  if ( wins[1][2] <= 9 ) r |= 1 << 6 ;
+  if ( wins[2][0] <= 9 ) r |= 1 << 7 ;
+  if ( wins[2][1] <= 9 ) r |= 1 << 8 ;
+  if ( wins[2][2] <= 9 ) r |= 1 << 9 ;
+  return r;  
+}
+
+Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins ) {
+  for ( int win = 0; win < 8; win++ ) {
+    for ( int pos = 0; pos < 3; pos++ ) {
+      if ( wins[win][pos] > 9 ) {
+        stream.print( wins[win][pos] ); 
+      } else {
+        stream.print( int(wins[win][pos]) );        
+      }
+    }
+    stream.print( ' ' );
+  }
+  stream.println();
+  return *this;  
+}
+
+Atm_widget_oxo& Atm_widget_oxo::select( char v ) {
+  if ( v == 'O' ) led->on( 28 ).off( 27 );
+  if ( v == 'X' ) led->on( 27 ).off( 28 );
+  return *this;  
+}
+
+
+char Atm_widget_oxo::cell( int no ) {
+  char c = set( no );
+  return c ? c : no; 
+}
+
+
 /* Nothing customizable below this line                          
  ************************************************************************************************
 */
@@ -315,7 +367,7 @@ Atm_widget_oxo& Atm_widget_oxo::onMatch( atm_cb_push_t callback, int idx ) {
 }
 
 /*
- * onSet() push connector variants ( slots 1, autostore 0, broadcast 0 )
+ * onset() push connector variants ( slots 1, autostore 0, broadcast 0 )
  */
 
 Atm_widget_oxo& Atm_widget_oxo::onSet( Machine& machine, int event ) {

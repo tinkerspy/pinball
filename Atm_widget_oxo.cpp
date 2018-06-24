@@ -246,16 +246,18 @@ uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) {
   return r;  
 }
 
-Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins ) {
+Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins, int idx ) {
   for ( int win = 0; win < 8; win++ ) {
-    for ( int pos = 0; pos < 3; pos++ ) {
-      if ( wins[win][pos] > 9 ) {
-        stream.print( wins[win][pos] ); 
-      } else {
-        stream.print( int(wins[win][pos]) );        
+    if ( idx == -1 || idx == win ) {
+      for ( int pos = 0; pos < 3; pos++ ) {
+        if ( wins[win][pos] > 9 ) {
+          stream.print( wins[win][pos] ); 
+        } else {
+          stream.print( int(wins[win][pos]) );        
+        }
       }
+      stream.print( ' ' );
     }
-    stream.print( ' ' );
   }
   stream.println();
   return *this;  

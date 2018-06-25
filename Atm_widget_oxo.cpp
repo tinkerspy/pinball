@@ -206,6 +206,11 @@ char Atm_widget_oxo::set( int cell ) {
   return 0;
 }
 
+char Atm_widget_oxo::cell( int no ) {
+  char c = set( no );
+  return c ? c : no; 
+}
+
 Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
   stream.print( set( 1 ) ? set( 1 ) : '-' );
   stream.print( set( 2 ) ? set( 2 ) : '-' );
@@ -222,7 +227,7 @@ Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
   return *this;  
 }
 
-uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) {
+uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to bot
   // Winning patterns 123 456 789 147 258 369 159 357
   uint16_t r = 0;
   wins[0][0] = wins[3][0] = wins[6][0] = cell( 1 );
@@ -234,15 +239,6 @@ uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) {
   wins[3][2] = wins[2][0] = wins[7][2] = cell( 7 );
   wins[2][1] = wins[4][2] = cell( 8 );  
   wins[2][2] = wins[6][2] = wins[5][2] = cell( 9 );  
-  if ( wins[0][0] <= 9 ) r |= 1 << 1 ;
-  if ( wins[0][1] <= 9 ) r |= 1 << 2 ;
-  if ( wins[0][2] <= 9 ) r |= 1 << 3 ;
-  if ( wins[1][0] <= 9 ) r |= 1 << 4 ;
-  if ( wins[1][1] <= 9 ) r |= 1 << 5 ;
-  if ( wins[1][2] <= 9 ) r |= 1 << 6 ;
-  if ( wins[2][0] <= 9 ) r |= 1 << 7 ;
-  if ( wins[2][1] <= 9 ) r |= 1 << 8 ;
-  if ( wins[2][2] <= 9 ) r |= 1 << 9 ;
   return r;  
 }
 
@@ -269,11 +265,6 @@ Atm_widget_oxo& Atm_widget_oxo::select( char v ) {
   return *this;  
 }
 
-
-char Atm_widget_oxo::cell( int no ) {
-  char c = set( no );
-  return c ? c : no; 
-}
 
 
 /* Nothing customizable below this line                          

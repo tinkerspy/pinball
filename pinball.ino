@@ -43,22 +43,14 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
     OXO_LED_X, OXO_LED_O };  
 
 
-/*
-sub check {
- my $piece = shift; # X or O
- my $move  = shift; # 1 through 9
- return 0 if $piece !~ /^[XO]$/ or $move !~ /^[1-9]$/;
- return grep { /$piece/ && /$move/ && /\d${piece}?\d/ } @wins;
-}
-*/
-
 // OFF, ON, RANDOM, BOT, AI
 
 int finished( oxo_wins_t wins, uint16_t available ) {
   if ( !available ) return 0;
   for ( int w = 0; w < 8; w++ ) 
     if ( wins[w][0] > 9 && wins[w][0] == wins[w][1] && wins[w][1] == wins[w][2] ) {
-      Serial.println( "Finished!" );
+      Serial.print( "Player won: " );
+      Serial.println( wins[w][0] );
       return 1; 
     }
   return 0;
@@ -72,11 +64,9 @@ int random_bot( oxo_wins_t &wins, uint16_t available ) {
     if ( available & ( 1 << c ) )
       mem[cnt++] = c;
   if ( cnt == 0 ) return 0;
-  int v = random( 1, cnt ); // Checkme!
+  int v = random( 1, cnt + 1 );
   return mem[v-1];
 }
-
-// random_bot, stupid_bot, smart_bot
 
 int stupid_bot( oxo_wins_t &wins, uint16_t available ) {
 
@@ -141,39 +131,11 @@ uint16_t checkWins( oxo_wins_t wins, char piece, int move ) {
     }
     if ( mover && mine && !his ) r |= 1 << w;
   }
-  /*
-  Serial.print( "checkWins( " );
-  Serial.print( piece );
-  Serial.print( ", " );
-  Serial.print( move );
-  Serial.print( " ): " );
-  Serial.println( r, BIN );
-  */
   return r;
 }
 
-/*
- * sub bot {
- return if move('O', 5);
- my $move;
- my @open = ($board =~ /(\d)/g);
- for $move (@open) { return move('O',$move) if grep {/$move/ && /O\d?O/} @wins; }
- for $move (@open) { return move('O',$move) if grep {/$move/ && /X\d?X/} @wins; }
- for (@open) { return move('O',$_) if ( check('O', $_) > 1 ); }
- for $move (@open) {
-  if ( my @seq = check('O', $move) ) {
-   my ($opposite) = $seq[0] =~ /([^O$move])/;
-   return move('O', $move) if ( check('X', $opposite) < 2 );
-  }
- }
- move ('O', $open[0]);
-}
- */
- 
 int smart_bot( char my_piece, oxo_wins_t &wins, uint16_t available ) {
 
-  oxo.dumpWins( Serial, wins );
-  Serial.println( available, BIN );
 
   char opp_piece = my_piece == 'X' ? 'O' : 'X'; 
 
@@ -206,7 +168,7 @@ int smart_bot( char my_piece, oxo_wins_t &wins, uint16_t available ) {
       for ( int w = 0; w < 8; w++ ) {
         bool success = true;
         for ( int p = 0; p < 3; p++ ) {
-          if ( wins[w][p] != 'O' && wins[w][p] != c ) success = false; 
+          if ( wins[w][p] != opp_piece && wins[w][p] != c ) success = false; 
         }
         if ( success ) {
           Serial.print( "Blocking move: " );
@@ -220,68 +182,61 @@ int smart_bot( char my_piece, oxo_wins_t &wins, uint16_t available ) {
   Serial.println( "No blocking moves" );
   for ( int c = 1; c < 10; c++ ) {
     if ( available & ( 1 << c ) ) {
+      Serial.printf( "Check wins for %d/%c: %d\n", 
+        c, my_piece, bitCount( checkWins( wins, my_piece, c ) ) );
       if ( bitCount( checkWins( wins, my_piece, c ) ) > 1 ) {
         Serial.println( "Forking move for bot: " );
         m = c;
       }
     }
   }
-/*  
-  for $move (@open) {
-  if ( my @seq = check('X', $move) ) {
-   my ($opposite) = $seq[0] =~ /([^X$move])/;
-   return move('X', $move) if ( check('O', $opposite) < 2 );
-  }
-*/
-  Serial.println( "No forks for me" );
+  Serial.println( "No forks for bot" );
   if ( m ) return m;
   for ( int c = 1; c < 10; c++ ) {
     if ( available & ( 1 << c ) ) {
       uint16_t wmap = checkWins( wins, my_piece, c );
-      Serial.print( "Try " );
-      Serial.print( c );
-      Serial.print( "/" );
-      Serial.print( my_piece );
-      Serial.print( ": " );
-      Serial.println( wmap, BIN );
       for ( int w = 0; w < 8; w++ ) {
         if ( wmap & 1 << w ) {
-          oxo.dumpWins( Serial, wins, w );
           for ( int p = 0; p < 3; p++ ) {
             if ( wins[w][p] != my_piece && wins[w][p] != c ) {
-              Serial.print( "Opposite: " );
-              Serial.print( int( wins[w][p] ) ); 
-              Serial.print( ": " );
-              Serial.println( checkWins( wins, opp_piece, wins[w][p] ), BIN );
               if ( bitCount( checkWins( wins, opp_piece, wins[w][p] ) ) < 2 ) {
-                return c;
+                Serial.print( "Blocking fork for opponent: " );
+                Serial.println( c );
+                m = c;
               }
             }
           }
         }        
       }      
     }
-  }
-  
-  Serial.println( "No forks for him, fallback to random" );
+  }  
+  if ( m ) return m;
+  Serial.println( "No opponent forks to block, fallback to random" );
   // Fall back to random bot 
+  if ( bitCount( available ) == 8 ) 
+    return random_bot( wins, 0b1010001010 ); // Second move, don't choose a side square
   return random_bot( wins, available );
 }
 
 void setup() {
   randomSeed( analogRead( 9 ) );
 
-  timer.begin( 1000 )
+  timer.begin( 500 )
     .onTimer( [] ( int idx, int v, int up ) {
         oxo_wins_t oxo_wins;
         Serial.println( "-------------------------" );
         uint16_t available = oxo.loadWins( oxo_wins );
-        int m = smart_bot( 'X', oxo_wins, available );
-        Serial.print( "Bot move " );
-        Serial.println( m );
-        if ( m ) oxo.set( m, 'X' );
-        oxo.dump( Serial );
-        oxo.loadWins( oxo_wins );
+        Serial.print( "Possible wins: " );
+        oxo.dumpWins( Serial, oxo_wins );
+        Serial.print( "Available moves: " );        
+        Serial.println( available, BIN );
+        if ( available ) {
+          int m = smart_bot( 'X', oxo_wins, available );
+          Serial.print( "Bot move " );
+          Serial.println( m );
+          if ( m ) oxo.set( m, 'X' ); // Should use an event!
+          oxo.dump( Serial );
+        }
     });
   
   Serial.begin( 9600 );
@@ -325,6 +280,8 @@ void setup() {
     .onMatch( led, led.EVT_ON )
     .onSet( [] ( int idx, int v, int up ) {
       if ( up == 0 ) {
+        Serial.print( "Player move: " );
+        Serial.println( v );
         timer.start();
       }
     });

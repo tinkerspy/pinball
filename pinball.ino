@@ -210,21 +210,31 @@ void setup() {
 
   timer.begin( 500 )
     .onTimer( [] ( int idx, int v, int up ) {
-        oxo_wins_t oxo_wins;
+        oxo_wins_t wins;
         Serial.println( "-------------------------" );
-        oxo.loadWins( oxo_wins );
+        oxo.loadWins( wins );
         Serial.print( "Possible wins: " );
-        oxo.dumpWins( Serial, oxo_wins );
+        oxo.dumpWins( Serial, wins );
         Serial.print( "Available moves: " );        
-        Serial.println( availableMoves( oxo_wins ), BIN );
-        if ( availableMoves( oxo_wins ) ) {
-          int m = smartBot( 'X', oxo_wins );
-          Serial.print( "Bot move " );
-          Serial.println( m );
-          if ( m ) oxo.set( m, 'X' ); // Should use an event!
-          oxo.dump( Serial );
+        Serial.println( availableMoves( wins ), BIN );
+        if ( availableMoves( wins ) && !winner( wins ) ) {
+          if ( !(up % 2) ) {
+            int m = stupidBot( 'X', wins );
+            Serial.printf( "Stupid bot move %d", m );
+            if ( m ) oxo.set( m, 'X' ); // Should use an event!
+            oxo.dump( Serial );
+          } else {
+            int m = smartBot( 'O', wins );
+            Serial.printf( "Smart bot move %d", m );
+            if ( m ) oxo.set( m, 'O' ); // Should use an event!
+            oxo.dump( Serial );
+          }
+        } else {
+          oxo.init();
         }
-    });
+    })
+    .repeat()
+    .start();
   
   Serial.begin( 9600 );
   //playfield.trace( Serial );

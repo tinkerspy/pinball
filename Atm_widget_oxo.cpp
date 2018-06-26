@@ -227,7 +227,7 @@ Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
   return *this;  
 }
 
-uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to bot
+Atm_widget_oxo& Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to bot
   // Winning patterns 123 456 789 147 258 369 159 357
   uint16_t r = 0;
   wins[0][0] = wins[3][0] = wins[6][0] = cell( 1 );
@@ -239,7 +239,7 @@ uint16_t Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to b
   wins[3][2] = wins[2][0] = wins[7][2] = cell( 7 );
   wins[2][1] = wins[4][2] = cell( 8 );  
   wins[2][2] = wins[6][2] = wins[5][2] = cell( 9 );  
-  return r;  
+  return *this;  
 }
 
 Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins, int idx ) {

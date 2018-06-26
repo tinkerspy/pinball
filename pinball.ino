@@ -7,6 +7,7 @@
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
 Atm_widget_oxo oxo;
+//Atm_bot_oxo bot;
 Atm_led led;
 Atm_timer timer;
 
@@ -45,7 +46,7 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
 
 // OFF, ON, RANDOM, BOT, AI
 
-char winner( oxo_wins_t wins ) {
+char winner( oxo_wins_t wins ) { // Returns O, X or 0
   for ( int w = 0; w < 8; w++ ) 
     if ( wins[w][0] > 9 && wins[w][0] == wins[w][1] && wins[w][1] == wins[w][2] ) {
       return wins[w][0]; 
@@ -53,7 +54,7 @@ char winner( oxo_wins_t wins ) {
   return 0;
 }
 
-int randomBit( uint16_t v ) {
+int randomBit( uint16_t v ) { // Selects a random 1 bit from the arg and returns its number (or -1 if arg = 0 )
   int cnt = 0;
   for ( int c = 0; c < 16; c++ )
     if ( v & ( 1 << c ) ) cnt++;
@@ -64,7 +65,7 @@ int randomBit( uint16_t v ) {
   return -1;
 }
 
-uint16_t availableMoves( oxo_wins_t &wins ) {
+uint16_t availableMoves( oxo_wins_t &wins ) { // Returns bitmap with free squares, 1 = bit1, 2 = bit2, etc. (1..9)
   uint16_t r = 0;
   for ( int w = 0; w < 3; w++ ) 
     for ( int p = 0; p < 3; p++ )   
@@ -72,7 +73,24 @@ uint16_t availableMoves( oxo_wins_t &wins ) {
   return r;
 }
 
-int bitCount( uint16_t v ) {
+/*
+ * Remise: availableWins( 'O', wins ) == 0 && availableWins( 'X', wins ) == 0
+ * Bot can't win: availableWins( 'O', wins ) == 0
+ */
+
+uint16_t availableWins( char piece, oxo_wins_t &wins ) { // Returns bitmap of possible wins (0..7) for piece
+  uint16_t r = 0;
+  for ( int w = 0; w < 3; w++ ) {
+    bool winnable = true;
+    for ( int p = 0; p < 3; p++ ) {  
+      if ( wins[w][p] > 9 && wins[w][p] != piece ) winnable = false;
+    }
+    if ( winnable ) r |= 1 << w;
+  }
+  return r;
+}
+
+int bitCount( uint16_t v ) { // Returns the number of high bits in the argument
   int r = 0;
   while ( v )  {
     if ( v & 1 ) r++;
@@ -81,7 +99,23 @@ int bitCount( uint16_t v ) {
   return r;
 }
 
-uint16_t checkWins( oxo_wins_t wins, char piece, int move ) {
+int findWin( char piece, oxo_wins_t &wins ) {
+  uint16_t available = availableMoves( wins );
+  for ( int c = 1; c < 10; c++ ) {
+    if ( available & ( 1 << c ) ) {
+      for ( int w = 0; w < 8; w++ ) {
+        bool success = true;
+        for ( int p = 0; p < 3; p++ ) {
+          if ( wins[w][p] != piece && wins[w][p] != c ) success = false; 
+        }
+        if ( success ) return c;
+      }
+    }
+  }
+  return 0;
+}
+
+uint16_t checkWins( oxo_wins_t wins, char piece, int move ) { // Returns bitmap of possible wins (0..8)
 
   uint16_t r = 0;
   for ( int w = 0; w < 8; w++ ) {
@@ -98,50 +132,21 @@ uint16_t checkWins( oxo_wins_t wins, char piece, int move ) {
   return r;
 }
 
-int random_bot( char my_piece, oxo_wins_t &wins ) {
+int randomBot( char piece, oxo_wins_t &wins ) { // Makes a random valid move
   if ( winner( wins ) ) return 0; // Give up when all is lost
   int r = randomBit( availableMoves( wins ) );
   return r == -1 ? 0 : r;
 }
 
-int stupid_bot( char my_piece, oxo_wins_t &wins ) {
+int stupidBot( char piece, oxo_wins_t &wins ) { // Takes wins, blocks opponent wins 
   if ( winner( wins ) ) return 0; // Give up when all is lost
   uint16_t available = availableMoves( wins );
   if ( available & ( 1 << 5 ) ) return 5; // If cell 5 is free, take it
-  char opp_piece = my_piece == 'X' ? 'O' : 'X'; 
+  char opp_piece = piece == 'X' ? 'O' : 'X'; 
   // Try to find a winning square for the bot
   int m = 0;
-  for ( int c = 1; c < 10; c++ ) {
-    if ( available & ( 1 << c ) ) {
-      for ( int w = 0; w < 8; w++ ) {
-        bool success = true;
-        for ( int p = 0; p < 3; p++ ) {
-          if ( wins[w][p] != my_piece && wins[w][p] != c ) success = false; 
-        }
-        if ( success ) {
-          Serial.println( "Winning move" );
-          m = c;
-        }
-      }
-    }
-  }
-  if ( m ) return m;
-  // Try to find a winning square for the opponent, then block it
-  for ( int c = 1; c < 10; c++ ) {
-    if ( available & ( 1 << c ) ) {
-      for ( int w = 0; w < 8; w++ ) {
-        bool success = true;
-        for ( int p = 0; p < 3; p++ ) {
-          if ( wins[w][p] != opp_piece && wins[w][p] != c ) success = false; 
-        }
-        if ( success ) {
-          Serial.println( "Blocking move" );
-          m = c;
-        }
-      }
-    }
-  }
-  if ( m ) return m;
+  if ( ( m = findWin( piece, wins ) ) ) return m;
+  if ( ( m = findWin( opp_piece, wins ) ) ) return m;
   // Fall back to random  
   m = randomBit( available );
   return m > 0 ? m : 0;
@@ -149,53 +154,21 @@ int stupid_bot( char my_piece, oxo_wins_t &wins ) {
 
 // TODO: bot concedes defeat: no more wins possible
 
-int smart_bot( char my_piece, oxo_wins_t &wins ) {
+int smartBot( char piece, oxo_wins_t &wins ) { // Takes wins, blocks opponent wins, blocks opponent forks 
   if ( winner( wins ) ) return 0; // Give up when all is lost
   uint16_t available = availableMoves( wins );
   if ( available & ( 1 << 5 ) ) return 5; // If cell 5 is free, take it
-  char opp_piece = my_piece == 'X' ? 'O' : 'X'; 
+  char opp_piece = piece == 'X' ? 'O' : 'X'; 
   int m = 0;
   // Try to find a winning square for the bot
-  for ( int c = 1; c < 10; c++ ) {
-    if ( available & ( 1 << c ) ) {
-      for ( int w = 0; w < 8; w++ ) {
-        bool success = true;
-        for ( int p = 0; p < 3; p++ ) {
-          if ( wins[w][p] != my_piece && wins[w][p] != c ) success = false; 
-        }
-        if ( success ) {
-          Serial.print( "Winning move: " );
-          Serial.println( c );
-          m = c;
-        }
-      }
-    }
-  }
-  if ( m ) return m;
-  Serial.println( "No winning moves" );
-  // Try to find a winning square for the opponent, then block it
-  for ( int c = 1; c < 10; c++ ) {
-    if ( available & ( 1 << c ) ) {
-      for ( int w = 0; w < 8; w++ ) {
-        bool success = true;
-        for ( int p = 0; p < 3; p++ ) {
-          if ( wins[w][p] != opp_piece && wins[w][p] != c ) success = false; 
-        }
-        if ( success ) {
-          Serial.print( "Blocking move: " );
-          Serial.println( c );
-          m = c;
-        }
-      }
-    }
-  }
-  if ( m ) return m;
+  if ( ( m = findWin( piece, wins ) ) ) return m;
+  if ( ( m = findWin( opp_piece, wins ) ) ) return m;
   Serial.println( "No blocking moves" );
   for ( int c = 1; c < 10; c++ ) {
     if ( available & ( 1 << c ) ) {
       Serial.printf( "Check wins for %d/%c: %d\n", 
-        c, my_piece, bitCount( checkWins( wins, my_piece, c ) ) );
-      if ( bitCount( checkWins( wins, my_piece, c ) ) > 1 ) {
+        c, piece, bitCount( checkWins( wins, piece, c ) ) );
+      if ( bitCount( checkWins( wins, piece, c ) ) > 1 ) {
         Serial.println( "Forking move for bot: " );
         m = c;
       }
@@ -205,11 +178,11 @@ int smart_bot( char my_piece, oxo_wins_t &wins ) {
   if ( m ) return m;
   for ( int c = 1; c < 10; c++ ) {
     if ( available & ( 1 << c ) ) {
-      uint16_t wmap = checkWins( wins, my_piece, c );
+      uint16_t wmap = checkWins( wins, piece, c );
       for ( int w = 0; w < 8; w++ ) {
         if ( wmap & 1 << w ) {
           for ( int p = 0; p < 3; p++ ) {
-            if ( wins[w][p] != my_piece && wins[w][p] != c ) {
+            if ( wins[w][p] != piece && wins[w][p] != c ) {
               if ( bitCount( checkWins( wins, opp_piece, wins[w][p] ) ) < 2 ) {
                 Serial.print( "Blocking fork for opponent: " );
                 Serial.println( c );
@@ -225,7 +198,7 @@ int smart_bot( char my_piece, oxo_wins_t &wins ) {
   Serial.println( "No opponent forks to block, fallback to random" );
   // Fall back to random
   if ( bitCount( available ) == 8 ) {
-    m = randomBit( 0b1010001010 ); // Second move: chose no sides
+    m = randomBit( 0b1010001010 ); // Second move: only corners!
   } else {
     m = randomBit( available );
   }
@@ -245,7 +218,7 @@ void setup() {
         Serial.print( "Available moves: " );        
         Serial.println( availableMoves( oxo_wins ), BIN );
         if ( availableMoves( oxo_wins ) ) {
-          int m = smart_bot( 'X', oxo_wins );
+          int m = smartBot( 'X', oxo_wins );
           Serial.print( "Bot move " );
           Serial.println( m );
           if ( m ) oxo.set( m, 'X' ); // Should use an event!

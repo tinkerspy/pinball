@@ -233,8 +233,8 @@ void setup() {
           oxo.init();
         }
     })
-    .repeat()
-    .start();
+    .repeat();
+//    .start();
   
   Serial.begin( 9600 );
   //playfield.trace( Serial );
@@ -278,7 +278,7 @@ void setup() {
       if ( up == 0 ) {
         Serial.print( "Player move: " );
         Serial.println( v );
-        timer.start();
+        //timer.start();
       }
     });
 

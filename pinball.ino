@@ -9,7 +9,7 @@ Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
 Atm_widget_oxo oxo;
 //Atm_bot_oxo bot;
 Atm_led led;
-Atm_timer timer;
+Atm_timer timer, timer2;
 
 int8_t rows[] = { 20, 21, 22, 23 };
 int8_t cols[] = { 16, 17, 18, 19 };
@@ -267,7 +267,7 @@ void setup() {
     .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT )
     .onPress( 11, oxo, Atm_widget_oxo::EVT_TOGGLE );
     
-  led_strip_oxo.begin( 29, SPI_11_13 ).rgb( 0xffffff );
+  led_strip_oxo.begin( 29, 3 ).rgb( 0xffffff );
 
   oxo.begin( led_strip_oxo, oxo_leds ).select( 'O' )
     .onInit(  [] ( int idx, int v, int up ) {
@@ -283,6 +283,20 @@ void setup() {
     });
 
   //oxo.trace( Serial );
+/*
+  timer2.begin( 20 )
+    .onTimer( [] ( int idx, int v, int up ) {
+      if ( up % 2 ) {
+        led_strip_oxo.on( 0 );
+        led_strip_oxo.on( 9 );
+      } else {
+        led_strip_oxo.off( 0 );
+        led_strip_oxo.off( 9 );        
+      }
+    }).repeat().start();
+*/
+  led_strip_oxo.on( 0 ).on( 3 ).pulse( 5, 50 );
+//  led_strip_oxo.dump();
 }
 
 uint32_t cnt = 0;

@@ -9,7 +9,7 @@
  *
  */
 
-Atm_apa102& Atm_apa102::begin( int number_of_leds, int idx ) {
+Atm_apa102& Atm_apa102::begin( int number_of_leds, int gate_pin ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -21,22 +21,14 @@ Atm_apa102& Atm_apa102::begin( int number_of_leds, int idx ) {
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->number_of_leds = number_of_leds;
-  switch ( idx ) {
-    case SPI_11_13: 
-      controller = &FastLED.addLeds<APA102, 11, 13>(leds, number_of_leds);
-      break;
-    case SPI_11_20: 
-      controller = &FastLED.addLeds<APA102, 11, 20>(leds, number_of_leds);
-      break;
-    case SPI_21_13: 
-      controller = &FastLED.addLeds<APA102, 21, 13>(leds, number_of_leds);
-      break;
-    case SPI_21_20: 
-      controller = &FastLED.addLeds<APA102, 21, 20>(leds, number_of_leds);
-      break;
+  this->gate_pin = gate_pin;
+  if ( this->gate_pin > -1 ) {
+    pinMode( this->gate_pin, OUTPUT );
+    digitalWrite( this->gate_pin, LOW );
   }
-  rgb( 0x050505 ); // Safe default
-  controller->showLeds();
+  spi4teensy3::init();
+  rgb( 0x050505 ).off(); // Safe default
+  this->showLeds();
   return *this;          
 }
 
@@ -84,12 +76,12 @@ void Atm_apa102::action( int id ) {
         }
       }
       if ( refresh ) {
-        controller->showLeds();
+        this->showLeds();
         refresh = 0;
       }
       return;
     case ENT_UPDATING:
-      controller->showLeds();
+      this->showLeds();
       refresh = 0;
       return;
     case ENT_IDLE:
@@ -113,11 +105,27 @@ Atm_apa102& Atm_apa102::trigger( int event ) {
 int Atm_apa102::state( void ) {
   return Machine::state();
 }
+
+
   
-Atm_apa102& Atm_apa102::rgb( uint32_t rgb ) {
+Atm_apa102& Atm_apa102::dump( void ) {
 
   for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    meta[ledno].rgb = rgb;     
+    Serial.printf( "gb=%d, r=%d, g=%d, b=%d\n", leds.led[ledno].gb, leds.led[ledno].r, leds.led[ledno].g, leds.led[ledno].b );
+  }
+  return *this;
+}
+
+
+Atm_apa102& Atm_apa102::rgb( uint32_t rgb ) {
+
+  uint8_t r = (rgb & 0xFF0000) >> 16;
+  uint8_t g = (rgb & 0x00FF00) >> 8;
+  uint8_t b = (rgb & 0x0000FF);
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+    meta[ledno].r = r;     
+    meta[ledno].g = g;     
+    meta[ledno].b = b;     
   }
   return *this;  
 }
@@ -125,33 +133,44 @@ Atm_apa102& Atm_apa102::rgb( uint32_t rgb ) {
 Atm_apa102& Atm_apa102::level( uint8_t v ) {
 
   for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    meta[ledno].rgb = v << 16 | v << 8 | v;     
+    rgb( ledno, v, v, v );     
   }
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::level( uint8_t ledno, uint8_t v ) {
 
-  if ( ledno > -1 ) meta[ledno].rgb = v << 16 | v << 8 | v;     
+  if ( ledno > -1 ) rgb( ledno, v, v, v );
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::rgb( int ledno, uint32_t rgb ) {
 
-  if ( ledno > -1 ) meta[ledno].rgb = rgb;
+  if ( ledno > -1 ) {
+    meta[ledno].r = (rgb & 0xFF0000) >> 16;
+    meta[ledno].g = (rgb & 0x00FF00) >> 8;
+    meta[ledno].b = (rgb & 0x0000FF);
+  }
   return *this;  
 }
 
 Atm_apa102& Atm_apa102::rgb( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
   
-  if ( ledno > -1 ) meta[ledno].rgb = r << 16 | g << 8 | b;     
+  if ( ledno > -1 ) {
+    meta[ledno].r = r;
+    meta[ledno].g = g;
+    meta[ledno].b = b;     
+  }
   return *this;
 }
 
 Atm_apa102& Atm_apa102::set( int ledno, uint32_t rgb ) {
 
   if ( ledno > -1 ) {
-    leds[ledno] = rgb;
+    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].r = (rgb & 0xFF0000) >> 16;
+    leds.led[ledno].g = (rgb & 0x00FF00) >> 8;
+    leds.led[ledno].b = (rgb & 0x0000FF);
     meta[ledno].status = rgb > 0 ? 1 : 0;  
     refresh = 1; 
     trigger( EVT_UPDATE ); 
@@ -162,7 +181,10 @@ Atm_apa102& Atm_apa102::set( int ledno, uint32_t rgb ) {
 Atm_apa102& Atm_apa102::set( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
   
   if ( ledno > -1 ) {
-    leds[ledno] = CRGB( r, g, b );
+    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].r = r;
+    leds.led[ledno].g = g;
+    leds.led[ledno].b = b;
     meta[ledno].status = r > 0 || g > 0 || b > 0 ? 1 : 0;  
     refresh = 1; 
     trigger( EVT_UPDATE );
@@ -173,7 +195,10 @@ Atm_apa102& Atm_apa102::set( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
 Atm_apa102& Atm_apa102::on( int ledno ) {
 
   if ( ledno > -1 ) {
-    leds[ledno] = meta[ledno].rgb;
+    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].r = meta[ledno].r;
+    leds.led[ledno].g = meta[ledno].g;
+    leds.led[ledno].b = meta[ledno].b;
     meta[ledno].status = 1;  
     refresh = 1; 
     trigger( EVT_UPDATE ); 
@@ -184,7 +209,10 @@ Atm_apa102& Atm_apa102::on( int ledno ) {
 Atm_apa102& Atm_apa102::off( int ledno ) {
   
   if ( ledno > -1 ) {
-    leds[ledno] = 0;
+    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].r = 0;
+    leds.led[ledno].g = 0;
+    leds.led[ledno].b = 0;
     meta[ledno].status = 0;  
     refresh = 1; 
     trigger( EVT_UPDATE );
@@ -192,10 +220,23 @@ Atm_apa102& Atm_apa102::off( int ledno ) {
   return *this;
 }
 
+Atm_apa102& Atm_apa102::off() {
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].r = 0;
+    leds.led[ledno].g = 0;
+    leds.led[ledno].b = 0;
+    meta[ledno].status = 0;  
+  }  
+  refresh = 1; 
+  trigger( EVT_UPDATE );
+  return *this;
+}
+
 Atm_apa102& Atm_apa102::pulse( int ledno, uint16_t duration ) {
 
   if ( ledno > -1 ) {
-    set( ledno, meta[ledno].rgb ); // Set to default brightness (no fade)
+    set( ledno, meta[ledno].r, meta[ledno].g, meta[ledno].b ); // Set to default brightness (no fade)
     if ( duration != 0xFFFF ) {
       // Set up pulse monitoring
       meta[ledno].pulsing = 1;
@@ -212,6 +253,12 @@ int Atm_apa102::active( int ledno ) {
 
   return ledno > -1 ? meta[ledno].status : 0;  
 }
+
+Atm_apa102& Atm_apa102::showLeds( void ) {
+    spi4teensy3::send( &leds, ( this->number_of_leds * 4 ) + 4 + 10 ); // 10 = endframe for 160 leds
+    return *this;
+}
+
 
 /* Nothing customizable below this line                          
  ************************************************************************************************

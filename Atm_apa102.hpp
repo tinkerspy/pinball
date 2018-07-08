@@ -13,15 +13,16 @@
 #define GLOBAL_BRIGHTNESS 255 
 
 struct led_meta_data {
-    uint8_t r, g, b; 
+    uint8_t gb, r, g, b; 
     uint16_t last_millis; 
     uint16_t pulse_millis; 
     uint8_t status : 1;
     uint8_t pulsing : 1;
     
-    uint8_t changed : 1;
-    uint8_t fade : 1;
-    uint8_t step;
+    //uint8_t changed : 1;
+    uint8_t fade_in : 1;
+    uint8_t fade_out : 1;
+    uint8_t fade_step : 1;
 };
 
 struct led_data {  
@@ -35,6 +36,11 @@ struct led_strip {
 };
 
 
+/*
+ * gbrgb( gb, r, g, b ), gbrgb( ledno, gb, r, g, b )
+ * 
+ */
+
 class Atm_apa102: public Machine {
 
  public:
@@ -46,13 +52,9 @@ class Atm_apa102: public Machine {
   Atm_apa102& trigger( int event );
   int state( void );
   Atm_apa102& update( void );
-  Atm_apa102& level( uint8_t v );
-  Atm_apa102& level( uint8_t ledno, uint8_t v );
-  Atm_apa102& rgb( uint32_t rgb );
-  Atm_apa102& rgb( int ledno, uint32_t rgb );
-  Atm_apa102& rgb( int ledno, uint8_t r, uint8_t g, uint8_t b );
-  Atm_apa102& set( int ledno, uint32_t rgb );
-  Atm_apa102& set( int ledno, uint8_t r, uint8_t g, uint8_t b );
+  Atm_apa102& gbrgb( int gb, int r, int g, int b );
+  Atm_apa102& gbrgb( int ledno, int gb, int r, int g, int b );
+  Atm_apa102& set( int ledno, int gb, int r, int g, int b );
   Atm_apa102& on( int ledno );
   Atm_apa102& off( int ledno );
   Atm_apa102& off( void );

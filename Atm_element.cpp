@@ -28,6 +28,7 @@ Atm_element& Atm_element::begin( Atm_apa102& led, int light, int coil, int pulse
   light_led = light;
   coil_led = coil;
   this->led = &led;
+  this->initialized = true;
   return *this;          
 }
 

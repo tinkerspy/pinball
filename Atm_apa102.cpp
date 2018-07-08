@@ -27,7 +27,7 @@ Atm_apa102& Atm_apa102::begin( int number_of_leds, int gate_pin ) {
     digitalWrite( this->gate_pin, LOW );
   }
   spi4teensy3::init();
-  rgb( 0x050505 ).off(); // Safe default
+  gbrgb( 31, 5, 5, 5 ).off(); // Safe default
   this->showLeds();
   return *this;          
 }
@@ -69,7 +69,7 @@ void Atm_apa102::action( int id ) {
           int16_t diff = (uint16_t) millis() - meta[i].last_millis; 
           if ( diff >= meta[i].pulse_millis ) {
             meta[i].pulsing = 0;
-            set( i, 0 ); // Set to black (no fade)
+            set( i, 0, 0, 0, 0 ); // Set to black (no fade)
           } else {
             running = 1; // We're still running
           }
@@ -117,85 +117,46 @@ Atm_apa102& Atm_apa102::dump( void ) {
 }
 
 
-Atm_apa102& Atm_apa102::rgb( uint32_t rgb ) {
-
-  uint8_t r = (rgb & 0xFF0000) >> 16;
-  uint8_t g = (rgb & 0x00FF00) >> 8;
-  uint8_t b = (rgb & 0x0000FF);
-  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    meta[ledno].r = r;     
-    meta[ledno].g = g;     
-    meta[ledno].b = b;     
-  }
-  return *this;  
-}
-
-Atm_apa102& Atm_apa102::level( uint8_t v ) {
-
-  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    rgb( ledno, v, v, v );     
-  }
-  return *this;  
-}
-
-Atm_apa102& Atm_apa102::level( uint8_t ledno, uint8_t v ) {
-
-  if ( ledno > -1 ) rgb( ledno, v, v, v );
-  return *this;  
-}
-
-Atm_apa102& Atm_apa102::rgb( int ledno, uint32_t rgb ) {
-
-  if ( ledno > -1 ) {
-    meta[ledno].r = (rgb & 0xFF0000) >> 16;
-    meta[ledno].g = (rgb & 0x00FF00) >> 8;
-    meta[ledno].b = (rgb & 0x0000FF);
-  }
-  return *this;  
-}
-
-Atm_apa102& Atm_apa102::rgb( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
+Atm_apa102& Atm_apa102::gbrgb( int ledno, int gb, int r, int g, int b ) {
   
   if ( ledno > -1 ) {
-    meta[ledno].r = r;
-    meta[ledno].g = g;
-    meta[ledno].b = b;     
+    if ( gb > -1 ) meta[ledno].gb = gb;
+    if ( r > -1 ) meta[ledno].r = r;
+    if ( g > -1 ) meta[ledno].g = g;
+    if ( b > -1 ) meta[ledno].b = b;     
   }
   return *this;
 }
 
-Atm_apa102& Atm_apa102::set( int ledno, uint32_t rgb ) {
+Atm_apa102& Atm_apa102::gbrgb( int gb, int r, int g, int b ) {
+  
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+    if ( gb > -1 ) meta[ledno].gb = gb;
+    if ( r > -1 ) meta[ledno].r = r;
+    if ( g > -1 ) meta[ledno].g = g;
+    if ( b > -1 ) meta[ledno].b = b;     
+  }
+  return *this;
+}
+
+Atm_apa102& Atm_apa102::set( int ledno, int gb, int r, int g, int b ) {
 
   if ( ledno > -1 ) {
-    leds.led[ledno].gb = 0xFF;    
-    leds.led[ledno].r = (rgb & 0xFF0000) >> 16;
-    leds.led[ledno].g = (rgb & 0x00FF00) >> 8;
-    leds.led[ledno].b = (rgb & 0x0000FF);
-    meta[ledno].status = rgb > 0 ? 1 : 0;  
+    leds.led[ledno].gb = gb + 0xE0;    
+    leds.led[ledno].r = r;
+    leds.led[ledno].g = g;
+    leds.led[ledno].b = b;
+    meta[ledno].status = ( r > 0 || g > 0 || b > 0 ) && gb > 0 ? 1 : 0;  
     refresh = 1; 
     trigger( EVT_UPDATE ); 
   }
   return *this;  
 }
 
-Atm_apa102& Atm_apa102::set( int ledno, uint8_t r, uint8_t g, uint8_t b ) {
-  
-  if ( ledno > -1 ) {
-    leds.led[ledno].gb = 0xFF;    
-    leds.led[ledno].r = r;
-    leds.led[ledno].g = g;
-    leds.led[ledno].b = b;
-    meta[ledno].status = r > 0 || g > 0 || b > 0 ? 1 : 0;  
-    refresh = 1; 
-    trigger( EVT_UPDATE );
-  }  
-  return *this;
-}
-
 Atm_apa102& Atm_apa102::on( int ledno ) {
 
   if ( ledno > -1 ) {
-    leds.led[ledno].gb = 0xFF;    
+    leds.led[ledno].gb = meta[ledno].gb + 0xE0;    
     leds.led[ledno].r = meta[ledno].r;
     leds.led[ledno].g = meta[ledno].g;
     leds.led[ledno].b = meta[ledno].b;
@@ -236,7 +197,7 @@ Atm_apa102& Atm_apa102::off() {
 Atm_apa102& Atm_apa102::pulse( int ledno, uint16_t duration ) {
 
   if ( ledno > -1 ) {
-    set( ledno, meta[ledno].r, meta[ledno].g, meta[ledno].b ); // Set to default brightness (no fade)
+    set( ledno, meta[ledno].gb, meta[ledno].r, meta[ledno].g, meta[ledno].b ); // Set to default brightness (no fade)
     if ( duration != 0xFFFF ) {
       // Set up pulse monitoring
       meta[ledno].pulsing = 1;
@@ -254,9 +215,23 @@ int Atm_apa102::active( int ledno ) {
   return ledno > -1 ? meta[ledno].status : 0;  
 }
 
+
 Atm_apa102& Atm_apa102::showLeds( void ) {
-    spi4teensy3::send( &leds, ( this->number_of_leds * 4 ) + 4 + 10 ); // 10 = endframe for 160 leds
-    return *this;
+  
+  if ( this->gate_pin > -1 ) digitalWriteFast( this->gate_pin, HIGH );
+  spi4teensy3::send( 0 ); // Startframe
+  spi4teensy3::send( 0 ); 
+  spi4teensy3::send( 0 ); 
+  spi4teensy3::send( 0 );
+  for ( int ledno = 0; ledno < this->number_of_leds; ledno++ ) { // Sending as one block is slightly faster
+    spi4teensy3::send( &leds.led[ledno], 4 ); 
+  }
+  spi4teensy3::send( 0xFF ); // 16 leds endframe
+  spi4teensy3::send( 0xFF ); // 32 leds
+  spi4teensy3::send( 0xFF ); // 48 leds
+  spi4teensy3::send( 0xFF ); // 54 leds
+  if ( this->gate_pin > -1 ) digitalWriteFast( this->gate_pin, LOW );
+  return *this;
 }
 
 

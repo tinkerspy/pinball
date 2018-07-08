@@ -229,7 +229,6 @@ Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
 
 Atm_widget_oxo& Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to bot
   // Winning patterns 123 456 789 147 258 369 159 357
-  uint16_t r = 0;
   wins[0][0] = wins[3][0] = wins[6][0] = cell( 1 );
   wins[0][1] = wins[4][0] = cell( 2 );
   wins[0][2] = wins[7][0] = wins[5][0] = cell( 3 );

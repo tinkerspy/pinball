@@ -2,13 +2,11 @@
 #include "Atm_zone.hpp"
 #include "Atm_apa102.hpp"
 #include "Atm_element.hpp"
-#include "Atm_widget_oxo.hpp"
+#include "Atm_oxo_field.hpp"
 #include "Atm_oxo_bot.hpp"
 
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
-Atm_widget_oxo oxo;
-Atm_oxo_bot bot;
 Atm_led led;
 Atm_timer timer, timer2;
 
@@ -69,41 +67,45 @@ void setup() {
   led.begin( 2 );
 
   playfield.begin( led_strip_pf, cols, rows, 4, 4 )
-//    .onPress(  0, oxo, Atm_widget_oxo::EVT_1X )
-//    .onPress(  1, oxo, Atm_widget_oxo::EVT_2X )
-//    .onPress(  2, oxo, Atm_widget_oxo::EVT_3X )
-    .onPress(  4, oxo, Atm_widget_oxo::EVT_1O )
-    .onPress(  5, oxo, Atm_widget_oxo::EVT_2O )
-    .onPress(  6, oxo, Atm_widget_oxo::EVT_3O )
-    .onPress(  8, oxo, Atm_widget_oxo::EVT_4 )
-    .onPress(  9, oxo, Atm_widget_oxo::EVT_5 )
-    .onPress( 10, oxo, Atm_widget_oxo::EVT_6 )
-    .onPress( 12, oxo, Atm_widget_oxo::EVT_7 )
-    .onPress( 13, oxo, Atm_widget_oxo::EVT_8 )
-    .onPress( 14, oxo, Atm_widget_oxo::EVT_9 )
-    .onPress( 15, oxo, Atm_widget_oxo::EVT_INIT )
-    .onPress( 11, oxo, Atm_widget_oxo::EVT_TOGGLE );
+   .onPress(  0, [] (int idx, int v, int up ) {
+     led_strip_oxo.on( 1 );
+   })
+   .onPress(  1, [] (int idx, int v, int up ) {
+     led_strip_oxo.on( 2 );
+   })
+   .onPress(  2, [] (int idx, int v, int up ) {
+     led_strip_oxo.on( 3 );
+   })
+   .onPress(  4, [] (int idx, int v, int up ) {
+     led_strip_oxo.off( 1 );
+   })
+   .onPress(  5, [] (int idx, int v, int up ) {
+     led_strip_oxo.off( 2 );
+   })
+   .onPress(  6, [] (int idx, int v, int up ) {
+     led_strip_oxo.off( 3 );
+   });
+
+;
     
   led_strip_oxo.begin( 29, 3 ).gbrgb( 5, 255, 255, 255 );
 
-  oxo.begin( led_strip_oxo, oxo_leds ).select( 'O' )
-    .onInit(  [] ( int idx, int v, int up ) {
-      led.off();
-    })
-    .onMatch( led, led.EVT_ON )
-    .onSet( [] ( int idx, int v, int up ) {
-      oxo_wins_t wins;
-      oxo.loadWins( wins );
-      bot.move( wins ); // Perhaps make piece a parameter for move() so one bot can play itself...
-    });
-
-  bot.begin( 'X', 500, Atm_oxo_bot::SMART_BOT )
-    .onMove( [] ( int idx, int v, int up ) {
-       Serial.printf( "Bot move: %d\n", v );
-       oxo.set( v, 'X' ); // FIXME use up value for character!
-    });
-
   //oxo.trace( Serial );
+  //led_strip_oxo.trace( Serial );
+  //delay( 2000 );
+  led_strip_oxo.fade( 2 );
+
+  timer.begin( 1000 )
+    .onTimer( [] (int idx, int v, int up ) {
+      if ( up % 2 ) {
+        led_strip_oxo.on( 2 ).on( 5 );
+      } else {
+        led_strip_oxo.off( 2 ).off( 5 );
+      }
+    })
+    .repeat();
+//    .start();
+  
 
 }
 

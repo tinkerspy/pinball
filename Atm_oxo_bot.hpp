@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Automaton.h>
-#include "Atm_widget_oxo.hpp"
+#include "Atm_oxo_field.hpp"
 
 class Atm_oxo_bot: public Machine {
 
@@ -10,14 +10,14 @@ class Atm_oxo_bot: public Machine {
   enum { IDLE, WAIT, MOVE }; // STATES
   enum { EVT_TIMER, EVT_MOVE, ELSE }; // EVENTS
   Atm_oxo_bot( void ) : Machine() {};
-  Atm_oxo_bot& begin( char piece, uint32_t delay, int personality = SMART_BOT );
+  Atm_oxo_bot& begin( int personality = SMART_BOT, uint32_t delay = 0 );
   Atm_oxo_bot& personality( int p );
   Atm_oxo_bot& trace( Stream & stream );
   Atm_oxo_bot& trigger( int event );
   int state( void );
   Atm_oxo_bot& onMove( Machine& machine, int event = 0 );
   Atm_oxo_bot& onMove( atm_cb_push_t callback, int idx = 0 );
-  Atm_oxo_bot& move( oxo_wins_t &wins );
+  Atm_oxo_bot& move( char piece, oxo_wins_t &wins );
 
  private:
   enum { ENT_MOVE }; // ACTIONS
@@ -36,10 +36,10 @@ class Atm_oxo_bot: public Machine {
   int smartBot( char piece, oxo_wins_t &wins );
   char winner( oxo_wins_t &wins );
  
-  char piece;
   int bot_personality;
   oxo_wins_t wins;
   atm_timer_millis timer;
+  char piece;
 
 };
 

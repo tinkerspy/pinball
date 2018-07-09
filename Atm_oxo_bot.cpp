@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_oxo_bot& Atm_oxo_bot::begin( char piece, uint32_t delay, int personality /* = SMART_BOT */ ) {
+Atm_oxo_bot& Atm_oxo_bot::begin( int personality /* = SMART_BOT */, uint32_t delay /* = 0 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*          ON_ENTER    ON_LOOP  ON_EXIT  EVT_TIMER  EVT_MOVE  ELSE */
@@ -14,7 +14,6 @@ Atm_oxo_bot& Atm_oxo_bot::begin( char piece, uint32_t delay, int personality /* 
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  this->piece = piece;
   this->bot_personality = personality;
   timer.set( delay );
   return *this;          
@@ -239,9 +238,10 @@ int Atm_oxo_bot::smartBot( char piece, oxo_wins_t &wins ) { // Takes wins, block
  *
  */
 
-Atm_oxo_bot& Atm_oxo_bot::move( oxo_wins_t &wins ) {
+Atm_oxo_bot& Atm_oxo_bot::move( char piece, oxo_wins_t &wins ) {
 
   memcpy( this->wins, wins, sizeof( oxo_wins_t ) );
+  this->piece = piece;
   trigger( EVT_MOVE );
   return *this;
 }

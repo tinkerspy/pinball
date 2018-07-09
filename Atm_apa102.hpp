@@ -5,11 +5,6 @@
 
 #define MAX_LEDS 100
 
-#define MOSI0 11
-#define SCK0 13
-#define MOSI1 21
-#define SCK1 20
-
 #define GLOBAL_BRIGHTNESS 255 
 
 struct led_meta_data {
@@ -17,12 +12,11 @@ struct led_meta_data {
     uint16_t last_millis; 
     uint16_t pulse_millis; 
     uint8_t status : 1;
-    uint8_t pulsing : 1;
-    
-    //uint8_t changed : 1;
+    uint8_t pulsing : 1;   
     uint8_t fade_in : 1;
     uint8_t fade_out : 1;
-    uint8_t fade_step : 1;
+    uint8_t fade_step;
+    uint8_t fade_speed;
 };
 
 struct led_data {  
@@ -36,10 +30,6 @@ struct led_strip {
 };
 
 
-/*
- * gbrgb( gb, r, g, b ), gbrgb( ledno, gb, r, g, b )
- * 
- */
 
 class Atm_apa102: public Machine {
 
@@ -55,8 +45,10 @@ class Atm_apa102: public Machine {
   Atm_apa102& gbrgb( int gb, int r, int g, int b );
   Atm_apa102& gbrgb( int ledno, int gb, int r, int g, int b );
   Atm_apa102& set( int ledno, int gb, int r, int g, int b );
+  Atm_apa102& fade( int ledno, int speed );
+  Atm_apa102& fade( int speed );
   Atm_apa102& on( int ledno );
-  Atm_apa102& off( int ledno );
+  Atm_apa102& off( int ledno, bool no_update = false );
   Atm_apa102& off( void );
   Atm_apa102& pulse( int ledno, uint16_t duration ); // ledno, pulse_time, delay_time, intensity
   int active( int ledno );
@@ -64,6 +56,7 @@ class Atm_apa102: public Machine {
   Atm_apa102& dump( void );
 
  private:
+  uint8_t slope[32] = {0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 18, 22, 26, 31, 37, 44, 54, 63, 76, 90, 108, 127, 153, 180, 217, 230, 255};
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 
   void action( int id ); 

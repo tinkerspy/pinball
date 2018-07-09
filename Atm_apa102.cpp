@@ -27,7 +27,11 @@ Atm_apa102& Atm_apa102::begin( int number_of_leds, int gate_pin ) {
     digitalWrite( this->gate_pin, LOW );
   }
   spi4teensy3::init();
-  gbrgb( 31, 5, 5, 5 ).off(); // Safe default
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    leds.led[i].gb = 255;
+    meta[i].status = 1; // Force off
+  }
+  gbrgb( 31, 5, 5, 5 ).fade( 0 ).off(); // Safe default
   this->showLeds();
   return *this;          
 }
@@ -72,6 +76,32 @@ void Atm_apa102::action( int id ) {
             set( i, 0, 0, 0, 0 ); // Set to black (no fade)
           } else {
             running = 1; // We're still running
+          }
+        }
+        if ( meta[i].fade_in ) {
+          int16_t diff = (uint16_t) millis() - meta[i].last_millis; 
+          if ( diff >= meta[i].fade_speed ) {
+            if ( meta[i].fade_step < 31 ) {
+              meta[i].fade_step++;
+              set( i, 31, slope[meta[i].fade_step], slope[meta[i].fade_step], slope[meta[i].fade_step] );          
+              meta[i].last_millis = millis();
+              running = 1; 
+            }
+          } else {
+            running = 1;
+          }
+        }
+        if ( meta[i].fade_out ) {
+          int16_t diff = (uint16_t) millis() - meta[i].last_millis; 
+          if ( diff >= meta[i].fade_speed ) {
+            if ( meta[i].fade_step < 31 ) {
+              meta[i].fade_step++;
+              set( i, 31, slope[31 - meta[i].fade_step], slope[31 - meta[i].fade_step], slope[31 - meta[i].fade_step] );          
+              meta[i].last_millis = millis();
+              running = 1; 
+            }
+          } else {
+            running = 1;
           }
         }
       }
@@ -139,6 +169,23 @@ Atm_apa102& Atm_apa102::gbrgb( int gb, int r, int g, int b ) {
   return *this;
 }
 
+Atm_apa102& Atm_apa102::fade( int ledno, int speed ) {
+
+  if ( ledno > -1 ) {
+    meta[ledno].fade_speed = speed;
+  }
+  return *this;
+}
+
+Atm_apa102& Atm_apa102::fade( int speed ) {
+
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+    meta[ledno].fade_speed = speed;
+  }
+  return *this;
+}
+
+
 Atm_apa102& Atm_apa102::set( int ledno, int gb, int r, int g, int b ) {
 
   if ( ledno > -1 ) {
@@ -156,38 +203,57 @@ Atm_apa102& Atm_apa102::set( int ledno, int gb, int r, int g, int b ) {
 Atm_apa102& Atm_apa102::on( int ledno ) {
 
   if ( ledno > -1 ) {
-    leds.led[ledno].gb = meta[ledno].gb + 0xE0;    
-    leds.led[ledno].r = meta[ledno].r;
-    leds.led[ledno].g = meta[ledno].g;
-    leds.led[ledno].b = meta[ledno].b;
+    meta[ledno].pulsing = 0;
+    if ( meta[ledno].fade_speed ) {
+      meta[ledno].fade_step = 0;
+      meta[ledno].fade_in = 1;   
+      meta[ledno].fade_out = 0;   
+      meta[ledno].last_millis = millis();        
+      meta[ledno].fade_step = 0;
+      running = 1;
+      sleep( 0 );
+    } else {
+      leds.led[ledno].gb = meta[ledno].gb + 0xE0;    
+      leds.led[ledno].r = meta[ledno].r;
+      leds.led[ledno].g = meta[ledno].g;
+      leds.led[ledno].b = meta[ledno].b;
+      refresh = 1; 
+      trigger( EVT_UPDATE ); 
+    }
     meta[ledno].status = 1;  
-    refresh = 1; 
-    trigger( EVT_UPDATE ); 
   } 
   return *this;
 }
 
-Atm_apa102& Atm_apa102::off( int ledno ) {
+Atm_apa102& Atm_apa102::off( int ledno, bool no_update /* = false */ ) {
   
-  if ( ledno > -1 ) {
-    leds.led[ledno].gb = 0xFF;    
-    leds.led[ledno].r = 0;
-    leds.led[ledno].g = 0;
-    leds.led[ledno].b = 0;
+  if ( ledno > -1 && meta[ledno].status > 0 ) {
+    if ( meta[ledno].fade_speed ) {
+      meta[ledno].fade_step = 0;
+      meta[ledno].fade_in = 0;   
+      meta[ledno].fade_out = 1;   
+      meta[ledno].last_millis = millis();        
+      meta[ledno].fade_step = 0;
+      running = 1;
+      sleep( 0 );
+    } else { 
+      leds.led[ledno].gb = 0xFF;    
+      leds.led[ledno].r = 0;
+      leds.led[ledno].g = 0;
+      leds.led[ledno].b = 0;
+      if ( !no_update ) {
+        trigger( EVT_UPDATE );
+        refresh = 1; 
+      }
+    }
     meta[ledno].status = 0;  
-    refresh = 1; 
-    trigger( EVT_UPDATE );
   }  
   return *this;
 }
 
 Atm_apa102& Atm_apa102::off() {
   for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    leds.led[ledno].gb = 0xFF;    
-    leds.led[ledno].r = 0;
-    leds.led[ledno].g = 0;
-    leds.led[ledno].b = 0;
-    meta[ledno].status = 0;  
+    off( ledno, true );
   }  
   refresh = 1; 
   trigger( EVT_UPDATE );

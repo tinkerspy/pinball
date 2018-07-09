@@ -1,4 +1,4 @@
-#include "Atm_widget_oxo.hpp"
+#include "Atm_oxo_field.hpp"
 
 /* Add optional parameters for the state machine to begin()
  * Add extra initialization code
@@ -11,7 +11,7 @@
  */
 
 
-Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
+Atm_oxo_field& Atm_oxo_field::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
   // clang-format off
   const static state_t state_table[] PROGMEM = { 
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_MATCH  EVT_1X  EVT_1O  EVT_2X  EVT_2O  EVT_3X  EVT_3O  EVT_4  EVT_5  EVT_6  EVT_7  EVT_8  EVT_9  EVT_INIT  EVT_TOGGLE  ELSE */
@@ -44,7 +44,7 @@ Atm_widget_oxo& Atm_widget_oxo::begin( Atm_apa102& led, int8_t* led_map ) { // E
  * The code must return 1 to trigger the event
  */
 
-int Atm_widget_oxo::event( int id ) {
+int Atm_oxo_field::event( int id ) {
   switch ( id ) {
     case EVT_MATCH:
       char s1 = set( 1 ), s2 = set( 2 ), s3 = set( 3 );
@@ -71,7 +71,7 @@ int Atm_widget_oxo::event( int id ) {
  *   push( connectors, ON_SET, 0, <v>, <up> );
  */
 
-void Atm_widget_oxo::action( int id ) {
+void Atm_oxo_field::action( int id ) {
   switch ( id ) {
     case ENT_1X:
       if ( !set( 1 ) ) {
@@ -168,7 +168,7 @@ void Atm_widget_oxo::action( int id ) {
  * Control how your machine processes triggers
  */
 
-Atm_widget_oxo& Atm_widget_oxo::trigger( int event ) {
+Atm_oxo_field& Atm_oxo_field::trigger( int event ) {
   Machine::trigger( event );
   return *this;
 }
@@ -177,11 +177,11 @@ Atm_widget_oxo& Atm_widget_oxo::trigger( int event ) {
  * Control what the machine returns when another process requests its state
  */
 
-int Atm_widget_oxo::state( void ) {
+int Atm_oxo_field::state( void ) {
   return current == MATCH ? 1 : 0;
 }
 
-void Atm_widget_oxo::set( int cell, char v ) {
+void Atm_oxo_field::set( int cell, char v ) {
   switch ( v ) {
     case 'X':
       led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
@@ -196,22 +196,22 @@ void Atm_widget_oxo::set( int cell, char v ) {
   led->off( led_map[ ( cell - 1 ) * 3 + 2 ] );
 }
 
-void Atm_widget_oxo::set_to_active( int cell ) {
+void Atm_oxo_field::set_to_active( int cell ) {
   set( cell, led->active( led_map[27] ) ? 'X' : 'O' );
 }
 
-char Atm_widget_oxo::set( int cell ) {
+char Atm_oxo_field::set( int cell ) {
   if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
   if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
   return 0;
 }
 
-char Atm_widget_oxo::cell( int no ) {
+char Atm_oxo_field::cell( int no ) {
   char c = set( no );
   return c ? c : no; 
 }
 
-Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
+Atm_oxo_field& Atm_oxo_field::dump( Stream & stream ) {
   stream.print( set( 1 ) ? set( 1 ) : '-' );
   stream.print( set( 2 ) ? set( 2 ) : '-' );
   stream.print( set( 3 ) ? set( 3 ) : '-' );
@@ -227,7 +227,7 @@ Atm_widget_oxo& Atm_widget_oxo::dump( Stream & stream ) {
   return *this;  
 }
 
-Atm_widget_oxo& Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move this to bot
+Atm_oxo_field& Atm_oxo_field::loadWins( oxo_wins_t &wins ) { // should move this to bot
   // Winning patterns 123 456 789 147 258 369 159 357
   wins[0][0] = wins[3][0] = wins[6][0] = cell( 1 );
   wins[0][1] = wins[4][0] = cell( 2 );
@@ -241,7 +241,7 @@ Atm_widget_oxo& Atm_widget_oxo::loadWins( oxo_wins_t &wins ) { // should move th
   return *this;  
 }
 
-Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins, int idx ) {
+Atm_oxo_field& Atm_oxo_field::dumpWins( Stream &stream, oxo_wins_t &wins, int idx ) {
   for ( int win = 0; win < 8; win++ ) {
     if ( idx == -1 || idx == win ) {
       for ( int pos = 0; pos < 3; pos++ ) {
@@ -258,7 +258,7 @@ Atm_widget_oxo& Atm_widget_oxo::dumpWins( Stream &stream, oxo_wins_t &wins, int 
   return *this;  
 }
 
-Atm_widget_oxo& Atm_widget_oxo::select( char v ) {
+Atm_oxo_field& Atm_oxo_field::select( char v ) {
   if ( v == 'O' ) led->on( 28 ).off( 27 );
   if ( v == 'X' ) led->on( 27 ).off( 28 );
   return *this;  
@@ -274,72 +274,72 @@ Atm_widget_oxo& Atm_widget_oxo::select( char v ) {
  *
  */
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_1x() {
+Atm_oxo_field& Atm_oxo_field::oxo_1x() {
   trigger( EVT_1X );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_1o() {
+Atm_oxo_field& Atm_oxo_field::oxo_1o() {
   trigger( EVT_1O );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_2x() {
+Atm_oxo_field& Atm_oxo_field::oxo_2x() {
   trigger( EVT_2X );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_2o() {
+Atm_oxo_field& Atm_oxo_field::oxo_2o() {
   trigger( EVT_2O );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_3x() {
+Atm_oxo_field& Atm_oxo_field::oxo_3x() {
   trigger( EVT_3X );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_3o() {
+Atm_oxo_field& Atm_oxo_field::oxo_3o() {
   trigger( EVT_3O );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_4() {
+Atm_oxo_field& Atm_oxo_field::oxo_4() {
   trigger( EVT_4 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_5() {
+Atm_oxo_field& Atm_oxo_field::oxo_5() {
   trigger( EVT_5 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_6() {
+Atm_oxo_field& Atm_oxo_field::oxo_6() {
   trigger( EVT_6 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_7() {
+Atm_oxo_field& Atm_oxo_field::oxo_7() {
   trigger( EVT_7 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_8() {
+Atm_oxo_field& Atm_oxo_field::oxo_8() {
   trigger( EVT_8 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::oxo_9() {
+Atm_oxo_field& Atm_oxo_field::oxo_9() {
   trigger( EVT_9 );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::toggle() {
+Atm_oxo_field& Atm_oxo_field::toggle() {
   trigger( EVT_TOGGLE );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::init() {
+Atm_oxo_field& Atm_oxo_field::init() {
   trigger( EVT_INIT );
   return *this;
 }
@@ -348,12 +348,12 @@ Atm_widget_oxo& Atm_widget_oxo::init() {
  * onMatch() push connector variants ( slots 1, autostore 0, broadcast 0 )
  */
 
-Atm_widget_oxo& Atm_widget_oxo::onMatch( Machine& machine, int event ) {
+Atm_oxo_field& Atm_oxo_field::onMatch( Machine& machine, int event ) {
   onPush( connectors, ON_MATCH, 0, 1, 1, machine, event );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::onMatch( atm_cb_push_t callback, int idx ) {
+Atm_oxo_field& Atm_oxo_field::onMatch( atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_MATCH, 0, 1, 1, callback, idx );
   return *this;
 }
@@ -362,12 +362,12 @@ Atm_widget_oxo& Atm_widget_oxo::onMatch( atm_cb_push_t callback, int idx ) {
  * onset() push connector variants ( slots 1, autostore 0, broadcast 0 )
  */
 
-Atm_widget_oxo& Atm_widget_oxo::onSet( Machine& machine, int event ) {
+Atm_oxo_field& Atm_oxo_field::onSet( Machine& machine, int event ) {
   onPush( connectors, ON_SET, 0, 1, 1, machine, event );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::onSet( atm_cb_push_t callback, int idx ) {
+Atm_oxo_field& Atm_oxo_field::onSet( atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_SET, 0, 1, 1, callback, idx );
   return *this;
 }
@@ -376,12 +376,12 @@ Atm_widget_oxo& Atm_widget_oxo::onSet( atm_cb_push_t callback, int idx ) {
  * onSet() push connector variants ( slots 1, autostore 0, broadcast 0 )
  */
 
-Atm_widget_oxo& Atm_widget_oxo::onInit( Machine& machine, int event ) {
+Atm_oxo_field& Atm_oxo_field::onInit( Machine& machine, int event ) {
   onPush( connectors, ON_INIT, 0, 1, 1, machine, event );
   return *this;
 }
 
-Atm_widget_oxo& Atm_widget_oxo::onInit( atm_cb_push_t callback, int idx ) {
+Atm_oxo_field& Atm_oxo_field::onInit( atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_INIT, 0, 1, 1, callback, idx );
   return *this;
 }
@@ -390,7 +390,7 @@ Atm_widget_oxo& Atm_widget_oxo::onInit( atm_cb_push_t callback, int idx ) {
  * Sets the symbol table and the default logging method for serial monitoring
  */
 
-Atm_widget_oxo& Atm_widget_oxo::trace( Stream & stream ) {
+Atm_oxo_field& Atm_oxo_field::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "WIDGET_OXO\0EVT_MATCH\0EVT_1X\0EVT_1O\0EVT_2X\0EVT_2O\0EVT_3X\0EVT_3O\0EVT_4\0EVT_5\0EVT_6\0EVT_7\0EVT_8\0EVT_9\0EVT_INIT\0EVT_TOGGLE\0ELSE\0IDLE\0OXO_1X\0OXO_1O\0OXO_2X\0OXO_2O\0OXO_3X\0OXO_3O\0OXO_4\0OXO_5\0OXO_6\0OXO_7\0OXO_8\0OXO_9\0MATCH\0INIT\0TOGGLE" );
   return *this;

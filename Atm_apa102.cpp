@@ -26,12 +26,16 @@ Atm_apa102& Atm_apa102::begin( int number_of_leds, int gate_pin ) {
     pinMode( this->gate_pin, OUTPUT );
     digitalWrite( this->gate_pin, LOW );
   }
+#ifdef CORE_TEENSY
   spi4teensy3::init();
+#else
+  SPI.begin();
+#endif
   for ( int i = 0; i < number_of_leds; i++ ) {
     leds.led[i].gb = 255;
     meta[i].status = 1; // Force off
   }
-  gbrgb( 31, 5, 5, 5 ).fade( 0 ).off(); // Safe default
+  gbrgb( 31, 255, 255, 255 ).fade( 0 ).off(); // Default for the whole strip
   this->showLeds();
   return *this;          
 }
@@ -138,10 +142,33 @@ int Atm_apa102::state( void ) {
 
 
   
-Atm_apa102& Atm_apa102::dump( void ) {
+Atm_apa102& Atm_apa102::dump( Stream& stream ) {
 
   for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
-    Serial.printf( "gb=%d, r=%d, g=%d, b=%d\n", leds.led[ledno].gb, leds.led[ledno].r, leds.led[ledno].g, leds.led[ledno].b );
+    stream.print( "led gb=" );
+    stream.print( leds.led[ledno].gb );
+    stream.print( ", r=" );
+    stream.print( leds.led[ledno].r );
+    stream.print( ", g=" );
+    stream.print( leds.led[ledno].g );
+    stream.print( ", b=" );
+    stream.println( leds.led[ledno].b );
+  }
+  return *this;
+}
+
+
+Atm_apa102& Atm_apa102::dump_meta( Stream& stream ) {
+
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+    stream.print( "meta gb=" );
+    stream.print( meta[ledno].gb );
+    stream.print( ", r=" );
+    stream.print( meta[ledno].r );
+    stream.print( ", g=" );
+    stream.print( meta[ledno].g );
+    stream.print( ", b=" );
+    stream.println( meta[ledno].b );
   }
   return *this;
 }
@@ -260,6 +287,15 @@ Atm_apa102& Atm_apa102::off() {
   return *this;
 }
 
+Atm_apa102& Atm_apa102::toggle( int ledno ) {
+  if ( meta[ledno].status ) {
+    off( ledno );
+  } else {
+    on( ledno );
+  }
+  return *this;
+}
+
 Atm_apa102& Atm_apa102::pulse( int ledno, uint16_t duration ) {
 
   if ( ledno > -1 ) {
@@ -281,9 +317,8 @@ int Atm_apa102::active( int ledno ) {
   return ledno > -1 ? meta[ledno].status : 0;  
 }
 
-
-Atm_apa102& Atm_apa102::showLeds( void ) {
-  
+#ifdef CORE_TEENSY
+Atm_apa102& Atm_apa102::showLeds( void ) { // Teensy 3.x version
   if ( this->gate_pin > -1 ) digitalWriteFast( this->gate_pin, HIGH );
   spi4teensy3::send( 0 ); // Startframe
   spi4teensy3::send( 0 ); 
@@ -300,6 +335,31 @@ Atm_apa102& Atm_apa102::showLeds( void ) {
   return *this;
 }
 
+#else
+
+Atm_apa102& Atm_apa102::showLeds( void ) { // Arduino UNO version
+  if ( this->gate_pin > -1 ) digitalWrite( this->gate_pin, HIGH );
+  SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
+  SPI.transfer( (uint8_t) 0 ); // Startframe
+  SPI.transfer( (uint8_t) 0 ); 
+  SPI.transfer( (uint8_t) 0 ); 
+  SPI.transfer( (uint8_t) 0 );
+  for ( int ledno = 0; ledno < this->number_of_leds; ledno++ ) { 
+    SPI.transfer( leds.led[ledno].gb ); 
+    SPI.transfer( leds.led[ledno].r ); 
+    SPI.transfer( leds.led[ledno].g ); 
+    SPI.transfer( leds.led[ledno].b ); 
+  }
+  SPI.transfer( (uint8_t) 0xFF ); // 16 leds endframe
+  SPI.transfer( (uint8_t) 0xFF ); // 32 leds
+  SPI.transfer( (uint8_t) 0xFF ); // 48 leds
+  SPI.transfer( (uint8_t) 0xFF ); // 54 leds
+  SPI.endTransaction();
+  if ( this->gate_pin > -1 ) digitalWrite( this->gate_pin, LOW );
+  return *this;
+}
+
+#endif
 
 /* Nothing customizable below this line                          
  ************************************************************************************************
@@ -324,6 +384,7 @@ Atm_apa102& Atm_apa102::trace( Stream & stream ) {
     "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   return *this;
 }
+
 
 
 

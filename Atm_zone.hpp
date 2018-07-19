@@ -6,7 +6,7 @@
 #include "Atm_element.hpp"
 #include "Atm_apa102.hpp"
 
-#define MAX_SWITCHES 70
+#define MAX_SWITCHES 30
 
 struct zone_switch_profile { 
     uint8_t switch_state : 1;
@@ -18,7 +18,7 @@ struct zone_switch_profile {
 };
 
 struct zone_element { 
-    uint8_t initialized;
+    uint8_t initialized; // Don't need this! Check state() > -1 instead of initialized (TEST)
     Atm_element element;
 };
 

@@ -48,7 +48,7 @@ class Atm_element: public Machine {
   int light_led, coil_led, autolite;
   uint16_t pulse_time;
   Atm_apa102 *led;
-  bool initialized = false;
+  bool initialized = false; // Don't need this, just check state() > -1
 
 };
 

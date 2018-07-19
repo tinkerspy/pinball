@@ -68,32 +68,48 @@ void setup() {
 
   playfield.begin( led_strip_pf, cols, rows, 4, 4 )
    .onPress(  0, [] (int idx, int v, int up ) {
-     led_strip_oxo.on( 1 );
+     led_strip_oxo.toggle( 0 );
    })
    .onPress(  1, [] (int idx, int v, int up ) {
-     led_strip_oxo.on( 2 );
+     led_strip_oxo.toggle( 1 );
    })
    .onPress(  2, [] (int idx, int v, int up ) {
-     led_strip_oxo.on( 3 );
+     led_strip_oxo.toggle( 2 );
+   })
+   .onPress(  3, [] (int idx, int v, int up ) {
+     led_strip_oxo.toggle( 3 );
    })
    .onPress(  4, [] (int idx, int v, int up ) {
-     led_strip_oxo.off( 1 );
+     led_strip_oxo.toggle( 4 );
    })
    .onPress(  5, [] (int idx, int v, int up ) {
-     led_strip_oxo.off( 2 );
+     led_strip_oxo.toggle( 5 );
    })
    .onPress(  6, [] (int idx, int v, int up ) {
-     led_strip_oxo.off( 3 );
+     led_strip_oxo.toggle( 6 );
+   })
+   .onPress(  7, [] (int idx, int v, int up ) {
+     led_strip_oxo.toggle( 7 );
+   })
+   .onPress(  8, [] (int idx, int v, int up ) {
+     led_strip_oxo.toggle( 8 );
+   })
+   .onPress(  9, [] (int idx, int v, int up ) {
+     led_strip_oxo.toggle( 9 );
+   })
+   .onPress(  15, [] (int idx, int v, int up ) {
+     led_strip_oxo.off();
    });
 
 ;
-    
-  led_strip_oxo.begin( 29, 3 ).gbrgb( 5, 255, 255, 255 );
+
+    pinMode( 3, OUTPUT );digitalWrite( 3, LOW );
+  led_strip_oxo.begin( 29, 3).gbrgb( 5, 255, 255, 255 );
 
   //oxo.trace( Serial );
   //led_strip_oxo.trace( Serial );
   //delay( 2000 );
-  led_strip_oxo.fade( 2 );
+  led_strip_oxo.fade( 5 );
 
   timer.begin( 1000 )
     .onTimer( [] (int idx, int v, int up ) {
@@ -106,7 +122,7 @@ void setup() {
     .repeat();
 //    .start();
   
-
+   led_strip_oxo.dump( Serial );
 }
 
 uint32_t cnt = 0;

@@ -128,13 +128,13 @@ void Atm_zone::switch_changed( uint8_t logical, uint8_t v ) {
         prof[logical].switch_state = 1;
         prof[logical].last_change = millis();
         push( connectors, ON_PRESS, logical, logical, 1 ); 
-        if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_KICK );
+        if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_KICK ); // Check state() > -1 instead of initialized (TEST)
       }
     } else {
       prof[logical].switch_state = 0;      
       prof[logical].last_change = millis();
       push( connectors, ON_RELEASE, logical, logical, 0 ); 
-      if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_RELEASE );
+      if ( elem[logical].initialized ) elem[logical].element.trigger( Atm_element::EVT_RELEASE ); // Check state() > -1 instead of initialized (TEST)
     }
   }
 }

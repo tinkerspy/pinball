@@ -1,9 +1,13 @@
 #pragma once
 
 #include <Automaton.h>
-#include <spi4teensy3.h>
+#ifdef CORE_TEENSY
+  #include <spi4teensy3.h>
+#else
+  #include <SPI.h>
+#endif
 
-#define MAX_LEDS 100
+#define MAX_LEDS 10
 
 #define GLOBAL_BRIGHTNESS 255 
 
@@ -42,18 +46,20 @@ class Atm_apa102: public Machine {
   Atm_apa102& trigger( int event );
   int state( void );
   Atm_apa102& update( void );
-  Atm_apa102& gbrgb( int gb, int r, int g, int b );
+  Atm_apa102& gbrgb( int gb, int r = -1, int g = -1, int b = -1 );
   Atm_apa102& gbrgb( int ledno, int gb, int r, int g, int b );
   Atm_apa102& set( int ledno, int gb, int r, int g, int b );
   Atm_apa102& fade( int ledno, int speed );
   Atm_apa102& fade( int speed );
   Atm_apa102& on( int ledno );
+  Atm_apa102& toggle( int ledno );
   Atm_apa102& off( int ledno, bool no_update = false );
   Atm_apa102& off( void );
   Atm_apa102& pulse( int ledno, uint16_t duration ); // ledno, pulse_time, delay_time, intensity
   int active( int ledno );
   uint8_t debug;
-  Atm_apa102& dump( void );
+  Atm_apa102& dump( Stream& stream );
+  Atm_apa102& dump_meta( Stream& stream );
 
  private:
   uint8_t slope[32] = {0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 18, 22, 26, 31, 37, 44, 54, 63, 76, 90, 108, 127, 153, 180, 217, 230, 255};
@@ -105,4 +111,5 @@ Automaton::ATML::begin - Automaton Markup Language
 
 Automaton::ATML::end
 */
+
 

@@ -7,7 +7,7 @@
   #include <SPI.h>
 #endif
 
-#define MAX_LEDS 10
+#define MAX_LEDS 29
 
 #define GLOBAL_BRIGHTNESS 255 
 

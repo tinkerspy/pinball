@@ -7,6 +7,7 @@
 
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
+#Atm_strip led; // TODO virtualized strip container combines physical strips
 Atm_led led;
 Atm_timer timer, timer2;
 
@@ -50,6 +51,13 @@ enum { LEVEL_05 = 3 * 4, LEVEL_50, LEVEL_100, LEVEL_255 };
 
 void setup() {
   randomSeed( analogRead( 9 ) );
+
+/*  
+  led.begin()
+	.add(    0, led_strip_pf )
+	.add( 1000, led_strip_bb )
+	.add( 2000, led_strip_cb );
+*/
 
   Serial.begin( 9600 );
   //playfield.trace( Serial );

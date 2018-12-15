@@ -7,7 +7,7 @@
 
 Atm_zone playfield;
 Atm_apa102 led_strip_pf, led_strip_bb, led_strip_cb, led_strip_oxo;
-#Atm_strip led; // TODO virtualized strip container combines physical strips
+//Atm_strip led; // TODO virtualized strip container combines physical strips
 Atm_led led;
 Atm_timer timer, timer2;
 
@@ -139,4 +139,3 @@ void loop() {
   automaton.run();
 //  if ( ++cnt % 1000 == 0 ) Serial.println( millis() ); // 10 cycles/millisecond, 100 usec latency per matrix_row
 }
-

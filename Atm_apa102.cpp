@@ -319,6 +319,8 @@ int Atm_apa102::active( int ledno ) {
 
 #ifdef CORE_TEENSY
 Atm_apa102& Atm_apa102::showLeds( void ) { // Teensy 3.x version
+  // Enable pin 13 for SPI and open the MOSI gate
+  CORE_PIN13_CONFIG = PORT_PCR_DSE | PORT_PCR_MUX(2); //   Alt2=SPIO_SCK.  chip pin PTC5 (13) 
   if ( this->gate_pin > -1 ) digitalWriteFast( this->gate_pin, HIGH );
   spi4teensy3::send( 0 ); // Startframe
   spi4teensy3::send( 0 ); 
@@ -331,7 +333,9 @@ Atm_apa102& Atm_apa102::showLeds( void ) { // Teensy 3.x version
   spi4teensy3::send( 0xFF ); // 32 leds
   spi4teensy3::send( 0xFF ); // 48 leds
   spi4teensy3::send( 0xFF ); // 54 leds
+  // Disable pin 13 for SPI and close the MOSI gate
   if ( this->gate_pin > -1 ) digitalWriteFast( this->gate_pin, LOW );
+  CORE_PIN13_CONFIG = PORT_PCR_DSE | PORT_PCR_MUX(1); //   Alt1 = PTC5.  chip pin PTC5 (13)   
   return *this;
 }
 
@@ -384,7 +388,3 @@ Atm_apa102& Atm_apa102::trace( Stream & stream ) {
     "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   return *this;
 }
-
-
-
-

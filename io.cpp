@@ -1,5 +1,7 @@
 #include "io.hpp"
 
+#undef DEBUG
+
 IO& IO::begin( int pin_data, int pin_clock, int pin_pl, uint8_t *addr, uint8_t *inp, uint8_t *gate ) {
   this->pin_data = pin_data;
   this->pin_clock = pin_clock;
@@ -29,7 +31,7 @@ IO& IO::begin( int pin_data, int pin_clock, int pin_pl, uint8_t *addr, uint8_t *
 IO& IO::strip( uint8_t n, Adafruit_NeoPixel &s, uint8_t bytes_per_pixel ) {
   s.begin();
   led_strip[n] = &s;
-  led_dirty[n] = 255;
+  led_dirty[n] = 255; // Force update on next IO::show()
   led_bytes[n] = bytes_per_pixel;
   for ( uint8_t i = 0; i < s.numPixels(); i++ ) {
     log_led[log_led_cnt].strip = n;
@@ -41,12 +43,26 @@ IO& IO::strip( uint8_t n, Adafruit_NeoPixel &s, uint8_t bytes_per_pixel ) {
 
 IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
   if ( n < log_led_cnt ) {
-    Serial.print( "setPixelColor " );
+#ifdef DEBUG    
+    Serial.print( millis() );
+    Serial.print( " setPixelColor " );
     Serial.print( n );
     Serial.print( ": strip=" );
     Serial.print( log_led[n].strip );
     Serial.print( ", led=" );
-    Serial.println( log_led[n].led );
+    Serial.print( log_led[n].led );
+    Serial.print( ", value=" );
+    Serial.print( r );
+    Serial.print( "," );
+    Serial.print( g );
+    Serial.print( "," );
+    Serial.print( b );
+    Serial.print( "," );
+    Serial.println( w );
+#endif
+    if ( led_bytes[log_led[n].strip] == 3 ) { // Convert w value to rgb for 3 byte strips
+      if ( w > 0 && r + g + b == 0 ) r = g = b = w;    
+    }
     led_strip[log_led[n].strip]->setPixelColor( log_led[n].led, r, g, b, w );
     if ( log_led[n].led > led_dirty[log_led[n].strip] ) 
       led_dirty[log_led[n].strip] = log_led[n].led;   
@@ -70,21 +86,36 @@ uint16_t IO::numPixels( void ) {
   return log_led_cnt;
 }
 
+uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
+   return r << 24 | g << 16 | b << 8 | w;
+}
+
+uint32_t IO::Mono( uint8_t w ) {
+   return w;
+}
+
 int16_t IO::lastPixel( void ) {
   return log_last_pixel;
 }
 
-IO& IO::show() {
+bool IO::show() {
+  bool success = true;
   for ( uint8_t i = 0; i < NUM_LED_STRIPS; i++ ) {
     if ( led_dirty[i] > -1 ) {
-      Serial.print( "Show strip " );
-      Serial.println( i );
-      select( i );
-      led_strip[i]->show();
-      led_dirty[i] = -1; 
+      if ( led_strip[i]->canShow() ) {
+#ifdef DEBUG
+        Serial.print( "Show strip " );
+        Serial.println( i );
+#endif      
+        select( i );
+        led_strip[i]->show();
+        led_dirty[i] = -1; 
+      } else {
+        success = false;
+      }
     }
   }
-  return *this;
+  return success;
 }
 
 uint32_t IO::timer() {

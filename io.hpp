@@ -1,3 +1,5 @@
+#pragma once
+
 #include <arduino.h>
 #include <Adafruit_NeoPixel.h>
 
@@ -26,7 +28,8 @@ struct logical_led {
 // Show is limited to one strip (lowest id) and up to the highest touched pixel (Adafruit_Neopixel patch necessary, move numBytes, woffset & roffset to public)
 
 class IO {
-  private:
+//  private:
+  public:
     uint8_t pin_data; 
     uint8_t pin_clock; 
     uint8_t pin_pl; 
@@ -58,9 +61,11 @@ class IO {
     IO& strip( uint8_t n, Adafruit_NeoPixel &s, uint8_t bytes_per_pixel );
     IO& setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
     IO& setPixelMono( uint16_t n, uint8_t w );
+    static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ); 
+    static uint32_t Mono( uint8_t w ); 
     uint16_t numPixels( void );
     int16_t lastPixel( void ); // Last pixel set
-    IO& show();
+    bool show();
 
     uint16_t isPressed( int16_t code );
     int16_t scan(); 

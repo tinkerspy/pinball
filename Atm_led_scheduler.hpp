@@ -6,21 +6,6 @@
 #define MAX_LEDS 5 * 256
 #define MAX_PROFILES 16
 
-/*
- * leds.setProfile( id_profile, , , );
- * leds.profile( n, id_profile );
- * leds.on( n );
- * leds.off( n );
- * leds.clear();
- * 
- * Profiles:
- * - r, g, b, w
- * - delay
- * - initial_level 
- * - initial_time
- * - hold_level(until off, 0? -> pulse auto off)
- */
-
 struct led_meta_data {
   uint32_t rgbw; 
   uint8_t profile = 0;
@@ -54,8 +39,8 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& toggle( int ledno, int v = -1 );
   Atm_led_scheduler& off( int ledno, bool no_update = false );
   Atm_led_scheduler& off( void );
-  Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t delay_time, uint32_t rgbw1, uint16_t rgbw1_time, uint32_t rgbw2 );
   Atm_led_scheduler& set( int16_t n, uint32_t c );
+  Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t delay_time, uint32_t rgbw1, uint16_t rgbw1_time, uint32_t rgbw2 = 0 );
   Atm_led_scheduler& profile( int16_t n, uint8_t prof );
   
   int active( int ledno );

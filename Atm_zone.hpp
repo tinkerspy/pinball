@@ -4,9 +4,9 @@
 
 #include <Automaton.h>
 #include "Atm_element.hpp"
-#include "Atm_apa102.hpp"
+#include "Atm_led_scheduler.hpp"
 
-#define MAX_SWITCHES 30
+#define MAX_SWITCHES 100
 
 struct zone_switch_profile { 
     uint8_t switch_state : 1;
@@ -15,10 +15,6 @@ struct zone_switch_profile {
     uint8_t debounce_delay; 
     uint16_t retrigger_delay;
     uint16_t last_change; 
-};
-
-struct zone_element { 
-    uint8_t initialized; // Don't need this! Check state() > -1 instead of initialized (TEST)
     Atm_element element;
 };
 
@@ -28,7 +24,7 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   enum { IDLE, SCAN, DISABLED }; 
   enum { EVT_DISABLE, EVT_ENABLE, ELSE }; // EVENTS
   Atm_zone( void ) : Machine() {};
-  Atm_zone& begin( Atm_apa102& led, int8_t rows[], int8_t cols[], uint8_t no_of_rows, uint8_t no_of_cols);
+  Atm_zone& begin( IO& io, Atm_led_scheduler& led );
   Atm_zone& trace( Stream & stream );
   Atm_zone& trigger( int event );
   int state( void );
@@ -43,8 +39,7 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   Atm_zone& persistent( uint8_t l, bool v = true );
   Atm_zone& disable();
   Atm_zone& enable();
-  Atm_element& element( int switch_no, int light_led, int coil_led, int pulse_time = -1 );
-  Atm_element& element( int switch_no );
+  Atm_element& element( int switch_no, int light_led = -1, int coil_led = -1 );
 
 
  private:
@@ -53,43 +48,15 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
-  void scan_zone_column( bool active );
+  void scan_matrix( bool active );
   void switch_changed( uint8_t l, uint8_t v );
   
   int no_of_rows, no_of_cols;
   int8_t* cols;
   int8_t* rows;
   bool active;
-  zone_switch_profile prof[ MAX_SWITCHES ];
+  zone_switch_profile prof[MAX_SWITCHES ];
   int8_t scan_col = 0;
-  zone_element elem[MAX_SWITCHES];
-  Atm_apa102 *led;
-
+  Atm_led_scheduler *led;
+  IO *io;
 };
-
-/* 
-Automaton::ATML::begin - Automaton Markup Language
-
-<?xml version="1.0" encoding="UTF-8"?>
-<machines>
-  <machine name="Atm_zone">
-    <states>
-      <IDLE index="0">
-        <ELSE>SCAN</ELSE>
-      </IDLE>
-      <SCAN index="1" on_enter="ENT_SCAN">
-      </SCAN>
-    </states>
-    <events>
-    </events>
-    <connectors>
-      <CHANGE autostore="0" broadcast="0" dir="PUSH" slots="32"/>
-    </connectors>
-    <methods>
-    </methods>
-  </machine>
-</machines>
-
-Automaton::ATML::end 
-*/
-

@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_element& Atm_element::begin( Atm_apa102& led, int light, int coil, int pulse_time, int delay ) {
+Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, int coil /* = -1 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */
@@ -23,11 +23,11 @@ Atm_element& Atm_element::begin( Atm_apa102& led, int light, int coil, int pulse
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  timer.set( delay );
-  this->pulse_time = pulse_time;
   light_led = light;
   coil_led = coil;
   this->led = &led;
+  led.profile( light_led, led.PROFILE_DEFAULT_LED );
+  led.profile( coil_led, led.PROFILE_DEFAULT_COIL );
   this->initialized = true;
   return *this;          
 }
@@ -59,7 +59,7 @@ int Atm_element::event( int id ) {
 void Atm_element::action( int id ) {
   switch ( id ) {
     case ENT_KICKING:
-      led->pulse( coil_led, pulse_time );
+      led->on( coil_led );
       if ( autolite) led->on( light_led );
       //connectors[ON_KICK+2].push( 1 );
       if ( led->active( light_led ) ) {  
@@ -267,6 +267,3 @@ Atm_element& Atm_element::trace( Stream & stream ) {
     "ELEMENT\0EVT_ON\0EVT_OFF\0EVT_TOGGLE\0EVT_KICK\0EVT_RELEASE\0EVT_INPUT\0EVT_INIT\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_LIT\0ELSE\0IDLE\0DELAY\0KICKING\0DISABLED\0INIT\0INPUTTING\0RELEASE\0LIGHT_ON\0LIGHT_OFF\0TOGGLE" );
   return *this;
 }
-
-
-

@@ -38,7 +38,6 @@ class IO {
     uint8_t *addr;
     uint8_t row_ptr = 0;
     uint8_t col_ptr = 0;
-    uint8_t row_max = 8;
     uint8_t col_max = 8;
     uint32_t last_read_time = 0;
     uint8_t selected = 0; 
@@ -50,6 +49,8 @@ class IO {
     int16_t log_last_pixel = -1;        
     uint8_t soll[8][8];
     uint8_t ist[8][8];
+    uint8_t row_map[5];
+    uint8_t row_max;
     IO& readRow( uint8_t row, uint8_t mx_width = 8 );
     IO& readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init = false );
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
@@ -61,7 +62,8 @@ class IO {
     IO& strip( uint8_t n, Adafruit_NeoPixel &s, uint8_t bytes_per_pixel );
     IO& setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
     IO& setPixelMono( uint16_t n, uint8_t w );
-    static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ); 
+    IO& map( uint8_t r1, uint8_t r2 = 0, uint8_t r3 = 0, uint8_t r4 = 0, uint8_t r5 = 0 );
+    static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0 ); 
     static uint32_t Mono( uint8_t w ); 
     uint16_t numPixels( void );
     int16_t lastPixel( void ); // Last pixel set

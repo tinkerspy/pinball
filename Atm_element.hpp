@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Automaton.h>
-#include "Atm_apa102.hpp"
+#include "Atm_led_scheduler.hpp"
 
 class Atm_element: public Machine {
 
@@ -9,7 +9,7 @@ class Atm_element: public Machine {
   enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, TOGGLE }; // STATES
   enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, ELSE }; // EVENTS
   Atm_element( void ) : Machine() {};
-  Atm_element& begin( Atm_apa102& led, int light, int coil, int pulse_time = -1, int delay = 0 );
+  Atm_element& begin( Atm_led_scheduler& led, int light = -1, int coil = -1 ); 
   Atm_element& trace( Stream & stream );
   Atm_element& trigger( int event );
   int state( void );
@@ -46,8 +46,7 @@ class Atm_element: public Machine {
   void action( int id ); 
   atm_timer_millis timer;
   int light_led, coil_led, autolite;
-  uint16_t pulse_time;
-  Atm_apa102 *led;
+  Atm_led_scheduler *led;
   bool initialized = false; // Don't need this, just check state() > -1
 
 };
@@ -118,4 +117,3 @@ Automaton::ATML::begin - Automaton Markup Language
 
 Automaton::ATML::end
 */
-

@@ -118,6 +118,16 @@ bool IO::show() {
   return success;
 }
 
+IO& IO::map( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) {
+  row_map[0] = 0;
+  row_map[1] = r1;
+  row_map[2] = row_map[1] + r2;
+  row_map[3] = row_map[2] + r3;
+  row_map[4] = row_map[3] + r4;
+  row_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
+  return *this;
+}
+
 uint32_t IO::timer() {
   return last_read_time;
 }
@@ -174,13 +184,21 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
   return *this;
 }
 
-uint16_t IO::decimal_encode( uint8_t row, uint8_t col, uint8_t bus ) {
-  return ( bus + 1 ) * 100 + ( row + 1 ) * 10 + col;
+// Return 1-based mapped index
+
+uint16_t IO::decimal_encode( uint8_t row, uint8_t col, uint8_t bus ) { 
+  return col + row * 8 + row_map[bus] * 8 + 1;
 }
 
 uint16_t IO::isPressed( int16_t code ) {
-  code = abs( code );
-  return ( ist[( ( code % 100 ) / 10 ) -1][code % 10] & ( 1 << ( ( code / 100 ) - 1 ) ) ) > 0; 
+  if ( code != 0 ) {
+    code = abs( code ) - 1;
+    int bus = 4;
+    while ( ( row_map[bus] * 8 ) > code ) bus--;
+    return ( ist[code / 8 - row_map[bus]][code % 8] & ( 1 << bus ) ) > 0; 
+  } else {
+    return 0;
+  }
 }
 
 int16_t IO::scan() {
@@ -203,7 +221,7 @@ int16_t IO::scan() {
     // Increment col & row pointers modulo 8 (should be col_max, row_max?)
     if ( ! ( col_ptr = ( col_ptr + 1 ) % 8 ) ) 
       if ( ! ( row_ptr = ( row_ptr + 1 ) % 8 ) ) {
-        // On row wrap around 8 -> 0 read the matrix
+        // On row wrap around 7 -> 0 read the matrix
         last_read_time = micros();
         readMatrix( row_max, col_max );          
         last_read_time = micros() - last_read_time;

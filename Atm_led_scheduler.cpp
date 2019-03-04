@@ -78,7 +78,8 @@ void Atm_led_scheduler::action( int id ) {
                 refresh = 1;                        
               } else {
                 set( i, 0 );
-                meta[i].state = LED_STATE_IDLE;                                            
+                meta[i].state = LED_STATE_IDLE;
+                refresh = 1;                                            
               }
             } else {
               running = 1;         

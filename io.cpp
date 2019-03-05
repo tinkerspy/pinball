@@ -1,9 +1,8 @@
-#include "io.hpp"
+#include "IO.hpp"
 
 #undef DEBUG
 
-IO& IO::begin( int pin_data, int pin_clock, int pin_pl, uint8_t *addr, uint8_t *inp, uint8_t *gate ) {
-  this->pin_data = pin_data;
+IO& IO::begin( int pin_clock, int pin_pl, uint8_t *addr, uint8_t *inp, uint8_t *gate ) {
   this->pin_clock = pin_clock;
   this->pin_pl = pin_pl;
   this->gate = gate;
@@ -16,7 +15,6 @@ IO& IO::begin( int pin_data, int pin_clock, int pin_pl, uint8_t *addr, uint8_t *
   for ( int i = 0; i < 5; i++ )
     pinMode( gate[i], OUTPUT ); 
   pinMode( pin_pl, OUTPUT );
-  pinMode( pin_data, OUTPUT );
   pinMode( pin_clock, OUTPUT );
   IOWRITE( pin_clock, LOW );  
   readMatrix( 8, 8, true );
@@ -28,11 +26,10 @@ IO& IO::begin( int pin_data, int pin_clock, int pin_pl, uint8_t *addr, uint8_t *
   return *this;
 }
 
-IO& IO::strip( uint8_t n, Adafruit_NeoPixel &s, uint8_t bytes_per_pixel ) {
+IO& IO::strip( uint8_t n, IO_Adafruit_NeoPixel &s ) { // TODO: automatically count 'n'
   s.begin();
   led_strip[n] = &s;
   led_dirty[n] = 255; // Force update on next IO::show()
-  led_bytes[n] = bytes_per_pixel;
   for ( uint8_t i = 0; i < s.numPixels(); i++ ) {
     log_led[log_led_cnt].strip = n;
     log_led[log_led_cnt].led = i;
@@ -60,7 +57,7 @@ IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) 
     Serial.print( "," );
     Serial.println( w );
 #endif
-    if ( led_bytes[log_led[n].strip] == 3 ) { // Convert w value to rgb for 3 byte strips
+    if ( led_strip[log_led[n].strip]->bytesPerPixel() == 3 ) { // Convert w value to rgb for 3 byte strips
       if ( w > 0 && r + g + b == 0 ) r = g = b = w;    
     }
     led_strip[log_led[n].strip]->setPixelColor( log_led[n].led, r, g, b, w );
@@ -73,7 +70,7 @@ IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) 
 
 IO& IO::setPixelMono( uint16_t n, uint8_t w ) {
   if ( n < log_led_cnt ) {
-    if ( led_bytes[log_led[n].strip] == 3 ) {
+    if ( led_strip[log_led[n].strip]->bytesPerPixel() == 3 ) {
       setPixelColor( n, w, w, w, 0 );
     } else {
       setPixelColor( n, 0, 0, 0, w );

@@ -1,45 +1,28 @@
 
-IO io;
-Atm_sk6812 output;
-Atm_table table;
+Atm_led_scheduler
+on( n )
+off( n )
+set( n, c )
+toggle( n, v )
+toggle( n )
 
-Human multipleMe[10] = { Human(20.0f,10.0f), Human(18.0f,20.0f), };
+Atm_element
+  Atm_element& onInit( [] );
+  Atm_element& onInput( {state,} [] );
+  Atm_element& onKick( {state,} [] );
+  Atm_element& onLight( {state,} [] );
+  Atm_element& on( void );
+  Atm_element& off( void );
+  Atm_element& kick( void );
+  Atm_element& release( void );
+  Atm_element& input( void );
+  Atm_element& init( void );
+  Atm_element& disable( void );
+  Atm_element& enable( void );
+  Atm_element& toggle( void );
+  Atm_element& autoLite( int v = 1 );
+  int state() {returns true when led is lit, if there's no led returns the switch pressed state - flipper/score_digit}
 
-Adafruit_NeoPixel strip[] = {
-	Adafruit_NeoPixel( 10, pin_data, NEO_GRBW + NEO_KHZ800),
-	Adafruit_NeoPixel( 12, pin_data, NEO_GRBW + NEO_KHZ800),
-};
+  EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE  
+  
 
-
-enum { 
-	LED_ONE, LED_TWO, LED_THREE,
-	LED_FOUR, LED_FIVE, LED_SIX,
-} leds;
-
-enum {
-	PROFILE_LED, PROFILE_BUMPER, PROFILE_SLINGSHOT, PROFILE_FLIPPER, PROFILE_KICKER
-} profiles;
-
-
-io.begin();
-output.begin( data_pin )
-	.onSelect( [] (int idx, int v, int up ) {
-		io.select( v );
-	})
-	.add( 0, LED_ONE )
-	.add( 1, LED_FOUR );
-
-output.defineProfile( PROFILE_LED, slope_up, 127, slope_down );	// slope_up, level, slope_down
-output.defineProfile( PROFILE_FLIPPER, 0, 127, 30, 64 );	// delay, kick_level, kick_time, hold_time = -1
-output.defineProfile( PROFILE_SIMPLE, 127 ); // Just sets the level (delay = 0, kick_time = -1, hold_time = -1)
-
-output.profile( LED_ONE, PROFILE_LED );
-output.profile( LED_THREE, PROFILE_FLIPPER );
-output.profile( LED_FOUR, PROFILE_FLIPPER );
-
-output.on( LED_ONE );
-output.pulse( LED_THREE );
-
-table.begin( io, output );
-
- 

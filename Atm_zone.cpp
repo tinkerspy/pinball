@@ -4,6 +4,9 @@
 // TODO: Allow for active HIGH switches
 // TODO: Add catchall on onPress()/onRelease()
 
+/* 
+ *  Some way to pulse score-digits (while/until switch is enabled)
+ */
 
 Atm_zone& Atm_zone::begin( IO& io, Atm_led_scheduler& led ) {
   // clang-format off
@@ -57,8 +60,8 @@ Atm_zone& Atm_zone::debounce( uint8_t v ) {
   return *this;   
 }
 
-Atm_zone& Atm_zone::debounce( uint8_t l, uint8_t v ) {
-  prof[l].debounce_delay = v; 
+Atm_zone& Atm_zone::debounce( uint8_t n, uint8_t v ) {
+  prof[n].debounce_delay = v; 
   return *this;   
 }
 
@@ -69,13 +72,13 @@ Atm_zone& Atm_zone::retrigger( uint16_t v ) {
   return *this;   
 }
 
-Atm_zone& Atm_zone::retrigger( uint8_t l, uint16_t v ) {
-  prof[l].retrigger_delay = v; 
+Atm_zone& Atm_zone::retrigger( uint8_t n, uint16_t v ) {
+  prof[n].retrigger_delay = v; 
   return *this;   
 }
 
-Atm_zone& Atm_zone::persistent( uint8_t l, bool v /* = true */ ) {
-  prof[l].persistent = v ? 1 : 0; 
+Atm_zone& Atm_zone::persistent( uint8_t n, bool v /* = true */ ) {
+  prof[n].persistent = v ? 1 : 0; 
   return *this;   
 }
 
@@ -96,30 +99,30 @@ void Atm_zone::scan_matrix( bool active ) {
   }
 }
 
-void Atm_zone::switch_changed( uint8_t logical, uint8_t v ) {
-  uint16_t millis_passed = (uint16_t) millis() - prof[logical].last_change;
-  if ( millis_passed > prof[logical].debounce_delay ) {
+void Atm_zone::switch_changed( uint8_t n, uint8_t v ) {
+  uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
+  if ( millis_passed > prof[n].debounce_delay ) {
     if ( v ) {
-      if ( millis_passed > prof[logical].retrigger_delay ) {
-        prof[logical].switch_state = 1;
-        prof[logical].last_change = millis();
-        push( connectors, ON_PRESS, logical, logical, 1 ); 
-        if ( prof[logical].element.state() > -1 ) prof[logical].element.trigger( Atm_element::EVT_KICK ); 
+      if ( millis_passed > prof[n].retrigger_delay ) {
+        prof[n].switch_state = 1;
+        prof[n].last_change = millis();
+        push( connectors, ON_PRESS, n, n, 1 ); 
+        if ( prof[n].element.state() > -1 ) prof[n].element.trigger( Atm_element::EVT_KICK ); 
       }
     } else {
-      prof[logical].switch_state = 0;      
-      prof[logical].last_change = millis();
-      push( connectors, ON_RELEASE, logical, logical, 0 ); 
-      if ( prof[logical].element.state() > -1 ) prof[logical].element.trigger( Atm_element::EVT_RELEASE );
+      prof[n].switch_state = 0;      
+      prof[n].last_change = millis();
+      push( connectors, ON_RELEASE, n, n, 0 ); 
+      if ( prof[n].element.state() > -1 ) prof[n].element.trigger( Atm_element::EVT_RELEASE );
     }
   }
 }
 
-Atm_element& Atm_zone::element( int switch_no, int light_led /* = -1 */, int coil_led /* = -1 */ ) {
-  if ( prof[switch_no].element.state() == -1 ) {
-    prof[switch_no].element.begin( *led, light_led, coil_led );
+Atm_element& Atm_zone::element( int n, int light_led /* = -1 */, int coil_led /* = -1 */, int coil_profile /* = 0 */ ) {
+  if ( prof[n].element.state() == -1 ) {
+    prof[n].element.begin( *led, light_led, coil_led, coil_profile );
   }
-  return prof[switch_no].element;
+  return prof[n].element;
 }
 
 /* Optionally override the default trigger() method

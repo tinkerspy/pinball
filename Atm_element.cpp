@@ -1,14 +1,11 @@
 #include "Atm_element.hpp"
 
-/* Add optional parameters for the state machine to begin()
- * Add extra initialization code
- */
-
-Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, int coil /* = -1 */ ) {
+Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, int coil /* = -1 */, int coil_profile /* = 0 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */
-    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,    DELAY,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,       -1,
+    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,  KICKING,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,       -1,
+/* DELAY IS NOT USED ANYMORE */
     /*     DELAY */            -1,        -1,      -1,       -1,        -1,         -1,       -1,        IDLE,        -1,       -1,          -1,         -1,   KICKING,        -1,       -1,
     /*   KICKING */   ENT_KICKING,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
 /* Insert extra wait state to stop machine gunning (retrigger) */    
@@ -26,9 +23,9 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, i
   light_led = light;
   coil_led = coil;
   this->led = &led;
+  led.profile( coil_led, coil_profile );
   led.profile( light_led, led.PROFILE_DEFAULT_LED );
-  led.profile( coil_led, led.PROFILE_DEFAULT_COIL );
-  this->initialized = true;
+  switch_state = false;
   return *this;          
 }
 
@@ -59,6 +56,7 @@ int Atm_element::event( int id ) {
 void Atm_element::action( int id ) {
   switch ( id ) {
     case ENT_KICKING:
+      switch_state = true;
       led->on( coil_led );
       if ( autolite) led->on( light_led );
       //connectors[ON_KICK+2].push( 1 );
@@ -81,7 +79,8 @@ void Atm_element::action( int id ) {
       }
       return;
     case ENT_RELEASE:
-      led->off( coil_led );
+      switch_state = false;
+      led->off( coil_led );      
       return;
     case ENT_LIGHT_ON:
       led->on( light_led );
@@ -110,7 +109,12 @@ Atm_element& Atm_element::trigger( int event ) {
  */
 
 int Atm_element::state( void ) {
-  return Machine::state();
+  // If there's a led return its state else return the switch state
+  if ( light_led > -1 ) {
+    return led->active( light_led ); 
+  } else {
+    return switch_state;    
+  }
 }
 
 /* Nothing customizable below this line                          

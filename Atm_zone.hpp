@@ -8,7 +8,7 @@
 
 #define MAX_SWITCHES 100
 
-struct zone_switch_profile { 
+struct switch_record { 
     uint8_t switch_state : 1;
     uint8_t persistent : 1;
     uint8_t disabled : 1;
@@ -33,13 +33,13 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   Atm_zone& onRelease( int sub, Machine& machine, int event = 0 );
   Atm_zone& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_zone& debounce( uint8_t v );
-  Atm_zone& debounce( uint8_t l, uint8_t v );
+  Atm_zone& debounce( uint8_t n, uint8_t v );
   Atm_zone& retrigger( uint16_t v );
-  Atm_zone& retrigger( uint8_t l, uint16_t v );
-  Atm_zone& persistent( uint8_t l, bool v = true );
+  Atm_zone& retrigger( uint8_t n, uint16_t v );
+  Atm_zone& persistent( uint8_t n, bool v = true );
   Atm_zone& disable();
   Atm_zone& enable();
-  Atm_element& element( int switch_no, int light_led = -1, int coil_led = -1 );
+  Atm_element& element( int n, int light_led = -1, int coil_led = -1, int coil_profile = 0 );
 
 
  private:
@@ -49,13 +49,13 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   int event( int id ); 
   void action( int id ); 
   void scan_matrix( bool active );
-  void switch_changed( uint8_t l, uint8_t v );
+  void switch_changed( uint8_t n, uint8_t v );
   
   int no_of_rows, no_of_cols;
   int8_t* cols;
   int8_t* rows;
   bool active;
-  zone_switch_profile prof[MAX_SWITCHES ];
+  switch_record prof[MAX_SWITCHES ];
   int8_t scan_col = 0;
   Atm_led_scheduler *led;
   IO *io;

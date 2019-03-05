@@ -25,7 +25,7 @@ struct logical_led {
 
 // Converts multiple physical strips into one logical strip
 // Keeps track of the highest changed pixel in every strip
-// Show is limited to one strip (lowest id) and up to the highest touched pixel (Adafruit_Neopixel patch necessary, move numBytes, woffset & roffset to public)
+// Show is limited to one strip (lowest id) and up to the highest touched pixel
 
 class IO {
   private:

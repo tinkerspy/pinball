@@ -37,8 +37,9 @@ class Atm_element: public Machine {
   Atm_element& enable( void );
   Atm_element& toggle( void );
   Atm_element& autoLite( int v = 1 );
+  bool initialized = false; // state() == -1 does not work to test initialization...
 
- private:
+ protected:
   enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF }; // ACTIONS
   enum { ON_INIT, ON_INPUT, ON_KICK = 4, ON_LIGHT = 7, CONN_MAX = 10 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];

@@ -41,8 +41,7 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   Atm_zone& enable();
   Atm_element& element( int n, int light_led = -1, int coil_led = -1, int coil_profile = 0 );
 
-
- private:
+ protected:
   enum { ENT_SCAN, ENT_DISABLED }; // ACTIONS
   enum { ON_PRESS, ON_RELEASE = MAX_SWITCHES, CONN_MAX = MAX_SWITCHES * 2 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];

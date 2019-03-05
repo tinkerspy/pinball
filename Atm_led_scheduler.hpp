@@ -48,7 +48,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& dump( Stream& stream );
   Atm_led_scheduler& dump_meta( Stream& stream );
 
-// private:
+protected:
   led_profile_record led_profile[MAX_PROFILES];
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 

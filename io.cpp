@@ -2,52 +2,53 @@
 
 #undef DEBUG
 
-IO& IO::begin( int pin_clock, int pin_pl, uint8_t *addr, uint8_t *inp, uint8_t *gate ) {
+IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate ) {
   this->pin_clock = pin_clock;
-  this->pin_pl = pin_pl;
+  this->pin_latch = pin_latch;
   this->gate = gate;
-  this->addr = addr;
-  this->inp = inp;
-  for ( int i = 0; i < 5; i++ )
-    pinMode( inp[i], INPUT_MODE ); 
-  for ( int i = 0; i < 3; i++ )
-    pinMode( addr[i], OUTPUT ); 
-  for ( int i = 0; i < 5; i++ )
+  this->address = address;
+  this->inputs = inputs;
+  for ( int i = 0; i < NUM_IOPORTS; i++ ) {
+    pinMode( inputs[i], INPUT_MODE ); 
     pinMode( gate[i], OUTPUT ); 
-  pinMode( pin_pl, OUTPUT );
+    led_dirty[i] = -1;
+  }
+  for ( int i = 0; i < 3; i++ )
+    pinMode( address[i], OUTPUT ); 
+  pinMode( pin_latch, OUTPUT );
   pinMode( pin_clock, OUTPUT );
   IOWRITE( pin_clock, LOW );  
-  readMatrix( 8, 8, true );
+  readMatrix( MATRIX_ROWS, MATRIX_COLS, true );
   select( 0 );
   row_ptr = 0;
   col_ptr = 0;
-  for ( int i = 0; i < NUM_LED_STRIPS; i++ )
-    led_dirty[i] = -1;
   return *this;
 }
 
-IO& IO::strip( uint8_t n, IO_Adafruit_NeoPixel &s ) { // TODO: automatically count 'n'
-  s.begin();
-  led_strip[n] = &s;
-  led_dirty[n] = 255; // Force update on next IO::show()
-  for ( uint8_t i = 0; i < s.numPixels(); i++ ) {
-    log_led[log_led_cnt].strip = n;
-    log_led[log_led_cnt].led = i;
-    log_led_cnt++;
+IO& IO::addStrips( IO_Adafruit_NeoPixel strip[] ) { 
+  for ( int n = 0; n < NUM_IOPORTS; n++ ) {
+    strip[n].begin();
+    led_strip[n] = &strip[n];
+    for ( uint8_t i = 0; i < strip[n].numPixels(); i++ ) {
+      led[led_cnt].strip = n;
+      led[led_cnt].led = i;
+      led_cnt++;
+    }
+    led_dirty[n] = strip[n].numPixels() - 1; // Force full strip update on next IO::show()
   }
   return *this;
 }
 
 IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
-  if ( n < log_led_cnt ) {
+  if ( n < led_cnt ) {
 #ifdef DEBUG    
     Serial.print( millis() );
     Serial.print( " setPixelColor " );
     Serial.print( n );
     Serial.print( ": strip=" );
-    Serial.print( log_led[n].strip );
+    Serial.print( led[n].strip );
     Serial.print( ", led=" );
-    Serial.print( log_led[n].led );
+    Serial.print( led[n].led );
     Serial.print( ", value=" );
     Serial.print( r );
     Serial.print( "," );
@@ -57,20 +58,21 @@ IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) 
     Serial.print( "," );
     Serial.println( w );
 #endif
-    if ( led_strip[log_led[n].strip]->bytesPerPixel() == 3 ) { // Convert w value to rgb for 3 byte strips
+    uint8_t nled = led[n].led;
+    uint8_t strip = led[n].strip;
+    if ( led_strip[strip]->bytesPerPixel() == 3 ) { // Convert w value to rgb for 3 byte strips
       if ( w > 0 && r + g + b == 0 ) r = g = b = w;    
     }
-    led_strip[log_led[n].strip]->setPixelColor( log_led[n].led, r, g, b, w );
-    if ( log_led[n].led > led_dirty[log_led[n].strip] ) 
-      led_dirty[log_led[n].strip] = log_led[n].led;   
+    led_strip[strip]->setPixelColor( led[n].led, r, g, b, w );
+    led_dirty[strip] = max( nled, led_dirty[strip] );   
     log_last_pixel = n;
   }
   return *this;
 }
 
 IO& IO::setPixelMono( uint16_t n, uint8_t w ) {
-  if ( n < log_led_cnt ) {
-    if ( led_strip[log_led[n].strip]->bytesPerPixel() == 3 ) {
+  if ( n < led_cnt ) {
+    if ( led_strip[led[n].strip]->bytesPerPixel() == 3 ) {
       setPixelColor( n, w, w, w, 0 );
     } else {
       setPixelColor( n, 0, 0, 0, w );
@@ -80,11 +82,11 @@ IO& IO::setPixelMono( uint16_t n, uint8_t w ) {
 }
 
 uint16_t IO::numPixels( void ) {
-  return log_led_cnt;
+  return led_cnt;
 }
 
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
-   return r << 24 | g << 16 | b << 8 | w;
+   return (uint32_t) r << 24 | (uint32_t) g << 16 | (uint32_t) b << 8 | (uint32_t) w;
 }
 
 uint32_t IO::Mono( uint8_t w ) {
@@ -97,7 +99,7 @@ int16_t IO::lastPixel( void ) {
 
 bool IO::show() {
   bool success = true;
-  for ( uint8_t i = 0; i < NUM_LED_STRIPS; i++ ) {
+  for ( uint8_t i = 0; i < NUM_IOPORTS; i++ ) {
     if ( led_dirty[i] > -1 ) {
       if ( led_strip[i]->canShow() ) {
 #ifdef DEBUG
@@ -141,14 +143,14 @@ IO& IO::range( uint8_t row_max, uint8_t col_max ) {
 }
     
 IO& IO::select( int row, bool latch /* = false */ ) {
-  IOWRITE( addr[0], row & 0b00000001 );
-  IOWRITE( addr[1], row & 0b00000010 );
-  IOWRITE( addr[2], row & 0b00000100 );
+  IOWRITE( address[0], row & 0b00000001 );
+  IOWRITE( address[1], row & 0b00000010 );
+  IOWRITE( address[2], row & 0b00000100 );
   delayMicroseconds( PULSE_WIDTH_USEC ); 
-  IOWRITE( pin_pl, LOW );
+  IOWRITE( pin_latch, LOW );
   delayMicroseconds( PULSE_WIDTH_USEC );
   if ( latch ) {
-    IOWRITE( pin_pl, HIGH );
+    IOWRITE( pin_latch, HIGH );
     delayMicroseconds( PULSE_WIDTH_USEC );        
   }
   IOWRITE( gate[selected], LOW );
@@ -161,11 +163,11 @@ IO& IO::readRow( uint8_t row, uint8_t mx_width ) {
   select( row, true );
   for ( uint8_t col = 0; col < mx_width; col++ ) {
     soll[row][col] = 
-      ( IOREAD( inp[0] ) ) |
-      ( IOREAD( inp[1] ) << 1 ) |
-      ( IOREAD( inp[2] ) << 2 ) |
-      ( IOREAD( inp[3] ) << 3 ) |
-      ( IOREAD( inp[4] ) << 4 );
+      ( IOREAD( inputs[0] ) ) |
+      ( IOREAD( inputs[1] ) << 1 ) |
+      ( IOREAD( inputs[2] ) << 2 ) |
+      ( IOREAD( inputs[3] ) << 3 ) |
+      ( IOREAD( inputs[4] ) << 4 );
     IOWRITE( pin_clock, LOW );
     delayMicroseconds( PULSE_WIDTH_USEC );
     IOWRITE( pin_clock, HIGH );
@@ -183,16 +185,16 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
 
 // Return 1-based mapped index
 
-uint16_t IO::decimal_encode( uint8_t row, uint8_t col, uint8_t bus ) { 
-  return col + row * 8 + row_map[bus] * 8 + 1;
+uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) { 
+  return col + row * MATRIX_COLS + row_map[bus] * MATRIX_ROWS + 1;
 }
 
 uint16_t IO::isPressed( int16_t code ) {
   if ( code != 0 ) {
     code = abs( code ) - 1;
-    int bus = 4;
-    while ( ( row_map[bus] * 8 ) > code ) bus--;
-    return ( ist[code / 8 - row_map[bus]][code % 8] & ( 1 << bus ) ) > 0; 
+    int bus = NUM_IOPORTS - 1;
+    while ( ( row_map[bus] * MATRIX_COLS ) > code ) bus--;
+    return ( ist[code / MATRIX_COLS - row_map[bus]][code % MATRIX_ROWS] & ( 1 << bus ) ) > 0; 
   } else {
     return 0;
   }
@@ -209,15 +211,15 @@ int16_t IO::scan() {
       }
       if ( ( 1 << bitpos ) & soll[row_ptr][col_ptr] ) { // press
         ist[row_ptr][col_ptr] |= ( 1 << bitpos );          
-        return decimal_encode( row_ptr, col_ptr, bitpos );
+        return decimal_encode( bitpos, row_ptr, col_ptr );
       } else { // release
         ist[row_ptr][col_ptr] &= ~( 1 << bitpos );                    
-        return decimal_encode( row_ptr, col_ptr, bitpos ) * -1;
+        return decimal_encode( bitpos, row_ptr, col_ptr ) * -1;
       }
     }
     // Increment col & row pointers modulo 8 (should be col_max, row_max?)
-    if ( ! ( col_ptr = ( col_ptr + 1 ) % 8 ) ) 
-      if ( ! ( row_ptr = ( row_ptr + 1 ) % 8 ) ) {
+    if ( ! ( col_ptr = ( col_ptr + 1 ) % MATRIX_COLS ) ) 
+      if ( ! ( row_ptr = ( row_ptr + 1 ) % MATRIX_ROWS ) ) {
         // On row wrap around 7 -> 0 read the matrix
         last_read_time = micros();
         readMatrix( row_max, col_max );          

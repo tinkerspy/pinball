@@ -40,6 +40,7 @@ class IO {
     uint8_t col_ptr = 0;
     uint8_t col_max = MATRIX_COLS;
     uint32_t last_read_time = 0;
+    uint8_t last_strip = 0;
     uint8_t selected = 0; 
     IO_Adafruit_NeoPixel *led_strip[NUM_IOPORTS];
     logical_led led[NUM_IOPORTS * MAX_LEDS_PER_STRIP];
@@ -58,8 +59,9 @@ class IO {
     IO& range( uint8_t row_max, uint8_t col_max );
     IO& select( int row, bool latch = false );
     IO& addStrips( IO_Adafruit_NeoPixel strip[] );
-    IO& setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
-    IO& setPixelMono( uint16_t n, uint8_t w );
+    IO& addStrip( IO_Adafruit_NeoPixel *strip );
+    IO& setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
+    IO& setPixelMono( int16_t n, uint8_t w );
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
     IO& map( uint8_t r1, uint8_t r2 = 0, uint8_t r3 = 0, uint8_t r4 = 0, uint8_t r5 = 0 );
     static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0 ); 

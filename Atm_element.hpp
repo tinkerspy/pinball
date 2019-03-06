@@ -9,7 +9,7 @@ class Atm_element: public Machine {
   enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, TOGGLE }; // STATES
   enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, ELSE }; // EVENTS
   Atm_element( void ) : Machine() {};
-  Atm_element& begin( Atm_led_scheduler& led, int light = -1, int coil = -1, int coil_profile = 0 ); 
+  Atm_element& begin( Atm_led_scheduler& led, int16_t light = -1, int16_t coil = -1, uint8_t coil_profile = 0 ); 
   Atm_element& trace( Stream & stream );
   Atm_element& trigger( int event );
   int state( void );

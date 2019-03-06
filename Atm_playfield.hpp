@@ -19,28 +19,28 @@ struct switch_record {
     Atm_element *element;
 };
 
-class Atm_zone: public Machine { // Beter: Atm_switch_zone
+class Atm_playfield: public Machine { // Beter: Atm_switch_zone
 
  public:
   enum { IDLE, SCAN, DISABLED }; 
   enum { EVT_DISABLE, EVT_ENABLE, ELSE }; // EVENTS
-  Atm_zone( void ) : Machine() {};
-  Atm_zone& begin( IO& io, Atm_led_scheduler& led );
-  Atm_zone& trace( Stream & stream );
-  Atm_zone& trigger( int event );
+  Atm_playfield( void ) : Machine() {};
+  Atm_playfield& begin( IO& io, Atm_led_scheduler& led );
+  Atm_playfield& trace( Stream & stream );
+  Atm_playfield& trigger( int event );
   int state( void );
-  Atm_zone& onPress( int sub, Machine& machine, int event = 0 );
-  Atm_zone& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_zone& onRelease( int sub, Machine& machine, int event = 0 );
-  Atm_zone& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_zone& debounce( uint8_t v );
-  Atm_zone& debounce( uint8_t n, uint8_t v );
-  Atm_zone& retrigger( uint16_t v );
-  Atm_zone& retrigger( uint8_t n, uint16_t v );
-  Atm_zone& persistent( uint8_t n, bool v = true );
-  Atm_zone& disable();
-  Atm_zone& enable();
-  Atm_element& element( int n, int light_led = -1, int coil_led = -1, int coil_profile = 0 );
+  Atm_playfield& onPress( int sub, Machine& machine, int event = 0 );
+  Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );
+  Atm_playfield& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_playfield& debounce( uint8_t v );
+  Atm_playfield& debounce( int16_t n, uint8_t v );
+  Atm_playfield& retrigger( int16_t v );
+  Atm_playfield& retrigger( int16_t n, uint16_t v );
+  Atm_playfield& persistent( int16_t n, bool v = true );
+  Atm_playfield& disable();
+  Atm_playfield& enable();
+  Atm_element& element( int16_t n, int16_t light_led = -1, int16_t coil_led = -1, uint8_t coil_profile = 0 );
 
  protected:
   enum { ENT_SCAN, ENT_DISABLED }; // ACTIONS
@@ -49,7 +49,7 @@ class Atm_zone: public Machine { // Beter: Atm_switch_zone
   int event( int id ); 
   void action( int id ); 
   void scan_matrix( bool active );
-  void switch_changed( uint8_t n, uint8_t v );
+  void switch_changed( int16_t n, uint8_t v );
   
   int no_of_rows, no_of_cols;
   int8_t* cols;

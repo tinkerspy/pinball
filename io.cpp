@@ -39,7 +39,20 @@ IO& IO::addStrips( IO_Adafruit_NeoPixel strip[] ) {
   return *this;
 }
 
-IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
+IO& IO::addStrip( IO_Adafruit_NeoPixel *strip ) { 
+  strip->begin();
+  led_strip[last_strip] = strip;
+  for ( uint8_t i = 0; i < strip->numPixels(); i++ ) {
+    led[led_cnt].strip = last_strip;
+    led[led_cnt].led = i;
+    led_cnt++;
+  }
+  led_dirty[last_strip] = strip->numPixels() - 1; // Force full strip update on next IO::show()
+  last_strip++;
+  return *this;
+}
+
+IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
   if ( n < led_cnt ) {
 #ifdef DEBUG    
     Serial.print( millis() );
@@ -70,7 +83,7 @@ IO& IO::setPixelColor( uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) 
   return *this;
 }
 
-IO& IO::setPixelMono( uint16_t n, uint8_t w ) {
+IO& IO::setPixelMono( int16_t n, uint8_t w ) {
   if ( n < led_cnt ) {
     if ( led_strip[led[n].strip]->bytesPerPixel() == 3 ) {
       setPixelColor( n, w, w, w, 0 );

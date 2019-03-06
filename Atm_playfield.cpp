@@ -1,4 +1,4 @@
-#include "Atm_zone.hpp"
+#include "Atm_playfield.hpp"
 
 // TODO: Move retrigger to element() level
 // TODO: Allow for active HIGH switches
@@ -8,7 +8,7 @@
  *  Some way to pulse score-digits (while/until switch is enabled)
  */
 
-Atm_zone& Atm_zone::begin( IO& io, Atm_led_scheduler& led ) {
+Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE      ELSE */
@@ -21,7 +21,7 @@ Atm_zone& Atm_zone::begin( IO& io, Atm_led_scheduler& led ) {
   this->io = &io;
   this->led = &led;
   for ( int i = 0; i < MAX_SWITCHES; i++ ) 
-    debounce( i, 5 );
+    debounce( i, 5 );   
   return *this;          
 }
 
@@ -29,7 +29,7 @@ Atm_zone& Atm_zone::begin( IO& io, Atm_led_scheduler& led ) {
  * The code must return 1 to trigger the event
  */
 
-int Atm_zone::event( int id ) {
+int Atm_playfield::event( int id ) {
   switch ( id ) {
   }
   return 0;
@@ -42,7 +42,7 @@ int Atm_zone::event( int id ) {
  *   push( connectors, ON_CHANGE, <sub>, <v>, <up> );
  */
 
-void Atm_zone::action( int id ) {
+void Atm_playfield::action( int id ) {
   switch ( id ) {
     case ENT_SCAN:
       scan_matrix( true );
@@ -53,53 +53,53 @@ void Atm_zone::action( int id ) {
   }
 }
 
-Atm_zone& Atm_zone::debounce( uint8_t v ) {
-  for ( uint16_t i = 0; i < MAX_SWITCHES; i++ ) {
+Atm_playfield& Atm_playfield::debounce( uint8_t v ) {
+  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
     prof[i].debounce_delay = v; 
   }
   return *this;   
 }
 
-Atm_zone& Atm_zone::debounce( uint8_t n, uint8_t v ) {
+Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t v ) {
   prof[n].debounce_delay = v; 
   return *this;   
 }
 
-Atm_zone& Atm_zone::retrigger( uint16_t v ) {
-  for ( uint8_t i = 0; i < MAX_SWITCHES; i++ ) {
+Atm_playfield& Atm_playfield::retrigger( int16_t v ) {
+  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
     prof[i].retrigger_delay = v; 
   }
   return *this;   
 }
 
-Atm_zone& Atm_zone::retrigger( uint8_t n, uint16_t v ) {
+Atm_playfield& Atm_playfield::retrigger( int16_t n, uint16_t v ) {
   prof[n].retrigger_delay = v; 
   return *this;   
 }
 
-Atm_zone& Atm_zone::persistent( uint8_t n, bool v /* = true */ ) {
+Atm_playfield& Atm_playfield::persistent( int16_t n, bool v /* = true */ ) {
   prof[n].persistent = v ? 1 : 0; 
   return *this;   
 }
 
-Atm_zone& Atm_zone::disable() {
+Atm_playfield& Atm_playfield::disable() {
   trigger( EVT_DISABLE );
   return *this;   
 }
 
-Atm_zone& Atm_zone::enable() {
+Atm_playfield& Atm_playfield::enable() {
   trigger( EVT_ENABLE );
   return *this;   
 }
 
-void Atm_zone::scan_matrix( bool active ) {
+void Atm_playfield::scan_matrix( bool active ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
     switch_changed( abs( sw ), sw > 0 );
   }
 }
 
-void Atm_zone::switch_changed( uint8_t n, uint8_t v ) {
+void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
   if ( millis_passed > prof[n].debounce_delay ) {
     if ( v ) {
@@ -118,7 +118,7 @@ void Atm_zone::switch_changed( uint8_t n, uint8_t v ) {
   }
 }
 
-Atm_element& Atm_zone::element( int n, int light_led /* = -1 */, int coil_led /* = -1 */, int coil_profile /* = 0 */ ) {
+Atm_element& Atm_playfield::element( int16_t n, int16_t light_led /* = -1 */, int16_t coil_led /* = -1 */, uint8_t coil_profile /* = 0 */ ) {
   if ( !prof[n].initialized ) {
     prof[n].element = new Atm_element();  
     prof[n].element->begin( *led, light_led, coil_led, coil_profile );
@@ -131,7 +131,7 @@ Atm_element& Atm_zone::element( int n, int light_led /* = -1 */, int coil_led /*
  * Control how your machine processes triggers
  */
 
-Atm_zone& Atm_zone::trigger( int event ) {
+Atm_playfield& Atm_playfield::trigger( int event ) {
   Machine::trigger( event );
   return *this;
 }
@@ -140,7 +140,7 @@ Atm_zone& Atm_zone::trigger( int event ) {
  * Control what the machine returns when another process requests its state
  */
 
-int Atm_zone::state( void ) {
+int Atm_playfield::state( void ) {
   return Machine::state();
 }
 
@@ -153,22 +153,22 @@ int Atm_zone::state( void ) {
  */
 
 
-Atm_zone& Atm_zone::onPress( int sub, Machine& machine, int event ) {
+Atm_playfield& Atm_playfield::onPress( int sub, Machine& machine, int event ) {
   onPush( connectors, ON_PRESS, sub, 32, 0, machine, event );
   return *this;
 }
 
-Atm_zone& Atm_zone::onPress( int sub, atm_cb_push_t callback, int idx ) {
+Atm_playfield& Atm_playfield::onPress( int sub, atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_PRESS, sub, 32, 0, callback, idx );
   return *this;
 }
 
-Atm_zone& Atm_zone::onRelease( int sub, Machine& machine, int event ) {
+Atm_playfield& Atm_playfield::onRelease( int sub, Machine& machine, int event ) {
   onPush( connectors, ON_RELEASE, sub, 32, 0, machine, event );
   return *this;
 }
 
-Atm_zone& Atm_zone::onRelease( int sub, atm_cb_push_t callback, int idx ) {
+Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_RELEASE, sub, 32, 0, callback, idx );
   return *this;
 }
@@ -177,7 +177,7 @@ Atm_zone& Atm_zone::onRelease( int sub, atm_cb_push_t callback, int idx ) {
  * Sets the symbol table and the default logging method for serial monitoring
  */
 
-Atm_zone& Atm_zone::trace( Stream & stream ) {
+Atm_playfield& Atm_playfield::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "zone\0EVT_DISABLE\0EVT_ENABLE\0ELSE\0IDLE\0SCAN\0DISABLED" );
   return *this;

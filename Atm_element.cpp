@@ -1,6 +1,6 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, int coil /* = -1 */, int coil_profile /* = 0 */ ) {
+Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t light /* = -1 */, int16_t coil /* = -1 */, uint8_t coil_profile /* = 0 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */

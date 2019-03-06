@@ -26,7 +26,6 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int light /* = -1 */, i
   led.profile( coil_led, coil_profile );
   led.profile( light_led, led.PROFILE_DEFAULT_LED );
   switch_state = false;
-  initialized = true;
   return *this;          
 }
 

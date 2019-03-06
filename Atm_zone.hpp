@@ -6,7 +6,7 @@
 #include "Atm_element.hpp"
 #include "Atm_led_scheduler.hpp"
 
-#define MAX_SWITCHES 100
+#define MAX_SWITCHES 320
 
 struct switch_record { 
     uint8_t switch_state : 1;
@@ -14,8 +14,9 @@ struct switch_record {
     uint8_t disabled : 1;
     uint8_t debounce_delay; 
     uint16_t retrigger_delay;
-    uint16_t last_change; 
-    Atm_element element;
+    uint16_t last_change;
+    bool initialized = false; 
+    Atm_element *element;
 };
 
 class Atm_zone: public Machine { // Beter: Atm_switch_zone

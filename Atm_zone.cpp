@@ -107,22 +107,24 @@ void Atm_zone::switch_changed( uint8_t n, uint8_t v ) {
         prof[n].switch_state = 1;
         prof[n].last_change = millis();
         push( connectors, ON_PRESS, n, n, 1 ); 
-        if ( prof[n].element.initialized ) prof[n].element.trigger( Atm_element::EVT_KICK ); 
+        if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
       }
     } else {
       prof[n].switch_state = 0;      
       prof[n].last_change = millis();
       push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].element.initialized ) prof[n].element.trigger( Atm_element::EVT_RELEASE );
+      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
     }
   }
 }
 
 Atm_element& Atm_zone::element( int n, int light_led /* = -1 */, int coil_led /* = -1 */, int coil_profile /* = 0 */ ) {
-  if ( !prof[n].element.initialized ) {
-    prof[n].element.begin( *led, light_led, coil_led, coil_profile );
+  if ( !prof[n].initialized ) {
+    prof[n].element = new Atm_element();  
+    prof[n].element->begin( *led, light_led, coil_led, coil_profile );
+    prof[n].initialized = true;
   }
-  return prof[n].element;
+  return *prof[n].element;
 }
 
 /* Optionally override the default trigger() method

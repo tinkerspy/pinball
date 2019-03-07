@@ -17,16 +17,17 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_controller targets;
+Atm_timer timer;
 
 // Output profiles (leds, coils)
 
-enum { PROFILE_DEFAULT_COIL, PROFILE_DEFAULT_LED, PROFILE_BUMPER, PROFILE_FLIPPER };
+enum { PROFILE_COIL, PROFILE_LED, PROFILE_FLIPPER, PROFILE_KICKER, PROFILE_FEEDER };
 
 // Coils & leds
 
 enum { 
-  COIL_BALL_FEEDER, COIL_FLIPPER_RIGHT, COIL_SLINGSHOT_RIGHT, COIL_SAVE_GATE, 
-  COIL_KICKHOLE_RIGHT, COIL_FLIPPER_LEFT, COIL_SLINGSHOT_LEFT, COIL_KICKHOLE_LEFT,
+  COIL_BALL_FEEDER, COIL_FLIPPER_RIGHT, COIL_SLING_RIGHT, COIL_SAVE_GATE, 
+  COIL_KICKER_RIGHT, COIL_FLIPPER_LEFT, COIL_SLING_LEFT, COIL_KICKER_LEFT,
   
   COIL_BUMPER_LEFT, COIL_BUMPER_CENTER, COIL_BUMPER_RIGHT, GI_PLAYFIELD,
   LED_LANE_UP_LEFT, LED_KICKER_LEFT, LED_KICKER_RIGHT, LED_LANE_UP_RIGHT,
@@ -43,10 +44,10 @@ enum {
   SWITCH_LANE_OUT, SWITCH_LANE_IN_LEFT, SWITCH_SLING_LEFT, SWITCH_SLING_RIGHT, SWITCH_ROLLOVER, SWITCH_LANE_IN_RIGHT, SWITCH_BALL_EXIT, SWITCH_BALL_ENTER,
 
   SWITCH_FLIPPER_LEFT, SWITCH_FLIPPER_RIGHT, SWITCH_FLIPPER_EOS_LEFT, SWITCH_FLIPPER_EOS_RIGHT, SWITCH_TILT_PENDULUM, SWITCH_TILT_RAMP,
-  SWITCH_DIGIT0_10, SWITCH_DIGIT0_100, SWITCH_DIGIT0_1000, SWITCH_DIGIT0_10000,
-  SWITCH_DIGIT1_10, SWITCH_DIGIT1_100, SWITCH_DIGIT1_1000, SWITCH_DIGIT1_10000,
-  SWITCH_DIGIT2_10, SWITCH_DIGIT2_100, SWITCH_DIGIT2_1000, SWITCH_DIGIT2_10000,
-  SWITCH_DIGIT3_10, SWITCH_DIGIT3_100, SWITCH_DIGIT3_1000, SWITCH_DIGIT3_10000,
+  SWITCH_SCORE0_00010, SWITCH_SCORE0_00100, SWITCH_SCORE0_01000, SWITCH_SCORE0_10000,
+  SWITCH_SCORE1_00010, SWITCH_SCORE1_00100, SWITCH_SCORE1_01000, SWITCH_SCORE1_10000,
+  SWITCH_SCORE2_00010, SWITCH_SCORE2_00100, SWITCH_SCORE2_01000, SWITCH_SCORE2_10000,
+  SWITCH_SCORE3_00010, SWITCH_SCORE3_00100, SWITCH_SCORE3_01000, SWITCH_SCORE3_10000,
   
 };
 
@@ -55,39 +56,32 @@ void setup() {
   Serial.println( "start" );
 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
-    .map( 3, 1, 2 )
+    .switchMap( 3, 1, 2 )
     .addStrip( new IO_Adafruit_NeoPixel( 10, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // SK6812
     .addStrip( new IO_Adafruit_NeoPixel(  8, pin_data, NEO_GRB  + NEO_KHZ800 ) ) // WS2812B 
     .retrigger()
     .show();
 
   leds.begin( io )
-    .defineProfile( PROFILE_DEFAULT_COIL, 0, 127, 30 ) // wait_time, kick_level, kick_time, (hold_level)  
-    .defineProfile( PROFILE_DEFAULT_LED, 0, 0, 0, 5 )
+    .defineProfile( PROFILE_COIL, 0, 127, 30 ) // wait_time, kick_level, kick_time, (hold_level)  
+    .defineProfile( PROFILE_LED, 0, 0, 0, 5 )
     .defineProfile( PROFILE_FLIPPER, 0, 127, 30, 20 )
-    .defineProfile( PROFILE_BUMPER, 0, 127, 30 );
+    .defineProfile( PROFILE_KICKER, 1000, 127, 30 )
+    .defineProfile( PROFILE_FEEDER, 1000, 127, 30 );
 
-  playfield.begin( io, leds );
+  playfield.begin( io, leds ); // IDEA: embed led scheduler in playfield...
 
-  playfield.element( SWITCH_PORT_2_O, 1, COIL_FLIPPER_LEFT );
-  playfield.element( SWITCH_PORT_2_O ).on();
-  
-  leds.on(  5 );
-  leds.on( 15 );
-  
-/*
-  playfield.element( SWITCH_FLIPPER_LEFT, -1, COIL_FLIPPER_LEFT, PROFILE_FLIPPER );
-  playfield.onRelease( SWITCH_FLIPPER_EOS_LEFT, playfield.element( SWITCH_FLIPPER_LEFT ), Atm_element::EVT_KICK );
-    
-  playfield.element( SWITCH_FLIPPER_RIGHT, -1, COIL_FLIPPER_RIGHT, PROFILE_FLIPPER );
-  playfield.onRelease( SWITCH_FLIPPER_EOS_RIGHT, playfield.element( SWITCH_FLIPPER_RIGHT ), Atm_element::EVT_KICK );
+  playfield.element( SWITCH_BUMPER_LEFT, COIL_BUMPER_LEFT, -1 );
+  playfield.element( SWITCH_BUMPER_CENTER, COIL_BUMPER_CENTER, -1 );
+  playfield.element( SWITCH_BUMPER_RIGHT, COIL_BUMPER_RIGHT, -1 );
+  playfield.element( SWITCH_KICKER_LEFT, COIL_KICKER_LEFT, -1, PROFILE_KICKER );
+  playfield.element( SWITCH_KICKER_RIGHT, COIL_KICKER_RIGHT, -1, PROFILE_KICKER );
+  playfield.element( SWITCH_SLING_LEFT, COIL_SLING_LEFT, -1 );
+  playfield.element( SWITCH_SLING_RIGHT, COIL_SLING_RIGHT, -1 ).kick();
+  playfield.element( SWITCH_FLIPPER_LEFT, COIL_FLIPPER_LEFT, -1, PROFILE_FLIPPER );
+  playfield.element( SWITCH_FLIPPER_RIGHT, COIL_FLIPPER_RIGHT, -1, PROFILE_FLIPPER );
+  playfield.element( SWITCH_BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );
 
-  targets.begin()
-    .IF( playfield.element( SWITCH_TARGET_A ) )
-    .AND( playfield.element( SWITCH_TARGET_B ) )
-    .onChange( true, playfield.element( SWITCH_BUMPER_CENTER ), Atm_element::EVT_ON )
-    .onChange( false, playfield.element( SWITCH_BUMPER_CENTER ), Atm_element::EVT_OFF );
-*/    
   Serial.println( FreeRam() );
 }
 

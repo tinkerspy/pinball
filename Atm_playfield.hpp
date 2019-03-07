@@ -15,7 +15,7 @@ struct switch_record {
     uint8_t debounce_delay; 
     uint16_t retrigger_delay;
     uint16_t last_change;
-    bool initialized = false; 
+    bool initialized; 
     Atm_element *element;
 };
 
@@ -40,7 +40,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& persistent( int16_t n, bool v = true );
   Atm_playfield& disable();
   Atm_playfield& enable();
-  Atm_element& element( int16_t n, int16_t light_led = -1, int16_t coil_led = -1, uint8_t coil_profile = 0 );
+  Atm_element& element( int16_t n, int16_t coil_led = -1, int16_t light_led = -1, uint8_t coil_profile = 0 , uint8_t led_profile = 0 );
 
  protected:
   enum { ENT_SCAN, ENT_DISABLED }; // ACTIONS

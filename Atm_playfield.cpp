@@ -20,8 +20,10 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   Machine::begin( state_table, ELSE );
   this->io = &io;
   this->led = &led;
+  memset( connectors, 0, sizeof( connectors ) );
+  memset( prof, 0, sizeof( prof ) );
   for ( int i = 0; i < MAX_SWITCHES; i++ ) 
-    debounce( i, 5 );   
+    debounce( i, 5 );       
   return *this;          
 }
 
@@ -118,10 +120,10 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   }
 }
 
-Atm_element& Atm_playfield::element( int16_t n, int16_t light_led /* = -1 */, int16_t coil_led /* = -1 */, uint8_t coil_profile /* = 0 */ ) {
+Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 0 */ ) {
   if ( !prof[n].initialized ) {
     prof[n].element = new Atm_element();  
-    prof[n].element->begin( *led, light_led, coil_led, coil_profile );
+    prof[n].element->begin( *led, coil_led, light_led, coil_profile, led_profile );
     prof[n].initialized = true;
   }
   return *prof[n].element;

@@ -1,6 +1,6 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t light /* = -1 */, int16_t coil /* = -1 */, uint8_t coil_profile /* = 0 */ ) {
+Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */
@@ -24,8 +24,9 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t light /* = -1 *
   coil_led = coil;
   this->led = &led;
   led.profile( coil_led, coil_profile );
-  led.profile( light_led, led.PROFILE_DEFAULT_LED );
+  led.profile( light_led, led_profile );
   switch_state = false;
+  memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
   return *this;          
 }
 
@@ -85,7 +86,7 @@ void Atm_element::action( int id ) {
     case ENT_LIGHT_ON:
       led->on( light_led );
       //connectors[ON_LIGHT+2].push( 1 );
-      connectors[ON_LIGHT+1].push( 1 );
+      connectors[ON_LIGHT+1].push( 1 ); 
       return;
     case ENT_LIGHT_OFF:
       led->off( light_led );

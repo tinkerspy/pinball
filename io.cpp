@@ -83,27 +83,12 @@ IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
   return *this;
 }
 
-IO& IO::setPixelMono( int16_t n, uint8_t w ) {
-  if ( n < led_cnt ) {
-    if ( led_strip[led[n].strip]->bytesPerPixel() == 3 ) {
-      setPixelColor( n, w, w, w, 0 );
-    } else {
-      setPixelColor( n, 0, 0, 0, w );
-    }
-  }
-  return *this;
-}
-
 uint16_t IO::numPixels( void ) {
   return led_cnt;
 }
 
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
    return (uint32_t) r << 24 | (uint32_t) g << 16 | (uint32_t) b << 8 | (uint32_t) w;
-}
-
-uint32_t IO::Mono( uint8_t w ) {
-   return w;
 }
 
 int16_t IO::lastPixel( void ) {
@@ -120,7 +105,7 @@ bool IO::show() {
         Serial.println( i );
 #endif      
         select( i );
-        led_strip[i]->show();
+        led_strip[i]->show( 0 );
         led_dirty[i] = -1; 
       } else {
         success = false;
@@ -130,7 +115,7 @@ bool IO::show() {
   return success;
 }
 
-IO& IO::map( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) {
+IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) {
   row_map[0] = 0;
   row_map[1] = r1;
   row_map[2] = row_map[1] + r2;

@@ -3,8 +3,8 @@
 #include <Automaton.h>
 #include "IO.hpp"
 
-#define MAX_LEDS 5 * 256
-#define MAX_PROFILES 16
+#define MAX_LEDS 1280
+#define MAX_PROFILES 32
 
 struct led_meta_data {
   uint32_t rgbw; 
@@ -26,7 +26,7 @@ class Atm_led_scheduler: public Machine {
   enum { IDLE, WAITING, RUNNING, UPDATING }; // STATES
   enum { EVT_DONE, EVT_RUN, EVT_UPDATE, EVT_MILLI, ELSE }; // EVENTS
   enum { LED_STATE_IDLE, LED_STATE_DELAY, LED_STATE_RGBW1, LED_STATE_RGBW2 };
-  enum { PROFILE_DEFAULT_COIL, PROFILE_DEFAULT_LED }; // Standard profiles
+  enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_scheduler( void ) : Machine() {};
   Atm_led_scheduler& begin( IO &io );

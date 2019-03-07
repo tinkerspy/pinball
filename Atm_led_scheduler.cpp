@@ -20,8 +20,8 @@ Atm_led_scheduler& Atm_led_scheduler::begin( IO &io ) {
   Machine::begin( state_table, ELSE );
   this->io = &io;
   number_of_leds = io.numPixels();
-  defineProfile( PROFILE_DEFAULT_COIL, 0, IO::Mono( 127 ), 30, IO::Mono(   0 ) );  // Default for coils (30 ms pulse at 50%)
-  defineProfile(  PROFILE_DEFAULT_LED, 0, IO::Mono( 127 ),  0, IO::Mono( 127 ) );  // Default for leds (hold level at 50%)
+  defineProfile( PROFILE_COIL, 0, 127, 30,   0 );  // Default for coils (30 ms pulse at 50%)
+  defineProfile(  PROFILE_LED, 0, 127,  0, 127 );  // Default for leds (hold level at 50%)
   io.show();
   last_milli = millis();
   return *this;          
@@ -163,13 +163,18 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
 
 Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false */ ) {
   if ( ledno > -1 ) {
+    // There's a bug lurking here
+    // If an off() comes in during rgbw1
+    // the led must not go into rgbw2 (even if it's set)
     if ( meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].state = LED_STATE_IDLE;
       set( ledno, 0 );
       refresh = 1; 
       if ( !no_update ) trigger( EVT_UPDATE );
     }    
-  }  
+  }  else {
+    
+  }
   return *this;
 }
 

@@ -14,10 +14,7 @@ struct led_meta_data {
 };
 
 struct led_profile_record {
-  uint32_t delay_time;
-  uint32_t rgbw1; 
-  uint32_t rgbw1_time;
-  uint32_t rgbw2;  // 0? immediate auto-off (single pulse) 
+  uint32_t T0, L1, T1, L2;
 };
 
 class Atm_led_scheduler: public Machine {
@@ -40,7 +37,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& off( int ledno, bool no_update = false );
   Atm_led_scheduler& off( void );
   Atm_led_scheduler& set( int16_t n, uint32_t c );
-  Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t delay_time, uint32_t rgbw1, uint16_t rgbw1_time, uint32_t rgbw2 = 0 );
+  Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
   Atm_led_scheduler& profile( int16_t n, uint8_t prof );
   
   int active( int ledno );

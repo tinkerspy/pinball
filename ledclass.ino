@@ -16,38 +16,37 @@ const int pin_latch = 4;
 IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
-Atm_controller targets;
-Atm_timer timer;
 
 // Output profiles (leds, coils)
 
-enum { PROFILE_COIL, PROFILE_LED, PROFILE_FLIPPER, PROFILE_KICKER, PROFILE_FEEDER };
+enum { PROFILE_COIL, PROFILE_LED, PROFILE_FLIPPER, PROFILE_KICKER, PROFILE_FEEDER, PROFILE_GATE };
 
-// Coils & leds
+// Coils & leds (outputs)
 
 enum { 
-  COIL_BALL_FEEDER, COIL_FLIPPER_RIGHT, COIL_SLING_RIGHT, COIL_SAVE_GATE, 
-  COIL_KICKER_RIGHT, COIL_FLIPPER_LEFT, COIL_SLING_LEFT, COIL_KICKER_LEFT,
+  COIL_BALL_FEEDER, COIL_FLIPPER_R, COIL_SLING_R, COIL_SAVE_GATE, 
+  COIL_KICKER_R, COIL_FLIPPER_L, COIL_SLING_L, COIL_KICKER_L,
   
-  COIL_BUMPER_LEFT, COIL_BUMPER_CENTER, COIL_BUMPER_RIGHT, GI_PLAYFIELD,
-  LED_LANE_UP_LEFT, LED_KICKER_LEFT, LED_KICKER_RIGHT, LED_LANE_UP_RIGHT,
-  LED_BUMPER_CENTER, LED_BUMPER_LEFT, LED_BUMPER_RIGHT, LED_TARGET_A, 
+  COIL_BUMPER_A, COIL_BUMPER_C, COIL_BUMPER_B, GI_PLAYFIELD,
+  LED_LANE_UP_L, LED_KICKER_L, LED_KICKER_R, LED_LANE_UP_R,
+  LED_BUMPER_C, LED_BUMPER_A, LED_BUMPER_B, LED_TARGET_A, 
   LED_TARGET_B, LED_SHOOTS_AGAIN, LED_TRIPLE_BONUS,
 };
 
-// Switches
+// Switches (inputs)
 
 enum { 
   SWITCH_NULL,
-  SWITCH_TARGET_B, SWITCH_PORT_3_X, SWITCH_PORT_3_O, SWITCH_PORT_2_X, SWITCH_PORT_2_O, SWITCH_PORT_1_X, SWITCH_PORT_1_O, SWITCH_TARGET_A,
-  SWITCH_KICKER_LEFT, SWITCH_LANE_UP_LEFT, SWITCH_BUMPER_LEFT, SWITCH_BUMPER_CENTER, SWITCH_KICKER_RIGHT, SWITCH_BUMPER_RIGHT, SWITCH_LANE_UP_RIGHT, SWITCH_TARGET_CENTER,  
-  SWITCH_LANE_OUT, SWITCH_LANE_IN_LEFT, SWITCH_SLING_LEFT, SWITCH_SLING_RIGHT, SWITCH_ROLLOVER, SWITCH_LANE_IN_RIGHT, SWITCH_BALL_EXIT, SWITCH_BALL_ENTER,
+  TARGET_B, PORT_3_X, PORT_3_O, PORT_2_X, PORT_2_O, PORT_1_X, PORT_1_O, TARGET_A,
+  KICKER_L, LANE_UP_L, BUMPER_A, BUMPER_C, KICKER_R, BUMPER_B, LANE_UP_R, TARGET_C,  
+  LANE_OUT, LANE_IN_L, SLING_L, SLING_R, ROLLOVER, LANE_IN_R, BALL_EXIT, BALL_ENTER,
 
-  SWITCH_FLIPPER_LEFT, SWITCH_FLIPPER_RIGHT, SWITCH_FLIPPER_EOS_LEFT, SWITCH_FLIPPER_EOS_RIGHT, SWITCH_TILT_PENDULUM, SWITCH_TILT_RAMP,
-  SWITCH_SCORE0_00010, SWITCH_SCORE0_00100, SWITCH_SCORE0_01000, SWITCH_SCORE0_10000,
-  SWITCH_SCORE1_00010, SWITCH_SCORE1_00100, SWITCH_SCORE1_01000, SWITCH_SCORE1_10000,
-  SWITCH_SCORE2_00010, SWITCH_SCORE2_00100, SWITCH_SCORE2_01000, SWITCH_SCORE2_10000,
-  SWITCH_SCORE3_00010, SWITCH_SCORE3_00100, SWITCH_SCORE3_01000, SWITCH_SCORE3_10000,
+  FLIPPER_L, FLIPPER_R, FLIPPER_EOS_L, FLIPPER_EOS_R, TILT_PENDULUM, TILT_RAMP,
+  SCORE0_00010, SCORE0_00100, SCORE0_01000, SCORE0_10000,
+  SCORE1_00010, SCORE1_00100, SCORE1_01000, SCORE1_10000,
+  SCORE2_00010, SCORE2_00100, SCORE2_01000, SCORE2_10000,
+  SCORE3_00010, SCORE3_00100, SCORE3_01000, SCORE3_10000,
+  SAVE_GATE, // dummy element
   
 };
 
@@ -63,24 +62,57 @@ void setup() {
     .show();
 
   leds.begin( io )
-    .defineProfile( PROFILE_COIL, 0, 127, 30 ) // wait_time, kick_level, kick_time, (hold_level)  
+    .defineProfile( PROFILE_COIL, 0, 127, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 5 )
     .defineProfile( PROFILE_FLIPPER, 0, 127, 30, 20 )
     .defineProfile( PROFILE_KICKER, 1000, 127, 30 )
+    .defineProfile( PROFILE_GATE, 0, 127, 30, 50 )
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 );
 
   playfield.begin( io, leds ); // IDEA: embed led scheduler in playfield...
 
-  playfield.element( SWITCH_BUMPER_LEFT, COIL_BUMPER_LEFT, -1 );
-  playfield.element( SWITCH_BUMPER_CENTER, COIL_BUMPER_CENTER, -1 );
-  playfield.element( SWITCH_BUMPER_RIGHT, COIL_BUMPER_RIGHT, -1 );
-  playfield.element( SWITCH_KICKER_LEFT, COIL_KICKER_LEFT, -1, PROFILE_KICKER );
-  playfield.element( SWITCH_KICKER_RIGHT, COIL_KICKER_RIGHT, -1, PROFILE_KICKER );
-  playfield.element( SWITCH_SLING_LEFT, COIL_SLING_LEFT, -1 );
-  playfield.element( SWITCH_SLING_RIGHT, COIL_SLING_RIGHT, -1 ).kick();
-  playfield.element( SWITCH_FLIPPER_LEFT, COIL_FLIPPER_LEFT, -1, PROFILE_FLIPPER );
-  playfield.element( SWITCH_FLIPPER_RIGHT, COIL_FLIPPER_RIGHT, -1, PROFILE_FLIPPER );
-  playfield.element( SWITCH_BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );
+  // Element instantiation
+    
+  playfield.element( TARGET_A, -1, LED_TARGET_A ).autoLight();
+  playfield.element( TARGET_A, -1, LED_TARGET_B ).autoLight();
+  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A );
+  playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B );
+  playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C );
+  playfield.element( KICKER_L, COIL_KICKER_L, LED_KICKER_L, PROFILE_KICKER );
+  playfield.element( KICKER_R, COIL_KICKER_R, LED_KICKER_R, PROFILE_KICKER );
+  playfield.element( SLING_L, COIL_SLING_L, -1 );
+  playfield.element( SLING_R, COIL_SLING_R, -1 ).kick();
+  playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
+  playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
+  playfield.element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
+  playfield.element( BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );  
+
+  // TARGET -> BUMPER -> GATE logic
+
+  playfield.element( TARGET_A )
+    .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON );
+    
+  playfield.element( TARGET_B )
+    .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON );
+
+  playfield.element( BUMPER_A )
+    .onLight( true, [] ( int idx, int v, int up ) {
+      if ( playfield.element( BUMPER_B ).state() ) {
+        playfield.element( BUMPER_C ).on();
+      }
+    });
+
+  playfield.element( BUMPER_B )
+    .onLight( true, [] ( int idx, int v, int up ) {
+      if ( playfield.element( BUMPER_A ).state() ) {
+        playfield.element( BUMPER_C ).on();
+      }
+    });
+
+  playfield.element( BUMPER_C  )
+    .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK );
+
+  // end of login
 
   Serial.println( FreeRam() );
 }

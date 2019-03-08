@@ -62,8 +62,8 @@ void Atm_led_scheduler::action( int id ) {
         // Set running = 1; while there is work to do
         switch ( meta[i].state ) {
           case LED_STATE_DELAY:
-            if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].delay_time ) {
-              set( i, led_profile[meta[i].profile].rgbw1 );
+            if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].T0 ) {
+              set( i, led_profile[meta[i].profile].L1 );
               meta[i].state = LED_STATE_RGBW1;
               meta[i].last_millis = millis();
               refresh = 1;
@@ -71,9 +71,9 @@ void Atm_led_scheduler::action( int id ) {
             running = 1;
             break;
           case LED_STATE_RGBW1:
-            if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].rgbw1_time ) {
-              if ( led_profile[meta[i].profile].rgbw2 ) {
-                set( i, led_profile[meta[i].profile].rgbw2 );
+            if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].T1 ) {
+              if ( led_profile[meta[i].profile].L2 ) {
+                set( i, led_profile[meta[i].profile].L2 );
                 meta[i].state = LED_STATE_RGBW2;  
                 refresh = 1;                        
               } else {
@@ -99,11 +99,11 @@ void Atm_led_scheduler::action( int id ) {
   }
 }
 
-Atm_led_scheduler& Atm_led_scheduler::defineProfile( uint8_t prof, uint16_t delay_time, uint32_t rgbw1, uint16_t rgbw1_time, uint32_t rgbw2 ) {
-  led_profile[prof].delay_time = delay_time;
-  led_profile[prof].rgbw1 = rgbw1;
-  led_profile[prof].rgbw1_time = rgbw1_time;
-  led_profile[prof].rgbw2 = rgbw2;
+Atm_led_scheduler& Atm_led_scheduler::defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 ) {
+  led_profile[prof].T0 = T0;
+  led_profile[prof].L1 = L1;
+  led_profile[prof].T1 = T1;
+  led_profile[prof].L2 = L2;
   return *this;
 }
 
@@ -142,15 +142,15 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
   if ( ledno > -1 ) {
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].last_millis = millis();
-      if ( led_profile[meta[ledno].profile].delay_time ) {      
+      if ( led_profile[meta[ledno].profile].T0 ) {      
         meta[ledno].state = LED_STATE_DELAY;
         set( ledno, 0 );
       } else {
-        if ( led_profile[meta[ledno].profile].rgbw1_time == 0 ) {
-          set( ledno, led_profile[meta[ledno].profile].rgbw2 );
+        if ( led_profile[meta[ledno].profile].T1 == 0 ) {
+          set( ledno, led_profile[meta[ledno].profile].L2 );
           meta[ledno].state = LED_STATE_RGBW2;
         } else {
-          set( ledno, led_profile[meta[ledno].profile].rgbw1 );
+          set( ledno, led_profile[meta[ledno].profile].L1 );
           meta[ledno].state = LED_STATE_RGBW1;
         }
       }

@@ -1,8 +1,8 @@
 #include "Atm_playfield.hpp"
 
-// TODO: Move retrigger to element() level
-// TODO: Allow for active HIGH switches
+// TODO: Move retrigger to element() level?
 // TODO: Add catchall on onPress()/onRelease()
+// BUG: RELEASE occurring inside debounce interval is lost
 
 /* 
  *  Some way to pulse score-digits (while/until switch is enabled)
@@ -22,8 +22,8 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   this->led = &led;
   memset( connectors, 0, sizeof( connectors ) );
   memset( prof, 0, sizeof( prof ) );
-  for ( int i = 0; i < MAX_SWITCHES; i++ ) 
-    debounce( i, 5 );       
+  debounce( 5 );      
+  retrigger( 500 ); 
   return *this;          
 }
 
@@ -56,7 +56,7 @@ void Atm_playfield::action( int id ) {
 }
 
 Atm_playfield& Atm_playfield::debounce( uint8_t v ) {
-  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
+  for ( int16_t i = 0; i <= MAX_SWITCHES; i++ ) {
     prof[i].debounce_delay = v; 
   }
   return *this;   
@@ -68,7 +68,7 @@ Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t v ) {
 }
 
 Atm_playfield& Atm_playfield::retrigger( int16_t v ) {
-  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
+  for ( int16_t i = 0; i <= MAX_SWITCHES; i++ ) {
     prof[i].retrigger_delay = v; 
   }
   return *this;   
@@ -99,34 +99,62 @@ void Atm_playfield::scan_matrix( bool active ) {
   if ( sw != 0 ) {
     switch_changed( abs( sw ), sw > 0 );
   }
+  // FIXME optimize: Use a global switch_state variable that indicates any switch is in switch_state 1, clear if none are
+  for ( int n = 1; n <= MAX_SWITCHES; n++ ) {
+    if ( prof[n].switch_state ) {
+      uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
+      if ( millis_passed > prof[n].debounce_delay ) {
+        if ( !io->isPressed( n ) ) switch_changed( n, 0 );
+      }
+    }
+  }
 }
 
 void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
-  if ( millis_passed > prof[n].debounce_delay ) {
-    if ( v ) {
+  uint16_t global_millis_passed = (uint16_t) millis() - global_last_kick;
+  if ( millis_passed > prof[n].debounce_delay && global_millis_passed > prof[n].debounce_delay ) {
+    if ( v ) { // KICK
       if ( millis_passed > prof[n].retrigger_delay ) {
         prof[n].switch_state = 1;
-        prof[n].last_change = millis();
+        prof[n].last_change = global_last_kick = millis();
         push( connectors, ON_PRESS, n, n, 1 ); 
+#ifdef DYNAMIC_ELEMENTS        
         if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
+#else 
+        if ( prof[n].initialized ) prof[n].element.trigger( Atm_element::EVT_KICK ); 
+#endif        
       }
-    } else {
-      prof[n].switch_state = 0;      
-      prof[n].last_change = millis();
-      push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
+    } else { // RELEASE
+      if ( prof[n].switch_state == 1 ) { // Only if switch is actually pressed
+        prof[n].switch_state = 0;      
+        prof[n].last_change = global_last_kick = millis();
+        push( connectors, ON_RELEASE, n, n, 0 ); 
+#ifdef DYNAMIC_ELEMENTS        
+        if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
+#else
+        if ( prof[n].initialized ) prof[n].element.trigger( Atm_element::EVT_RELEASE );
+#endif
+      }
     }
   }
 }
 
 Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 0 */ ) {
   if ( !prof[n].initialized ) {
+    prof[n].initialized = true;
+#ifdef DYNAMIC_ELEMENTS        
     prof[n].element = new Atm_element();  
     prof[n].element->begin( *led, coil_led, light_led, coil_profile, led_profile );
-    prof[n].initialized = true;
+#else 
+    prof[n].element.begin( *led, coil_led, light_led, coil_profile, led_profile );
+#endif    
   }
+#ifdef DYNAMIC_ELEMENTS        
   return *prof[n].element;
+#else   
+  return prof[n].element;
+#endif  
 }
 
 /* Optionally override the default trigger() method

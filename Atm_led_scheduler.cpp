@@ -72,7 +72,7 @@ void Atm_led_scheduler::action( int id ) {
             break;
           case LED_STATE_RGBW1:
             if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].T1 ) {
-              if ( led_profile[meta[i].profile].L2 ) {
+              if ( led_profile[meta[i].profile].L2 && meta[i].holding ) {
                 set( i, led_profile[meta[i].profile].L2 );
                 meta[i].state = LED_STATE_RGBW2;  
                 refresh = 1;                        
@@ -141,6 +141,7 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
 
   if ( ledno > -1 ) {
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
+      meta[ledno].holding = 1;
       meta[ledno].last_millis = millis();
       if ( led_profile[meta[ledno].profile].T0 ) {      
         meta[ledno].state = LED_STATE_DELAY;
@@ -163,9 +164,7 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
 
 Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false */ ) {
   if ( ledno > -1 ) {
-    // There's a bug lurking here
-    // If an off() comes in during rgbw1
-    // the led must not go into rgbw2 (even if it's set)
+    meta[ledno].holding = 0;
     if ( meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].state = LED_STATE_IDLE;
       set( ledno, 0 );

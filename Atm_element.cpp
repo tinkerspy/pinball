@@ -27,6 +27,7 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
   led.profile( light_led, led_profile );
   switch_state = false;
   led_state = false;
+  autolight = false;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
   return *this;          
 }
@@ -61,6 +62,7 @@ void Atm_element::action( int id ) {
       switch_state = true;
       led->on( coil_led );
       if ( autolight ) { 
+        connectors[ON_LIGHT+1].push( 1 ); 
         led->on( light_led );
         led_state = true;
       }

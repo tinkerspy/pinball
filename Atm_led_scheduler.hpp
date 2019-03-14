@@ -10,7 +10,7 @@ struct led_meta_data {
   uint32_t rgbw; 
   uint8_t profile = 0;
   uint32_t last_millis; 
-  uint8_t state;
+  uint8_t state, holding;
 };
 
 struct led_profile_record {

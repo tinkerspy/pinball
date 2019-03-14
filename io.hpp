@@ -49,6 +49,7 @@ class IO {
     int16_t log_last_pixel = -1;        
     uint8_t soll[MATRIX_ROWS][MATRIX_COLS];
     uint8_t ist[MATRIX_ROWS][MATRIX_COLS];
+    uint8_t nc[MATRIX_ROWS][MATRIX_COLS];
     uint8_t row_map[NUM_IOPORTS];
     uint8_t row_max;
     IO& readRow( uint8_t row, uint8_t mx_width = MATRIX_COLS );
@@ -71,5 +72,8 @@ class IO {
     int16_t scan(); 
     uint32_t timer(); // Last time in usec needed for matrix read
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
-    
+    IO& invert( uint8_t code );
+    IO& invert( uint8_t c1, uint8_t c2, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0 );
+
+
 };

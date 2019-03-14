@@ -139,6 +139,29 @@ IO& IO::range( uint8_t row_max, uint8_t col_max ) {
   this->col_max = col_max;
   return *this;
 }
+
+
+IO& IO::invert( uint8_t code ) {
+  if ( code != 0 ) {
+    code = abs( code ) - 1;
+    int bus = NUM_IOPORTS - 1;
+    while ( ( row_map[bus] * MATRIX_COLS ) > code ) bus--;
+    nc[code / MATRIX_COLS - row_map[bus]][code % MATRIX_ROWS] |= ( 1 << bus );; 
+  }
+  return *this;
+}
+    
+IO& IO::invert( uint8_t c1, uint8_t c2, uint8_t c3, uint8_t c4, uint8_t c5, uint8_t c6, uint8_t c7, uint8_t c8 ) {
+  if ( c1 > 0 ) invert( c1 );
+  if ( c2 > 0 ) invert( c2 );
+  if ( c3 > 0 ) invert( c3 );
+  if ( c4 > 0 ) invert( c4 );
+  if ( c5 > 0 ) invert( c5 );
+  if ( c6 > 0 ) invert( c6 );
+  if ( c7 > 0 ) invert( c7 );
+  if ( c8 > 0 ) invert( c8 );
+  return *this;
+}
     
 IO& IO::select( int row, bool latch /* = false */ ) {
   IOWRITE( address[0], row & 0b00000001 );
@@ -200,14 +223,15 @@ uint16_t IO::isPressed( int16_t code ) {
 
 int16_t IO::scan() {
   for (;;) {      
-    // Check one byte for changes
-    if ( uint8_t xdiff = ist[row_ptr][col_ptr] ^ soll[row_ptr][col_ptr] ) {
+    // Check one normalized (=corrected for normally closed switches) byte for changes
+    uint8_t normalized = soll[row_ptr][col_ptr] ^ nc[row_ptr][col_ptr];
+    if ( uint8_t xdiff = ist[row_ptr][col_ptr] ^ normalized ) {
       uint8_t bitpos = 0;
       while ( ( xdiff & 1 ) == 0 ) {
         xdiff >>= 1;
         bitpos++;
       }
-      if ( ( 1 << bitpos ) & soll[row_ptr][col_ptr] ) { // press
+      if ( ( 1 << bitpos ) & normalized ) { // press
         ist[row_ptr][col_ptr] |= ( 1 << bitpos );          
         return decimal_encode( bitpos, row_ptr, col_ptr );
       } else { // release
@@ -216,7 +240,7 @@ int16_t IO::scan() {
       }
     }
     // Increment col & row pointers modulo 8 (should be col_max, row_max?)
-    if ( ! ( col_ptr = ( col_ptr + 1 ) % MATRIX_COLS ) ) 
+    if ( ! ( col_ptr = ( col_ptr + 1 ) % MATRIX_COLS ) ) {
       if ( ! ( row_ptr = ( row_ptr + 1 ) % MATRIX_ROWS ) ) {
         // On row wrap around 7 -> 0 read the matrix
         last_read_time = micros();
@@ -224,5 +248,6 @@ int16_t IO::scan() {
         last_read_time = micros() - last_read_time;
         return 0;
       }
+    }
   }
 }  

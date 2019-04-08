@@ -98,9 +98,9 @@ void Atm_playfield::scan_matrix( bool active ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
     switch_changed( abs( sw ), sw > 0 );
-    Serial.print( millis() );
-    Serial.print( " sw=" );
-    Serial.println( sw );
+//    Serial.print( millis() );
+//    Serial.print( " sw=" );
+//    Serial.println( sw );
   }
   // FIXME optimize: Use a global switch_state variable that indicates any switch is in switch_state 1, clear if none are
   for ( int n = 1; n <= MAX_SWITCHES; n++ ) {

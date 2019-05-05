@@ -56,8 +56,8 @@ enum {
 // Switches (inputs)
 
 enum { 
-/* Physical switches */  
   NULL_SW,
+/* Physical switches */  
   TARGET_B,
   PORT_3X,
   PORT_3O,

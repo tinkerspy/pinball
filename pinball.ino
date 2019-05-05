@@ -12,6 +12,8 @@
 // Latency (caused by serial/debugging output?, measure with logic analyzer)
 // Flippers latch (measure ref voltage while stuck, possibly add capacitor)
 
+// Er is een commit met meer recente wijzigingen, maar die heeft problemen met de led HOLD state.
+
 IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
@@ -54,8 +56,8 @@ void setup() {
   playfield.element( KICKER_R, COIL_KICKER_R, LED_KICKER_R, PROFILE_KICKER );
   playfield.element( SLING_L, COIL_SLING_L, -1 );
   playfield.element( SLING_R, COIL_SLING_R, -1 );
-  playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
-  playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
+  playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER ).pulse( false );
+  playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER ).pulse( false );
   playfield.element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
   playfield.element( BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );  
 
@@ -94,6 +96,7 @@ void setup() {
     
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
+//      if ( playfield.element( BUMPER_C ).state() && ( playfield.element( BALL_EXIT ).idle() < 2000 || playfield.element( OUTLANE ).idle() < 2000 ) ) {
       Serial.println( "Clear bumper A & B" );
       playfield.element( TARGET_A ).off();
       playfield.element( TARGET_B ).off();
@@ -101,6 +104,7 @@ void setup() {
       playfield.element( BUMPER_B ).off();
       playfield.element( BUMPER_C ).off();
       playfield.element( SAVE_GATE ).release();
+//      }      
     });
     
   // end of logic

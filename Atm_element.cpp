@@ -29,7 +29,6 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
   led_state = false;
   autolight = false;
   autokick = true;
-  autopulse = true;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
   changed = millis();
   return *this;          
@@ -93,8 +92,7 @@ void Atm_element::action( int id ) {
       return;
     case ENT_RELEASE:
       switch_state = false;
-      if ( autopulse ) 
-        led->off( coil_led );      
+      led->off( coil_led );      
       return;
     case ENT_LIGHT_ON:
       led->on( light_led );
@@ -115,6 +113,9 @@ uint32_t Atm_element::idle() {
   return millis() - changed;
 }
 
+bool Atm_element::idle( uint32_t m ) {
+  return ( millis() - changed ) >= m;
+}
 
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
@@ -198,11 +199,6 @@ Atm_element& Atm_element::autoLight( int v ) {
 
 Atm_element& Atm_element::autoKick( int v ) {
   autokick = v ? 1 : 0;
-  return *this;
-}
-
-Atm_element& Atm_element::pulse( int v ) {
-  autopulse = v ? 1 : 0;
   return *this;
 }
 

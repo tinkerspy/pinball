@@ -13,6 +13,13 @@ struct led_meta_data {
   uint8_t state, holding;
 };
 
+/*
+ * T0 Waiting period before led is switched on (ms)
+ * L1 Initial led RGBW level
+ * T1 Pulse length (period L1 is applied in ms)
+ * L2 Hold level (when hold level zero, led is in pulse mode: off() is ignored)
+ */
+
 struct led_profile_record {
   uint32_t T0, L1, T1, L2;
 };

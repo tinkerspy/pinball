@@ -162,18 +162,13 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
 }
 
 Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false */ ) {
-  if ( ledno > -1 ) {
-    // There's a bug lurking here
-    // If an off() comes in during rgbw1
-    // the led must not go into rgbw2 (even if it's set)
+  if ( ledno > -1 && led_profile[meta[ledno].profile].L2 ) { // Ignore off() for leds in pulse mode 
     if ( meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].state = LED_STATE_IDLE;
       set( ledno, 0 );
       refresh = 1; 
       if ( !no_update ) trigger( EVT_UPDATE );
     }    
-  }  else {
-    
   }
   return *this;
 }

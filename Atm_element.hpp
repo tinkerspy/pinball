@@ -42,9 +42,9 @@ class Atm_element: public Machine {
   Atm_element& toggle( void );
   Atm_element& autoLight( int v = 1 ); // Default false, switch triggers light
   Atm_element& autoKick( int v = 1 ); // Default true, switch triggers coil 
-  Atm_element& pulse( int v = 1 ); // Default true, release does not affect coil
   
-  uint32_t idle( void );
+  uint32_t idle( void ); // Number of millis element has been idle
+  bool idle( uint32_t m ); // Element has been idle for at least 'm' millis  
 
  protected:
   enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF }; // ACTIONS
@@ -53,7 +53,7 @@ class Atm_element: public Machine {
   int event( int id ); 
   void action( int id ); 
   atm_timer_millis timer;
-  int16_t light_led, coil_led, autolight, autokick, autopulse;
+  int16_t light_led, coil_led, autolight, autokick;
   Atm_led_scheduler *led;
   bool switch_state, led_state;
   uint32_t changed;

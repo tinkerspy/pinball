@@ -36,7 +36,7 @@ void setup() {
     .defineProfile( PROFILE_FLIPPER, 0, 150, 50, 20 )
     .defineProfile( PROFILE_KICKER, 1000, 20, 30 )
     .defineProfile( PROFILE_GATE, 0, 127, 30, 50 )
-    .defineProfile( PROFILE_BUMPER, 0, 60, 50, 0 )
+    .defineProfile( PROFILE_BUMPER, 0, 60, 50 )
     .defineProfile( PROFILE_FEEDER, 1000, 20, 30 );
 
   playfield.begin( io, leds ) // IDEA: embed led scheduler in playfield...
@@ -49,15 +49,15 @@ void setup() {
 
   playfield.element( TARGET_A, -1, LED_TARGET_A ).autoLight();
   playfield.element( TARGET_B, -1, LED_TARGET_B ).autoLight();
-  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER ); // on makes it hang!
+  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER ); 
   playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER );
   playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER );
   playfield.element( KICKER_L, COIL_KICKER_L, LED_KICKER_L, PROFILE_KICKER );
   playfield.element( KICKER_R, COIL_KICKER_R, LED_KICKER_R, PROFILE_KICKER );
   playfield.element( SLING_L, COIL_SLING_L, -1 );
   playfield.element( SLING_R, COIL_SLING_R, -1 );
-  playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER ).pulse( false );
-  playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER ).pulse( false );
+  playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
+  playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
   playfield.element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
   playfield.element( BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );  
 
@@ -96,8 +96,8 @@ void setup() {
     
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
-//      if ( playfield.element( BUMPER_C ).state() && ( playfield.element( BALL_EXIT ).idle() < 2000 || playfield.element( OUTLANE ).idle() < 2000 ) ) {
-      Serial.println( "Clear bumper A & B" );
+//      if ( playfield.element( BUMPER_C ).state() && ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) ) {
+      Serial.println( "Clear bumper A & B and close gate" );
       playfield.element( TARGET_A ).off();
       playfield.element( TARGET_B ).off();
       playfield.element( BUMPER_A ).off();

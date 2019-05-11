@@ -31,13 +31,13 @@ void setup() {
     .show();
 
   leds.begin( io )
-    .defineProfile( PROFILE_COIL, 0, 30, 30 ) // T0, L1, T1, L2
+    .defineProfile( PROFILE_COIL, 0, 255, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
-    .defineProfile( PROFILE_FLIPPER, 0, 150, 50, 20 )
-    .defineProfile( PROFILE_KICKER, 1000, 20, 30 )
+    .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 20 )
+    .defineProfile( PROFILE_KICKER, 1000, 127, 30 )
     .defineProfile( PROFILE_GATE, 0, 127, 30, 50 )
-    .defineProfile( PROFILE_BUMPER, 0, 60, 50 )
-    .defineProfile( PROFILE_FEEDER, 1000, 20, 30 );
+    .defineProfile( PROFILE_BUMPER, 0, 255, 30 )
+    .defineProfile( PROFILE_FEEDER, 1000, 127, 30 );
 
   playfield.begin( io, leds ) // IDEA: embed led scheduler in playfield...
     .debounce( 20 )

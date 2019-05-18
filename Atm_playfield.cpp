@@ -103,7 +103,7 @@ void Atm_playfield::scan_matrix( bool active ) {
 
 void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
-  if ( millis_passed > prof[n].debounce_delay ) {
+  if ( millis_passed >= prof[n].debounce_delay ) {
     if ( v ) {
       if ( millis_passed > prof[n].retrigger_delay ) {
         prof[n].switch_state = 1;
@@ -117,6 +117,8 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       push( connectors, ON_RELEASE, n, n, 0 ); 
       if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
     }
+  } else {
+    io->cancel(); // Cancels the last scan() event (makes event sticky in case of debounce)
   }
 }
 
@@ -127,6 +129,10 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
     prof[n].initialized = true;
   }
   return *prof[n].element;
+}
+
+Atm_led_scheduler& Atm_playfield::leds() {
+  return *led;
 }
 
 /* Optionally override the default trigger() method

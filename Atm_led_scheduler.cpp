@@ -140,6 +140,7 @@ Atm_led_scheduler& Atm_led_scheduler::profile( int16_t n, uint8_t prof ) {
 Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
 
   if ( ledno > -1 ) {
+    // Misschien moet dit ook simpel onconditioneel, d.w.z. een 'on' triggert altijd de 'T0' state...
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].last_millis = millis();
       if ( led_profile[meta[ledno].profile].T0 ) {      

@@ -35,15 +35,15 @@ void setup() {
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
     .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 20 )
     .defineProfile( PROFILE_KICKER, 1000, 127, 30 )
-    .defineProfile( PROFILE_GATE, 0, 127, 30, 50 )
+    .defineProfile( PROFILE_GATE, 0, 255, 30, 50 )
     .defineProfile( PROFILE_BUMPER, 0, 255, 30 )
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 );
 
   playfield.begin( io, leds ) // IDEA: embed led scheduler in playfield...
     .debounce( 20 )
-    .retrigger( 500 )
-    .retrigger( FLIPPER_R, 0 ).debounce( FLIPPER_R, 0 ) // One debounce setting? debounce( n, debounce, retrigger )
-    .retrigger( FLIPPER_L, 0 ).debounce( FLIPPER_L, 0 );
+    .retrigger( 100 )
+    .retrigger( FLIPPER_R, 0 ).debounce( FLIPPER_R, 10 ) // One debounce setting? debounce( n, debounce, retrigger )
+    .retrigger( FLIPPER_L, 0 ).debounce( FLIPPER_L, 10 );
 
   // Playfield element instantiation
 
@@ -60,6 +60,8 @@ void setup() {
   playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
   playfield.element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
   playfield.element( BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );  
+
+  // playfield.solo( 5, BUMPER_A, BUMPER_B, BUMPER_C ); // action on one element blocks the others in the chain for 5 ms
 
   // TARGET -> BUMPER -> GATE logic
   

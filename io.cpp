@@ -226,7 +226,7 @@ int16_t IO::scan() {
     // Check one normalized (=corrected for normally closed switches) byte for changes
     uint8_t normalized = soll[row_ptr][col_ptr] ^ nc[row_ptr][col_ptr];
     if ( uint8_t xdiff = ist[row_ptr][col_ptr] ^ normalized ) {
-      uint8_t bitpos = 0;
+      bitpos = 0;
       while ( ( xdiff & 1 ) == 0 ) {
         xdiff >>= 1;
         bitpos++;
@@ -251,3 +251,7 @@ int16_t IO::scan() {
     }
   }
 }  
+
+IO& IO::cancel() { // Mark the last keypress as unprocessed so that will generate another scan() event
+  ist[row_ptr][col_ptr] ^= ( 1 << bitpos );
+}

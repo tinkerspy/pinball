@@ -38,6 +38,7 @@ class IO {
     uint8_t *address;
     uint8_t row_ptr = 0;
     uint8_t col_ptr = 0;
+    uint8_t bitpos = 0;
     uint8_t col_max = MATRIX_COLS;
     uint32_t last_read_time = 0;
     uint8_t last_strip = 0;
@@ -70,6 +71,7 @@ class IO {
     bool show();
     uint16_t isPressed( int16_t code );
     int16_t scan(); 
+    IO& cancel();
     uint32_t timer(); // Last time in usec needed for matrix read
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );

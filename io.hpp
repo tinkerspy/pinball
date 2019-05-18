@@ -71,7 +71,7 @@ class IO {
     bool show();
     uint16_t isPressed( int16_t code );
     int16_t scan(); 
-    IO& cancel();
+    IO& unscan();
     uint32_t timer(); // Last time in usec needed for matrix read
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );

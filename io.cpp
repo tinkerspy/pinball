@@ -252,6 +252,6 @@ int16_t IO::scan() {
   }
 }  
 
-IO& IO::cancel() { // Mark the last keypress as unprocessed so that will generate another scan() event
+IO& IO::unscan() { // Mark the last keypress as unprocessed so that will generate another scan() event
   ist[row_ptr][col_ptr] ^= ( 1 << bitpos );
 }

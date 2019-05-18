@@ -44,7 +44,7 @@ class Atm_element: public Machine {
   Atm_element& autoKick( int v = 1 ); // Default true, switch triggers coil 
   
   uint32_t idle( void ); // Number of millis element has been idle
-  bool idle( uint32_t m ); // Element has been idle for at least 'm' millis  
+  bool idle( uint32_t maximum ); // Element has been idle for at most 'maximum' millis  
 
  protected:
   enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF }; // ACTIONS

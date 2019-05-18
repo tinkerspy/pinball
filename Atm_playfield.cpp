@@ -55,30 +55,20 @@ void Atm_playfield::action( int id ) {
   }
 }
 
-Atm_playfield& Atm_playfield::debounce( uint8_t v ) {
+Atm_playfield& Atm_playfield::debounce( uint8_t d, uint16_t r  ) {
   for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
-    prof[i].debounce_delay = v; 
+    prof[i].debounce_delay = d; 
+    prof[i].retrigger_delay = r; 
   }
   return *this;   
 }
 
-Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t v ) {
-  prof[n].debounce_delay = v; 
+Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t d, uint16_t r ) {
+  prof[n].debounce_delay = d; 
+  prof[n].retrigger_delay = r; 
   return *this;   
 }
-
-Atm_playfield& Atm_playfield::retrigger( int16_t v ) {
-  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
-    prof[i].retrigger_delay = v; 
-  }
-  return *this;   
-}
-
-Atm_playfield& Atm_playfield::retrigger( int16_t n, uint16_t v ) {
-  prof[n].retrigger_delay = v; 
-  return *this;   
-}
-
+  
 Atm_playfield& Atm_playfield::persistent( int16_t n, bool v /* = true */ ) {
   prof[n].persistent = v ? 1 : 0; 
   return *this;   
@@ -118,7 +108,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
     }
   } else {
-    io->cancel(); // Cancels the last scan() event (makes event sticky in case of debounce)
+    io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
   }
 }
 

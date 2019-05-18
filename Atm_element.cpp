@@ -113,8 +113,8 @@ uint32_t Atm_element::idle() {
   return millis() - changed;
 }
 
-bool Atm_element::idle( uint32_t m ) {
-  return ( millis() - changed ) >= m;
+bool Atm_element::idle( uint32_t maximum ) { // maximum time idle
+  return ( millis() - changed ) < maximum;
 }
 
 /* Optionally override the default trigger() method

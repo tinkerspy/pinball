@@ -40,10 +40,9 @@ void setup() {
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 );
 
   playfield.begin( io, leds ) // IDEA: embed led scheduler in playfield...
-    .debounce( 20 )
-    .retrigger( 100 )
-    .retrigger( FLIPPER_R, 0 ).debounce( FLIPPER_R, 10 ) // One debounce setting? debounce( n, debounce, retrigger )
-    .retrigger( FLIPPER_L, 0 ).debounce( FLIPPER_L, 10 );
+    .debounce( 20, 100 )
+    .debounce( FLIPPER_R, 10, 0 ) 
+    .debounce( FLIPPER_L, 10, 0 );
 
   // Playfield element instantiation
 
@@ -98,15 +97,15 @@ void setup() {
     
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
-//      if ( playfield.element( BUMPER_C ).state() && ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) ) {
-      Serial.println( "Clear bumper A & B and close gate" );
-      playfield.element( TARGET_A ).off();
-      playfield.element( TARGET_B ).off();
-      playfield.element( BUMPER_A ).off();
-      playfield.element( BUMPER_B ).off();
-      playfield.element( BUMPER_C ).off();
-      playfield.element( SAVE_GATE ).release();
-//      }      
+      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) {
+        Serial.println( "Clear bumper A & B and close gate" );
+        playfield.element( TARGET_A ).off();
+        playfield.element( TARGET_B ).off();
+        playfield.element( BUMPER_A ).off();
+        playfield.element( BUMPER_B ).off();
+        playfield.element( BUMPER_C ).off();
+        playfield.element( SAVE_GATE ).release();
+      }      
     });
     
   // end of logic

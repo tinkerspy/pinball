@@ -40,10 +40,8 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );
   Atm_playfield& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_playfield& debounce( uint8_t v );
-  Atm_playfield& debounce( int16_t n, uint8_t v );
-  Atm_playfield& retrigger( int16_t v );
-  Atm_playfield& retrigger( int16_t n, uint16_t v );
+  Atm_playfield& debounce( uint8_t d, uint16_t r  );
+  Atm_playfield& debounce( int16_t n, uint8_t d, uint16_t r );  
   Atm_playfield& persistent( int16_t n, bool v = true );
   Atm_playfield& disable();
   Atm_playfield& enable();

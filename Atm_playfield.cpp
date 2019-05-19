@@ -125,6 +125,12 @@ Atm_led_scheduler& Atm_playfield::leds() {
   return *led;
 }
 
+Atm_playfield& Atm_playfield::defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 ) {
+  led->defineProfile( prof, T0, L1, T1, L2 );
+  return *this;
+}
+
+
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
  */

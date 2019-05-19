@@ -71,7 +71,7 @@ void Atm_element::action( int id ) {
         led_state = true;
       }
       //connectors[ON_KICK+2].push( 1 );
-      if ( led_state ) {  
+      if ( led_state || led->active( light_led ) ) {  
         connectors[ON_KICK+1].push( 1 );
       } else {
         connectors[ON_KICK+0].push( 1 );
@@ -84,7 +84,7 @@ void Atm_element::action( int id ) {
       return;
     case ENT_INPUT:
       //connectors[ON_INPUT+2].push( 1 );
-      if ( led_state ) {  
+      if ( led_state || led->active( light_led ) ) {  
         connectors[ON_INPUT+1].push( 1 );
       } else {
         connectors[ON_INPUT+0].push( 1 );
@@ -133,7 +133,7 @@ Atm_element& Atm_element::trigger( int event ) {
 int Atm_element::state( void ) {
   // If there's a led return its state else return the switch state
   if ( light_led > -1 ) {
-    return led_state; 
+    return led_state || led->active( light_led ); 
   } else {
     return switch_state;    
   }

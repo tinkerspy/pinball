@@ -10,6 +10,17 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 
+
+
+void reset_bumpers() {
+  playfield.element( TARGET_A ).off();
+  playfield.element( TARGET_B ).off();
+  playfield.element( BUMPER_A ).off();
+  playfield.element( BUMPER_B ).off();
+  playfield.element( BUMPER_C ).off();
+  playfield.element( SAVE_GATE ).release();  
+}
+
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
@@ -85,14 +96,8 @@ void setup() {
     
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
-      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) {
-        Serial.println( "Clear bumper A, B & C and close gate" );
-        playfield.element( TARGET_A ).off();
-        playfield.element( TARGET_B ).off();
-        playfield.element( BUMPER_A ).off();
-        playfield.element( BUMPER_B ).off();
-        playfield.element( BUMPER_C ).off();
-        playfield.element( SAVE_GATE ).release();
+      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) { // Fix hardware switches instead
+        reset_bumpers();
       }      
     });
     

@@ -12,8 +12,6 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 
-
-
 void reset_bumpers() {
   playfield.element( TARGET_A ).off();
   playfield.element( TARGET_B ).off();
@@ -61,7 +59,7 @@ void setup() {
   playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
   playfield.element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
   playfield.element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
-  playfield.element( BALL_EXIT, COIL_BALL_FEEDER, -1, PROFILE_FEEDER );
+  playfield.element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER );
   playfield.element( UP_LANE_L, -1, LED_UP_LANE_L );
   playfield.element( UP_LANE_R, -1, LED_UP_LANE_R );
 
@@ -100,6 +98,12 @@ void setup() {
     playfield.element( KICKER_L ).on();
     playfield.element( KICKER_R ).on();
   });
+
+  // Light the same player shoots again led
+  playfield.element( KICKER_L ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
+  playfield.element( KICKER_R ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
+  playfield.element( UP_LANE_L ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
+  playfield.element( UP_LANE_R ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   
   // TARGET -> BUMPER -> GATE logic
 
@@ -137,6 +141,8 @@ void setup() {
       oxo.init();
       playfield.element( KICKER_L ).off();
       playfield.element( KICKER_R ).off();
+      leds.off( LED_SHOOTS_AGAIN );
+      leds.off( LED_TRIPLE_BONUS );
     });
 
   // end of logic

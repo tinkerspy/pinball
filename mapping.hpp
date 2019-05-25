@@ -54,7 +54,7 @@ enum {
   /* w */  LED_KICKER_L,
   /* x */  LED_UP_LANE_L,
 /* OXO leds: 27 + 2 */
-  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, // TODO: fix the order, this is not right!
+  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, // TODO: Swap with list below, should work as well and is more correct!
   LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
   LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
   LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
@@ -69,7 +69,7 @@ enum {
 
 // OXO led mapping 
 uint8_t oxo_map[] = {
-  LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
+  LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
   LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
   LED_OXO_1A, LED_OXO_1B, LED_OXO_1C,
   LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,

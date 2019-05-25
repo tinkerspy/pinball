@@ -52,9 +52,23 @@ enum {
   /* u */  LED_TRIPLE_BONUS,
   /* v */  LED_EXTRA, 
   /* w */  LED_KICKER_L,
-  /* x */  LED_UP_LANE_L,
+  /* x */  LED_UP_LANE_L,  
 /* OXO leds: 27 + 2 */
-  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, // TODO: Swap with list below, should work as well and is more correct!
+  LED_OXO_3A, LED_OXO_3B, LED_OXO_3C, // OXO physical led order
+  LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
+  LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
+  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C,
+  LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
+  LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,  
+  LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
+  LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
+  LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
+  LED_OXO_O, LED_OXO_X,  
+};
+
+// OXO led mapping 
+uint8_t oxo_map[] = {
+  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
   LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
   LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
   LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
@@ -63,21 +77,6 @@ enum {
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
   LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
-  LED_OXO_O, LED_OXO_X,
-    
-};
-
-// OXO led mapping 
-uint8_t oxo_map[] = {
-  LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
-  LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
-  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C,
-  LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
-  LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
-  LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
-  LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
-  LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
-  LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
   LED_OXO_O, LED_OXO_X,
 };
 

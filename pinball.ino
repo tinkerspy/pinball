@@ -25,6 +25,9 @@ void setup() {
   delay( 1000 );
   Serial.println( "start" );
   delay( 100 );
+  for ( int i = 0; i < 27; i++ ) {
+    Serial.println( oxo_map[i] );
+  }
   
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 2 )

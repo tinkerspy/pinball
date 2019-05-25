@@ -11,7 +11,7 @@
  */
 
 
-Atm_oxo_field& Atm_oxo_field::begin( Atm_apa102& led, int8_t* led_map ) { // Expects 9 * 3 + 2 leds
+Atm_oxo_field& Atm_oxo_field::begin( Atm_led_scheduler& led, uint8_t* led_map, uint8_t oxo_profile /* = PROFILE_LED */, uint8_t led_profile /* = PROFILE_LED */ ) { // Expects 9 * 3 + 2 leds
   // clang-format off
   const static state_t state_table[] PROGMEM = { 
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_MATCH  EVT_1X  EVT_1O  EVT_2X  EVT_2O  EVT_3X  EVT_3O  EVT_4  EVT_5  EVT_6  EVT_7  EVT_8  EVT_9  EVT_INIT  EVT_TOGGLE  ELSE */
@@ -36,6 +36,11 @@ Atm_oxo_field& Atm_oxo_field::begin( Atm_apa102& led, int8_t* led_map ) { // Exp
   Machine::begin( state_table, ELSE );
   this->led_map = led_map;
   this->led = &led;
+  for ( uint8_t i = 0; i < 27; i++ ) {
+    led.profile( led_map[i], oxo_profile );
+  }
+  led.profile( led_map[27], led_profile );
+  led.profile( led_map[28], led_profile );
   led.on( led_map[27] ); // Default selector: X
   return *this;          
 }
@@ -395,6 +400,3 @@ Atm_oxo_field& Atm_oxo_field::trace( Stream & stream ) {
     "WIDGET_OXO\0EVT_MATCH\0EVT_1X\0EVT_1O\0EVT_2X\0EVT_2O\0EVT_3X\0EVT_3O\0EVT_4\0EVT_5\0EVT_6\0EVT_7\0EVT_8\0EVT_9\0EVT_INIT\0EVT_TOGGLE\0ELSE\0IDLE\0OXO_1X\0OXO_1O\0OXO_2X\0OXO_2O\0OXO_3X\0OXO_3O\0OXO_4\0OXO_5\0OXO_6\0OXO_7\0OXO_8\0OXO_9\0MATCH\0INIT\0TOGGLE" );
   return *this;
 }
-
-
-

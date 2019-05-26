@@ -28,6 +28,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
 IO& IO::addStrips( IO_Adafruit_NeoPixel strip[] ) { 
   for ( int n = 0; n < NUM_IOPORTS; n++ ) {
     strip[n].begin();
+    strip[n].show();
     led_strip[n] = &strip[n];
     for ( uint8_t i = 0; i < strip[n].numPixels(); i++ ) {
       led[led_cnt].strip = n;
@@ -41,6 +42,7 @@ IO& IO::addStrips( IO_Adafruit_NeoPixel strip[] ) {
 
 IO& IO::addStrip( IO_Adafruit_NeoPixel *strip ) { 
   strip->begin();
+  strip->show();
   led_strip[last_strip] = strip;
   for ( uint8_t i = 0; i < strip->numPixels(); i++ ) {
     led[led_cnt].strip = last_strip;

@@ -25,10 +25,7 @@ void setup() {
   delay( 1000 );
   Serial.println( "start" );
   delay( 100 );
-  for ( int i = 0; i < 27; i++ ) {
-    Serial.println( oxo_map[i] );
-  }
-  
+    
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 2 )
     .addStrip( new IO_Adafruit_NeoPixel( 25 + 27 + 2, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // SK6812
@@ -45,7 +42,7 @@ void setup() {
     .defineProfile( PROFILE_BUMPER, 0, 255, 30 )
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 )
     .defineProfile( PROFILE_GI, 0, 1, 1, 3 )
-    .defineProfile( PROFILE_OXO, 0, 1, 1, 127 );
+    .defineProfile( PROFILE_OXO, 0, 1, 1, 255 );
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 

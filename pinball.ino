@@ -36,8 +36,8 @@ void setup() {
   leds.begin( io )
     .defineProfile( PROFILE_COIL, 0, 255, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
-    .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 20 )
-    .defineProfile( PROFILE_KICKER, 1000, 127, 30 )
+    .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 255 )
+    .defineProfile( PROFILE_KICKER, 1000, 95, 30 )
     .defineProfile( PROFILE_GATE, 0, 255, 30, 255 )
     .defineProfile( PROFILE_BUMPER, 0, 255, 30 )
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 )
@@ -100,8 +100,8 @@ void setup() {
   });
 
   // Light the same player shoots again led
-  playfield.element( KICKER_L ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
-  playfield.element( KICKER_R ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
+  playfield.element(  KICKER_L ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
+  playfield.element(  KICKER_R ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   playfield.element( UP_LANE_L ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   playfield.element( UP_LANE_R ).onKick( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   
@@ -131,7 +131,7 @@ void setup() {
     
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
-      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) { // Fix hardware switches instead
+      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) { // Fix hardware switch instead
         reset_bumpers();
       }      
     });

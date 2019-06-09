@@ -18,6 +18,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   pinMode( pin_latch, OUTPUT );
   pinMode( pin_clock, OUTPUT );
   IOWRITE( pin_clock, LOW );  
+  switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_ROWS, MATRIX_COLS, true );
   select( 0 );
   row_ptr = 0;
@@ -256,4 +257,5 @@ int16_t IO::scan() {
 
 IO& IO::unscan() { // Mark the last keypress as unprocessed so that will generate another scan() event
   ist[row_ptr][col_ptr] ^= ( 1 << bitpos );
+  return *this;
 }

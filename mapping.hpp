@@ -66,7 +66,7 @@ enum {
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_O, LED_OXO_X,  
 
-  /* Logical LED groups declared after physical leds*/
+  /* Logical LED groups are declared after physical leds*/
   LED_KICKER_GRP,
   LED_UP_LANE_GRP,  
   LED_OXO_GRP,
@@ -76,7 +76,7 @@ enum {
   COIL_COUNTER3_GRP,
 };
 
-// Define logical led groups (use a 16 bitmap for mapping)
+// Define logical led groups
 int16_t led_group_map[] = {
   LED_KICKER_GRP, 
     LED_KICKER_L, LED_KICKER_R, -1,

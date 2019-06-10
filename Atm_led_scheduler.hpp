@@ -3,14 +3,14 @@
 #include <Automaton.h>
 #include "IO.hpp"
 
-#define MAX_LEDS 1280
+#define MAX_LEDS 1280 // Physical + Logical
 #define MAX_PROFILES 32
+#define MAX_GROUPS 32 // Logical groups
 
 struct led_meta_data {
   uint32_t rgbw; 
   uint8_t profile = 0;
   uint32_t last_millis; 
-  uint16_t group = 0;
   uint8_t state;
 };
 
@@ -72,5 +72,6 @@ protected:
   uint8_t last_milli;
   IO *io;
   int16_t* led_group_map;
+  int16_t* led_group[MAX_GROUPS];
   
 };

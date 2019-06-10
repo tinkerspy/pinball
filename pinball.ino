@@ -49,6 +49,7 @@ void setup() {
   //leds.dump_meta( Serial );
 
   int16_t* p = leds.group( LED_OXO_GRP );
+  Serial.println( (uint32_t)&p[0], HEX );
   while ( p[0] != -1 ) {
     Serial.print( "GRP: " );
     Serial.println( p[0] );

@@ -40,21 +40,27 @@ class Atm_led_scheduler: public Machine {
   int state( void );
   Atm_led_scheduler& update( void );
 
-  Atm_led_scheduler& on( int ledno ); //* logical group support required!
-  Atm_led_scheduler& toggle( int ledno, int v = -1 ); //*
-  Atm_led_scheduler& off( int ledno, bool no_update = false ); //*
+  Atm_led_scheduler& on( int ledno, bool no_update = false ); 
+  Atm_led_scheduler& toggle( int ledno, int v = -1 ); 
+  Atm_led_scheduler& off( int ledno, bool no_update = false ); 
   Atm_led_scheduler& off( void );
-  Atm_led_scheduler& set( int16_t n, uint32_t c ); //*
+  Atm_led_scheduler& set( int16_t ledno, uint32_t c ); 
   Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
-  Atm_led_scheduler& profile( int16_t n, uint8_t prof ); //*
-  Atm_led_scheduler& groups( int16_t* group_def );
-  
-  int active( int ledno ); //*
+  Atm_led_scheduler& profile( int16_t ledno, uint8_t prof );
+  Atm_led_scheduler& groups( int16_t* group_def ); 
+  int active( int ledno );
+
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );
   Atm_led_scheduler& dump_meta( Stream& stream );
 
 protected:
+  Atm_led_scheduler& group_set( int16_t ledno, uint32_t c ); 
+  Atm_led_scheduler& group_on( int ledno );
+  Atm_led_scheduler& group_off( int ledno ); 
+  Atm_led_scheduler& group_toggle( int ledno, int v = -1 );
+  Atm_led_scheduler& group_profile( int16_t ledno, uint8_t prof );
+  int group_active( int ledno );
   led_profile_record led_profile[MAX_PROFILES];
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 

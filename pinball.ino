@@ -12,7 +12,7 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
-Atm_em_counter counter;
+Atm_em_counter counter[4];
 
 void reset_bumpers() {
   playfield.element( TARGET_A ).off();
@@ -30,7 +30,7 @@ void setup() {
     
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 2 )
-    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // SK6812
+    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip
     .invert( BALL_ENTER )
     .retrigger()
     .show();

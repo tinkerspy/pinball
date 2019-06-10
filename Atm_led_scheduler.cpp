@@ -131,8 +131,18 @@ Atm_led_scheduler& Atm_led_scheduler::dump_meta( Stream& stream ) {
   return *this;
 }
 
-Atm_led_scheduler& Atm_led_scheduler::set( int16_t n, uint32_t c ) {
-  io->setPixelColor( n, c >> 24, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff );
+Atm_led_scheduler& Atm_led_scheduler::set( int16_t ledno, uint32_t c ) {
+  io->setPixelColor( ledno, c >> 24, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff );
+  return *this;
+}
+
+Atm_led_scheduler& Atm_led_scheduler::group_set( int16_t ledno, uint32_t c ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      set( i, c );
+    }
+  }
   return *this;
 }
 
@@ -153,16 +163,27 @@ int Atm_led_scheduler::state( void ) {
   return Machine::state();
 }
 
-Atm_led_scheduler& Atm_led_scheduler::profile( int16_t n, uint8_t prof ) {
-  if ( n > -1 ) {
-    meta[n].profile = prof;
+Atm_led_scheduler& Atm_led_scheduler::profile( int16_t ledno, uint8_t prof ) {
+  if ( ledno > -1 ) {
+    if ( ledno >= number_of_leds ) return group_profile( ledno, prof );
+    meta[ledno].profile = prof;
   }
   return *this;
 }
 
+Atm_led_scheduler& Atm_led_scheduler::group_profile( int16_t ledno, uint8_t prof  ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      profile( i, prof );
+    }
+  }
+  return *this;
+}
 
-Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
+Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false */  ) {
   if ( ledno > -1 ) {
+    if ( ledno >= number_of_leds ) return group_on( ledno );
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].last_millis = millis();
       if ( led_profile[meta[ledno].profile].T0 ) {      
@@ -178,19 +199,42 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
         }
       }
       refresh = 1; 
-      trigger( EVT_UPDATE );
+      if ( !no_update ) trigger( EVT_UPDATE );
     }
   } 
   return *this;
 }
 
+Atm_led_scheduler& Atm_led_scheduler::group_on( int ledno ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      on( i, true );
+    }
+  }
+  trigger( EVT_UPDATE );
+  return *this;
+}
+
 Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false */ ) {
+  if ( ledno >= number_of_leds ) return group_off( ledno );
   if ( ledno > -1 && led_profile[meta[ledno].profile].L2 ) { // Ignore off() for leds in pulse mode 
     meta[ledno].state = LED_STATE_IDLE;
     set( ledno, 0 );
     refresh = 1; 
     if ( !no_update ) trigger( EVT_UPDATE );
   }
+  return *this;
+}
+
+Atm_led_scheduler& Atm_led_scheduler::group_off( int ledno ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      off( i, true );
+    }
+  }
+  trigger( EVT_UPDATE );
   return *this;
 }
 
@@ -216,10 +260,33 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
   return *this;
 }
 
+Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      toggle( i, v );
+    }
+  }
+  trigger( EVT_UPDATE );
+  return *this;
+}
+
 int Atm_led_scheduler::active( int ledno ) {
+  if ( ledno >= number_of_leds ) return group_active( ledno );
   return ledno > -1 ? meta[ledno].state : 0;  
 }
 
+// group_active simply returns the state of the first led in the group
+
+int Atm_led_scheduler::group_active( int ledno ) {
+  int gid = ledno - number_of_leds; 
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    if ( meta[i].group & ( 1 << gid ) ) {
+      return active( i );
+    }
+  }
+  return 0;
+}
 
 /* Nothing customizable below this line                          
  ************************************************************************************************

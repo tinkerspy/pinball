@@ -9,7 +9,7 @@
  */
  
 
-Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch, int c0, int c1, int c2, int c3, int profile ) {
+Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch, int16_t group_id, int profile ) {
   
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -64,10 +64,11 @@ Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t s
   this->io = &io;
   this->sensor_switch = sensor_switch;
   pinMode( sensor_switch, INPUT_PULLUP );
-  led.profile( this->coil[0] = c0, profile );
-  led.profile( this->coil[1] = c1, profile );
-  led.profile( this->coil[2] = c2, profile );
-  led.profile( this->coil[3] = c3, profile );
+  const int16_t* p = led.group( group_id );
+  led.profile( this->coil[0] = p[0], profile );
+  led.profile( this->coil[1] = p[1], profile );
+  led.profile( this->coil[2] = p[2], profile );
+  led.profile( this->coil[3] = p[3], profile );
   value = 0;
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );

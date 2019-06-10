@@ -54,5 +54,5 @@ class Atm_oxo_field: public Machine {
   int event( int id ); 
   void action( int id ); 
   Atm_led_scheduler *led;
-  int16_t *led_map;
+  const int16_t *led_map;
 };

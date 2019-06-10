@@ -15,6 +15,12 @@ struct led_meta_data {
 };
 
 /*
+ * Scheduler functions:
+ * - led envelope timing (wait duration, pulse level, pulse duration, hold level) per led
+ * - led logical groups
+ * - led state keeping: active()
+ * - analog lamp simulation (fade in/out) TODO
+ * 
  * T0 Waiting period before led is switched on (ms)
  * L1 Initial led RGBW level
  * T1 Pulse length (period L1 is applied in ms)
@@ -34,7 +40,7 @@ class Atm_led_scheduler: public Machine {
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_scheduler( void ) : Machine() {};
-  Atm_led_scheduler& begin( IO &io, int16_t* group_def );
+  Atm_led_scheduler& begin( IO &io, const int16_t* group_def );
   Atm_led_scheduler& trace( Stream & stream );
   Atm_led_scheduler& trigger( int event );
   int state( void );
@@ -47,7 +53,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& set( int16_t ledno, uint32_t c ); 
   Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
   Atm_led_scheduler& profile( int16_t ledno, uint8_t prof );
-  int16_t* group( int16_t gid );
+  const int16_t* group( int16_t gid );
   int active( int ledno );
 
   uint8_t debug;
@@ -55,7 +61,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& dump_meta( Stream& stream );
 
 protected:
-  Atm_led_scheduler& groups( int16_t* group_def ); 
+  Atm_led_scheduler& groups( const int16_t* group_def ); 
   Atm_led_scheduler& group_set( int16_t ledno, uint32_t c ); 
   Atm_led_scheduler& group_on( int ledno );
   Atm_led_scheduler& group_off( int ledno ); 
@@ -71,7 +77,6 @@ protected:
   uint8_t refresh, running;
   uint8_t last_milli;
   IO *io;
-  int16_t* led_group_map;
-  int16_t* led_group[MAX_GROUPS];
+  const int16_t* led_group[MAX_GROUPS];
   
 };

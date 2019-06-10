@@ -29,7 +29,7 @@ class Atm_em_counter: public Machine {
     SCND, SCND1, SCND1W, SCND2, SCND2W, SCND3, SCND3W, THRD, THRD1, THRD1W, THRD2, THRD2W, THRD3, THRD3W, FRTH, FRTH0, FRTHW, FFTH }; // STATES
   enum { EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
   Atm_em_counter( void ) : Machine() {};
-  Atm_em_counter& begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch, int c0, int c1, int c2, int c3, int profile );
+  Atm_em_counter& begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch,  int16_t group_id, int profile );
   Atm_em_counter& trace( Stream & stream );
   Atm_em_counter& trigger( int event );
   int state( void );

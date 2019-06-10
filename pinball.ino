@@ -44,17 +44,18 @@ void setup() {
     .defineProfile( PROFILE_BUMPER, 0, 255, 30 )
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 )
     .defineProfile( PROFILE_GI, 0, 1, 1, 3 )
-    .defineProfile( PROFILE_OXO, 0, 1, 1, 255 );
+    .defineProfile( PROFILE_OXO, 0, 1, 1, 255 )
+    .defineProfile( PROFILE_COUNTER, 0, 255, 30 );
 
 //leds.dump_meta( Serial );
 
-/*
-  int16_t* p = leds.group( LED_OXO_GRP );
+
+  const int16_t* p = leds.group( LED_OXO_GRP );
   while ( *p != -1 ) {
     Serial.print( "GRP: " );
     Serial.println( *p++ ); 
   }
-*/
+
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 
@@ -87,9 +88,7 @@ void setup() {
   // Start OXO widget and connect to the proper switches 
   oxo.begin( leds, LED_OXO_GRP, PROFILE_OXO );
 
-  // Retrieve pointer to group list from the leds object
-  // oxo.begin( leds, LED_OXO_GRP, PROFILE_OXO );
-  // counter.begin( io, leds, COUNTER0_SENSE, COIL_COUNTER0_GRP, PROFILE_COUNTER );
+  //counter.begin( io, leds, COUNTER0_SENSE, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
   
   playfield.onPress(   PORT_1O, oxo, oxo.EVT_1O );
   playfield.onPress(   PORT_1X, oxo, oxo.EVT_1X );

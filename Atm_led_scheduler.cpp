@@ -7,7 +7,7 @@
 //  enum { EVT_DONE, EVT_RUN, EVT_UPDATE, EVT_MILLI, ELSE }; // EVENTS
 
 
-Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, int16_t* group_def ) {
+Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, const int16_t* group_def ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -109,8 +109,7 @@ Atm_led_scheduler& Atm_led_scheduler::defineProfile( uint8_t prof, uint16_t T0, 
 }
 
 
-Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
-  led_group_map = group_def;
+Atm_led_scheduler& Atm_led_scheduler::groups( const int16_t* group_def ) {
   while ( group_def[0] != -1 ) {
     int gid = group_def[0] - number_of_leds;
     led_group[gid] = &group_def[1];
@@ -123,7 +122,7 @@ Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
   return *this;
 }
 
-int16_t* Atm_led_scheduler::group( int16_t gid ) {
+const int16_t* Atm_led_scheduler::group( int16_t gid ) {
   return led_group[gid - number_of_leds];
 }
 
@@ -133,7 +132,7 @@ Atm_led_scheduler& Atm_led_scheduler::set( int16_t ledno, uint32_t c ) {
 }
 
 Atm_led_scheduler& Atm_led_scheduler::group_set( int16_t ledno, uint32_t c ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   while ( *p != -1 ) {
     set( *p++, c );
   }
@@ -166,7 +165,7 @@ Atm_led_scheduler& Atm_led_scheduler::profile( int16_t ledno, uint8_t prof ) {
 }
 
 Atm_led_scheduler& Atm_led_scheduler::group_profile( int16_t ledno, uint8_t prof  ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   while ( *p != -1 )
     profile( *p++, prof );
   return *this;
@@ -197,7 +196,7 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
 }
 
 Atm_led_scheduler& Atm_led_scheduler::group_on( int ledno ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   while ( *p != -1 )
     on( *p++, true );
   trigger( EVT_UPDATE );
@@ -216,7 +215,7 @@ Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false 
 }
 
 Atm_led_scheduler& Atm_led_scheduler::group_off( int ledno ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   while ( *p != -1 )
     off( *p++, true );
   trigger( EVT_UPDATE );
@@ -246,7 +245,7 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
 }
 
 Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   while ( *p != -1 ) 
     toggle( *p++, v );
   trigger( EVT_UPDATE );
@@ -261,7 +260,7 @@ int Atm_led_scheduler::active( int ledno ) {
 // group_active simply returns the state of the first led in the group
 
 int Atm_led_scheduler::group_active( int ledno ) {
-  int16_t* p = group( ledno );
+  const int16_t* p = group( ledno );
   return active( *p );
 }
 

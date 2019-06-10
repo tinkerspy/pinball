@@ -1,5 +1,13 @@
 #pragma once
 
+/*
+ * Aims:
+ * - Minimal wiring
+ * - Minimal I/O pins
+ * - Minimal code
+ * - Minimal latency
+ */
+
 uint8_t gate[5] = { 15, 22, 23, 16, 17 };
 uint8_t shift_inputs[5] = { 2, 14, 7, 8, 6 };
 uint8_t addr[3] = { 5, 21, 20 };
@@ -19,7 +27,8 @@ enum {
   PROFILE_GATE, 
   PROFILE_BUMPER,
   PROFILE_GI,
-  PROFILE_OXO
+  PROFILE_OXO,
+  PROFILE_COUNTER,
 };
 
 // Coils & leds (outputs)
@@ -66,7 +75,7 @@ enum {
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_O, LED_OXO_X,  
 
-  /* Logical LED groups are declared after physical leds*/
+  /* Virtual LED groups - up to 32 - are declared after physical leds */
   LED_KICKER_GRP,
   LED_UP_LANE_GRP,  
   LED_OXO_GRP,
@@ -76,49 +85,10 @@ enum {
   COIL_COUNTER3_GRP,
 };
 
-// Define logical item groups ( leds don't mix with switches or profiles )
-int16_t group_map[] = {
-  LED_KICKER_GRP, 
-    LED_KICKER_L, LED_KICKER_R, -1,
-  LED_UP_LANE_GRP, 
-    LED_UP_LANE_L, LED_UP_LANE_R, -1,
-  LED_OXO_GRP,
-    LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
-    LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
-    LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
-    LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
-    LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
-    LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
-    LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
-    LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
-    LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
-    LED_OXO_O, LED_OXO_X, -1,
-  // Add groups per score counter
-//COIL_COUNTER0_GRP,
-//  COIL_COUNTER0_10K, COIL_COUNTER0_1K COIL_COUNTER0_100, COIL_COUNTER0_10, -1,
-//COIL_COUNTER1_GRP,
-//  COIL_COUNTER1_10K, COIL_COUNTER1_1K COIL_COUNTER1_100, COIL_COUNTER1_10, -1,
-            
-  -1, 
-};
-
-// OXO led mapping 
-// TODO replace this with group() logic based on led_group_map
-int16_t oxo_map[] = {
-  LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
-  LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
-  LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
-  LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
-  LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
-  LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
-  LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
-  LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
-  LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
-  LED_OXO_O, LED_OXO_X,
-};
-
 // Switches (inputs)
+
 enum { 
+/* Dummy, switches start at 1 and go up to 320 */  
   NULL_SW,
 /* Physical switches */  
   TARGET_B,
@@ -150,9 +120,43 @@ enum {
   DUMMY3,
   FLIPPER_L,
   FLIPPER_R,
-/* Dummy switches (for elements without physical switches) */  
+/* Virtual switches (for elements without physical switches) */  
   SAVE_GATE, 
 };
+
+/* group_map - Defines virtual LEDs (groups of leds)
+ *  
+ * Record starts with the group ID followed by the elements, ended by a -1 entry.
+ * The last record in the list is followed by a second -1 entry to signal end of list 
+ * 
+ * Leds and switches can be mixed as long as you make sure no Atm_led_scheduler actions
+ * are performed on the group.
+ */
+
+const int16_t group_map[] = {
+  LED_KICKER_GRP, 
+    LED_KICKER_L, LED_KICKER_R, -1,
+  LED_UP_LANE_GRP, 
+    LED_UP_LANE_L, LED_UP_LANE_R, -1,
+  LED_OXO_GRP,
+    LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
+    LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
+    LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
+    LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
+    LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
+    LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
+    LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
+    LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
+    LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
+    LED_OXO_O, LED_OXO_X, -1,
+  // Add groups per score counter
+//COIL_COUNTER0_GRP,
+//  COIL_COUNTER0_10K, COIL_COUNTER0_1K COIL_COUNTER0_100, COIL_COUNTER0_10, COUNTER0_SENSE, -1,
+//COIL_COUNTER1_GRP,
+//  COIL_COUNTER1_10K, COIL_COUNTER1_1K COIL_COUNTER1_100, COIL_COUNTER1_10, COUNTER1_SENSE, -1,
+  -1, 
+};
+
 
 #define SWITCH_NAME( sw ) switch_names + ( sw * 11 )
 

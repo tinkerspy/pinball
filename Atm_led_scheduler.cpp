@@ -107,6 +107,30 @@ Atm_led_scheduler& Atm_led_scheduler::defineProfile( uint8_t prof, uint16_t T0, 
   return *this;
 }
 
+
+Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
+  while ( group_def[0] != -1 ) {
+    int gid = group_def[0] - number_of_leds;
+    group_def++;
+    while ( group_def[0] != -1 ) {
+      meta[group_def[0]].group |= ( 1 << gid );
+      group_def++;
+    }
+    group_def++;
+  }
+  return *this;
+}
+
+Atm_led_scheduler& Atm_led_scheduler::dump_meta( Stream& stream ) {
+
+  for ( int i = 0; i < number_of_leds; i++ ) {
+    Serial.print( i );
+    Serial.print( " " );
+    Serial.println( meta[i].group, BIN );
+  }
+  return *this;
+}
+
 Atm_led_scheduler& Atm_led_scheduler::set( int16_t n, uint32_t c ) {
   io->setPixelColor( n, c >> 24, c >> 16 & 0xff, c >> 8 & 0xff, c & 0xff );
   return *this;
@@ -138,9 +162,7 @@ Atm_led_scheduler& Atm_led_scheduler::profile( int16_t n, uint8_t prof ) {
 
 
 Atm_led_scheduler& Atm_led_scheduler::on( int ledno ) {
-
   if ( ledno > -1 ) {
-    // Misschien moet dit ook simpel onconditioneel, d.w.z. een 'on' triggert altijd de 'T0' state...
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].last_millis = millis();
       if ( led_profile[meta[ledno].profile].T0 ) {      

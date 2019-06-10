@@ -65,10 +65,24 @@ enum {
   LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_O, LED_OXO_X,  
+
+  /* Logical LED groups declared after physical leds*/
+  LED_KICKER,
+  LED_UP_LANE,  
+
+};
+
+// Define logical led groups (use a bit map for mapping)
+int16_t led_group_map[] = {
+  LED_KICKER, 
+    LED_KICKER_L, LED_KICKER_R, -1,
+  LED_UP_LANE, 
+    LED_UP_LANE_L, LED_UP_LANE_R, -1,
+  -1,
 };
 
 // OXO led mapping 
-uint8_t oxo_map[] = {
+int16_t oxo_map[] = {
   LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
   LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
   LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,

@@ -10,7 +10,8 @@ struct led_meta_data {
   uint32_t rgbw; 
   uint8_t profile = 0;
   uint32_t last_millis; 
-  uint8_t state, holding;
+  uint16_t group = 0;
+  uint8_t state;
 };
 
 /*
@@ -39,15 +40,16 @@ class Atm_led_scheduler: public Machine {
   int state( void );
   Atm_led_scheduler& update( void );
 
-  Atm_led_scheduler& on( int ledno );
-  Atm_led_scheduler& toggle( int ledno, int v = -1 );
-  Atm_led_scheduler& off( int ledno, bool no_update = false );
+  Atm_led_scheduler& on( int ledno ); //* logical group support required!
+  Atm_led_scheduler& toggle( int ledno, int v = -1 ); //*
+  Atm_led_scheduler& off( int ledno, bool no_update = false ); //*
   Atm_led_scheduler& off( void );
-  Atm_led_scheduler& set( int16_t n, uint32_t c );
+  Atm_led_scheduler& set( int16_t n, uint32_t c ); //*
   Atm_led_scheduler& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
-  Atm_led_scheduler& profile( int16_t n, uint8_t prof );
+  Atm_led_scheduler& profile( int16_t n, uint8_t prof ); //*
+  Atm_led_scheduler& groups( int16_t* group_def );
   
-  int active( int ledno );
+  int active( int ledno ); //*
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );
   Atm_led_scheduler& dump_meta( Stream& stream );

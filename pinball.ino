@@ -6,11 +6,13 @@
 #include "freeram.hpp"
 #include "mapping.hpp"
 #include "Atm_oxo_field.hpp"
+#include "Atm_em_counter.hpp"
 
 IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
+Atm_em_counter counter;
 
 void reset_bumpers() {
   playfield.element( TARGET_A ).off();
@@ -28,12 +30,13 @@ void setup() {
     
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 2 )
-    .addStrip( new IO_Adafruit_NeoPixel( 25 + 27 + 2, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // SK6812
+    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // SK6812
     .invert( BALL_ENTER )
     .retrigger()
     .show();
 
   leds.begin( io )
+    .groups( led_group_map )
     .defineProfile( PROFILE_COIL, 0, 255, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
     .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 255 )
@@ -43,6 +46,8 @@ void setup() {
     .defineProfile( PROFILE_FEEDER, 1000, 127, 30 )
     .defineProfile( PROFILE_GI, 0, 1, 1, 3 )
     .defineProfile( PROFILE_OXO, 0, 1, 1, 255 );
+
+  leds.dump_meta( Serial );
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 

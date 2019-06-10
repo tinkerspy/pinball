@@ -12,7 +12,7 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
-Atm_em_counter counter[4];
+Atm_em_counter counter;
 
 void reset_bumpers() {
   playfield.element( TARGET_A ).off();
@@ -35,8 +35,7 @@ void setup() {
     .retrigger()
     .show();
 
-  leds.begin( io )
-    .groups( led_group_map )
+  leds.begin( io, led_group_map )
     .defineProfile( PROFILE_COIL, 0, 255, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
     .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 255 )
@@ -47,7 +46,14 @@ void setup() {
     .defineProfile( PROFILE_GI, 0, 1, 1, 3 )
     .defineProfile( PROFILE_OXO, 0, 1, 1, 255 );
 
-  leds.dump_meta( Serial );
+  //leds.dump_meta( Serial );
+
+  int16_t* p = leds.group( LED_OXO_GRP );
+  while ( p[0] != -1 ) {
+    Serial.print( "GRP: " );
+    Serial.println( p[0] );
+    p++;
+  }
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 
@@ -79,6 +85,10 @@ void setup() {
 
   // Start OXO widget and connect to the proper switches 
   oxo.begin( leds, oxo_map, PROFILE_OXO );
+
+  // Retrieve pointer to group list from the leds object
+  // oxo.begin( leds, LED_OXO_GRP, PROFILE_OXO );
+  // counter.begin( io, leds, COUNTER0_SENSE, COIL_COUNTER0_GRP, PROFILE_COUNTER );
   
   playfield.onPress(   PORT_1O, oxo, oxo.EVT_1O );
   playfield.onPress(   PORT_1X, oxo, oxo.EVT_1X );

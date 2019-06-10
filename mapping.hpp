@@ -67,21 +67,43 @@ enum {
   LED_OXO_O, LED_OXO_X,  
 
   /* Logical LED groups declared after physical leds*/
-  LED_KICKER,
-  LED_UP_LANE,  
-
+  LED_KICKER_GRP,
+  LED_UP_LANE_GRP,  
+  LED_OXO_GRP,
+  COIL_COUNTER0_GRP,
+  COIL_COUNTER1_GRP,
+  COIL_COUNTER2_GRP,
+  COIL_COUNTER3_GRP,
 };
 
-// Define logical led groups (use a bit map for mapping)
+// Define logical led groups (use a 16 bitmap for mapping)
 int16_t led_group_map[] = {
-  LED_KICKER, 
+  LED_KICKER_GRP, 
     LED_KICKER_L, LED_KICKER_R, -1,
-  LED_UP_LANE, 
+  LED_UP_LANE_GRP, 
     LED_UP_LANE_L, LED_UP_LANE_R, -1,
-  -1,
+  LED_OXO_GRP,
+    LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
+    LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
+    LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
+    LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
+    LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
+    LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
+    LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
+    LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
+    LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
+    LED_OXO_O, LED_OXO_X, -1,
+  // Add groups per score counter
+//COIL_COUNTER0_GRP,
+//  COIL_COUNTER0_10K, COIL_COUNTER0_1K COIL_COUNTER0_100, COIL_COUNTER0_10, -1,
+//COIL_COUNTER1_GRP,
+//  COIL_COUNTER1_10K, COIL_COUNTER1_1K COIL_COUNTER1_100, COIL_COUNTER1_10, -1,
+            
+  -1, 
 };
 
 // OXO led mapping 
+// TODO replace this with group() logic based on led_group_map
 int16_t oxo_map[] = {
   LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
   LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,

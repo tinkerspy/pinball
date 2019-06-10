@@ -7,7 +7,7 @@
 //  enum { EVT_DONE, EVT_RUN, EVT_UPDATE, EVT_MILLI, ELSE }; // EVENTS
 
 
-Atm_led_scheduler& Atm_led_scheduler::begin( IO &io ) {
+Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, int16_t* group_def ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -24,6 +24,7 @@ Atm_led_scheduler& Atm_led_scheduler::begin( IO &io ) {
   defineProfile(  PROFILE_LED, 0, 127,  0, 127 );  // Default for leds (hold level at 50%)
   io.show();
   last_milli = millis();
+  groups( group_def );
   return *this;          
 }
 
@@ -109,6 +110,7 @@ Atm_led_scheduler& Atm_led_scheduler::defineProfile( uint8_t prof, uint16_t T0, 
 
 
 Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
+  led_group_map = group_def;
   while ( group_def[0] != -1 ) {
     int gid = group_def[0] - number_of_leds;
     group_def++;
@@ -119,6 +121,18 @@ Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
     group_def++;
   }
   return *this;
+}
+
+int16_t* Atm_led_scheduler::group( int16_t gid ) {
+  int16_t* p = led_group_map;
+  while ( p[0] != -1 ) {
+    int g = p[0];
+    p++;
+    if ( g == gid ) return p;
+    while ( p[0] != -1 ) p++;
+    p++;    
+  }
+  return p;
 }
 
 Atm_led_scheduler& Atm_led_scheduler::dump_meta( Stream& stream ) {

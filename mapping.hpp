@@ -76,8 +76,8 @@ enum {
   COIL_COUNTER3_GRP,
 };
 
-// Define logical led groups
-int16_t led_group_map[] = {
+// Define logical item groups ( leds don't mix with switches or profiles )
+int16_t group_map[] = {
   LED_KICKER_GRP, 
     LED_KICKER_L, LED_KICKER_R, -1,
   LED_UP_LANE_GRP, 

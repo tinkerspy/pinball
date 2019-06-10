@@ -134,9 +134,8 @@ Atm_led_scheduler& Atm_led_scheduler::set( int16_t ledno, uint32_t c ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_set( int16_t ledno, uint32_t c ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    set( p[0], c );
-    p++;
+  while ( *p != -1 ) {
+    set( *p++, c );
   }
   return *this;
 }
@@ -168,9 +167,8 @@ Atm_led_scheduler& Atm_led_scheduler::profile( int16_t ledno, uint8_t prof ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_profile( int16_t ledno, uint8_t prof  ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    profile( p[0], prof );
-    p++;
+  while ( *p != -1 ) {
+    profile( *p++, prof );
   }
   return *this;
 }
@@ -201,9 +199,8 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
 
 Atm_led_scheduler& Atm_led_scheduler::group_on( int ledno ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    on( p[0], true );
-    p++;
+  while ( *p != -1 ) {
+    on( *p++, true );
   }
   trigger( EVT_UPDATE );
   return *this;
@@ -222,9 +219,8 @@ Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false 
 
 Atm_led_scheduler& Atm_led_scheduler::group_off( int ledno ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    off( p[0], true );
-    p++;
+  while ( *p != -1 ) {
+    off( *p++, true );
   }
   trigger( EVT_UPDATE );
   return *this;
@@ -254,9 +250,8 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    toggle( p[0], v );
-    p++;
+  while ( *p != -1 ) {
+    toggle( *p++, v );
   }  
   trigger( EVT_UPDATE );
   return *this;
@@ -271,11 +266,7 @@ int Atm_led_scheduler::active( int ledno ) {
 
 int Atm_led_scheduler::group_active( int ledno ) {
   int16_t* p = group( ledno );
-  while ( p[0] != -1 ) {
-    return active( p[0] );
-    p++;
-  }
-  return 0;
+  return active( *p );
 }
 
 /* Nothing customizable below this line                          

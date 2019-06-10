@@ -29,13 +29,13 @@ void setup() {
   delay( 100 );
     
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
-    .switchMap( 3, 1, 2 )
+    .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip
     .invert( BALL_ENTER )
     .retrigger()
     .show();
 
-  leds.begin( io, led_group_map )
+  leds.begin( io, group_map )
     .defineProfile( PROFILE_COIL, 0, 255, 30 ) // T0, L1, T1, L2
     .defineProfile( PROFILE_LED, 0, 0, 0, 127 )
     .defineProfile( PROFILE_FLIPPER, 0, 255, 50, 255 )
@@ -46,14 +46,13 @@ void setup() {
     .defineProfile( PROFILE_GI, 0, 1, 1, 3 )
     .defineProfile( PROFILE_OXO, 0, 1, 1, 255 );
 
-  //leds.dump_meta( Serial );
+//leds.dump_meta( Serial );
 
   int16_t* p = leds.group( LED_OXO_GRP );
   Serial.println( (uint32_t)&p[0], HEX );
-  while ( p[0] != -1 ) {
+  while ( *p != -1 ) {
     Serial.print( "GRP: " );
-    Serial.println( p[0] );
-    p++;
+    Serial.println( *p++ ); 
   }
 
   playfield.begin( io, leds ).debounce( 20, 20 );

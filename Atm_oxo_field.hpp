@@ -13,7 +13,7 @@ class Atm_oxo_field: public Machine {
   enum { EVT_MATCH, EVT_1X, EVT_1O, EVT_2X, EVT_2O, EVT_3X, EVT_3O, EVT_4, EVT_5, EVT_6, EVT_7, EVT_8, EVT_9, EVT_INIT, EVT_TOGGLE, ELSE }; // EVENTS
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   Atm_oxo_field( void ) : Machine() {};
-  Atm_oxo_field& begin( Atm_led_scheduler& led, int16_t* leds, uint8_t oxo_profile = PROFILE_LED, uint8_t led_profile = PROFILE_LED );
+  Atm_oxo_field& begin( Atm_led_scheduler& led, int16_t group_id, uint8_t oxo_profile = PROFILE_LED, uint8_t led_profile = PROFILE_LED );
   Atm_oxo_field& trace( Stream & stream );
   Atm_oxo_field& trigger( int event );
   int state( void );

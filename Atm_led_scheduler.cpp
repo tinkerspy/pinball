@@ -113,7 +113,7 @@ Atm_led_scheduler& Atm_led_scheduler::groups( int16_t* group_def ) {
   led_group_map = group_def;
   while ( group_def[0] != -1 ) {
     int gid = group_def[0] - number_of_leds;
-    led_group[gid] = &group_def[0];
+    led_group[gid] = &group_def[1];
     group_def++;
     while ( group_def[0] != -1 ) {
       group_def++;
@@ -167,9 +167,8 @@ Atm_led_scheduler& Atm_led_scheduler::profile( int16_t ledno, uint8_t prof ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_profile( int16_t ledno, uint8_t prof  ) {
   int16_t* p = group( ledno );
-  while ( *p != -1 ) {
+  while ( *p != -1 )
     profile( *p++, prof );
-  }
   return *this;
 }
 
@@ -199,9 +198,8 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
 
 Atm_led_scheduler& Atm_led_scheduler::group_on( int ledno ) {
   int16_t* p = group( ledno );
-  while ( *p != -1 ) {
+  while ( *p != -1 )
     on( *p++, true );
-  }
   trigger( EVT_UPDATE );
   return *this;
 }
@@ -219,23 +217,22 @@ Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false 
 
 Atm_led_scheduler& Atm_led_scheduler::group_off( int ledno ) {
   int16_t* p = group( ledno );
-  while ( *p != -1 ) {
+  while ( *p != -1 )
     off( *p++, true );
-  }
   trigger( EVT_UPDATE );
   return *this;
 }
 
 Atm_led_scheduler& Atm_led_scheduler::off() {
-  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) {
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) 
     off( ledno, true );
-  }  
   refresh = 1; 
   trigger( EVT_UPDATE );
   return *this;
 }
 
 Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
+  if ( ledno >= number_of_leds ) return group_toggle( ledno, v );
   if ( v > -1 ) {
     if ( v ) on( ledno ); else off( ledno );
     return *this;    
@@ -250,9 +247,8 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ ) {
   int16_t* p = group( ledno );
-  while ( *p != -1 ) {
+  while ( *p != -1 ) 
     toggle( *p++, v );
-  }  
   trigger( EVT_UPDATE );
   return *this;
 }

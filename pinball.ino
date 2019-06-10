@@ -48,12 +48,13 @@ void setup() {
 
 //leds.dump_meta( Serial );
 
+/*
   int16_t* p = leds.group( LED_OXO_GRP );
-  Serial.println( (uint32_t)&p[0], HEX );
   while ( *p != -1 ) {
     Serial.print( "GRP: " );
     Serial.println( *p++ ); 
   }
+*/
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 
@@ -84,7 +85,7 @@ void setup() {
   playfield.debounce( SLING_R, 20, 200 );
 
   // Start OXO widget and connect to the proper switches 
-  oxo.begin( leds, oxo_map, PROFILE_OXO );
+  oxo.begin( leds, LED_OXO_GRP, PROFILE_OXO );
 
   // Retrieve pointer to group list from the leds object
   // oxo.begin( leds, LED_OXO_GRP, PROFILE_OXO );

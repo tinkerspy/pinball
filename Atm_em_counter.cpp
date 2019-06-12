@@ -29,30 +29,30 @@ Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t s
     /* PRE1W */       -1,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
 // Solve first reel (first that goes low) by pulsing all three
     /* FRST  */ ENT_FRST,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
-    /* FRST1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    FRST1W,         -1,    -1,
+    /* FRST1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    FRST2,       -1,        -1,       -1,    FRST1W,         -1,    -1,
     /* FRST1W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST2,
-    /* FRST2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    FRST2W,         -1,    -1,
+    /* FRST2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    FRST3,       -1,       -1,        -1,       -1,    FRST2W,         -1,    -1,
     /* FRST2W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST3,
-    /* FRST3 */ENT_PULS3,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
+    /* FRST3 */ENT_PULS3,        -1,      -1,     -1,     -1,    FRST1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
     /* FRST3W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
 // Solve second reel (first that goes high)
     /* SCND  */ ENT_SCND,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
-    /* SCND1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    SCND1W,         -1,    -1,
+    /* SCND1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    SCND2,       -1,        -1,       -1,    SCND1W,         -1,    -1,
     /* SCND1W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
-    /* SCND2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    SCND2W,         -1,    -1,
+    /* SCND2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    SCND3,       -1,       -1,        -1,       -1,    SCND2W,         -1,    -1,
     /* SCND2W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
-    /* SCND3 */ENT_PULS3,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
+    /* SCND3 */ENT_PULS3,        -1,      -1,     -1,     -1,    SCND1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
     /* SCND3W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
 // Solve third reel (frst that goes high, and keep it at 9 to solve reel 0)
-    /* THRD  */ ENT_THRD,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,
-    /* THRD1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    THRD1W,         -1,    -1,
+    /* THRD  */ ENT_THRD,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     THRD1,         -1,    -1,
+    /* THRD1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    THRD2,       -1,        -1,       -1,    THRD1W,         -1,    -1,
     /* THRD1W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,
-    /* THRD2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    THRD2W,         -1,    -1,
+    /* THRD2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    THRD3,       -1,       -1,        -1,       -1,    THRD2W,         -1,    -1,
     /* THRD2W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD3,
-    /* THRD3 */ENT_PULS3,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,    THRD3W,         -1,    -1,
-    /* THRD3W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,
+    /* THRD3 */ENT_PULS3,        -1,      -1,     -1,     -1,    THRD1,       -1,       -1,       -1,        -1,       -1,    THRD3W,         -1,    -1,
+    /* THRD3W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,    
 // Solve reel 0 (pulse until line goes low)
-    /* FRTH */  ENT_FRTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     FRTH0,         -1,    -1,
+    /* FRTH */  ENT_FRTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
     /* FRTH0 */ENT_PULS0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     FRTHW,         -1,    -1,
     /* FRTHW */       -1,        -1,      -1,   FFTH,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
 // Move third reel to 0
@@ -72,6 +72,7 @@ Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t s
   value = 0;
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
+  memset( solved, 0, sizeof( solved ) );
   timer.set( 100 );
   return *this;          
 }
@@ -87,13 +88,13 @@ int Atm_em_counter::event( int id ) {
     case EVT_HI:
       return sensor();
     case EVT_DIG0:      
-      return ist[0] != soll[0];
+      return solved[0] || ( ist[0] != soll[0] );
     case EVT_DIG1:
-      return ist[1] != soll[1];
+      return solved[1] || ( ist[1] != soll[1] );
     case EVT_DIG2:
-      return ist[2] != soll[2];
+      return solved[2] || ( ist[2] != soll[2] );
     case EVT_DIG3:
-      return ist[3] != soll[3];
+      return solved[3] || ( ist[3] != soll[3] );
     case EVT_RESET:
       return 0;
     case EVT_TIMER:
@@ -130,19 +131,25 @@ void Atm_em_counter::action( int id ) {
       set( 0 );
       return;
     case ENT_RESET:
-      solved[0] = solved[1] = solved[2] = solved[3] = 0;
+      memset( soll, 0, sizeof( soll ) );
+      memset( ist, 0, sizeof( ist ) );
+      memset( solved, 0, sizeof( solved ) );
       return;
     case ENT_PULS0:
       pulse( 0 );
+      ist[0] = 0;
       return;
     case ENT_PULS1:
       pulse( 1 );
+      ist[2] = 0;
       return;
     case ENT_PULS2:
       pulse( 2 );
+      ist[2] = 0;
       return;
     case ENT_PULS3:
       pulse( 3 );
+      ist[3] = 0;
       return;
     case ENT_FRST:
       return;
@@ -161,6 +168,9 @@ void Atm_em_counter::action( int id ) {
         if ( solved[i] == 2 ) pulse( i, true );
         ist[i] = 0;      
       }
+      memset( soll, 0, sizeof( soll ) );
+      memset( ist, 0, sizeof( ist ) );
+      memset( solved, 0, sizeof( solved ) );
       return;
   }
 }
@@ -226,6 +236,7 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
   if ( force || solved[reel] == 0 ) {
     ist[reel] = ( ist[reel] + 1 ) % 10;
     led->on( coil[reel] );
+    /*
     Serial.print( millis() );
     Serial.print( " Pulse reel " );
     Serial.print( reel );
@@ -235,6 +246,7 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
     Serial.print( soll[reel] );
     Serial.print( ", " );
     dump_ist( Serial, false );
+    */
     last_pulse = reel;
   }
   return *this;

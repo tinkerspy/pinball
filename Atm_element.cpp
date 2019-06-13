@@ -242,25 +242,25 @@ Atm_element& Atm_element::onInput( int sub, atm_cb_push_t callback, int idx ) {
 }
 
 /*
- * onKick() push connector variants ( slots 3, autostore 0, broadcast 0 )
+ * onPress() push connector variants ( slots 3, autostore 0, broadcast 0 )
  */
 
-Atm_element& Atm_element::onKick( Machine& machine, int event ) {
+Atm_element& Atm_element::onPress( Machine& machine, int event ) {
   onPush( connectors, ON_KICK, 0, 3, 1, machine, event );
   return *this;
 }
 
-Atm_element& Atm_element::onKick( atm_cb_push_t callback, int idx ) {
+Atm_element& Atm_element::onPress( atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_KICK, 0, 3, 1, callback, idx );
   return *this;
 }
 
-Atm_element& Atm_element::onKick( int sub, Machine& machine, int event ) {
+Atm_element& Atm_element::onPress( int sub, Machine& machine, int event ) {
   onPush( connectors, ON_KICK, sub, 3, 0, machine, event );
   return *this;
 }
 
-Atm_element& Atm_element::onKick( int sub, atm_cb_push_t callback, int idx ) {
+Atm_element& Atm_element::onPress( int sub, atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_KICK, sub, 3, 0, callback, idx );
   return *this;
 }

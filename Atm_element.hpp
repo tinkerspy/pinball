@@ -23,10 +23,10 @@ class Atm_element: public Machine {
   Atm_element& onInput( atm_cb_push_t callback, int idx = 0 );
   Atm_element& onInput( int sub, Machine& machine, int event = 0 );
   Atm_element& onInput( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_element& onKick( Machine& machine, int event = 0 );
-  Atm_element& onKick( atm_cb_push_t callback, int idx = 0 );
-  Atm_element& onKick( int sub, Machine& machine, int event = 0 );
-  Atm_element& onKick( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_element& onPress( Machine& machine, int event = 0 );
+  Atm_element& onPress( atm_cb_push_t callback, int idx = 0 );
+  Atm_element& onPress( int sub, Machine& machine, int event = 0 );
+  Atm_element& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_element& onLight( Machine& machine, int event = 0 );
   Atm_element& onLight( atm_cb_push_t callback, int idx = 0 );
   Atm_element& onLight( int sub, Machine& machine, int event = 0 );

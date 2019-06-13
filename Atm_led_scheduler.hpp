@@ -40,7 +40,7 @@ class Atm_led_scheduler: public Machine {
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_scheduler( void ) : Machine() {};
-  Atm_led_scheduler& begin( IO &io, const int16_t* group_def );
+  Atm_led_scheduler& begin( IO &io, const int16_t* group_definition, const int16_t* profile_definition );
   Atm_led_scheduler& trace( Stream & stream );
   Atm_led_scheduler& trigger( int event );
   int state( void );
@@ -61,7 +61,8 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& dump_meta( Stream& stream );
 
 protected:
-  Atm_led_scheduler& groups( const int16_t* group_def ); 
+  Atm_led_scheduler& parseGroups( const int16_t* group_def ); 
+  Atm_led_scheduler& parseProfiles( const int16_t* profile_def ); 
   Atm_led_scheduler& group_set( int16_t ledno, uint32_t c ); 
   Atm_led_scheduler& group_on( int ledno );
   Atm_led_scheduler& group_off( int ledno ); 

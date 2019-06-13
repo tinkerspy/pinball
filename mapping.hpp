@@ -16,7 +16,7 @@ const int pin_data = 11;
 const int pin_clock = 13;
 const int pin_latch = 4;
 
-// Output profiles (leds, coils)
+// Led & coil profiles 
 
 enum { 
   PROFILE_COIL, 
@@ -29,6 +29,28 @@ enum {
   PROFILE_GI,
   PROFILE_OXO,
   PROFILE_COUNTER,
+};
+
+/* 
+ *  - ID Profile ID
+ *  - T0 Wait time before led on
+ *  - L1 Initial led level (0-255)
+ *  - T1 Initial period
+ *  - T2 Hold level
+ */ 
+
+const int16_t profile_definition[] = {
+  PROFILE_COIL,        0, 255, 30,   0, -1,
+  PROFILE_LED,         0,   0,  0, 127, -1,
+  PROFILE_FLIPPER,     0, 255, 50, 255, -1,
+  PROFILE_KICKER,   1000,  95, 30,   0, -1,
+  PROFILE_GATE,        0, 255, 30, 255, -1,
+  PROFILE_BUMPER,      0, 255, 30,   0, -1,
+  PROFILE_FEEDER,   1000, 127, 30,   0, -1,
+  PROFILE_GI,          0,   1,  1,   3, -1,
+  PROFILE_OXO,         0,   1,  1, 255, -1,
+  PROFILE_COUNTER,     0, 255, 30,   0, -1,
+  -1,  
 };
 
 // Coils & leds (outputs)
@@ -79,6 +101,8 @@ enum {
   LED_KICKER_GRP,
   LED_UP_LANE_GRP,  
   LED_OXO_GRP,
+  LED_BUMPER_GRP,
+  LED_FLASHER_GRP,
   COIL_COUNTER0_GRP,
   COIL_COUNTER1_GRP,
   COIL_COUNTER2_GRP,
@@ -133,7 +157,7 @@ enum {
  * are performed on the group.
  */
 
-const int16_t group_map[] = {
+const int16_t group_definition[] = {
   LED_KICKER_GRP, 
     LED_KICKER_L, LED_KICKER_R, -1,
   LED_UP_LANE_GRP, 
@@ -149,6 +173,10 @@ const int16_t group_map[] = {
     LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
     LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
     LED_OXO_O, LED_OXO_X, -1,
+  LED_BUMPER_GRP,
+    LED_BUMPER_A, LED_BUMPER_B, LED_BUMPER_C, LED_TARGET_A, LED_TARGET_B, COIL_SAVE_GATE, -1,  
+  LED_FLASHER_GRP,
+    LED_BUMPER_GRP, LED_UP_LANE_GRP, LED_OXO_GRP, LED_KICKER_GRP, LED_SHOOTS_AGAIN, LED_TRIPLE_BONUS, -1,  
   // Add groups per score counter
 //COIL_COUNTER0_GRP,
 //  COIL_COUNTER0_10K, COIL_COUNTER0_1K COIL_COUNTER0_100, COIL_COUNTER0_10, COUNTER0_SENSE, -1,

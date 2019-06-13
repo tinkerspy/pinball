@@ -2,7 +2,7 @@
 
 #include <Automaton.h>
 #include "Atm_led_scheduler.hpp"
-#include "io.hpp"
+#include "Atm_playfield.hpp"
 
 /*  
 0|1|2|3|X  <-  Reel numbering (X=dummy reel)
@@ -29,7 +29,7 @@ class Atm_em_counter: public Machine {
     SCND, SCND1, SCND1W, SCND2, SCND2W, SCND3, SCND3W, THRD, THRD1, THRD1W, THRD2, THRD2W, THRD3, THRD3W, FRTH, FRTH0, FRTHW, FFTH }; // STATES
   enum { EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
   Atm_em_counter( void ) : Machine() {};
-  Atm_em_counter& begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch,  int16_t group_id, int profile );
+  Atm_em_counter& begin( Atm_playfield& playfield, int16_t sensor_switch,  int16_t group_id, int profile );
   Atm_em_counter& trace( Stream & stream );
   Atm_em_counter& trigger( int event );
   int state( void );
@@ -56,8 +56,7 @@ class Atm_em_counter: public Machine {
   Atm_em_counter& pulse( uint8_t reel, uint8_t force = 0 );
   int sensor( void ); // Sensor (simulation)
 
-  Atm_led_scheduler* led;
-  IO* io;
+  Atm_playfield* playfield;
   int coil[4];
   int value;
   uint8_t ist[4], soll[4];
@@ -66,7 +65,7 @@ class Atm_em_counter: public Machine {
   uint8_t solved[4];
 
   atm_timer_millis timer;
-  
+    
 };
 
 /* 

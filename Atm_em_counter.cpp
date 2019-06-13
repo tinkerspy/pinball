@@ -9,7 +9,7 @@
  */
  
 
-Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t sensor_switch, int16_t group_id, int profile ) {
+Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_switch, int16_t group_id, int profile ) {
   
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -60,15 +60,14 @@ Atm_em_counter& Atm_em_counter::begin( IO& io, Atm_led_scheduler& led, int16_t s
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  this->led = &led;
-  this->io = &io;
+  this->playfield = &playfield;
   this->sensor_switch = sensor_switch;
   pinMode( sensor_switch, INPUT_PULLUP );
-  const int16_t* p = led.group( group_id );
-  led.profile( this->coil[0] = p[0], profile );
-  led.profile( this->coil[1] = p[1], profile );
-  led.profile( this->coil[2] = p[2], profile );
-  led.profile( this->coil[3] = p[3], profile );
+  const int16_t* p = playfield.leds().group( group_id );
+  playfield.leds().profile( this->coil[0] = p[0], profile );
+  playfield.leds().profile( this->coil[1] = p[1], profile );
+  playfield.leds().profile( this->coil[2] = p[2], profile );
+  playfield.leds().profile( this->coil[3] = p[3], profile );
   value = 0;
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
@@ -235,7 +234,7 @@ Atm_em_counter& Atm_em_counter::add( int16_t v ) {
 Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
   if ( force || solved[reel] == 0 ) {
     ist[reel] = ( ist[reel] + 1 ) % 10;
-    led->on( coil[reel] );
+    playfield->leds().on( coil[reel] );
     /*
     Serial.print( millis() );
     Serial.print( " Pulse reel " );
@@ -253,7 +252,7 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
 }
 
 int Atm_em_counter::sensor( void ) {
-  return io->isPressed( sensor_switch );
+  return playfield->isPressed( sensor_switch );
 }
 
 Atm_em_counter& Atm_em_counter::dump_soll( Stream & stream ) {

@@ -36,6 +36,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& trace( Stream & stream );
   Atm_playfield& trigger( int event );
   int state( void );
+  bool isPressed( int16_t n );
   Atm_playfield& onPress( int sub, Machine& machine, int event = 0 );
   Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );

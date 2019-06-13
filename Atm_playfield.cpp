@@ -84,6 +84,10 @@ Atm_playfield& Atm_playfield::enable() {
   return *this;   
 }
 
+bool Atm_playfield::isPressed( int16_t n ) {
+  return io->isPressed( n );
+}
+
 void Atm_playfield::scan_matrix( bool active ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {

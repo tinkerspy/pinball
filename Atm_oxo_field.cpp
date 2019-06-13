@@ -11,7 +11,7 @@
  */
 
 
-Atm_oxo_field& Atm_oxo_field::begin( Atm_led_scheduler& led, int16_t group_id, uint8_t oxo_profile /* = PROFILE_LED */, uint8_t led_profile /* = PROFILE_LED */ ) { // Expects 9 * 3 + 2 leds
+Atm_oxo_field& Atm_oxo_field::begin( Atm_playfield& playfield, int16_t group_id, uint8_t oxo_profile /* = PROFILE_LED */, uint8_t led_profile /* = PROFILE_LED */ ) { // Expects 9 * 3 + 2 leds
   // clang-format off
   const static state_t state_table[] PROGMEM = { 
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_MATCH  EVT_1X  EVT_1O  EVT_2X  EVT_2O  EVT_3X  EVT_3O  EVT_4  EVT_5  EVT_6  EVT_7  EVT_8  EVT_9  EVT_INIT  EVT_TOGGLE  ELSE */
@@ -34,14 +34,14 @@ Atm_oxo_field& Atm_oxo_field::begin( Atm_led_scheduler& led, int16_t group_id, u
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  this->led_map = led.group( group_id );
-  this->led = &led;
+  this->playfield = &playfield;
+  this->led_map = playfield.leds().group( group_id );
   for ( uint8_t i = 0; i < 27; i++ ) {
-    led.profile( led_map[i], oxo_profile );
+    playfield.leds().profile( led_map[i], oxo_profile );
   }
-  led.profile( led_map[27], led_profile );
-  led.profile( led_map[28], led_profile );
-  led.on( led_map[27] ); // Default selector: X
+  playfield.leds().profile( led_map[27], led_profile );
+  playfield.leds().profile( led_map[28], led_profile );
+  playfield.leds().on( led_map[27] ); // Default selector: X
   return *this;          
 }
 
@@ -117,37 +117,37 @@ void Atm_oxo_field::action( int id ) {
     case ENT_4:
       if ( !set( 4 ) ) {
         set_to_active( 4 );
-        push( connectors, ON_SET, 0, 4, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 4, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_5:
       if ( !set( 5 ) ) {
         set_to_active( 5 );
-        push( connectors, ON_SET, 0, 5, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 5, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_6:
       if ( !set( 6 ) ) {
         set_to_active( 6 );
-        push( connectors, ON_SET, 0, 6, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 6, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_7:
       if ( !set( 7 ) ) {
         set_to_active( 7 );
-        push( connectors, ON_SET, 0, 7, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 7, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_8:
       if ( !set( 8 ) ) {
         set_to_active( 8 );
-        push( connectors, ON_SET, 0, 8, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 8, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_9:
       if ( !set( 9 ) ) {
         set_to_active( 9 );
-        push( connectors, ON_SET, 0, 9, led->active( led_map[ 27 ] ) ? 1 : 0 );
+        push( connectors, ON_SET, 0, 9, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       }
       return;
     case ENT_MATCH:
@@ -157,13 +157,13 @@ void Atm_oxo_field::action( int id ) {
       for ( int i = 0; i < 9; i++ ) {
         set( i + 1, 0 );
       }
-      push( connectors, ON_INIT, 0, 9, led->active( led_map[ 27 ] ) ? 1 : 0 );
+      push( connectors, ON_INIT, 0, 9, playfield->leds().active( led_map[ 27 ] ) ? 1 : 0 );
       return;
     case ENT_TOGGLE:
-      if ( led->active( led_map[ 27 ] ) ) {
-        led->off( led_map[ 27 ] ).on( led_map[ 28 ] );
+      if ( playfield->leds().active( led_map[ 27 ] ) ) {
+        playfield->leds().off( led_map[ 27 ] ).on( led_map[ 28 ] );
       } else {
-        led->off( led_map[ 28 ] ).on( led_map[ 27 ] );
+        playfield->leds().off( led_map[ 28 ] ).on( led_map[ 27 ] );
       }
       return;
   }
@@ -189,25 +189,25 @@ int Atm_oxo_field::state( void ) {
 void Atm_oxo_field::set( int cell, char v ) {
   switch ( v ) {
     case 'X':
-      led->on( led_map[ ( cell - 1 ) * 3 + 1 ] );
+      playfield->leds().on( led_map[ ( cell - 1 ) * 3 + 1 ] );
       return;
     case 'O':
-      led->on( led_map[ ( cell - 1 ) * 3 + 0 ] );
-      led->on( led_map[ ( cell - 1 ) * 3 + 2 ] );
+      playfield->leds().on( led_map[ ( cell - 1 ) * 3 + 0 ] );
+      playfield->leds().on( led_map[ ( cell - 1 ) * 3 + 2 ] );
       return;
   }
-  led->off( led_map[ ( cell - 1 ) * 3 + 1 ] );
-  led->off( led_map[ ( cell - 1 ) * 3 + 0 ] );
-  led->off( led_map[ ( cell - 1 ) * 3 + 2 ] );
+  playfield->leds().off( led_map[ ( cell - 1 ) * 3 + 1 ] );
+  playfield->leds().off( led_map[ ( cell - 1 ) * 3 + 0 ] );
+  playfield->leds().off( led_map[ ( cell - 1 ) * 3 + 2 ] );
 }
 
 void Atm_oxo_field::set_to_active( int cell ) {
-  set( cell, led->active( led_map[27] ) ? 'X' : 'O' );
+  set( cell, playfield->leds().active( led_map[27] ) ? 'X' : 'O' );
 }
 
 char Atm_oxo_field::set( int cell ) {
-  if ( led->active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
-  if ( led->active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
+  if ( playfield->leds().active( led_map[ ( cell - 1 ) * 3 + 0 ] ) ) return 'O';
+  if ( playfield->leds().active( led_map[ ( cell - 1 ) * 3 + 1 ] ) ) return 'X';
   return 0;
 }
 
@@ -264,8 +264,8 @@ Atm_oxo_field& Atm_oxo_field::dumpWins( Stream &stream, oxo_wins_t &wins, int id
 }
 
 Atm_oxo_field& Atm_oxo_field::select( char v ) {
-  if ( v == 'O' ) led->on( 28 ).off( 27 );
-  if ( v == 'X' ) led->on( 27 ).off( 28 );
+  if ( v == 'O' ) playfield->leds().on( 28 ).off( 27 );
+  if ( v == 'X' ) playfield->leds().on( 27 ).off( 28 );
   return *this;  
 }
 

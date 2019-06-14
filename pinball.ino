@@ -16,7 +16,9 @@ void setup() {
     
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
-    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip
+    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
+    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet DUMMY!!!
+    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P3/headbox
     .invert( BALL_ENTER )
     .retrigger()
     .show();
@@ -62,20 +64,20 @@ void setup() {
   playfield.onPress(   PORT_2X, oxo, oxo.EVT_2X );
   playfield.onPress(   PORT_3O, oxo, oxo.EVT_3O );
   playfield.onPress(   PORT_3X, oxo, oxo.EVT_3X );
-  playfield.element( UP_LANE_L ).onPress( false, oxo, oxo.EVT_4 );
+  playfield.element( UP_LANE_L ).onPress( oxo, oxo.EVT_4 );
   playfield.onPress(  TARGET_C, oxo, oxo.EVT_5 );
-  playfield.element( UP_LANE_R ).onPress( false, oxo, oxo.EVT_6 );
+  playfield.element( UP_LANE_R ).onPress( oxo, oxo.EVT_6 );
   playfield.onPress( IN_LANE_L, oxo, oxo.EVT_7 );
   playfield.onPress(  ROLLOVER, oxo, oxo.EVT_8 );
   playfield.onPress( IN_LANE_R, oxo, oxo.EVT_9 );
 
   // Toggle O -> X -> O
-  playfield.element( SLING_L ).onPress( oxo, oxo.EVT_TOGGLE );
+  playfield.element( SLING_L ).onPress( oxo, oxo.EVT_TOGGLE ); // Replace with playfield.OR( SW_SLING_GRP ).onPress( oxo, oxo::EVT_TOGGLE );
   playfield.element( SLING_R ).onPress( oxo, oxo.EVT_TOGGLE );
 
   // OXO tix-tac-toe match lites 'extra ball' on kickers
   // TODO all nine fields lights 'special' on upper lanes
-  oxo.onMatch( playfield.element( LED_KICKER_GRP ), Atm_element::EVT_ON );
+  oxo.onMatch( playfield.element( LED_KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
   // Light the same player shoots again led
   playfield.element(  KICKER_L ).onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
@@ -84,6 +86,9 @@ void setup() {
   playfield.element( UP_LANE_R ).onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   
   // TARGET -> BUMPER -> GATE logic
+
+  // Replace with playfield.OR( SW_TARGET_GRP ).onPress( oxo, oxo::EVT_TOGGLE );
+  // Specially configured Atm_element object.
 
   playfield.element( TARGET_A )
     .autoLight()
@@ -112,7 +117,9 @@ void setup() {
     }     
   });
 
-  playfield.onPress( BALL_EXIT, playfield.element( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+  playfield.onPress( BALL_EXIT, [] ( int idx, int v, int up ) {  // Om dit anders te doen moet je een virtual switch inrichten en daar de LED_FLASHER_GRP aan hangen
+    playfield.leds().off( LED_FLASHER_GRP );
+  });
 
   // end of logic
 

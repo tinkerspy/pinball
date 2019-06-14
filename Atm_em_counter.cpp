@@ -35,7 +35,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
     /* FRST2W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST3,
     /* FRST3 */ENT_PULS3,        -1,      -1,     -1,     -1,    FRST1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
     /* FRST3W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
-// Solve second reel (first that goes high)
+// Solve second reel (first that goes high) by pulsing the remaining 2
     /* SCND  */ ENT_SCND,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
     /* SCND1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    SCND2,       -1,        -1,       -1,    SCND1W,         -1,    -1,
     /* SCND1W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
@@ -43,7 +43,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
     /* SCND2W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
     /* SCND3 */ENT_PULS3,        -1,      -1,     -1,     -1,    SCND1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
     /* SCND3W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
-// Solve third reel (frst that goes high, and keep it at 9 to solve reel 0)
+// Solve third reel (first that goes high, and keep it at 9 to solve reel 0)
     /* THRD  */ ENT_THRD,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     THRD1,         -1,    -1,
     /* THRD1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    THRD2,       -1,        -1,       -1,    THRD1W,         -1,    -1,
     /* THRD1W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,

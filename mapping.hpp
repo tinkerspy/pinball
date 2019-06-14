@@ -97,9 +97,9 @@ enum {
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_O, LED_OXO_X,
 
-  COIL_CHIME0,  // Dummy entries for led strip on P2 (cabinet)
-  COIL_CHIME1,
-  COIL_CHIME3,
+  COIL_CHIME_10,  // Dummy entries for led strip on P2 (cabinet)
+  COIL_CHIME_100,
+  COIL_CHIME_1K,
   COIL_KNOCKER,
   
   COIL_COUNTER0_10, // Strip on P3 (headbox)
@@ -149,21 +149,21 @@ enum {
   IN_LANE_R,
   BALL_ENTER,
   BALL_EXIT,
-  DUMMY216,
-  DUMMY217,
-  DUMMY218,
+  SWITCH216,
+  SWITCH217,
+  SWITCH218,
   FLIPPER_L,
   FLIPPER_R,
-  DUMMY314,
-  DUMMY315,
-  DUMMY316,
-  DUMMY317,
-  DUMMY318,
-  DUMMY319,
-  COUNTER0_SENSE,
-  COUNTER1_SENSE,
-  COUNTER2_SENSE,
-  COUNTER3_SENSE,
+  SWITCH314,
+  SWITCH315,
+  SWITCH316,
+  SWITCH317,
+  SWITCH318,
+  SWITCH319,
+  COUNTER0,
+  COUNTER1,
+  COUNTER2,
+  COUNTER3,
   
 /* Virtual switches (for elements without physical switches) */  
   SAVE_GATE, 
@@ -234,10 +234,21 @@ char switch_names[] =
   "ROLLOVER  \0"
   "IN_LANE_R \0"
   "BALL_ENTER\0"
-  "BALL_EXIT \0"
-  "DUMMY1    \0"
-  "DUMMY2    \0"
-  "DUMMY3    \0"
+  "BALL_EXIT \0" 
+  "SWITCH216 \0"
+  "SWITCH217 \0"
+  "SWITCH218 \0"
   "FLIPPER_L \0"
   "FLIPPER_R \0"
+  "SWITCH314 \0"
+  "SWITCH315 \0"
+  "SWITCH316 \0"
+  "SWITCH317 \0"
+  "SWITCH318 \0"
+  "SWITCH319 \0"
+  "COUNTER0  \0"
+  "COUNTER1  \0"
+  "COUNTER2  \0"
+  "COUNTER3  \0"
   "SAVE_GATE \0";
+  

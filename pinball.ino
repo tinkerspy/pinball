@@ -56,7 +56,7 @@ void setup() {
   // Start OXO widget and connect to the proper switches 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO );
 
-  //counter.begin( playfield, COUNTER0_SENSE, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
+  //counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
   
   playfield.onPress(   PORT_1O, oxo, oxo.EVT_1O );
   playfield.onPress(   PORT_1X, oxo, oxo.EVT_1X );

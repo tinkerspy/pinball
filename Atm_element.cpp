@@ -26,7 +26,6 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
   led.profile( coil_led, coil_profile );
   led.profile( light_led, led_profile );
   switch_state = false;
-  led_state = false;
   autolight = false;
   autokick = true;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
@@ -43,7 +42,7 @@ int Atm_element::event( int id ) {
     case EVT_TIMER:
       return timer.expired( this );
     case EVT_LIT:
-      return light_led > -1 ? led_state : 0;
+      return state();
   }
   return 0;
 }
@@ -68,23 +67,26 @@ void Atm_element::action( int id ) {
       if ( autolight ) { 
         connectors[ON_LIGHT+1].push( 1 ); 
         led->on( light_led );
-        led_state = true;
       }
       //connectors[ON_KICK+2].push( 1 );
-      if ( led_state || led->active( light_led ) ) {  
+      if ( state() ) {  
         connectors[ON_KICK+1].push( 1 );
       } else {
         connectors[ON_KICK+0].push( 1 );
+      }
+      if ( state() ) { 
+        if ( score_lit) counter->trigger( score_lit );
+      } else {
+        if ( score_unlit) counter->trigger( score_unlit );
       }
       return;
     case ENT_INIT:
       connectors[ON_INIT].push( 1 );
       led->off( light_led );
-      led_state = false;
       return;
     case ENT_INPUT:
       //connectors[ON_INPUT+2].push( 1 );
-      if ( led_state || led->active( light_led ) ) {  
+      if ( state() ) {  
         connectors[ON_INPUT+1].push( 1 );
       } else {
         connectors[ON_INPUT+0].push( 1 );
@@ -96,13 +98,11 @@ void Atm_element::action( int id ) {
       return;
     case ENT_LIGHT_ON:
       led->on( light_led );
-      led_state = true;
       //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+1].push( 1 ); 
       return;
     case ENT_LIGHT_OFF:
       led->off( light_led );
-      led_state = false;
       //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+0].push( 1 );
       return;
@@ -133,7 +133,7 @@ Atm_element& Atm_element::trigger( int event ) {
 int Atm_element::state( void ) {
   // If there's a led return its state else return the switch state
   if ( light_led > -1 ) {
-    return led_state || led->active( light_led ); 
+    return led->active( light_led ); 
   } else {
     return switch_state;    
   }
@@ -202,6 +202,12 @@ Atm_element& Atm_element::autoKick( int v ) {
   return *this;
 }
 
+Atm_element& Atm_element::onScore( Machine& machine, int event_unlit, int event_lit /* = -1 */ ) {
+  score_unlit = event_unlit;
+  score_lit = event_lit == -1 ? event_unlit : event_lit;
+  counter = &machine;
+  return *this;
+}
 
 /*
  * onInit() push connector variants ( slots 3, autostore 0, broadcast 0 )

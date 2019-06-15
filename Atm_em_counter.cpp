@@ -72,7 +72,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
   memset( solved, 0, sizeof( solved ) );
-  timer.set( 100 );
+  timer.set( 150 );
   return *this;          
 }
 
@@ -170,6 +170,7 @@ void Atm_em_counter::action( int id ) {
       memset( soll, 0, sizeof( soll ) );
       memset( ist, 0, sizeof( ist ) );
       memset( solved, 0, sizeof( solved ) );
+      value = 0;
       return;
   }
 }
@@ -214,6 +215,8 @@ Atm_em_counter& Atm_em_counter::set( uint16_t v ) {
   soll[2] = v % 100 / 10;
   soll[1] = v % 1000 / 100;
   soll[0] = v % 10000 / 1000;
+  Serial.print( "set: " );
+  Serial.println( value );
   trigger( EVT_CHANGE );
   return *this;
 }

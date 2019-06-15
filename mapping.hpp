@@ -149,17 +149,15 @@ enum {
   IN_LANE_R,
   BALL_ENTER,
   BALL_EXIT,
-  SWITCH216,
-  SWITCH217,
-  SWITCH218,
+  SWITCH211,
+  SWITCH212,
+  SWITCH213,
   FLIPPER_L,
   FLIPPER_R,
-  SWITCH314,
-  SWITCH315,
-  SWITCH316,
-  SWITCH317,
-  SWITCH318,
-  SWITCH319,
+  SWITCH216,
+  SWITCH217,
+  FRONTBTN,
+  SWITCH311,
   COUNTER0,
   COUNTER1,
   COUNTER2,
@@ -167,6 +165,7 @@ enum {
   
 /* Virtual switches (for elements without physical switches) */  
   SAVE_GATE, 
+  LED_FLASHERS,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds)
@@ -235,17 +234,15 @@ char switch_names[] =
   "IN_LANE_R \0"
   "BALL_ENTER\0"
   "BALL_EXIT \0" 
-  "SWITCH216 \0"
-  "SWITCH217 \0"
-  "SWITCH218 \0"
+  "SWITCH211 \0"
+  "SWITCH212 \0"
+  "SWITCH213 \0"
   "FLIPPER_L \0"
   "FLIPPER_R \0"
-  "SWITCH314 \0"
-  "SWITCH315 \0"
-  "SWITCH316 \0"
-  "SWITCH317 \0"
-  "SWITCH318 \0"
-  "SWITCH319 \0"
+  "SWITCH216 \0"
+  "SWITCH217 \0"
+  "FRONTBTN  \0"
+  "SWITCH311 \0"
   "COUNTER0  \0"
   "COUNTER1  \0"
   "COUNTER2  \0"

@@ -23,6 +23,10 @@ class Atm_element: public Machine {
   Atm_element& onInput( atm_cb_push_t callback, int idx = 0 );
   Atm_element& onInput( int sub, Machine& machine, int event = 0 );
   Atm_element& onInput( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_element& onScore( Machine& machine, int event_unlit, int event_lit = -1 );
+  Atm_element& onScore( atm_cb_push_t callback, int idx = 0 );
+  Atm_element& onScore( int sub, Machine& machine, int event = 0 );
+  Atm_element& onScore( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_element& onPress( Machine& machine, int event = 0 );
   Atm_element& onPress( atm_cb_push_t callback, int idx = 0 );
   Atm_element& onPress( int sub, Machine& machine, int event = 0 );
@@ -54,7 +58,9 @@ class Atm_element: public Machine {
   void action( int id ); 
   atm_timer_millis timer;
   int16_t light_led, coil_led, autolight, autokick;
+  int score_lit = 0, score_unlit = 0;
+  Machine *counter;
   Atm_led_scheduler *led;
-  bool switch_state, led_state;
+  bool switch_state;
   uint32_t changed;
 };

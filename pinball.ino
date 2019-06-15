@@ -27,14 +27,46 @@ void setup() {
 
   playfield.begin( io, leds ).debounce( 20, 20 );
 
+  counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
+
   // Playfield element instantiation
-  playfield.element( TARGET_A, -1, LED_TARGET_A );
-  playfield.element( TARGET_B, -1, LED_TARGET_B );
-  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER ); 
-  playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER );
-  playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER );
-  playfield.element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER );
-  playfield.element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER );
+
+  playfield.element( FRONTBTN ).onPress( counter, counter.EVT_RESET );
+
+  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER ); // Forward declaration
+  playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER ); // Can be solved by allowing overrides after instantiation!!!
+  playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER ); 
+  
+  playfield.element( TARGET_A, -1, LED_TARGET_A )
+    .autoLight( true )
+    .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON )
+    .onScore( counter, counter.EVT_100 ); 
+  
+  playfield.element( TARGET_B, -1, LED_TARGET_B )
+    .autoLight( true )
+    .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ) 
+    .onScore( counter, counter.EVT_100 ); 
+
+  playfield.element( BUMPER_A )
+    .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )
+    .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+
+ // playfield.element( BUMPER_A ).kick();
+
+  playfield.element( BUMPER_B )
+    .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )
+    .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+
+  playfield.element( BUMPER_C )
+    .onInput( [] ( int idx, int v, int up ) {
+      if ( playfield.element( BUMPER_A ).state() && playfield.element( BUMPER_B ).state() ) {
+        playfield.leds().on( LED_BUMPER_GRP );
+      }
+    })
+    .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
+  
+  playfield.element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER ).onScore( counter, counter.EVT_500, counter.EVT_5000 );
+  playfield.element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER ).onScore( counter, counter.EVT_500, counter.EVT_5000 );
   playfield.element( SLING_L, COIL_SLING_L, -1 );
   playfield.element( SLING_R, COIL_SLING_R, -1 );
   playfield.element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
@@ -43,6 +75,7 @@ void setup() {
   playfield.element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER );
   playfield.element( UP_LANE_L, -1, LED_UP_LANE_GRP );
   playfield.element( UP_LANE_R, -1, LED_UP_LANE_GRP );
+  playfield.element( OUT_LANE ).onScore( counter, counter.EVT_1000 );
 
   // Turn on the General Illumination
   playfield.leds().profile( COIL_GI, PROFILE_GI ).on( COIL_GI );
@@ -56,28 +89,27 @@ void setup() {
   // Start OXO widget and connect to the proper switches 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO );
 
-  //counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
   
-  playfield.onPress(   PORT_1O, oxo, oxo.EVT_1O );
-  playfield.onPress(   PORT_1X, oxo, oxo.EVT_1X );
-  playfield.onPress(   PORT_2O, oxo, oxo.EVT_2O );
-  playfield.onPress(   PORT_2X, oxo, oxo.EVT_2X );
-  playfield.onPress(   PORT_3O, oxo, oxo.EVT_3O );
-  playfield.onPress(   PORT_3X, oxo, oxo.EVT_3X );
-  playfield.element( UP_LANE_L ).onPress( oxo, oxo.EVT_4 );
-  playfield.onPress(  TARGET_C, oxo, oxo.EVT_5 );
-  playfield.element( UP_LANE_R ).onPress( oxo, oxo.EVT_6 );
-  playfield.onPress( IN_LANE_L, oxo, oxo.EVT_7 );
-  playfield.onPress(  ROLLOVER, oxo, oxo.EVT_8 );
-  playfield.onPress( IN_LANE_R, oxo, oxo.EVT_9 );
+  playfield.element(   PORT_1O ).onPress( oxo, oxo.EVT_1O ).onScore( counter, counter.EVT_10 );
+  playfield.element(   PORT_1X ).onPress( oxo, oxo.EVT_1X ).onScore( counter, counter.EVT_10 );
+  playfield.element(   PORT_2O ).onPress( oxo, oxo.EVT_2O ).onScore( counter, counter.EVT_10 );
+  playfield.element(   PORT_2X ).onPress( oxo, oxo.EVT_2X ).onScore( counter, counter.EVT_10 );
+  playfield.element(   PORT_3O ).onPress( oxo, oxo.EVT_3O ).onScore( counter, counter.EVT_10 );
+  playfield.element(   PORT_3X ).onPress( oxo, oxo.EVT_3X ).onScore( counter, counter.EVT_10 );
+  playfield.element( UP_LANE_L ).onPress( oxo, oxo.EVT_4 ).onScore( counter, counter.EVT_1000, counter.EVT_5000 );
+  playfield.element(  TARGET_C ).onPress( oxo, oxo.EVT_5 ).onScore( counter, counter.EVT_500 );
+  playfield.element( UP_LANE_R ).onPress( oxo, oxo.EVT_6 ).onScore( counter, counter.EVT_1000, counter.EVT_5000 );
+  playfield.element( IN_LANE_L ).onPress( oxo, oxo.EVT_7 ).onScore( counter, counter.EVT_1000 );
+  playfield.element(  ROLLOVER ).onPress( oxo, oxo.EVT_8 ).onScore( counter, counter.EVT_500 );
+  playfield.element( IN_LANE_R ).onPress( oxo, oxo.EVT_9 ).onScore( counter, counter.EVT_1000 );
 
   // Toggle O -> X -> O
-  playfield.element( SLING_L ).onPress( oxo, oxo.EVT_TOGGLE ); // Replace with playfield.OR( SW_SLING_GRP ).onPress( oxo, oxo::EVT_TOGGLE );
-  playfield.element( SLING_R ).onPress( oxo, oxo.EVT_TOGGLE );
+  playfield.element( SLING_L ).onPress( oxo, oxo.EVT_TOGGLE ).onScore( counter, counter.EVT_10 ); // Replace with playfield.OR( SW_SLING_GRP ).onPress( oxo, oxo::EVT_TOGGLE );
+  playfield.element( SLING_R ).onPress( oxo, oxo.EVT_TOGGLE ).onScore( counter, counter.EVT_10 );
 
   // OXO tix-tac-toe match lites 'extra ball' on kickers
   // TODO all nine fields lights 'special' on upper lanes
-  oxo.onMatch( playfield.element( LED_KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
+  oxo.onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
   // Light the same player shoots again led
   playfield.element(  KICKER_L ).onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
@@ -85,32 +117,6 @@ void setup() {
   playfield.element( UP_LANE_L ).onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   playfield.element( UP_LANE_R ).onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON );
   
-  // TARGET -> BUMPER -> GATE logic
-
-  // Replace with playfield.OR( SW_TARGET_GRP ).onPress( oxo, oxo::EVT_TOGGLE );
-  // Specially configured Atm_element object.
-
-  playfield.element( TARGET_A )
-    .autoLight()
-    .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON ); 
-    
-  playfield.element( TARGET_B )
-    .autoLight()
-    .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ); 
-
-  playfield.element( BUMPER_A )
-    .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT );
-
-  playfield.element( BUMPER_B )
-    .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT );
-
-  playfield.element( BUMPER_C )
-    .onInput( [] ( int idx, int v, int up ) {
-      if ( playfield.element( BUMPER_A ).state() && playfield.element( BUMPER_B ).state() ) {
-        playfield.leds().on( LED_BUMPER_GRP );
-      }
-    });
-    
   playfield.onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
     if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) { // Fix hardware switch instead
       playfield.leds().off( LED_BUMPER_GRP );
@@ -121,9 +127,14 @@ void setup() {
     playfield.leds().off( LED_FLASHER_GRP );
   });
 
+  // Dat kan on-the-fly:
+  //playfield.element( BALL_EXIT ).onPress( playfield.element( LED_FLASHERS, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+
+
   // end of logic
 
   Serial.println( FreeRam() );
+
 }
 
 void loop() {  

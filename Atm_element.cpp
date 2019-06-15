@@ -20,16 +20,21 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  light_led = light;
-  coil_led = coil;
   this->led = &led;
-  led.profile( coil_led, coil_profile );
-  led.profile( light_led, led_profile );
+  initialize( coil, light, coil_profile, led_profile );
   switch_state = false;
   autolight = false;
   autokick = true;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
   changed = millis();
+  return *this;          
+}
+
+Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
+  light_led = light;
+  coil_led = coil;
+  led->profile( coil_led, coil_profile );
+  led->profile( light_led, led_profile );
   return *this;          
 }
 

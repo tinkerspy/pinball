@@ -32,26 +32,20 @@ void setup() {
   // Playfield element instantiation
 
   playfield.element( FRONTBTN ).onPress( counter, counter.EVT_RESET );
-
-  playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER ); // Forward declaration
-  playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER ); // Can be solved by allowing overrides after instantiation!!!
-  playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER ); 
   
   playfield.element( TARGET_A, -1, LED_TARGET_A )
     .autoLight( true )
-    .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON )
+    .onLight( true, playfield.element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER  ), Atm_element::EVT_ON )
     .onScore( counter, counter.EVT_100 ); 
   
   playfield.element( TARGET_B, -1, LED_TARGET_B )
     .autoLight( true )
-    .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ) 
+    .onLight( true, playfield.element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER  ), Atm_element::EVT_ON ) 
     .onScore( counter, counter.EVT_100 ); 
 
   playfield.element( BUMPER_A )
-    .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )
+    .onLight( true, playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER  ), Atm_element::EVT_INPUT )
     .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
-
- // playfield.element( BUMPER_A ).kick();
 
   playfield.element( BUMPER_B )
     .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )

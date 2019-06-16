@@ -2,6 +2,7 @@
 
 #include <Automaton.h>
 #include "Atm_playfield.hpp"
+#include "Atm_led_scheduler.hpp"
 
 
 typedef char oxo_wins_t[8][3];
@@ -53,6 +54,6 @@ class Atm_oxo_field: public Machine {
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
-  Atm_playfield *playfield;
+  Atm_led_scheduler *leds;
   const int16_t *led_map;
 };

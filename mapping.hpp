@@ -36,19 +36,20 @@ enum {
  *  - T0 Wait time before led on
  *  - L1 Initial led level (0-255)
  *  - T1 Initial period
- *  - T2 Hold level
+ *  - L2 Hold level
  */ 
 
 const int16_t profile_definition[] = {
+/*                    T0   L1  T1   L2  */ 
   PROFILE_COIL,        0, 255, 30,   0, -1,
   PROFILE_LED,         0,   0,  0, 127, -1,
-  PROFILE_FLIPPER,     0, 255, 50, 255, -1,
+  PROFILE_FLIPPER,     0,   0,  0, 255, -1,
   PROFILE_KICKER,   1000,  95, 30,   0, -1,
-  PROFILE_GATE,        0, 255, 30, 255, -1,
+  PROFILE_GATE,        0,   0,  0, 255, -1,
   PROFILE_BUMPER,      0, 255, 30,   0, -1,
   PROFILE_FEEDER,   1000, 127, 30,   0, -1,
-  PROFILE_GI,          0,   1,  1,   3, -1,
-  PROFILE_OXO,         0,   1,  1, 255, -1,
+  PROFILE_GI,          0,   0,  0,   3, -1,
+  PROFILE_OXO,         0,   0,  0, 127, -1,
   PROFILE_COUNTER,     0, 255, 30,   0, -1,
   -1,  
 };
@@ -196,7 +197,17 @@ const int16_t group_definition[] = {
   LED_BUMPER_GRP,
     LED_BUMPER_A, LED_BUMPER_B, LED_BUMPER_C, LED_TARGET_A, LED_TARGET_B, COIL_SAVE_GATE, -1,  
   LED_FLASHER_GRP,
-    LED_BUMPER_GRP, LED_UP_LANE_GRP, LED_OXO_GRP, LED_KICKER_GRP, LED_SHOOTS_AGAIN, LED_TRIPLE_BONUS, -1,  
+    LED_BUMPER_GRP, LED_UP_LANE_GRP, LED_KICKER_GRP, LED_SHOOTS_AGAIN, LED_TRIPLE_BONUS, 
+    LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
+    LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
+    LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
+    LED_OXO_4A, LED_OXO_4B, LED_OXO_4C,
+    LED_OXO_5A, LED_OXO_5B, LED_OXO_5C,
+    LED_OXO_6A, LED_OXO_6B, LED_OXO_6C,
+    LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
+    LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
+    LED_OXO_9A, LED_OXO_9B, LED_OXO_9C,
+    -1,  
   // Add groups per score counter
   COIL_COUNTER0_GRP,
     COIL_COUNTER0_10K, COIL_COUNTER0_1K, COIL_COUNTER0_100, COIL_COUNTER0_10, -1,

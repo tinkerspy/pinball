@@ -119,7 +119,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
 Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 0 */ ) {
   if ( !prof[n].initialized ) {
     prof[n].element = new Atm_element();  
-    prof[n].element->begin( *led, coil_led, light_led, coil_profile, led_profile );
+    prof[n].element->begin( *this, coil_led, light_led, coil_profile, led_profile );
     prof[n].initialized = true;
   } else {
     if ( coil_led != -1 && light_led != -1 ) prof[n].element->initialize( coil_led, light_led, coil_profile, led_profile );

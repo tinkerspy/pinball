@@ -6,12 +6,19 @@
 #define MAX_LEDS 1280 // Physical + Logical
 #define MAX_PROFILES 32
 #define MAX_GROUPS 32 // Logical groups
+#define MAX_WATCHERS 16 
 
 struct led_meta_data {
   uint32_t rgbw; 
   uint8_t profile = 0;
   uint32_t last_millis; 
   uint8_t state;
+  uint16_t watch = 0;
+};
+
+struct led_watcher {
+  Machine* machine;
+  int16_t event;
 };
 
 /*
@@ -55,7 +62,9 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& profile( int16_t ledno, uint8_t prof );
   const int16_t* group( int16_t gid );
   int active( int ledno );
-
+  Atm_led_scheduler& onWatch( int16_t ledno, Machine& machine, int16_t event );
+  Atm_led_scheduler& led_register( int16_t ledno, uint8_t idx );
+  
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );
   Atm_led_scheduler& dump_meta( Stream& stream );
@@ -79,5 +88,7 @@ protected:
   uint8_t last_milli;
   IO *io;
   const int16_t* led_group[MAX_GROUPS];
+  led_watcher watchers[MAX_WATCHERS];
+  uint8_t watcher_cnt = 0;
   
 };

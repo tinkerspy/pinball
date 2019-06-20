@@ -1,6 +1,6 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
+Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */
@@ -20,7 +20,7 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  this->led = &led;
+  this->playfield = &playfield;
   initialize( coil, light, coil_profile, led_profile );
   switch_state = false;
   autolight = false;
@@ -31,10 +31,8 @@ Atm_element& Atm_element::begin( Atm_led_scheduler& led, int16_t coil /* -1 */, 
 }
 
 Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
-  light_led = light;
-  coil_led = coil;
-  led->profile( coil_led, coil_profile );
-  led->profile( light_led, led_profile );
+  playfield->leds().profile( coil_led = coil, coil_profile );
+  playfield->leds().profile( light_led = light, led_profile );
   return *this;          
 }
 
@@ -68,10 +66,10 @@ void Atm_element::action( int id ) {
     case ENT_KICKING:
       switch_state = true;
       if ( autokick ) 
-        led->on( coil_led );
+        playfield->leds().on( coil_led );
       if ( autolight ) { 
         connectors[ON_LIGHT+1].push( 1 ); 
-        led->on( light_led );
+        playfield->leds().on( light_led );
       }
       //connectors[ON_KICK+2].push( 1 );
       if ( state() ) {  
@@ -87,7 +85,7 @@ void Atm_element::action( int id ) {
       return;
     case ENT_INIT:
       connectors[ON_INIT].push( 1 );
-      led->off( light_led );
+      playfield->leds().off( light_led );
       return;
     case ENT_INPUT:
       //connectors[ON_INPUT+2].push( 1 );
@@ -99,15 +97,15 @@ void Atm_element::action( int id ) {
       return;
     case ENT_RELEASE:
       switch_state = false;
-      led->off( coil_led );      
+      playfield->leds().off( coil_led );      
       return;
     case ENT_LIGHT_ON:
-      led->on( light_led );
+      playfield->leds().on( light_led );
       //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+1].push( 1 ); 
       return;
     case ENT_LIGHT_OFF:
-      led->off( light_led );
+      playfield->leds().off( light_led );
       //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+0].push( 1 );
       return;
@@ -120,6 +118,12 @@ uint32_t Atm_element::idle() {
 
 bool Atm_element::idle( uint32_t maximum ) { // maximum time idle
   return ( millis() - changed ) < maximum;
+}
+
+
+Atm_element& Atm_element::debounce( uint8_t d, uint16_t r ) {
+  playfield->debounce( coil_led, d, r );
+  return *this;
 }
 
 /* Optionally override the default trigger() method
@@ -138,7 +142,7 @@ Atm_element& Atm_element::trigger( int event ) {
 int Atm_element::state( void ) {
   // If there's a led return its state else return the switch state
   if ( light_led > -1 ) {
-    return led->active( light_led ); 
+    return playfield->leds().active( light_led ); 
   } else {
     return switch_state;    
   }

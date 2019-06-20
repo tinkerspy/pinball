@@ -2,10 +2,13 @@
 
 #include <Automaton.h>
 #include "Atm_led_scheduler.hpp"
+#include "Atm_playfield.hpp"
 
 // Element should eventually accommodate score counter digits
 // - respond to kick by pulsing coil if enabled ( or if led_state is on )
 // - reset function (pulse until zero switch goes low/high) 
+
+class Atm_playfield;
 
 class Atm_element: public Machine {
 
@@ -13,7 +16,7 @@ class Atm_element: public Machine {
   enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, TOGGLE }; // STATES
   enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, ELSE }; // EVENTS
   Atm_element( void ) : Machine() {};
-  Atm_element& begin( Atm_led_scheduler& led, int16_t coil = -1, int16_t light = -1, uint8_t coil_profile = Atm_led_scheduler::PROFILE_COIL, uint8_t led_profile = Atm_led_scheduler::PROFILE_LED ); 
+  Atm_element& begin( Atm_playfield &playfield, int16_t coil = -1, int16_t light = -1, uint8_t coil_profile = Atm_led_scheduler::PROFILE_COIL, uint8_t led_profile = Atm_led_scheduler::PROFILE_LED ); 
   Atm_element& initialize( int16_t coil = -1, int16_t light = -1, uint8_t coil_profile = Atm_led_scheduler::PROFILE_COIL, uint8_t led_profile = Atm_led_scheduler::PROFILE_LED ); 
   Atm_element& trace( Stream & stream );
   Atm_element& trigger( int event );
@@ -47,6 +50,7 @@ class Atm_element: public Machine {
   Atm_element& toggle( void );
   Atm_element& autoLight( int v = 1 ); // Default false, switch triggers light
   Atm_element& autoKick( int v = 1 ); // Default true, switch triggers coil 
+  Atm_element& debounce( uint8_t d, uint16_t r );
   
   uint32_t idle( void ); // Number of millis element has been idle
   bool idle( uint32_t maximum ); // Element has been idle for at most 'maximum' millis  
@@ -61,7 +65,7 @@ class Atm_element: public Machine {
   int16_t light_led, coil_led, autolight, autokick;
   int score_lit = 0, score_unlit = 0;
   Machine *counter;
-  Atm_led_scheduler *led;
+  Atm_playfield *playfield;
   bool switch_state;
   uint32_t changed;
 };

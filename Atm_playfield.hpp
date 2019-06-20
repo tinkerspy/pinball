@@ -9,6 +9,8 @@
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
 
+class Atm_element;
+
 struct switch_record { 
     uint8_t switch_state : 1;
     uint8_t persistent : 1;

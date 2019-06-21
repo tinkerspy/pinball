@@ -87,7 +87,7 @@ void Atm_oxo_field::action( int id ) {
     case ENT_1O:
       if ( !set( 1 ) ) {
         set( 1, 'O' );
-        push( connectors, ON_SET, 0, 2, 0 );
+        push( connectors, ON_SET, 0, 1, 0 );
       }
       return;
     case ENT_2X:

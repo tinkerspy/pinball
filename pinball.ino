@@ -105,10 +105,21 @@ void setup() {
   playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
     .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
 
-  playfield.watch( LED_TARGET_GRP, Atm_watch::ALL )
-    .onMatch( true, playfield.element( BUMPER_GRP, -1, LED_BUMPER_GRP ), Atm_element::EVT_ON );
+  playfield.watch( LED_TARGET_GRP, Atm_watch::ALL, delay_ms )
+    .onChange( true, playfield.element( BUMPER_GRP, -1, LED_BUMPER_GRP ), Atm_element::EVT_ON );
   
  */
+
+  Atm_bit bit;
+  bit.begin()
+    .onChange( true, [] ( int idx, int v, int up ) {
+      Serial.println( "Bit true" );
+    })
+    .onChange( false, [] ( int idx, int v, int up ) {
+      Serial.println( "Bit false" );
+    });
+ 
+  playfield.leds().onWatch( LED_TARGET_GRP, bit, bit.EVT_TOGGLE );
   
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
@@ -180,16 +191,13 @@ void setup() {
       .debounce( 5, 0 );
 
   playfield
-    .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );  
-  
-  playfield
     .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
       .onPress( [] ( int idx, int v, int up ) {  // Om dit anders te doen moet je een virtual switch inrichten en daar de LED_FLASHER_GRP aan hangen
         playfield.leds().off( LED_FLASHER_GRP );
       });
 
   // Dat kan wellicht on-the-fly:
-  //playfield.element( BALL_EXIT ).onPress( playfield.element( LED_FLASHERS, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+  //playfield.element( BALL_EXIT ).onPress( playfield.element( FLASHERS, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 

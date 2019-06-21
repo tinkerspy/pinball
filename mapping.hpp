@@ -114,6 +114,7 @@ enum {
   LED_OXO_GRP,
   LED_BUMPER_GRP,
   LED_FLASHER_GRP,
+  LED_TARGET_GRP,
   COIL_COUNTER0_GRP,
   COIL_COUNTER1_GRP,
   COIL_COUNTER2_GRP,
@@ -165,8 +166,8 @@ enum {
   COUNTER3,
   
 /* Virtual switches (for elements without physical switches) */  
-  SAVE_GATE, 
-  LED_FLASHERS,
+  FLASHERS,
+  TARGET_GRP,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds)
@@ -183,6 +184,8 @@ const int16_t group_definition[] = {
     LED_KICKER_L, LED_KICKER_R, -1,
   LED_UP_LANE_GRP, 
     LED_UP_LANE_L, LED_UP_LANE_R, -1,
+  LED_TARGET_GRP,
+    LED_TARGET_A, LED_TARGET_B, -1,
   LED_OXO_GRP,
     LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
     LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
@@ -258,5 +261,5 @@ char switch_names[] =
   "COUNTER1  \0"
   "COUNTER2  \0"
   "COUNTER3  \0"
-  "SAVE_GATE \0";
+  "FLASHERS \0";
   

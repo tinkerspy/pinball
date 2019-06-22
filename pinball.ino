@@ -29,6 +29,10 @@ void setup() {
 
   counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
 
+  playfield
+    .leds()
+      .profile( LED_FLASHER_GRP, PROFILE_LED );
+
   // Turn on the General Illumination
   playfield
     .leds()

@@ -316,6 +316,6 @@ Atm_element& Atm_element::onLight( int sub, atm_cb_push_t callback, int idx ) {
 Atm_element& Atm_element::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "ELEMENT\0EVT_ON\0EVT_OFF\0EVT_TOGGLE\0EVT_KICK\0EVT_RELEASE\0EVT_INPUT\0EVT_INIT\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_LIT\0EVT_WATCH\0ELSE\0"
-    "IDLE\0DELAY\0KICKING\0DISABLED\0INIT\0INPUTTING\0RELEASE\0LIGHT_ON\0LIGHT_OFF\0TOGGLE" );
+    "IDLE\0DELAY\0KICKING\0DISABLED\0INIT\0INPUTTING\0RELEASE\0LIGHT_ON\0LIGHT_OFF\0WATCH\0TOGGLE" );
   return *this;
 }

@@ -122,9 +122,16 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
     prof[n].element->begin( *this, coil_led, light_led, coil_profile, led_profile );
     prof[n].initialized = true;
   } else {
-    if ( coil_led != -1 && light_led != -1 ) prof[n].element->initialize( coil_led, light_led, coil_profile, led_profile );
+    if ( coil_led >= 0 || light_led >= 0 ) prof[n].element->initialize( coil_led, light_led, coil_profile, led_profile );
   }
   return *prof[n].element;
+}
+
+Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {
+    Atm_element* element = new Atm_element();
+    element->begin( *this, -1, light_led, 0, 0, cnt );
+    led->onWatch( light_led, element, Atm_element::EVT_WATCH );
+    return *element;    
 }
 
 Atm_led_scheduler& Atm_playfield::leds() {

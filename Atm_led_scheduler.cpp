@@ -80,13 +80,7 @@ void Atm_led_scheduler::action( int id ) {
                 refresh = 1;                        
               } else {
                 set( i, 0 );
-                if ( meta[i].watch ) {
-                  for ( uint8_t ii = 0; ii < watcher_cnt; ii++ ) {
-                    if ( meta[i].watch & ( 1 << ii ) ) {
-                      watchers[ii].machine->trigger( watchers[ii].event ); 
-                    }
-                  }
-                }
+                led_notify( i );
                 meta[i].state = LED_STATE_IDLE;
                 refresh = 1;                                            
               }
@@ -198,13 +192,6 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
   if ( ledno > -1 ) {
     if ( ledno >= number_of_leds ) return group_on( ledno );
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
-      if ( meta[ledno].watch ) {
-        for ( uint8_t i = 0; i < watcher_cnt; i++ ) {
-          if ( meta[ledno].watch & ( 1 << i ) ) {
-            watchers[i].machine->trigger( watchers[i].event ); 
-          }
-        }
-      }
       meta[ledno].last_millis = millis();
       if ( led_profile[meta[ledno].profile].T0 ) {      
         meta[ledno].state = LED_STATE_DELAY;
@@ -219,6 +206,7 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
         }
       }
       refresh = 1; 
+      led_notify( ledno );
       if ( !no_update ) trigger( EVT_UPDATE );
     }
   } 
@@ -238,13 +226,7 @@ Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false 
   if ( ledno > -1 && led_profile[meta[ledno].profile].L2 ) { // Ignore off() for leds in pulse mode 
     meta[ledno].state = LED_STATE_IDLE;
     set( ledno, 0 );
-    if ( meta[ledno].watch ) {
-      for ( uint8_t i = 0; i < watcher_cnt; i++ ) {
-        if ( meta[ledno].watch & ( 1 << i ) ) {
-          watchers[i].machine->trigger( watchers[i].event ); 
-        }
-      }
-    }
+    led_notify( ledno );
     refresh = 1; 
     if ( !no_update ) trigger( EVT_UPDATE );
   }
@@ -314,11 +296,53 @@ Atm_led_scheduler& Atm_led_scheduler::led_register( int16_t ledno, uint8_t idx )
   return *this;
 }
 
+Atm_led_scheduler& Atm_led_scheduler::led_notify( int16_t ledno ) {
+  if ( meta[ledno].watch ) {
+    for ( uint8_t i = 0; i < watcher_cnt; i++ ) {
+      if ( meta[ledno].watch & ( 1 << i ) ) {
+        watchers[i].machine->trigger( watchers[i].event ); 
+      }
+    }
+  }
+  return *this;
+}  
+
+int16_t Atm_led_scheduler::count( int16_t ledno, uint8_t led_active /* = 1 */ ) {
+  int16_t cnt = 0;
+  if ( ledno > -1 ) {
+    if ( ledno < number_of_leds ) { // Physical led
+      if ( ledno == -1 ) {
+        cnt++;
+      } else {
+        if ( ( meta[ledno].state > 0 ) == led_active ) cnt++;
+      }
+    } else {   // Virtual led -> expand & recurse
+      const int16_t* p = group( ledno );
+      while ( *p != -1 )
+        cnt += this->count( *p++, led_active );    
+    }    
+  }
+  return cnt;
+}
+
+
 Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine& machine, int16_t event ) {
-  watchers[watcher_cnt].machine = &machine;
-  watchers[watcher_cnt].event = event;
-  led_register( ledno, watcher_cnt );
-  watcher_cnt++;
+  if ( watcher_cnt < MAX_WATCHERS ) {
+    watchers[watcher_cnt].machine = &machine;
+    watchers[watcher_cnt].event = event;
+    led_register( ledno, watcher_cnt );
+    watcher_cnt++;
+  }
+  return *this;  
+}
+
+Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine* machine, int16_t event ) {
+  if ( watcher_cnt < MAX_WATCHERS ) {
+    watchers[watcher_cnt].machine = machine;
+    watchers[watcher_cnt].event = event;
+    led_register( ledno, watcher_cnt );
+    watcher_cnt++;
+  }
   return *this;  
 }
 

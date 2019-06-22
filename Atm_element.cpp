@@ -1,10 +1,10 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
+Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */, int16_t cnt /* = -1 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT  EVT_WATCH      ELSE */
-    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,  KICKING,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,        -1,       -1,
+    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,  KICKING,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,     WATCH,       -1,
 /* DELAY IS NOT USED ANYMORE */
     /*     DELAY */            -1,        -1,      -1,       -1,        -1,         -1,       -1,        IDLE,        -1,       -1,          -1,         -1,   KICKING,        -1,        -1,       -1,
     /*   KICKING */   ENT_KICKING,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
@@ -22,7 +22,7 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->playfield = &playfield;
-  initialize( coil, light, coil_profile, led_profile );
+  initialize( coil, light, coil_profile, led_profile, cnt );
   switch_state = false;
   autolight = false;
   autokick = true;
@@ -31,9 +31,12 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */
   return *this;          
 }
 
-Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
+Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */, int16_t cnt  ) {
   playfield->leds().profile( coil_led = coil, coil_profile );
   playfield->leds().profile( light_led = light, led_profile );
+  led_cnt = playfield->leds().count( light_led );
+  watch_cnt = cnt > -1 ? cnt : led_cnt;
+  watch_state = playfield->leds().count( light_led, 1 ) >= led_cnt ? 1 : 0;
   return *this;          
 }
 
@@ -111,8 +114,11 @@ void Atm_element::action( int id ) {
       connectors[ON_LIGHT+0].push( 1 );
       return;
     case ENT_WATCH:
-      // Count the number of active leds
-      connectors[ON_LIGHT+1].push( 1 ); 
+      uint8_t new_state = playfield->leds().count( light_led, 1 ) >= led_cnt ? 1 : 0;
+      if ( new_state != watch_state ) { 
+        connectors[ON_LIGHT+new_state].push( 1 );
+        watch_state = new_state;           
+      }
       return;
   }
 }

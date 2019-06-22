@@ -63,7 +63,9 @@ class Atm_led_scheduler: public Machine {
   const int16_t* group( int16_t gid );
   int active( int ledno );
   Atm_led_scheduler& onWatch( int16_t ledno, Machine& machine, int16_t event );
+  Atm_led_scheduler& onWatch( int16_t ledno, Machine* machine, int16_t event );
   Atm_led_scheduler& led_register( int16_t ledno, uint8_t idx );
+  int16_t count( int16_t ledno, uint8_t led_active = -1 );
   
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );
@@ -78,6 +80,7 @@ protected:
   Atm_led_scheduler& group_toggle( int ledno, int v = -1 );
   Atm_led_scheduler& group_profile( int16_t ledno, uint8_t prof );
   int group_active( int ledno );
+  Atm_led_scheduler& led_notify( int16_t ledno );
   led_profile_record led_profile[MAX_PROFILES];
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 

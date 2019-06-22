@@ -104,9 +104,9 @@ void setup() {
 
   playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
     .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
-
-  playfield.watch( LED_TARGET_GRP, Atm_watch::ALL, delay_ms )
-    .onChange( true, playfield.element( BUMPER_GRP, -1, LED_BUMPER_GRP ), Atm_element::EVT_ON );
+    
+  playfield.watch( LED_TARGET_GRP )
+    .onLight( true, playfield.element( BUMPER_GRP, LED_BUMPER_GRP ), Atm_element::EVT_ON );
   
  */
 
@@ -197,7 +197,7 @@ void setup() {
       });
 
   // Dat kan wellicht on-the-fly:
-  //playfield.element( BALL_EXIT ).onPress( playfield.element( FLASHERS, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+  //playfield.element( BALL_EXIT ).onPress( playfield.element( -1, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
   playfield
     .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
@@ -206,7 +206,7 @@ void setup() {
       }     
     });
 
-  //playfield.element( BALL_ENTER ).onPress( playfield.element( LED_BUMPERS, LED_BUMPER_GRP ), Atm_element::EVT_OFF );
+  //playfield.element( BALL_ENTER ).onPress( playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_OFF );
 
   playfield
     .element( FRONTBTN )

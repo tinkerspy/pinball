@@ -8,8 +8,6 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter;
-Atm_timer timer;
-Atm_bit bit;
 
 void setup() {
   delay( 1000 );
@@ -26,9 +24,9 @@ void setup() {
     .show();
 
   leds.begin( io, group_definition, profile_definition );
+  
   playfield.begin( io, leds ).debounce( 20, 20 );
 
-/*
   counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
 
   // Turn on the General Illumination
@@ -83,59 +81,20 @@ void setup() {
 
   playfield
     .element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER )
-      .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )
       .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
 
   playfield
     .element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER )
-      .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_INPUT )
       .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
 
   playfield
     .element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
-      .onInput( [] ( int idx, int v, int up ) {
-        if ( playfield.element( BUMPER_A ).state() && playfield.element( BUMPER_B ).state() ) {
-          playfield.leds().on( LED_BUMPER_GRP );
-        }
-      })
       .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
-*/
-/*    
 
-  // Watch implementation
-
-  playfield.element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
-    .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
+  playfield
+    .watch( LED_TARGET_GRP )
+      .onLight( true, playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_ON ); 
     
-  playfield.watch( LED_TARGET_GRP )
-    .onLight( true, playfield.element( BUMPER_GRP, LED_BUMPER_GRP ), Atm_element::EVT_ON );
-  
- */
-
-
-  leds.profile( LED_TARGET_GRP, PROFILE_LED );
-  leds.on( LED_TARGET_B );
-    
-  playfield.watch( LED_TARGET_GRP )
-    .onLight( true, [] ( int idx, int v, int up ) {
-      Serial.print( "Led change on: " );
-      Serial.println( leds.count( LED_TARGET_GRP, 1 ) );
-    })
-    .onLight( false, [] ( int idx, int v, int up ) {
-      Serial.print( "Led change off: " );
-      Serial.println( leds.count( LED_TARGET_GRP, 1 ) );
-    });
-
-  
-  timer.begin( 1000 )
-    .onTimer( [] ( int idx, int v, int up ) {
-      Serial.println( "Action" );
-      leds.toggle( LED_TARGET_A );
-    })
-    .repeat( 4 )
-    .start()
-    ;
-/*    
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
@@ -147,13 +106,13 @@ void setup() {
       .onScore( counter, counter.EVT_500, counter.EVT_5000 );
     
   playfield
-    .element( UP_LANE_L, -1, LED_UP_LANE_GRP  )
+    .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_4 ) 
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
       .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
 
   playfield
-    .element( UP_LANE_R, -1, LED_UP_LANE_GRP  )
+    .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_6 )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
       .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
@@ -165,6 +124,10 @@ void setup() {
 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO )
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
+
+  playfield
+    .watch( LED_OXO_CELLS, 9 )
+      .onLight( true, playfield.element( LED_UP_LANE_GRP ), Atm_element::EVT_ON );
 
   playfield
     .element( IN_LANE_L )
@@ -206,29 +169,19 @@ void setup() {
       .debounce( 5, 0 );
 
   playfield
-    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
-      .onPress( [] ( int idx, int v, int up ) {  // Om dit anders te doen moet je een virtual switch inrichten en daar de LED_FLASHER_GRP aan hangen
-        playfield.leds().off( LED_FLASHER_GRP );
-      });
-
-  // Dat kan wellicht on-the-fly:
-  //playfield.element( BALL_EXIT ).onPress( playfield.element( -1, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+    .element( BALL_EXIT )
+      .onPress( playfield.element( -1, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
   playfield
-    .onPress( BALL_ENTER, [] ( int idx, int v, int up ) { 
-      if ( playfield.element( BALL_EXIT ).idle( 2000 ) || playfield.element( OUT_LANE ).idle( 2000 ) ) { // Fix hardware switch instead
-        playfield.leds().off( LED_BUMPER_GRP );
-      }     
-    });
-
-  //playfield.element( BALL_ENTER ).onPress( playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_OFF );
+    .element( BALL_ENTER )
+      .onPress( playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
   
   // end of logic
-*/
+
   Serial.println( FreeRam() );
 
 }

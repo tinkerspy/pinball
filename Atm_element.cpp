@@ -1,6 +1,6 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */, int16_t cnt /* = -1 */ ) {
+Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, int8_t coil_profile /* 0 */, int8_t led_profile /* 1 */, int16_t cnt /* = -1 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT  EVT_WATCH      ELSE */
@@ -31,9 +31,9 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */
   return *this;          
 }
 
-Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */, int16_t cnt  ) {
-  playfield->leds().profile( coil_led = coil, coil_profile );
-  playfield->leds().profile( light_led = light, led_profile );
+Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, int8_t coil_profile /* 0 */, int8_t led_profile /* 1 */, int16_t cnt  ) {
+  if ( coil_profile >= 0 ) playfield->leds().profile( coil_led = coil, coil_profile );
+  if ( led_profile >= 0 ) playfield->leds().profile( light_led = light, led_profile );
   led_cnt = playfield->leds().count( light_led );
   watch_cnt = cnt > -1 ? cnt : led_cnt;
   watch_state = playfield->leds().count( light_led, 1 ) >= led_cnt ? 1 : 0;
@@ -114,7 +114,7 @@ void Atm_element::action( int id ) {
       connectors[ON_LIGHT+0].push( 1 );
       return;
     case ENT_WATCH:
-      uint8_t new_state = playfield->leds().count( light_led, 1 ) >= led_cnt ? 1 : 0;
+      uint8_t new_state = playfield->leds().count( light_led, 1 ) >= watch_cnt ? 1 : 0;
       if ( new_state != watch_state ) { 
         connectors[ON_LIGHT+new_state].push( 1 );
         watch_state = new_state;           

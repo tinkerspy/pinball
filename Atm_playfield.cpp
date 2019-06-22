@@ -129,7 +129,7 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
 
 Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {
     Atm_element* element = new Atm_element();
-    element->begin( *this, -1, light_led, 0, 0, cnt );
+    element->begin( *this, -1, light_led, -1, -1, cnt );
     led->onWatch( light_led, element, Atm_element::EVT_WATCH );
     return *element;    
 }

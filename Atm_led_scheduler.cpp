@@ -12,9 +12,9 @@ Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, const int16_t* group_defini
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
     /*     IDLE */           -1, ATM_SLEEP,      -1,       -1, RUNNING,   UPDATING,        -1,      -1,
-    /*  WAITING */           -1,        -1,      -1,       -1,      -1,         -1,   RUNNING,      -1,    
+    /*  WAITING */           -1,        -1,      -1,       -1,      -1,         -1,   RUNNING,      -1,
     /*  RUNNING */  ENT_RUNNING,        -1,      -1,     IDLE,      -1,   UPDATING,        -1, WAITING,
-    /* UPDATING */ ENT_UPDATING,        -1,      -1,       -1, WAITING,         -1,        -1,    IDLE,    
+    /* UPDATING */ ENT_UPDATING,        -1,      -1,       -1, WAITING,         -1,        -1,    IDLE,
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -26,12 +26,12 @@ Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, const int16_t* group_defini
   last_milli = millis();
   parseGroups( group_definition );
   parseProfiles( profile_definition );
-  return *this;          
+  return *this;
 }
 
-/* Add C++ code for each internally handled event (input) 
- * The code must return 1 to trigger the event
- */
+/* Add C++ code for each internally handled event (input)
+   The code must return 1 to trigger the event
+*/
 
 int Atm_led_scheduler::event( int id ) {
   switch ( id ) {
@@ -53,8 +53,8 @@ int Atm_led_scheduler::event( int id ) {
 }
 
 /* Add C++ code for each action
- * This generates the 'output' for the state machine
- */
+   This generates the 'output' for the state machine
+*/
 
 void Atm_led_scheduler::action( int id ) {
   switch ( id ) {
@@ -76,16 +76,16 @@ void Atm_led_scheduler::action( int id ) {
             if ( millis() - meta[i].last_millis >= led_profile[meta[i].profile].T1 ) {
               if ( led_profile[meta[i].profile].L2 ) {
                 set( i, led_profile[meta[i].profile].L2 );
-                meta[i].state = LED_STATE_RGBW2;  
-                refresh = 1;                        
+                meta[i].state = LED_STATE_RGBW2;
+                refresh = 1;
               } else {
                 set( i, 0 );
                 led_notify( i );
                 meta[i].state = LED_STATE_IDLE;
-                refresh = 1;                                            
+                refresh = 1;
               }
             } else {
-              running = 1;         
+              running = 1;
             }
             break;
         }
@@ -157,8 +157,8 @@ Atm_led_scheduler& Atm_led_scheduler::group_set( int16_t ledno, uint32_t c ) {
 }
 
 /* Optionally override the default trigger() method
- * Control how your machine processes triggers
- */
+   Control how your machine processes triggers
+*/
 
 Atm_led_scheduler& Atm_led_scheduler::trigger( int event ) {
   Machine::trigger( event );
@@ -166,8 +166,8 @@ Atm_led_scheduler& Atm_led_scheduler::trigger( int event ) {
 }
 
 /* Optionally override the default state() method
- * Control what the machine returns when another process requests its state
- */
+   Control what the machine returns when another process requests its state
+*/
 
 int Atm_led_scheduler::state( void ) {
   return Machine::state();
@@ -193,7 +193,7 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
     if ( ledno >= number_of_leds ) return group_on( ledno );
     if ( meta[ledno].state == LED_STATE_IDLE || meta[ledno].state == LED_STATE_RGBW2 ) {
       meta[ledno].last_millis = millis();
-      if ( led_profile[meta[ledno].profile].T0 ) {      
+      if ( led_profile[meta[ledno].profile].T0 ) {
         meta[ledno].state = LED_STATE_DELAY;
         set( ledno, 0 );
       } else {
@@ -205,11 +205,11 @@ Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false *
           meta[ledno].state = LED_STATE_RGBW1;
         }
       }
-      refresh = 1; 
+      refresh = 1;
       led_notify( ledno );
       if ( !no_update ) trigger( EVT_UPDATE );
     }
-  } 
+  }
   return *this;
 }
 
@@ -223,11 +223,11 @@ Atm_led_scheduler& Atm_led_scheduler::group_on( int ledno ) {
 
 Atm_led_scheduler& Atm_led_scheduler::off( int ledno, bool no_update /* = false */ ) {
   if ( ledno >= number_of_leds ) return group_off( ledno );
-  if ( ledno > -1 && led_profile[meta[ledno].profile].L2 ) { // Ignore off() for leds in pulse mode 
+  if ( ledno > -1 && led_profile[meta[ledno].profile].L2 ) { // Ignore off() for leds in pulse mode
     meta[ledno].state = LED_STATE_IDLE;
     set( ledno, 0 );
     led_notify( ledno );
-    refresh = 1; 
+    refresh = 1;
     if ( !no_update ) trigger( EVT_UPDATE );
   }
   return *this;
@@ -242,9 +242,9 @@ Atm_led_scheduler& Atm_led_scheduler::group_off( int ledno ) {
 }
 
 Atm_led_scheduler& Atm_led_scheduler::off() {
-  for ( int ledno = 0; ledno < number_of_leds; ledno++ ) 
+  for ( int ledno = 0; ledno < number_of_leds; ledno++ )
     off( ledno, true );
-  refresh = 1; 
+  refresh = 1;
   trigger( EVT_UPDATE );
   return *this;
 }
@@ -253,7 +253,7 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
   if ( ledno >= number_of_leds ) return group_toggle( ledno, v );
   if ( v > -1 ) {
     if ( v ) on( ledno ); else off( ledno );
-    return *this;    
+    return *this;
   }
   if ( meta[ledno].state ) {
     off( ledno );
@@ -265,7 +265,7 @@ Atm_led_scheduler& Atm_led_scheduler::toggle( int ledno, int v /* = -1 */ ) {
 
 Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ ) {
   const int16_t* p = group( ledno );
-  while ( *p != -1 ) 
+  while ( *p != -1 )
     toggle( *p++, v );
   trigger( EVT_UPDATE );
   return *this;
@@ -273,7 +273,7 @@ Atm_led_scheduler& Atm_led_scheduler::group_toggle( int ledno, int v /* = -1 */ 
 
 int Atm_led_scheduler::active( int ledno ) {
   if ( ledno >= number_of_leds ) return group_active( ledno );
-  return ledno > -1 ? meta[ledno].state : 0;  
+  return ledno > -1 ? meta[ledno].state : 0;
 }
 
 // group_active simply returns the state of the first led in the group
@@ -290,28 +290,29 @@ Atm_led_scheduler& Atm_led_scheduler::led_register( int16_t ledno, uint8_t idx )
     } else {   // Virtual led -> expand & recurse
       const int16_t* p = group( ledno );
       while ( *p != -1 )
-        led_register( *p++, idx );    
+        led_register( *p++, idx );
     }
   }
   return *this;
 }
 
 Atm_led_scheduler& Atm_led_scheduler::led_notify( int16_t ledno ) {
+
   if ( meta[ledno].watch ) {
     for ( uint8_t i = 0; i < watcher_cnt; i++ ) {
       if ( meta[ledno].watch & ( 1 << i ) ) {
-        watchers[i].machine->trigger( watchers[i].event ); 
+        watchers[i].machine->trigger( watchers[i].event );
       }
     }
   }
   return *this;
-}  
+}
 
-int16_t Atm_led_scheduler::count( int16_t ledno, uint8_t led_active /* = 1 */ ) {
+int16_t Atm_led_scheduler::count( int16_t ledno, int8_t led_active /* = -1 */ ) {
   int16_t cnt = 0;
   if ( ledno > -1 ) {
     if ( ledno < number_of_leds ) { // Physical led
-      if ( ledno == -1 ) {
+      if ( led_active == -1 ) {
         cnt++;
       } else {
         if ( ( meta[ledno].state > 0 ) == led_active ) cnt++;
@@ -319,8 +320,8 @@ int16_t Atm_led_scheduler::count( int16_t ledno, uint8_t led_active /* = 1 */ ) 
     } else {   // Virtual led -> expand & recurse
       const int16_t* p = group( ledno );
       while ( *p != -1 )
-        cnt += this->count( *p++, led_active );    
-    }    
+        cnt += this->count( *p++, led_active );
+    }
   }
   return cnt;
 }
@@ -333,7 +334,7 @@ Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine& machine, 
     led_register( ledno, watcher_cnt );
     watcher_cnt++;
   }
-  return *this;  
+  return *this;
 }
 
 Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine* machine, int16_t event ) {
@@ -343,16 +344,16 @@ Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine* machine, 
     led_register( ledno, watcher_cnt );
     watcher_cnt++;
   }
-  return *this;  
+  return *this;
 }
 
-/* Nothing customizable below this line                          
+/* Nothing customizable below this line
  ************************************************************************************************
 */
 
 /* Public event methods
- *
- */
+
+*/
 
 
 Atm_led_scheduler& Atm_led_scheduler::update() {
@@ -361,11 +362,11 @@ Atm_led_scheduler& Atm_led_scheduler::update() {
 }
 
 /* State trace method
- * Sets the symbol table and the default logging method for serial monitoring
- */
+   Sets the symbol table and the default logging method for serial monitoring
+*/
 
 Atm_led_scheduler& Atm_led_scheduler::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
+                     "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   return *this;
 }

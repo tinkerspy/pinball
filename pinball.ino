@@ -8,6 +8,8 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter;
+Atm_timer timer;
+Atm_bit bit;
 
 void setup() {
   delay( 1000 );
@@ -24,9 +26,9 @@ void setup() {
     .show();
 
   leds.begin( io, group_definition, profile_definition );
-
   playfield.begin( io, leds ).debounce( 20, 20 );
 
+/*
   counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
 
   // Turn on the General Illumination
@@ -97,7 +99,7 @@ void setup() {
         }
       })
       .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
-
+*/
 /*    
 
   // Watch implementation
@@ -110,17 +112,30 @@ void setup() {
   
  */
 
-  Atm_bit bit;
-  bit.begin()
-    .onChange( true, [] ( int idx, int v, int up ) {
-      Serial.println( "Bit true" );
+
+  leds.profile( LED_TARGET_GRP, PROFILE_LED );
+  leds.on( LED_TARGET_B );
+    
+  playfield.watch( LED_TARGET_GRP )
+    .onLight( true, [] ( int idx, int v, int up ) {
+      Serial.print( "Led change on: " );
+      Serial.println( leds.count( LED_TARGET_GRP, 1 ) );
     })
-    .onChange( false, [] ( int idx, int v, int up ) {
-      Serial.println( "Bit false" );
+    .onLight( false, [] ( int idx, int v, int up ) {
+      Serial.print( "Led change off: " );
+      Serial.println( leds.count( LED_TARGET_GRP, 1 ) );
     });
- 
-  playfield.leds().onWatch( LED_TARGET_GRP, bit, bit.EVT_TOGGLE );
+
   
+  timer.begin( 1000 )
+    .onTimer( [] ( int idx, int v, int up ) {
+      Serial.println( "Action" );
+      leds.toggle( LED_TARGET_A );
+    })
+    .repeat( 4 )
+    .start()
+    ;
+/*    
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
@@ -213,7 +228,7 @@ void setup() {
       .onPress( counter, counter.EVT_RESET );
   
   // end of logic
-
+*/
   Serial.println( FreeRam() );
 
 }

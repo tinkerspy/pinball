@@ -3,19 +3,20 @@
 Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, uint8_t coil_profile /* 0 */, uint8_t led_profile /* 1 */  ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT      ELSE */
-    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,  KICKING,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,       -1,
+    /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT  EVT_WATCH      ELSE */
+    /*      IDLE */            -1, ATM_SLEEP,      -1, LIGHT_ON, LIGHT_OFF,     TOGGLE,  KICKING,     RELEASE, INPUTTING,     INIT,    DISABLED,         -1,        -1,        -1,        -1,       -1,
 /* DELAY IS NOT USED ANYMORE */
-    /*     DELAY */            -1,        -1,      -1,       -1,        -1,         -1,       -1,        IDLE,        -1,       -1,          -1,         -1,   KICKING,        -1,       -1,
-    /*   KICKING */   ENT_KICKING,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
+    /*     DELAY */            -1,        -1,      -1,       -1,        -1,         -1,       -1,        IDLE,        -1,       -1,          -1,         -1,   KICKING,        -1,        -1,       -1,
+    /*   KICKING */   ENT_KICKING,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
 /* Insert extra wait state to stop machine gunning (retrigger) */    
-    /*  DISABLED */            -1, ATM_SLEEP,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,       IDLE,        -1,        -1,       -1,
-    /*      INIT */      ENT_INIT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
-    /* INPUTTING */     ENT_INPUT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
-    /*   RELEASE */   ENT_RELEASE,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
-    /*  LIGHT_ON */  ENT_LIGHT_ON,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
-    /* LIGHT_OFF */ ENT_LIGHT_OFF,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,     IDLE,
-    /*    TOGGLE */            -1,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1, LIGHT_OFF, LIGHT_ON,
+    /*  DISABLED */            -1, ATM_SLEEP,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,       IDLE,        -1,        -1,        -1,       -1,
+    /*      INIT */      ENT_INIT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /* INPUTTING */     ENT_INPUT,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /*   RELEASE */   ENT_RELEASE,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /*  LIGHT_ON */  ENT_LIGHT_ON,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /* LIGHT_OFF */ ENT_LIGHT_OFF,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /*     WATCH */     ENT_WATCH,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1,        -1,        -1,     IDLE,
+    /*    TOGGLE */            -1,        -1,      -1,       -1,        -1,         -1,       -1,          -1,        -1,       -1,          -1,         -1,        -1, LIGHT_OFF,        -1, LIGHT_ON,
 
   };
   // clang-format on
@@ -108,6 +109,10 @@ void Atm_element::action( int id ) {
       playfield->leds().off( light_led );
       //connectors[ON_LIGHT+2].push( 1 );
       connectors[ON_LIGHT+0].push( 1 );
+      return;
+    case ENT_WATCH:
+      // Count the number of active leds
+      connectors[ON_LIGHT+1].push( 1 ); 
       return;
   }
 }
@@ -310,6 +315,7 @@ Atm_element& Atm_element::onLight( int sub, atm_cb_push_t callback, int idx ) {
 
 Atm_element& Atm_element::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "ELEMENT\0EVT_ON\0EVT_OFF\0EVT_TOGGLE\0EVT_KICK\0EVT_RELEASE\0EVT_INPUT\0EVT_INIT\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_LIT\0ELSE\0IDLE\0DELAY\0KICKING\0DISABLED\0INIT\0INPUTTING\0RELEASE\0LIGHT_ON\0LIGHT_OFF\0TOGGLE" );
+    "ELEMENT\0EVT_ON\0EVT_OFF\0EVT_TOGGLE\0EVT_KICK\0EVT_RELEASE\0EVT_INPUT\0EVT_INIT\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_LIT\0EVT_WATCH\0ELSE\0"
+    "IDLE\0DELAY\0KICKING\0DISABLED\0INIT\0INPUTTING\0RELEASE\0LIGHT_ON\0LIGHT_OFF\0TOGGLE" );
   return *this;
 }

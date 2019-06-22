@@ -13,8 +13,8 @@ class Atm_playfield;
 class Atm_element: public Machine {
 
  public:
-  enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, TOGGLE }; // STATES
-  enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, ELSE }; // EVENTS
+  enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, WATCH, TOGGLE }; // STATES
+  enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, EVT_WATCH, ELSE }; // EVENTS
   Atm_element( void ) : Machine() {};
   Atm_element& begin( Atm_playfield &playfield, int16_t coil = -1, int16_t light = -1, uint8_t coil_profile = Atm_led_scheduler::PROFILE_COIL, uint8_t led_profile = Atm_led_scheduler::PROFILE_LED ); 
   Atm_element& initialize( int16_t coil = -1, int16_t light = -1, uint8_t coil_profile = Atm_led_scheduler::PROFILE_COIL, uint8_t led_profile = Atm_led_scheduler::PROFILE_LED ); 
@@ -56,7 +56,7 @@ class Atm_element: public Machine {
   bool idle( uint32_t maximum ); // Element has been idle for at most 'maximum' millis  
 
  protected:
-  enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF }; // ACTIONS
+  enum { ENT_KICKING, ENT_INIT, ENT_INPUT, ENT_RELEASE, ENT_LIGHT_ON, ENT_LIGHT_OFF, ENT_WATCH }; // ACTIONS
   enum { ON_INIT, ON_INPUT, ON_KICK = 4, ON_LIGHT = 7, CONN_MAX = 10 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 

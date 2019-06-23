@@ -215,8 +215,8 @@ Atm_em_counter& Atm_em_counter::set( uint16_t v ) {
   soll[2] = v % 100 / 10;
   soll[1] = v % 1000 / 100;
   soll[0] = v % 10000 / 1000;
-  Serial.print( "set: " );
-  Serial.println( value );
+//  Serial.print( "set: " );
+//  Serial.println( value );
   trigger( EVT_CHANGE );
   return *this;
 }

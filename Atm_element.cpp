@@ -32,11 +32,13 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */
 }
 
 Atm_element& Atm_element::initialize( int16_t coil /* -1 */, int16_t light /* -1 */, int8_t coil_profile /* -1 */, int8_t led_profile /* -1 */, int16_t cnt /* -1 */ ) {
-  if ( coil_profile >= 0 ) playfield->leds().profile( coil_led = coil, coil_profile );
-  if ( led_profile >= 0 ) playfield->leds().profile( light_led = light, led_profile );
-  led_cnt = playfield->leds().count( light_led );
+  if ( coil >= 0 ) coil_led = coil;
+  if ( light >= 0 ) light_led = coil;
+  if ( coil_led >= 0 && coil_profile >= 0 ) playfield->leds().profile( coil_led, coil_profile );
+  if ( light_led >= 0 && led_profile >= 0 ) playfield->leds().profile( light_led, led_profile );
+  if ( light >= 0 ) led_cnt = playfield->leds().count( light );
   watch_cnt = cnt > -1 ? cnt : led_cnt;
-  watch_state = playfield->leds().count( light_led, 1 ) >= led_cnt ? 1 : 0;
+  watch_state = light > -1 ? ( playfield->leds().count( light, 1 ) >= led_cnt ? 1 : 0) : 0;
   return *this;          
 }
 

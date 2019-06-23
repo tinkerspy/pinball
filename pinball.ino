@@ -56,7 +56,6 @@ void setup() {
     .element( PORT_1O )
       .onPress( oxo, oxo.EVT_1O )
       .onScore( counter, counter.EVT_1000 );
-/*
 
   playfield
     .element( PORT_1X )
@@ -97,7 +96,7 @@ void setup() {
 
   playfield
     .element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER )
-      .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+    .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
 
   playfield
     .element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER )
@@ -111,7 +110,7 @@ void setup() {
   playfield
     .watch( LED_TARGET_GRP )
       .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_ON ); 
-    
+
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
@@ -199,7 +198,7 @@ void setup() {
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
-*/  
+
   Serial.println( FreeRam() );
 
 }

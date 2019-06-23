@@ -1,7 +1,5 @@
 #include "Atm_playfield.hpp"
 
-// TODO: Move retrigger to element() level
-// TODO: Allow for active HIGH switches
 // TODO: Add catchall on onPress()/onRelease()
 
 /* 
@@ -127,12 +125,18 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
   return *prof[n].element;
 }
 
-// The led objects should be stored in a separate pointer table so that they can be accessed later
+// The led/watch objects should perhaps be stored in a separate pointer table so that they can be accessed later
 
-Atm_element& Atm_playfield::led( int16_t light_led, int8_t led_profile, int16_t cnt ) {
+Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {
     Atm_element* element = new Atm_element();
-    element->begin( *this, -1, light_led, -1, led_profile, cnt );
+    element->begin( *this, -1, light_led, -1, -1, cnt );
     pleds->onWatch( light_led, element, Atm_element::EVT_WATCH );
+    return *element;    
+}
+
+Atm_element& Atm_playfield::led( int16_t light_led, int8_t led_profile ) {
+    Atm_element* element = new Atm_element();
+    element->begin( *this, -1, light_led, -1, led_profile );
     return *element;    
 }
 

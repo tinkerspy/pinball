@@ -96,7 +96,7 @@ enum {
   LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
   LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
-  LED_OXO_O, LED_OXO_X,
+  LED_OXO_O, LED_OXO_X, // FIXME these are the other way around!
 
   COIL_CHIME_10,  // Dummy entries for led strip on P2 (cabinet)
   COIL_CHIME_100,

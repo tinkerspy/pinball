@@ -8,6 +8,7 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter;
+Atm_timer timer;
 
 void setup() {
   delay( 1000 );
@@ -41,11 +42,22 @@ void setup() {
 
   // Playfield element instantiation
 
+  playfield.leds().profile( LED_OXO_GRP, PROFILE_OXO );
+  playfield.leds().on( LED_OXO_X );
+
+  timer.begin( 200 )
+    .onTimer( [] ( int idx, int v, int up ) {
+      playfield.leds().toggle( LED_OXO_GRP );
+    })
+    .repeat()
+    .start();
+
   playfield
     .element( PORT_1O )
       .onPress( oxo, oxo.EVT_1O )
       .onScore( counter, counter.EVT_1000 );
-      
+/*
+
   playfield
     .element( PORT_1X )
       .onPress( oxo, oxo.EVT_1X )
@@ -97,7 +109,7 @@ void setup() {
       .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
 
   playfield
-    .led( LED_TARGET_GRP )
+    .watch( LED_TARGET_GRP )
       .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_ON ); 
     
   playfield
@@ -131,7 +143,7 @@ void setup() {
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
   playfield
-    .led( LED_OXO_CELLS, -1, 9 )
+    .watch( LED_OXO_CELLS, 9 )
       .onLight( true, playfield.element( UP_LANE_L ), Atm_element::EVT_ON ); // UP_LANE_R should automatically follow
 
   playfield
@@ -187,7 +199,7 @@ void setup() {
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
-  
+*/  
   Serial.println( FreeRam() );
 
 }

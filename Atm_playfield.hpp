@@ -48,8 +48,8 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& persistent( int16_t n, bool v = true );
   Atm_playfield& disable();
   Atm_playfield& enable();
-  Atm_element& element( int16_t n, int16_t coil_led = -1, int16_t light_led = -1, uint8_t coil_profile = 0 , uint8_t led_profile = 1 );
-  Atm_element& watch( int16_t light_led, int16_t cnt = -1 );
+  Atm_element& element( int16_t n, int16_t coil_led = -1, int16_t light_led = -1, int8_t coil_profile = -1 , int8_t led_profile = -1 );
+  Atm_element& led( int16_t light_led, int8_t led_profile = -1, int16_t cnt = -1 );
   Atm_led_scheduler& leds();
   Atm_playfield& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
 
@@ -69,7 +69,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   int8_t* rows;
   bool active;
   int8_t scan_col = 0;
-  Atm_led_scheduler *led;
+  Atm_led_scheduler *pleds;
   uint16_t global_last_kick;
   IO *io;
 };

@@ -167,8 +167,7 @@ enum {
   COUNTER3,
   
 /* Virtual switches (for elements without physical switches) */  
-  FLASHERS,
-  TARGET_GRP,
+  SAVE_GATE,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds)

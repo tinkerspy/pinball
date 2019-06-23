@@ -93,11 +93,12 @@ void setup() {
 
   playfield
     .element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
+      .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_ON )
       .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
 
   playfield
-    .watch( LED_TARGET_GRP )
-      .onLight( true, playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_ON ); 
+    .led( LED_TARGET_GRP )
+      .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_ON ); 
     
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
@@ -130,8 +131,8 @@ void setup() {
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
   playfield
-    .watch( LED_OXO_CELLS, 9 )
-      .onLight( true, playfield.element( LED_UP_LANE_GRP ), Atm_element::EVT_ON );
+    .led( LED_OXO_CELLS, -1, 9 )
+      .onLight( true, playfield.element( UP_LANE_L ), Atm_element::EVT_ON ); // UP_LANE_R should automatically follow
 
   playfield
     .element( IN_LANE_L )
@@ -173,19 +174,20 @@ void setup() {
       .debounce( 5, 0 );
 
   playfield
+    .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
+
+  playfield
     .element( BALL_EXIT )
-      .onPress( playfield.element( -1, LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
   playfield
     .element( BALL_ENTER )
-      .onPress( playfield.element( -1, LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
+      .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
   
-  // end of logic
-
   Serial.println( FreeRam() );
 
 }

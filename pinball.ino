@@ -42,17 +42,6 @@ void setup() {
 
   // Playfield element instantiation
 
-  //playfield.leds().profile( LED_OXO_GRP, PROFILE_OXO );
-  //playfield.leds().on( LED_OXO_X );
-
-  timer.begin( 200 )
-    .onTimer( [] ( int idx, int v, int up ) {
-      playfield.leds().toggle( LED_OXO_GRP );
-    })
-    .repeat()
-//    .start()
-    ;
-
   playfield
     .element( PORT_1O )
       .onPress( oxo, oxo.EVT_1O )
@@ -86,18 +75,18 @@ void setup() {
   playfield
     .element( TARGET_A, -1, LED_TARGET_A )
       .autoLight( true )
-      .onLight( true, playfield.element( BUMPER_A  ), Atm_element::EVT_ON )
+      .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON )
       .onScore( counter, counter.EVT_100 ); 
   
   playfield
     .element( TARGET_B, -1, LED_TARGET_B )
       .autoLight( true )
-      .onLight( true, playfield.element( BUMPER_B  ), Atm_element::EVT_ON ) 
+      .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ) 
       .onScore( counter, counter.EVT_100 ); 
 
   playfield
     .element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER )
-    .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+      .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
 
   playfield
     .element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER )
@@ -202,8 +191,54 @@ void setup() {
 
   Serial.println( FreeRam() );
 
+  /*
+  TODO:
+  - Atm_bonus
+  - Atm_score
+  - playfield.enable( 0 );
+
+  score.begin( LED_NO_OF_PLAYERS, LED_ACTIVE_PLAYER, LED_ACTIVE_BALL )
+    .add( counter[0] )
+    .add( counter[1] )
+    .add( counter[2] )
+    .add( counter[3] );
+
+  score.reset(); // EVT
+  score.add_player(); // EVT
+  score.advance(); // EVT
+  EVT_10..EVT_5000 -> counter
+  
+  score.state();   
+  score.onScore();
+  score.ball();
+  score.player();
+  score.touched(); // ball scored > 0
+        
+   */
+
 }
 
 void loop() {  
+    // playfield.enable( 0 ); // playfield should be disabled by default!, disabled means all switches are ignored
+    // while ( !isPressed( FRONTBTN ) ) automaton.run();
+    // start game, score.reset();
+    // wait for counters to reset
+    // init game, playfield.enable();
+    // while ( !score.touched() ) ) automaton.run();
+    // do {
+      // init ball, playfield.enable( 1 )
+      // ball_active = 1;
+      // while ( ball_active ) automaton.run() // ball_active is set to false by BALL_EXIT onPress
+      // if ( score.touched() ) {
+        // if ( playfield.enabled() ) {
+        //   playfield.enable( 0 );
+        //   bonus.trigger( leds.active( TRIPLE_BONUS ) ? bonus.EVT_TRIPLE : bonus.EVT_SINGLE );
+        //   while ( bonus.state() ) automaton.run();
+        // }
+        // if ( !leds.active( SHOOTS_AGAIN ) ) { 
+        //   score.advance();
+        // }
+      //}
+    //} while ( score.state() ); // End-Of-Game
   automaton.run();
 }

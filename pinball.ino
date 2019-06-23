@@ -42,15 +42,16 @@ void setup() {
 
   // Playfield element instantiation
 
-  playfield.leds().profile( LED_OXO_GRP, PROFILE_OXO );
-  playfield.leds().on( LED_OXO_X );
+  //playfield.leds().profile( LED_OXO_GRP, PROFILE_OXO );
+  //playfield.leds().on( LED_OXO_X );
 
   timer.begin( 200 )
     .onTimer( [] ( int idx, int v, int up ) {
       playfield.leds().toggle( LED_OXO_GRP );
     })
     .repeat()
-    .start();
+//    .start()
+    ;
 
   playfield
     .element( PORT_1O )

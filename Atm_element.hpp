@@ -62,7 +62,7 @@ class Atm_element: public Machine {
   int event( int id ); 
   void action( int id ); 
   atm_timer_millis timer;
-  int16_t light_led, coil_led, autolight, autokick;
+  int16_t light_led = -1, coil_led = -1, autolight = 0, autokick = 1;
   int score_lit = 0, score_unlit = 0;
   Machine *counter;
   Atm_playfield *playfield;

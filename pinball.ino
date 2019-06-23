@@ -105,7 +105,7 @@ void setup() {
 
   playfield
     .element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
-      .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_ON )
+      .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
       .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
 
   playfield
@@ -114,24 +114,24 @@ void setup() {
 
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( counter, counter.EVT_500, counter.EVT_5000 );
 
   playfield
     .element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( counter, counter.EVT_500, counter.EVT_5000 );
     
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_4 ) 
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
 
   playfield
     .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_6 )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
     
   playfield
@@ -176,7 +176,7 @@ void setup() {
   playfield
     .element( OUT_LANE )
       .onScore( counter, counter.EVT_1000 );
-  
+
   playfield
     .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER )
       .debounce( 5, 0 );
@@ -184,12 +184,12 @@ void setup() {
   playfield  
     .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER )
       .debounce( 5, 0 );
-
+  
   playfield
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
 
   playfield
-    .element( BALL_EXIT )
+    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
       .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
   playfield

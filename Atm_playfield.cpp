@@ -117,7 +117,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
 Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, int8_t coil_profile /* -1 */, int8_t led_profile /* -1 */ ) {
   if ( !prof[n].initialized ) {
     prof[n].element = new Atm_element();  
-    prof[n].element->begin( *this, coil_led, light_led, coil_profile, led_profile );
+    prof[n].element->begin( *this, n, coil_led, light_led, coil_profile, led_profile );
     prof[n].initialized = true;
   } else {
     if ( coil_led >= 0 || light_led >= 0 ) prof[n].element->initialize( coil_led, light_led, coil_profile, led_profile );
@@ -129,14 +129,14 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
 
 Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {
     Atm_element* element = new Atm_element();
-    element->begin( *this, -1, light_led, -1, -1, cnt );
+    element->begin( *this, -1, -1, light_led, -1, -1, cnt );
     pleds->onWatch( light_led, element, Atm_element::EVT_WATCH );
     return *element;    
 }
 
 Atm_element& Atm_playfield::led( int16_t light_led, int8_t led_profile ) {
     Atm_element* element = new Atm_element();
-    element->begin( *this, -1, light_led, -1, led_profile );
+    element->begin( *this, -1, -1, light_led, -1, led_profile );
     return *element;    
 }
 

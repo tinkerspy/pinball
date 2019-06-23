@@ -1,6 +1,6 @@
 #include "Atm_element.hpp"
 
-Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */, int16_t light /* -1 */, int8_t coil_profile /* 0 */, int8_t led_profile /* 1 */, int16_t cnt /* = -1 */ ) {
+Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t pf_switch /* -1 */, int16_t coil /* -1 */, int16_t light /* -1 */, int8_t coil_profile /* 0 */, int8_t led_profile /* 1 */, int16_t cnt /* = -1 */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP  ON_EXIT    EVT_ON    EVT_OFF  EVT_TOGGLE, EVT_KICK  EVT_RELEASE  EVT_INPUT  EVT_INIT  EVT_DISABLE  EVT_ENABLE  EVT_TIMER    EVT_LIT  EVT_WATCH      ELSE */
@@ -24,6 +24,7 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t coil /* -1 */
   this->playfield = &playfield;
   initialize( coil, light, coil_profile, led_profile, cnt );
   switch_state = false;
+  switchno = pf_switch;
   autolight = false;
   autokick = true;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
@@ -135,7 +136,7 @@ bool Atm_element::idle( uint32_t maximum ) { // maximum time idle
 
 
 Atm_element& Atm_element::debounce( uint8_t d, uint16_t r ) {
-  playfield->debounce( coil_led, d, r );
+  playfield->debounce( switchno, d, r );
   return *this;
 }
 
@@ -155,7 +156,7 @@ Atm_element& Atm_element::trigger( int event ) {
 int Atm_element::state( void ) {
   // If there's a led return its state else return the switch state
   if ( light_led > -1 ) {
-    return playfield->leds().active( light_led ); 
+    return playfield->leds().active( light_led ) > 0; 
   } else {
     return switch_state;    
   }

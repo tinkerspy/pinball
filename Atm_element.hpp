@@ -16,7 +16,7 @@ class Atm_element: public Machine {
   enum { IDLE, DELAY, KICKING, DISABLED, INIT, INPUTTING, RELEASE, LIGHT_ON, LIGHT_OFF, WATCH, TOGGLE }; // STATES
   enum { EVT_ON, EVT_OFF, EVT_TOGGLE, EVT_KICK, EVT_RELEASE, EVT_INPUT, EVT_INIT, EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_LIT, EVT_WATCH, ELSE }; // EVENTS
   Atm_element( void ) : Machine() {};
-  Atm_element& begin( Atm_playfield &playfield, int16_t coil = -1, int16_t light = -1, int8_t coil_profile = -1, int8_t led_profile = -1, int16_t cnt = -1 ); 
+  Atm_element& begin( Atm_playfield &playfield, int16_t pf_switch = -1, int16_t coil = -1, int16_t light = -1, int8_t coil_profile = -1, int8_t led_profile = -1, int16_t cnt = -1 ); 
   Atm_element& initialize( int16_t coil = -1, int16_t light = -1, int8_t coil_profile = -1, int8_t led_profile = -1, int16_t cnt = -1 ); 
   Atm_element& trace( Stream & stream );
   Atm_element& trigger( int event );
@@ -69,5 +69,5 @@ class Atm_element: public Machine {
   bool switch_state;
   uint32_t changed;
   uint8_t watch_state = 0;
-  int16_t led_cnt = 0, watch_cnt = 0;
+  int16_t led_cnt = 0, watch_cnt = 0, switchno = -1;
 };

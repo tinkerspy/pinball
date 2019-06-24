@@ -218,26 +218,40 @@ void setup() {
 
 }
 
-void loop() {  
-    // playfield.enable( 0 ); // playfield should be disabled by default!, disabled means all switches are ignored (except kickers)
-    // while ( !isPressed( FRONTBTN ) ) automaton.run();
-    // start game, game.reset();
-    // wait for counters to reset
-    // init game, playfield.enable();
-    // while ( !game.touched() ) ) automaton.run();
-    // do {
-      // init ball, playfield.enable( 1 )
-      // while ( !io.isPressed( BALL_EXIT ) ) automaton.run(); // game loop 
-      // if ( game.touched() ) {
-        // if ( playfield.enabled() ) {
-        //   playfield.enable( 0 );
-        //   bonus.trigger( leds.active( TRIPLE_BONUS ) ? bonus.EVT_TRIPLE : bonus.EVT_SINGLE );
-        //   while ( bonus.state() ) automaton.run();
-        // }
-        // if ( !leds.active( SHOOTS_AGAIN ) ) { 
-        //   game.advance();
-        // }
-      //}
-    //} while ( game.state() ); // End-Of-Game
+void loop() {
+/*  
+  if ( isPressed( FRONTBTN ) ) {
+    Serial.println( "Resetting counters" );
+    game.reset();
+    while ( game.state() ) automaton.run();
+    Serial.println( "Initializing game (add players, wait for game activity)" );
+    game.initBall();
+    playfield.enable( 1 );
+    while ( !game.touched() ) automaton.run();
+    Serial.println( "Game started" );
+    do {
+      Serial.println( "Ball start" );
+      game.initBall();
+      playfield.enable( 1 );
+      Serial.println( "Ball play in progress" );
+      while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
+      Serial.println( "Ball play finished" );
+      if ( game.touched() ) {
+        Serial.println( "Collecting bonus" );
+        playfield.enable( 0 );
+        bonus.trigger( leds.active( TRIPLE_BONUS ) ? bonus.EVT_TRIPLE : bonus.EVT_SINGLE );
+        while ( bonus.state() ) automaton.run();
+      }
+      if ( !leds.active( SHOOTS_AGAIN ) ) { 
+        Serial.println( "Advance game ball/player" );
+        game.advance();
+      }
+      Serial.println( "Clear playfield" );
+      leds.off( LED_GROUP_FLASHERS );
+    } while ( game.state() );  
+  }
+*/  
   automaton.run();
 }
+
+

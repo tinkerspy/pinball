@@ -193,52 +193,51 @@ void setup() {
 
   /*
   TODO:
-  - Atm_bonus
-  - Atm_score
-  - playfield.enable( 0 );
+  - Atm_bonus bonus;
+  - Atm_game game;
+  - playfield.enable( 0 ); playfield.persistent( sw1, sw2, sw3 );
 
-  score.begin( LED_NO_OF_PLAYERS, LED_ACTIVE_PLAYER, LED_ACTIVE_BALL )
+  game.begin( LED_NO_OF_PLAYERS, LED_ACTIVE_PLAYER, LED_ACTIVE_BALL )
     .add( counter[0] )
     .add( counter[1] )
     .add( counter[2] )
     .add( counter[3] );
 
-  score.reset(); // EVT
-  score.add_player(); // EVT
-  score.advance(); // EVT
+  game.reset(); // EVT
+  game.add_player(); // EVT
+  game.advance(); // EVT
   EVT_10..EVT_5000 -> counter
   
-  score.state();   
-  score.onScore();
-  score.ball();
-  score.player();
-  score.touched(); // ball scored > 0
+  game.state();   
+  game.onScore();
+  game.ball();
+  game.player();
+  game.touched(); // ball scored > 0
         
    */
 
 }
 
 void loop() {  
-    // playfield.enable( 0 ); // playfield should be disabled by default!, disabled means all switches are ignored
+    // playfield.enable( 0 ); // playfield should be disabled by default!, disabled means all switches are ignored (except kickers)
     // while ( !isPressed( FRONTBTN ) ) automaton.run();
-    // start game, score.reset();
+    // start game, game.reset();
     // wait for counters to reset
     // init game, playfield.enable();
-    // while ( !score.touched() ) ) automaton.run();
+    // while ( !game.touched() ) ) automaton.run();
     // do {
       // init ball, playfield.enable( 1 )
-      // ball_active = 1;
-      // while ( ball_active ) automaton.run() // ball_active is set to false by BALL_EXIT onPress
-      // if ( score.touched() ) {
+      // while ( !io.isPressed( BALL_EXIT ) ) automaton.run(); // game loop 
+      // if ( game.touched() ) {
         // if ( playfield.enabled() ) {
         //   playfield.enable( 0 );
         //   bonus.trigger( leds.active( TRIPLE_BONUS ) ? bonus.EVT_TRIPLE : bonus.EVT_SINGLE );
         //   while ( bonus.state() ) automaton.run();
         // }
         // if ( !leds.active( SHOOTS_AGAIN ) ) { 
-        //   score.advance();
+        //   game.advance();
         // }
       //}
-    //} while ( score.state() ); // End-Of-Game
+    //} while ( game.state() ); // End-Of-Game
   automaton.run();
 }

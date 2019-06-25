@@ -257,21 +257,20 @@ void loop() {
 */  
   if ( io.isPressed( FRONTBTN ) ) {
     counter.reset();
-    number_of_players = 1;
-    //game.players( number_of_players = 1 );
+    game.setPlayers( 1 );
     Serial.println( "Counter reset started" );
     while ( counter.state() ) automaton.run();
     Serial.println( "Counter reset finished" );
-    for ( int p = 0; p < number_of_players; p++ ) {
+    for ( int p = 0; p < game.players(); p++ ) {
       for ( int b = 0; b < NUMBER_OF_BALLS; b++ ) {
-        //game.select( p, b );
+        game.select( p, b );
         Serial.println( "Serve ball" );
         playfield.element( BALL_EXIT ).kick();
         Serial.println( "Ball play in progress" );
         while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
         Serial.println( "Ball play finished" );      
         leds.off( LED_FLASHER_GRP );
-        break;
+        if ( playfield.element( BALL_EXIT ).state() ) continue;
       }
     }
   }

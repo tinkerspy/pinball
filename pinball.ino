@@ -3,12 +3,15 @@
 #include "Atm_oxo_field.hpp"
 #include "freeram.hpp"
 
+#define NUMBER_OF_BALLS 5
+
 IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter;
 Atm_timer timer;
+int number_of_players;
 
 void setup() {
   delay( 1000 );
@@ -178,17 +181,18 @@ void setup() {
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
 
   playfield
-    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
-      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
-
-  playfield
     .element( BALL_ENTER )
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield
+    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER );
+//      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+
+/*
+  playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
-
+*/
   Serial.println( FreeRam() );
 
   /*
@@ -251,7 +255,25 @@ void loop() {
     } while ( game.state() );  
   }
 */  
+  if ( io.isPressed( FRONTBTN ) ) {
+    counter.reset();
+    number_of_players = 1;
+    //game.players( number_of_players = 1 );
+    Serial.println( "Counter reset started" );
+    while ( counter.state() ) automaton.run();
+    Serial.println( "Counter reset finished" );
+    for ( int p = 0; p < number_of_players; p++ ) {
+      for ( int b = 0; b < NUMBER_OF_BALLS; b++ ) {
+        //game.select( p, b );
+        Serial.println( "Serve ball" );
+        playfield.element( BALL_EXIT ).kick();
+        Serial.println( "Ball play in progress" );
+        while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
+        Serial.println( "Ball play finished" );      
+        leds.off( LED_FLASHER_GRP );
+        break;
+      }
+    }
+  }
   automaton.run();
 }
-
-

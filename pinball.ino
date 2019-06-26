@@ -13,6 +13,9 @@ Atm_em_counter counter;
 Atm_timer timer;
 int number_of_players;
 
+// TODO: bspook flipperacties bij opstarten systeem lijken te komen doordat onterecht een button press wordt gedetecteert.
+// Oplossen door tijdelijk button presses te negeren. (ontdekt doordat ook de counter reset (front button) spontaan begin te lopen)
+
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
@@ -257,7 +260,7 @@ void loop() {
 */  
   if ( io.isPressed( FRONTBTN ) ) {
     counter.reset();
-    game.setPlayers( 1 );
+    game.players( 1 );
     Serial.println( "Counter reset started" );
     while ( counter.state() ) automaton.run();
     Serial.println( "Counter reset finished" );
@@ -265,13 +268,13 @@ void loop() {
       for ( int b = 0; b < NUMBER_OF_BALLS; b++ ) {
         do {
           game.select( p, b );
+          leds.off( LED_FLASHER_GRP );
           Serial.println( "Serve ball" );
           playfield.element( BALL_EXIT ).kick();
           Serial.println( "Ball play in progress" );
           while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
           Serial.println( "Ball play finished" );      
-          leds.off( LED_FLASHER_GRP );
-        while ( playfield.element( BALL_EXIT ) );
+        while ( leds.active( SHOOTS_AGAIN ) );
       }
     }
   }

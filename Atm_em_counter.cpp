@@ -269,7 +269,7 @@ Atm_em_counter& Atm_em_counter::sample( bool v ) {
   }
   buffer <<= 1;
   if ( v ) {
-    buffer ^= 1;
+    buffer |= 1;
     sample_counter++;
   }
   return *this;

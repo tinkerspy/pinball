@@ -8,6 +8,7 @@
 
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
+#define STARTUP_DELAY_MS 500
 
 class Atm_element;
 
@@ -29,8 +30,8 @@ struct switch_record {
 class Atm_playfield: public Machine { // Beter: Atm_switch_zone
 
  public:
-  enum { IDLE, SCAN, DISABLED }; 
-  enum { EVT_DISABLE, EVT_ENABLE, ELSE }; // EVENTS
+  enum { IDLE, WAIT, SCAN, DISABLED }; 
+  enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, ELSE }; // EVENTS
   Atm_playfield( void ) : Machine() {};
   Atm_playfield& begin( IO& io, Atm_led_scheduler& led );
   Atm_playfield& trace( Stream & stream );
@@ -70,5 +71,6 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   int8_t scan_col = 0;
   Atm_led_scheduler *pleds;
   uint16_t global_last_kick;
+  atm_timer_millis timer;
   IO *io;
 };

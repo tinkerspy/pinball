@@ -9,10 +9,11 @@
 Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE      ELSE */
-    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,     SCAN,
-    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,     SCAN,
-    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN, DISABLED, // Add INIT state!!! (send init events to all elements)
+    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER,     ELSE */
+    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     WAIT,
+    /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,       -1,
+    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     SCAN,
+    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1, DISABLED, // Add INIT state!!! (send init events to all elements)
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -22,6 +23,7 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   memset( prof, 0, sizeof( prof ) );
   for ( int i = 0; i < MAX_SWITCHES; i++ ) 
     debounce( i, 5 );       
+  timer.set( STARTUP_DELAY_MS );  
   return *this;          
 }
 
@@ -31,6 +33,8 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
 
 int Atm_playfield::event( int id ) {
   switch ( id ) {
+    case EVT_TIMER:
+      return timer.expired( this );
   }
   return 0;
 }
@@ -202,6 +206,6 @@ Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int id
 
 Atm_playfield& Atm_playfield::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "zone\0EVT_DISABLE\0EVT_ENABLE\0ELSE\0IDLE\0SCAN\0DISABLED" );
+    "zone\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0ELSE\0IDLE\0SCAN\0DISABLED" );
   return *this;
 }

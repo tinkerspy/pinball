@@ -286,7 +286,7 @@ int Atm_led_scheduler::group_active( int ledno ) {
 Atm_led_scheduler& Atm_led_scheduler::led_register( int16_t ledno, uint8_t idx ) {
   if ( ledno > -1 ) { // legal led
     if ( ledno < number_of_leds ) { // Physical led
-      meta[ledno].watch ^= ( 1 << idx );
+      meta[ledno].watch |= ( 1 << idx ); // Set watch bit for idx
     } else {   // Virtual led -> expand & recurse
       const int16_t* p = group( ledno );
       while ( *p != -1 )

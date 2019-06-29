@@ -4,7 +4,9 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
-#define DIGIT_DELAY_MS 120
+#define SAMPLE_BUFFERSIZE 20
+#define SAMPLE_THRESHOLD_UP SAMPLE_BUFFERSIZE / 2
+#define SAMPLE_THRESHOLD_DOWN SAMPLE_BUFFERSIZE / 2
 
 /*  
 0|1|2|3|X  <-  Reel numbering (X=dummy reel)
@@ -27,7 +29,7 @@
 class Atm_em_counter: public Machine {
 
  public:
-  enum { IDLE, CHECK, DIG0, DIG1, DIG2, DIG3, ZERO, RESET, PRE0, PRE0W, PRE1, PRE1W, FRST, FRST1, 
+  enum { IDLE, CHECK, DIG0, DIG1, DIG2, DIG3, ZERO, RESET, PRE0, PRE0W, PRE1, PRE1W, FRST, FRST1, FRST1W, FRST2, FRST2W, FRST3, FRST3W, 
     SCND, SCND1, SCND1W, SCND2, SCND2W, SCND3, SCND3W, THRD, THRD1, THRD1W, THRD2, THRD2W, THRD3, THRD3W, FRTH, FRTH0, FRTHW, FFTH }; // STATES
   enum { EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
   Atm_em_counter( void ) : Machine() {};
@@ -50,7 +52,7 @@ class Atm_em_counter: public Machine {
 
 
  private:
-  enum { ENT_DIG0, ENT_DIG1, ENT_DIG2, ENT_DIG3, ENT_ZERO, ENT_RESET, ENT_PULS0, ENT_PULS1, ENT_PULS2, ENT_PULS3, ENT_FRST, ENT_SCND, ENT_THRD, ENT_FRTH, ENT_FFTH }; // ACTIONS
+  enum { ENT_DIG0, ENT_DIG1, ENT_DIG2, ENT_DIG3, ENT_ZERO, ENT_RESET, ENT_PULS0, ENT_PULS1, ENT_PULS2, ENT_PULS3, ENT_FRST, ENT_SCND, ENT_THRD, ENT_FRTH, ENT_FFTH, LP_WAIT }; // ACTIONS
   enum { ON_SCORE, CONN_MAX = 3 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
@@ -66,6 +68,9 @@ class Atm_em_counter: public Machine {
   int16_t sensor_switch;
   uint8_t last_pulse;
   uint8_t solved[4];
+  uint32_t buffer; // bitwise ring buffer implemented in a single 32 bit unsigned integer
+  uint32_t last_sample;
+  uint8_t sample_counter;
 
   atm_timer_millis timer;
     

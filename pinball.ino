@@ -192,17 +192,16 @@ void setup() {
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield
-    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
-      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER );
+//      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
-
+/*
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
-
+*/
   Serial.println( FreeRam() );
-  
-  
+
   /*
   TODO:
   - Atm_bonus bonus;
@@ -262,6 +261,7 @@ void loop() {
       leds.off( LED_GROUP_FLASHERS );
     } while ( game.state() );  
   }
+*/  
   if ( io.isPressed( FRONTBTN ) ) {
     counter.reset();
 //    game.players( 1 );
@@ -282,6 +282,5 @@ void loop() {
       }
     }
   }
-*/  
   automaton.run();
 }

@@ -193,15 +193,13 @@ void setup() {
 
   playfield
     .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
-      //.onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF )
-      ;
-      
+      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
 
-/*
+
   playfield
     .element( FRONTBTN )
       .onPress( counter, counter.EVT_RESET );
-*/
+
   Serial.println( FreeRam() );
   
   
@@ -264,32 +262,26 @@ void loop() {
       leds.off( LED_GROUP_FLASHERS );
     } while ( game.state() );  
   }
-  */
   if ( io.isPressed( FRONTBTN ) ) {
     counter.reset();
 //    game.players( 1 );
-    Serial.print( millis() / 1000 );
-    Serial.println( " Counter reset started" );
+    Serial.println( "Counter reset started" );
     while ( counter.state() ) automaton.run();
-    Serial.print( millis() / 1000 );
-    Serial.println( " Counter reset finished" );
+    Serial.println( "Counter reset finished" );
     for ( int p = 0; p < 1; p++ ) {
       for ( int b = 0; b < NUMBER_OF_BALLS; b++ ) {
         do {
   //        game.select( p, b );
           leds.off( LED_FLASHER_GRP );
-          Serial.print( millis() / 1000 );
-          Serial.println( " Serve next ball" );
-          if ( io.isPressed( BALL_EXIT ) ) playfield.element( BALL_EXIT ).kick();
-          automaton.delay( 500 );
-          Serial.print( millis() / 1000 );
-          Serial.println( " Ball play in progress" );
+          Serial.println( "Serve ball" );
+          playfield.element( BALL_EXIT ).kick();
+          Serial.println( "Ball play in progress" );
           while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
-          Serial.print( millis() / 1000 );
-          Serial.println( " Ball play finished" );      
+          Serial.println( "Ball play finished" );      
         } while ( leds.active( LED_SHOOTS_AGAIN ) );
       }
     }
   }
+*/  
   automaton.run();
 }

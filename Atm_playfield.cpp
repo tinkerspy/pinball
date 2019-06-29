@@ -2,10 +2,6 @@
 
 // TODO: Add catchall on onPress()/onRelease()
 
-/* 
- *  Some way to pulse score-digits (while/until switch is enabled)
- */
-
 Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -13,7 +9,7 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
     /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     WAIT,
     /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,       -1,
     /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     SCAN,
-    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1, DISABLED, // Add INIT state!!! (send init events to all elements)
+    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1, DISABLED, 
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -206,6 +202,6 @@ Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int id
 
 Atm_playfield& Atm_playfield::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "zone\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0ELSE\0IDLE\0SCAN\0DISABLED" );
+    "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED" );
   return *this;
 }

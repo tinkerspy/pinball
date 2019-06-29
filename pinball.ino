@@ -13,12 +13,7 @@ Atm_em_counter counter;
 Atm_timer timer;
 int number_of_players;
 
-// TODO: spook flipperacties bij opstarten systeem lijken te komen doordat onterecht een button press wordt gedetecteert.
-// Oplossen door tijdelijk button presses te negeren. (ontdekt doordat ook de counter reset (front button) spontaan begin te lopen)
-
 // Debounce uitbreiden, we hebben nu delay_break & delay_retrigger, toevoegen: delay_make (pas een press registreren als die aanhoudt)
-
-// Atm_em_counter, Atm_analog of Atm_comparator gebruiken om sensorlijn te filteren/debouncen
 
 void setup() {
   delay( 1000 );

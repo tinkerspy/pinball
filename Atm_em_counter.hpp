@@ -4,6 +4,9 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
+#undef SIMULATE
+#define DIGIT_DELAY_MS 120
+
 /*  
 0|1|2|3|X  <-  Reel numbering (X=dummy reel)
   0: 10000's
@@ -21,6 +24,53 @@
  WARNING: For the 'switch_sensor' to operate some simultaneously running process must be actively                    
  polling the switch matrix to refresh the buffer. Usually this is done by the Atm_playfield object.
 */
+
+class em_counter_sim {
+  // This class simulates the hardware counter behaviour for testing purposes
+  public: 
+    int reel[4];
+
+    em_counter_sim() {
+      set( 0, 0, 0, 0 );
+    }
+
+    void pulse( int n ) {
+      reel[n] = ( reel[n] + 1 ) % 10;
+      //print( n );
+    }
+
+    void set( int r0, int r1, int r2, int r3 ) {
+      reel[0] = r0;
+      reel[1] = r1;
+      reel[2] = r2;
+      reel[3] = r3;
+      Serial.print( "Set: " );
+      print();
+    }
+
+    bool sensor( int quiet = 0 ) {
+      //if ( !quiet) Serial.print( "." );
+      return reel[0] != 0 && ( reel[1] == 9 || reel[2] == 9 || reel[3] == 9 );
+    }
+    
+    bool zero() {
+      return reel[0] == 0 && reel[1] == 0 && reel[2] == 0 && reel[3] == 0;
+    }
+
+    void print( int p = -1, int s = 0 ) {
+      if ( p > -1 ) {
+        Serial.print( p );
+        Serial.print( " -> " );
+      }
+      Serial.print( reel[0] );
+      Serial.print( reel[1] );
+      Serial.print( reel[2] );
+      Serial.print( reel[3] );
+      Serial.println( s ? ( sensor( 1 ) ? " HI" : " LO" ) : "" );
+    }
+
+};
+
 
 class Atm_em_counter: public Machine {
 
@@ -63,64 +113,12 @@ class Atm_em_counter: public Machine {
   int16_t sensor_switch;
   uint8_t last_pulse;
   uint8_t solved[4];
+  bool resetting;
 
   atm_timer_millis timer;
+
+#ifdef SIMULATE
+  public: em_counter_sim sim;
+#endif
     
 };
-
-/* 
-Automaton::ATML::begin - Automaton Markup Language
-
-<?xml version="1.0" encoding="UTF-8"?>
-<machines>
-  <machine name="Atm_em_counter">
-    <states>
-      <IDLE index="0" sleep="1">
-        <EVT_RESET>RESET</EVT_RESET>
-        <EVT_ZERO>ZERO</EVT_ZERO>
-      </IDLE>
-      <CHECK index="1">
-        <EVT_DIG0>DIG0</EVT_DIG0>
-        <EVT_DIG1>DIG1</EVT_DIG1>
-        <EVT_DIG2>DIG2</EVT_DIG2>
-        <EVT_DIG3>DIG3</EVT_DIG3>
-        <ELSE>IDLE</ELSE>
-      </CHECK>
-      <DIG0 index="2" on_enter="ENT_DIG0">
-        <EVT_TIMER>CHECK</EVT_TIMER>
-      </DIG0>
-      <DIG1 index="3" on_enter="ENT_DIG1">
-        <EVT_TIMER>CHECK</EVT_TIMER>
-      </DIG1>
-      <DIG2 index="4" on_enter="ENT_DIG2">
-        <EVT_TIMER>CHECK</EVT_TIMER>
-      </DIG2>
-      <DIG3 index="5" on_enter="ENT_DIG3">
-        <EVT_TIMER>CHECK</EVT_TIMER>
-      </DIG3>
-      <RESET index="6">
-      </RESET>
-      <ZERO index="7">
-      </ZERO>
-    </states>
-    <events>
-      <EVT_LO index="0" access="PRIVATE"/>
-      <EVT_HI index="1" access="PRIVATE"/>
-      <EVT_DIG0 index="2" access="PRIVATE"/>
-      <EVT_DIG1 index="3" access="PRIVATE"/>
-      <EVT_DIG2 index="4" access="PRIVATE"/>
-      <EVT_DIG3 index="5" access="PRIVATE"/>
-      <EVT_RESET index="6" access="MIXED"/>
-      <EVT_ZERO index="7" access="MIXED"/>
-      <EVT_TIMER index="8" access="PRIVATE"/>
-    </events>
-    <connectors>
-      <SCORE autostore="0" broadcast="0" dir="PUSH" slots="3"/>
-    </connectors>
-    <methods>
-    </methods>
-  </machine>
-</machines>
-
-Automaton::ATML::end 
-*/

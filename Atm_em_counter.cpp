@@ -72,7 +72,8 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
   memset( solved, 0, sizeof( solved ) );
-  timer.set( 150 );
+  timer.set( DIGIT_DELAY_MS );
+  resetting = false;
   return *this;          
 }
 
@@ -87,13 +88,13 @@ int Atm_em_counter::event( int id ) {
     case EVT_HI:
       return sensor();
     case EVT_DIG0:      
-      return solved[0] || ( ist[0] != soll[0] );
+      return resetting ? solved[0] : ( ist[0] != soll[0] );
     case EVT_DIG1:
-      return solved[1] || ( ist[1] != soll[1] );
+      return resetting ? solved[1] : ( ist[1] != soll[1] );
     case EVT_DIG2:
-      return solved[2] || ( ist[2] != soll[2] );
+      return resetting ? solved[2] : ( ist[2] != soll[2] );
     case EVT_DIG3:
-      return solved[3] || ( ist[3] != soll[3] );
+      return resetting ? solved[3] : ( ist[3] != soll[3] );
     case EVT_RESET:
       return 0;
     case EVT_TIMER:
@@ -133,6 +134,7 @@ void Atm_em_counter::action( int id ) {
       memset( soll, 0, sizeof( soll ) );
       memset( ist, 0, sizeof( ist ) );
       memset( solved, 0, sizeof( solved ) );
+      resetting = true;
       return;
     case ENT_PULS0:
       pulse( 0 );
@@ -151,18 +153,23 @@ void Atm_em_counter::action( int id ) {
       ist[3] = 0;
       return;
     case ENT_FRST:
+//      Serial.println( "FRST" );
       return;
     case ENT_SCND:
+//      Serial.println( "SCND" );
       solved[last_pulse] = 1;
       return;
     case ENT_THRD:
+//      Serial.println( "THRD" );
       solved[last_pulse] = 1;
       pulse( last_pulse, true );
       return;
     case ENT_FRTH:
+//      Serial.println( "FRTH" );
       solved[last_pulse] = 2; // 2 signals extra pulse is required
       return;
     case ENT_FFTH:
+//      Serial.println( "FFTH" );
       for ( int i = 0; i < 4; i++ ) {
         if ( solved[i] == 2 ) pulse( i, true );
         ist[i] = 0;      
@@ -170,6 +177,7 @@ void Atm_em_counter::action( int id ) {
       memset( soll, 0, sizeof( soll ) );
       memset( ist, 0, sizeof( ist ) );
       memset( solved, 0, sizeof( solved ) );
+      resetting = false;
       value = 0;
       return;
   }
@@ -237,8 +245,12 @@ Atm_em_counter& Atm_em_counter::add( int16_t v ) {
 Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
   if ( force || solved[reel] == 0 ) {
     ist[reel] = ( ist[reel] + 1 ) % 10;
+#ifdef SIMULATE
+    sim.pulse( reel );
+#else
     playfield->leds().on( coil[reel] );
-    /*
+#endif
+/*
     Serial.print( millis() );
     Serial.print( " Pulse reel " );
     Serial.print( reel );
@@ -248,14 +260,19 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
     Serial.print( soll[reel] );
     Serial.print( ", " );
     dump_ist( Serial, false );
-    */
+*/   
     last_pulse = reel;
   }
   return *this;
 }
 
 int Atm_em_counter::sensor( void ) {
+#ifdef SIMULATE
+  return sim.sensor();
+#else 
   return playfield->isPressed( sensor_switch );
+#endif
+  
 }
 
 Atm_em_counter& Atm_em_counter::dump_soll( Stream & stream ) {

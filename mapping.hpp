@@ -48,7 +48,7 @@ const int16_t profile_definition[] = {
   PROFILE_GATE,        0,   0,  0, 255, -1,
   PROFILE_BUMPER,      0, 255, 30,   0, -1,
   PROFILE_FEEDER,   1000, 127, 30,   0, -1,
-  PROFILE_GI,          0,   0,  0,   3, -1,
+  PROFILE_GI,          0,   0,  0, 255, -1,
   PROFILE_OXO,         0,   0,  0, 127, -1,
   PROFILE_COUNTER,     0, 255, 30,   0, -1,
   -1,  

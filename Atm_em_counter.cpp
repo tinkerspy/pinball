@@ -22,39 +22,34 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
     /*  DIG3 */ ENT_DIG3,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
     /*  ZERO */ ENT_ZERO,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, CHECK,
     /* RESET */ENT_RESET,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
-// Move to start position (digitalRead() == high) by pulsing reels 0 & 1
+// Move to start position (digitalRead() == high) by pulsing reels 0 & 1 ( 0 non-zero, any other is 9 )
     /* PRE0 */ ENT_PULS0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE0W,         -1,    -1,
-    /* PRE0W */       -1,   LP_WAIT,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE1,
+    /* PRE0W */       -1,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE1,
     /* PRE1 */ ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE1W,         -1,    -1,
-    /* PRE1W */       -1,   LP_WAIT,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
-// Solve first reel (first that goes low) by pulsing all three
+    /* PRE1W */       -1,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
+// Solve first reel (first that goes low) by pulsing reels 1,2,3, solved one is at zero
     /* FRST  */ ENT_FRST,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
-    /* FRST1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    FRST2,       -1,        -1,       -1,    FRST1W,         -1,    -1,
-    /* FRST1W */      -1,   LP_WAIT,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST2,
-    /* FRST2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    FRST3,       -1,       -1,        -1,       -1,    FRST2W,         -1,    -1,
-    /* FRST2W */      -1,   LP_WAIT,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST3,
-    /* FRST3 */ENT_PULS3,        -1,      -1,     -1,     -1,    FRST1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
-    /* FRST3W */      -1,   LP_WAIT,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
-// Solve second reel (first that goes high) by pulsing the remaining 2
+    /* FRST1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,      SCND,         -1,    -1,
+// Solve second reel (first that goes high) by pulsing the remaining 2, solved one is at 9 but moved to zero in ENT_THRD 
     /* SCND  */ ENT_SCND,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
     /* SCND1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    SCND2,       -1,        -1,       -1,    SCND1W,         -1,    -1,
-    /* SCND1W */      -1,   LP_WAIT,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
+    /* SCND1W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
     /* SCND2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    SCND3,       -1,       -1,        -1,       -1,    SCND2W,         -1,    -1,
-    /* SCND2W */      -1,   LP_WAIT,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
+    /* SCND2W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
     /* SCND3 */ENT_PULS3,        -1,      -1,     -1,     -1,    SCND1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
-    /* SCND3W */      -1,   LP_WAIT,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
+    /* SCND3W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
 // Solve third reel (first that goes high, and keep it at 9 to solve reel 0)
     /* THRD  */ ENT_THRD,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     THRD1,         -1,    -1,
     /* THRD1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    THRD2,       -1,        -1,       -1,    THRD1W,         -1,    -1,
-    /* THRD1W */      -1,   LP_WAIT,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,
+    /* THRD1W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,
     /* THRD2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    THRD3,       -1,       -1,        -1,       -1,    THRD2W,         -1,    -1,
-    /* THRD2W */      -1,   LP_WAIT,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD3,
+    /* THRD2W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD3,
     /* THRD3 */ENT_PULS3,        -1,      -1,     -1,     -1,    THRD1,       -1,       -1,       -1,        -1,       -1,    THRD3W,         -1,    -1,
-    /* THRD3W */      -1,   LP_WAIT,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,    
+    /* THRD3W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,    
 // Solve reel 0 (pulse until line goes low)
     /* FRTH */  ENT_FRTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
     /* FRTH0 */ENT_PULS0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     FRTHW,         -1,    -1,
-    /* FRTHW */       -1,   LP_WAIT,      -1,   FFTH,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
+    /* FRTHW */       -1,        -1,      -1,   FFTH,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
 // Move third reel to 0
     /* FFTH  */ ENT_FFTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  IDLE,    
   };
@@ -72,10 +67,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
   memset( solved, 0, sizeof( solved ) );
-  timer.set( 150 );
-  buffer = 0;
-  last_sample = millis();
-  sample_counter = 0;
+  timer.set( DIGIT_DELAY_MS );
   return *this;          
 }
 
@@ -86,9 +78,9 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
 int Atm_em_counter::event( int id ) {
   switch ( id ) {
     case EVT_LO:
-      return !sensor(); // sample_counter < SAMPLE_THRESHOLD_DOWN;
+      return !sensor(); 
     case EVT_HI:
-      return sensor(); // sample_counter >= SAMPLE_THRESHOLD_UP;
+      return sensor();
     case EVT_DIG0:      
       return solved[0] || ( ist[0] != soll[0] );
     case EVT_DIG1:
@@ -114,12 +106,6 @@ int Atm_em_counter::event( int id ) {
 
 void Atm_em_counter::action( int id ) {
   switch ( id ) {
-    case LP_WAIT:
-      if ( last_sample != millis() ) { // 1 millisecond sample rate
-        last_sample = millis();
-        sample( sensor() );
-      }
-      return;
     case ENT_DIG0:
       pulse( 0, true );
       return;
@@ -263,19 +249,18 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
   return *this;
 }
 
-Atm_em_counter& Atm_em_counter::sample( bool v ) {
-  if ( buffer & ( 1UL << ( SAMPLE_BUFFERSIZE - 1 ) ) ) { // 1UL actually means: unsigned long value 1
-    sample_counter--;
-  }
-  buffer <<= 1;
-  if ( v ) {
-    buffer |= 1;
-    sample_counter++;
-  }
-  return *this;
-}
-
 int Atm_em_counter::sensor( void ) {
+  /*
+  Serial.print( millis() );
+  Serial.print( " sensor: " );
+  Serial.print( ist[0] );
+  Serial.print( ist[1] );
+  Serial.print( ist[2] );
+  Serial.print( ist[3] );
+  int s = ist[0] != 0 && ( ist[1] == 9 || ist[2] == 9 || ist[3] == 9 );
+  Serial.println( s ? " HI" : " LO" );
+  return s;
+*/
   return playfield->isPressed( sensor_switch );
 }
 

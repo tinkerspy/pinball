@@ -4,10 +4,6 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
-// Element should eventually accommodate score counter digits
-// - respond to kick by pulsing coil if enabled ( or if led_state is on )
-// - reset function (pulse until zero switch goes low/high) 
-
 class Atm_playfield;
 
 class Atm_element: public Machine {

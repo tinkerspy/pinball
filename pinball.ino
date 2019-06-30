@@ -13,8 +13,6 @@ Atm_em_counter counter;
 Atm_timer timer;
 int number_of_players;
 
-// Debounce uitbreiden, we hebben nu delay_break & delay_retrigger, toevoegen: delay_make (pas een press registreren als die aanhoudt)
-
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
@@ -184,6 +182,7 @@ void setup() {
 
   playfield
     .element( BALL_ENTER )
+      .debounce( 5, 0, 20 )
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield

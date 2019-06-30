@@ -141,38 +141,29 @@ void Atm_em_counter::action( int id ) {
       return;
     case ENT_PULS0:
       pulse( 0 );
-      ist[0] = 0;
       return;
     case ENT_PULS1:
       pulse( 1 );
-      ist[2] = 0;
       return;
     case ENT_PULS2:
       pulse( 2 );
-      ist[2] = 0;
       return;
     case ENT_PULS3:
       pulse( 3 );
-      ist[3] = 0;
       return;
     case ENT_FRST:
-//      Serial.println( "FRST" );
       return;
     case ENT_SCND:
-//      Serial.println( "SCND" );
       solved[last_pulse] = 1;
       return;
     case ENT_THRD:
-//      Serial.println( "THRD" );
       solved[last_pulse] = 1;
       pulse( last_pulse, true );
       return;
     case ENT_FRTH:
-//      Serial.println( "FRTH" );
       solved[last_pulse] = 2; // 2 signals extra pulse is required
       return;
     case ENT_FFTH:
-//      Serial.println( "FFTH" );
       for ( int i = 0; i < 4; i++ ) {
         if ( solved[i] == 2 ) pulse( i, true );
         ist[i] = 0;      

@@ -50,7 +50,7 @@ class Atm_element: public Machine {
   Atm_element& toggle( void );
   Atm_element& autoLight( int v = 1 ); // Default false, switch triggers light
   Atm_element& autoKick( int v = 1 ); // Default true, switch triggers coil 
-  Atm_element& debounce( uint8_t d, uint16_t r );
+  Atm_element& debounce( uint8_t b, uint16_t r, uint8_t m );
   
   uint32_t idle( void ); // Number of millis element has been idle
   bool idle( uint32_t maximum ); // Element has been idle for at most 'maximum' millis  

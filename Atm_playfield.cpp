@@ -17,8 +17,7 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   this->pleds = &led;
   memset( connectors, 0, sizeof( connectors ) );
   memset( prof, 0, sizeof( prof ) );
-  for ( int i = 0; i < MAX_SWITCHES; i++ ) 
-    debounce( i, 5 );       
+  debounce( 5, 0, 0 );
   timer.set( STARTUP_DELAY_MS );  
   return *this;          
 }
@@ -53,16 +52,18 @@ void Atm_playfield::action( int id ) {
   }
 }
 
-Atm_playfield& Atm_playfield::debounce( uint8_t d, uint16_t r  ) {
+Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint8_t m ) {
   for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
-    prof[i].debounce_delay = d; 
+    prof[i].break_delay = b; 
+    prof[i].make_delay = m; 
     prof[i].retrigger_delay = r; 
   }
   return *this;   
 }
 
-Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t d, uint16_t r ) {
-  prof[n].debounce_delay = d; 
+Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t r, uint8_t m ) {
+  prof[n].break_delay = b; 
+  prof[n].make_delay = m; 
   prof[n].retrigger_delay = r; 
   return *this;   
 }
@@ -95,9 +96,9 @@ void Atm_playfield::scan_matrix( bool active ) {
 
 void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   uint16_t millis_passed = (uint16_t) millis() - prof[n].last_change;
-  if ( millis_passed >= prof[n].debounce_delay ) {
+  if ( millis_passed >= prof[n].break_delay ) {
     if ( v ) {
-      if ( millis_passed > prof[n].retrigger_delay ) {
+      if ( millis_passed > prof[n].retrigger_delay && millis_passed > prof[n].make_delay ) {
         prof[n].switch_state = 1;
         prof[n].last_change = millis();
         push( connectors, ON_PRESS, n, n, 1 ); 

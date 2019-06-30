@@ -31,7 +31,7 @@ void setup() {
 
   leds.begin( io, group_definition, profile_definition );
   
-  playfield.begin( io, leds ).debounce( 20, 20 );
+  playfield.begin( io, leds ).debounce( 20, 20, 0 );
 
   counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
 
@@ -152,13 +152,13 @@ void setup() {
     
   playfield
     .element( SLING_L, COIL_SLING_L, -1 )
-      .debounce( 20, 200 )
+      .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
       .onScore( counter, counter.EVT_10 );
 
   playfield
     .element( SLING_R, COIL_SLING_R, -1 )
-      .debounce( 20, 200 )
+      .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
       .onScore( counter, counter.EVT_10 );
 
@@ -173,11 +173,11 @@ void setup() {
 
   playfield
     .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0 );
+      .debounce( 5, 0, 0 );
 
   playfield  
     .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0 );
+      .debounce( 5, 0, 0 );
   
   playfield
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );

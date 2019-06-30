@@ -13,50 +13,50 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*          ON_ENTER    ON_LOOP  ON_EXIT  EVT_LO  EVT_HI  EVT_DIG3  EVT_DIG2  EVT_DIG1  EVT_DIG0  EVT_RESET  EVT_ZERO  EVT_TIMER, EVT_CHANGE,  ELSE */
-    /*  IDLE */       -1, ATM_SLEEP,      -1,     -1,     -1,       -1,       -1,       -1,       -1,     RESET,     ZERO,        -1,      CHECK,    -1,
-    /* CHECK */       -1,        -1,      -1,     -1,     -1,     DIG3,     DIG2,     DIG1,     DIG0,        -1,       -1,        -1,         -1,  IDLE,
-    /*  DIG0 */ ENT_DIG0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
-    /*  DIG1 */ ENT_DIG1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
-    /*  DIG2 */ ENT_DIG2,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
-    /*  DIG3 */ ENT_DIG3,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
-    /*  ZERO */ ENT_ZERO,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, CHECK,
-    /* RESET */ENT_RESET,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
+    /*          ON_ENTER    ON_LOOP  ON_EXIT  EVT_CLEAN EVT_LO  EVT_HI  EVT_DIG3  EVT_DIG2  EVT_DIG1  EVT_DIG0  EVT_RESET  EVT_ZERO  EVT_TIMER, EVT_CHANGE,  ELSE */
+    /*  IDLE */       -1, ATM_SLEEP,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,     RESET,     ZERO,        -1,      CHECK,    -1,
+    /* CHECK */       -1,        -1,      -1,        -1,    -1,     -1,     DIG3,     DIG2,     DIG1,     DIG0,        -1,       -1,        -1,         -1,  IDLE,
+    /*  DIG0 */ ENT_DIG0,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
+    /*  DIG1 */ ENT_DIG1,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
+    /*  DIG2 */ ENT_DIG2,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
+    /*  DIG3 */ ENT_DIG3,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     CHECK,         -1,    -1,
+    /*  ZERO */ ENT_ZERO,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, CHECK,
+    /* RESET */ENT_RESET,        -1,      -1,      IDLE,    -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
 // Move to start position (digitalRead() == high) by pulsing reels 0 & 1
-    /* PRE0 */ ENT_PULS0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE0W,         -1,    -1,
-    /* PRE0W */       -1,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE1,
-    /* PRE1 */ ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE1W,         -1,    -1,
-    /* PRE1W */       -1,        -1,      -1,     -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
+    /* PRE0 */ ENT_PULS0,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE0W,         -1,    -1,
+    /* PRE0W */       -1,        -1,      -1,        -1,    -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE1,
+    /* PRE1 */ ENT_PULS1,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     PRE1W,         -1,    -1,
+    /* PRE1W */       -1,        -1,      -1,        -1,    -1,   FRST,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  PRE0,
 // Solve first reel (first that goes low) by pulsing all three
-    /* FRST  */ ENT_FRST,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
-    /* FRST1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    FRST2,       -1,        -1,       -1,    FRST1W,         -1,    -1,
-    /* FRST1W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST2,
-    /* FRST2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    FRST3,       -1,       -1,        -1,       -1,    FRST2W,         -1,    -1,
-    /* FRST2W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST3,
-    /* FRST3 */ENT_PULS3,        -1,      -1,     -1,     -1,    FRST1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
-    /* FRST3W */      -1,        -1,      -1,   SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
+    /* FRST  */ ENT_FRST,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
+    /* FRST1 */ENT_PULS1,        -1,      -1,        -1,    -1,     -1,       -1,       -1,    FRST2,       -1,        -1,       -1,    FRST1W,         -1,    -1,
+    /* FRST1W */      -1,        -1,      -1,        -1,  SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST2,
+    /* FRST2 */ENT_PULS2,        -1,      -1,        -1,    -1,     -1,       -1,    FRST3,       -1,       -1,        -1,       -1,    FRST2W,         -1,    -1,
+    /* FRST2W */      -1,        -1,      -1,        -1,  SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST3,
+    /* FRST3 */ENT_PULS3,        -1,      -1,        -1,    -1,     -1,    FRST1,       -1,       -1,       -1,        -1,       -1,    FRST3W,         -1,    -1,
+    /* FRST3W */      -1,        -1,      -1,        -1,  SCND,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRST1,
 // Solve second reel (first that goes high) by pulsing the remaining 2
-    /* SCND  */ ENT_SCND,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
-    /* SCND1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    SCND2,       -1,        -1,       -1,    SCND1W,         -1,    -1,
-    /* SCND1W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
-    /* SCND2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    SCND3,       -1,       -1,        -1,       -1,    SCND2W,         -1,    -1,
-    /* SCND2W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
-    /* SCND3 */ENT_PULS3,        -1,      -1,     -1,     -1,    SCND1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
-    /* SCND3W */      -1,        -1,      -1,     -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
+    /* SCND  */ ENT_SCND,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
+    /* SCND1 */ENT_PULS1,        -1,      -1,        -1,    -1,     -1,       -1,       -1,    SCND2,       -1,        -1,       -1,    SCND1W,         -1,    -1,
+    /* SCND1W */      -1,        -1,      -1,        -1,    -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND2,
+    /* SCND2 */ENT_PULS2,        -1,      -1,        -1,    -1,     -1,       -1,    SCND3,       -1,       -1,        -1,       -1,    SCND2W,         -1,    -1,
+    /* SCND2W */      -1,        -1,      -1,        -1,    -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND3,
+    /* SCND3 */ENT_PULS3,        -1,      -1,        -1,    -1,     -1,    SCND1,       -1,       -1,       -1,        -1,       -1,    SCND3W,         -1,    -1,
+    /* SCND3W */      -1,        -1,      -1,        -1,    -1,   THRD,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, SCND1,
 // Solve third reel (first that goes high, and keep it at 9 to solve reel 0)
-    /* THRD  */ ENT_THRD,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     THRD1,         -1,    -1,
-    /* THRD1 */ENT_PULS1,        -1,      -1,     -1,     -1,       -1,       -1,    THRD2,       -1,        -1,       -1,    THRD1W,         -1,    -1,
-    /* THRD1W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,
-    /* THRD2 */ENT_PULS2,        -1,      -1,     -1,     -1,       -1,    THRD3,       -1,       -1,        -1,       -1,    THRD2W,         -1,    -1,
-    /* THRD2W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD3,
-    /* THRD3 */ENT_PULS3,        -1,      -1,     -1,     -1,    THRD1,       -1,       -1,       -1,        -1,       -1,    THRD3W,         -1,    -1,
-    /* THRD3W */      -1,        -1,      -1,     -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,    
-// Solve reel 0 (pulse until line goes low)
-    /* FRTH */  ENT_FRTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
-    /* FRTH0 */ENT_PULS0,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     FRTHW,         -1,    -1,
-    /* FRTHW */       -1,        -1,      -1,   FFTH,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
-// Move third reel to 0
-    /* FFTH  */ ENT_FFTH,        -1,      -1,     -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  IDLE,    
+    /* THRD  */ ENT_THRD,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     THRD1,         -1,    -1,
+    /* THRD1 */ENT_PULS1,        -1,      -1,        -1,    -1,     -1,       -1,       -1,    THRD2,       -1,        -1,       -1,    THRD1W,         -1,    -1,
+    /* THRD1W */      -1,        -1,      -1,        -1,    -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD2,
+    /* THRD2 */ENT_PULS2,        -1,      -1,        -1,    -1,     -1,       -1,    THRD3,       -1,       -1,        -1,       -1,    THRD2W,         -1,    -1,
+    /* THRD2W */      -1,        -1,      -1,        -1,    -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD3,
+    /* THRD3 */ENT_PULS3,        -1,      -1,        -1,    -1,     -1,    THRD1,       -1,       -1,       -1,        -1,       -1,    THRD3W,         -1,    -1,
+    /* THRD3W */      -1,        -1,      -1,        -1,    -1,   FRTH,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, THRD1,    
+// Solve reel 0 (pulse until line goes low)         
+    /* FRTH */  ENT_FRTH,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
+    /* FRTH0 */ENT_PULS0,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,     FRTHW,         -1,    -1,
+    /* FRTHW */       -1,        -1,      -1,        -1,  FFTH,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1, FRTH0,
+// Move third reel to 0                             
+    /* FFTH  */ ENT_FFTH,        -1,      -1,        -1,    -1,     -1,       -1,       -1,       -1,       -1,        -1,       -1,        -1,         -1,  IDLE,    
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -74,6 +74,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   memset( solved, 0, sizeof( solved ) );
   timer.set( DIGIT_DELAY_MS );
   resetting = false;
+  touched = true;
   return *this;          
 }
 
@@ -178,6 +179,7 @@ void Atm_em_counter::action( int id ) {
       memset( ist, 0, sizeof( ist ) );
       memset( solved, 0, sizeof( solved ) );
       resetting = false;
+      touched = false;
       value = 0;
       return;
   }
@@ -262,6 +264,7 @@ Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
     dump_ist( Serial, false );
 */   
     last_pulse = reel;
+    touched = true;
   }
   return *this;
 }
@@ -346,7 +349,7 @@ Atm_em_counter& Atm_em_counter::onScore( int sub, atm_cb_push_t callback, int id
 
 Atm_em_counter& Atm_em_counter::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "EM_COUNTER\0EVT_LO\0EVT_HI\0EVT_DIG3\0EVT_DIG2\0EVT_DIG1\0EVT_DIG0\0EVT_RESET\0EVT_ZERO\0EVT_TIMER\0EVT_CHANGE\0ELSE\0"
+    "EM_COUNTER\0EVT_CLEAN\0EVT_LO\0EVT_HI\0EVT_DIG3\0EVT_DIG2\0EVT_DIG1\0EVT_DIG0\0EVT_RESET\0EVT_ZERO\0EVT_TIMER\0EVT_CHANGE\0ELSE\0"
     "IDLE\0CHECK\0DIG0\0DIG1\0DIG2\0DIG3\0ZERO\0RESET\0PRE0\0PRE0W\0PRE1\0PRE1W\0FRST\0FRST1\0FRST1W\0FRST2\0FRST2W\0FRST3\0FRST3W\0"
     "SCND\0SCND1\0SCND1W\0SCND2\0SCND2W\0SCND3\0SCND3W\0THRD\0THRD1\0THRD1W\0THRD2\0THRD2W\0THRD3\0THRD3W\0FRTH\0FRTH0\0FRTHW\0FFTH" );
   return *this;

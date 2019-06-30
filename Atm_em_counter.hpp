@@ -77,7 +77,7 @@ class Atm_em_counter: public Machine {
  public:
   enum { IDLE, CHECK, DIG0, DIG1, DIG2, DIG3, ZERO, RESET, PRE0, PRE0W, PRE1, PRE1W, FRST, FRST1, FRST1W, FRST2, FRST2W, FRST3, FRST3W, 
     SCND, SCND1, SCND1W, SCND2, SCND2W, SCND3, SCND3W, THRD, THRD1, THRD1W, THRD2, THRD2W, THRD3, THRD3W, FRTH, FRTH0, FRTHW, FFTH }; // STATES
-  enum { EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
+  enum { EVT_CLEAN, EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
   Atm_em_counter( void ) : Machine() {};
   Atm_em_counter& begin( Atm_playfield& playfield, int16_t sensor_switch,  int16_t group_id, int profile );
   Atm_em_counter& trace( Stream & stream );
@@ -113,7 +113,7 @@ class Atm_em_counter: public Machine {
   int16_t sensor_switch;
   uint8_t last_pulse;
   uint8_t solved[4];
-  bool resetting;
+  bool resetting, touched;
 
   atm_timer_millis timer;
 

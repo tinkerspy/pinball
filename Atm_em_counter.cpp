@@ -84,6 +84,8 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
 
 int Atm_em_counter::event( int id ) {
   switch ( id ) {
+    case EVT_CLEAN:
+      return !touched;
     case EVT_LO:
       return !sensor();
     case EVT_HI:

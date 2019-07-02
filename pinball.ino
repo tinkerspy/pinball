@@ -9,7 +9,7 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
-Atm_em_counter counter;
+Atm_em_counter counter; 
 Atm_timer timer;
 int number_of_players;
 
@@ -182,7 +182,7 @@ void setup() {
 
   playfield
     .element( BALL_ENTER )
-      .debounce( 5, 0, 20 )
+      .debounce( 5, 0, 2000 )
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield

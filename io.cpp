@@ -19,10 +19,10 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   pinMode( pin_clock, OUTPUT );
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
-  readMatrix( MATRIX_ROWS, MATRIX_COLS, true );
+  readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
   select( 0 );
-  row_ptr = 0;
-  col_ptr = 0;
+  node_ptr = 0;
+  switch_ptr = 0;
   return *this;
 }
 
@@ -124,7 +124,7 @@ IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) 
   row_map[2] = row_map[1] + r2;
   row_map[3] = row_map[2] + r3;
   row_map[4] = row_map[3] + r4;
-  row_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
+  node_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
   return *this;
 }
 
@@ -137,9 +137,9 @@ IO& IO::retrigger() {
     return *this;
 }
 
-IO& IO::range( uint8_t row_max, uint8_t col_max ) {
-  this->row_max = row_max;
-  this->col_max = col_max;
+IO& IO::range( uint8_t node_max, uint8_t col_max ) {
+  this->node_max = node_max;
+  this->switch_max = switch_max;
   return *this;
 }
 
@@ -148,8 +148,8 @@ IO& IO::invert( uint8_t code ) {
   if ( code != 0 ) {
     code = abs( code ) - 1;
     int bus = NUM_IOPORTS - 1;
-    while ( ( row_map[bus] * MATRIX_COLS ) > code ) bus--;
-    nc[code / MATRIX_COLS - row_map[bus]][code % MATRIX_ROWS] |= ( 1 << bus );; 
+    while ( ( row_map[bus] * MATRIX_SWITCHES ) > code ) bus--;
+    nc[code / MATRIX_SWITCHES - row_map[bus]][code % MATRIX_NODES] |= ( 1 << bus );; 
   }
   return *this;
 }
@@ -210,52 +210,58 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
 // Return 1-based mapped index
 
 uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) { 
-  return col + row * MATRIX_COLS + row_map[bus] * MATRIX_ROWS + 1;
+  return col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
 }
 
 uint16_t IO::isPressed( int16_t code ) {
   if ( code != 0 ) {
     code = abs( code ) - 1;
     int bus = NUM_IOPORTS - 1;
-    while ( ( row_map[bus] * MATRIX_COLS ) > code ) bus--;
-    return ( ist[code / MATRIX_COLS - row_map[bus]][code % MATRIX_ROWS] & ( 1 << bus ) ) > 0; 
+    while ( ( row_map[bus] * MATRIX_SWITCHES ) > code ) bus--;
+    return ( ist[code / MATRIX_SWITCHES - row_map[bus]][code % MATRIX_NODES] & ( 1 << bus ) ) > 0; 
   } else {
     return 0;
   }
 }
 
+// TODO: remember last scan bitpos and continue from there...
+
 int16_t IO::scan() {
   for (;;) {      
-    // Check one normalized (=corrected for normally closed switches) byte for changes
-    uint8_t normalized = soll[row_ptr][col_ptr] ^ nc[row_ptr][col_ptr];
-    if ( uint8_t xdiff = ist[row_ptr][col_ptr] ^ normalized ) {
-      bitpos = 0;
-      while ( ( xdiff & 1 ) == 0 ) {
-        xdiff >>= 1;
-        bitpos++;
-      }
-      if ( ( 1 << bitpos ) & normalized ) { // press
-        ist[row_ptr][col_ptr] |= ( 1 << bitpos );          
-        return decimal_encode( bitpos, row_ptr, col_ptr );
-      } else { // release
-        ist[row_ptr][col_ptr] &= ~( 1 << bitpos );                    
-        return decimal_encode( bitpos, row_ptr, col_ptr ) * -1;
+    // Check one normalized (=corrected for normally closed switches) byte (5 bits) for changes
+    uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
+    if ( uint8_t changes = ist[node_ptr][switch_ptr] ^ soll_normalized ) {
+      while ( io_ptr < NUM_IOPORTS ) {
+        if ( changes & ( 1 << io_ptr ) ) { // something changed
+          if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
+            ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
+            io_ptr++; // Skip next scan() call         
+            return decimal_encode( io_ptr - 1, node_ptr, switch_ptr );
+          } else { // it's a release
+            ist[node_ptr][switch_ptr] &= ~( 1 << io_ptr );                    
+            io_ptr++; // Skip next scan() call         
+            return decimal_encode( io_ptr - 1, node_ptr, switch_ptr ) * -1;
+          }
+        }
+        io_ptr++;
       }
     }
+    io_ptr = 0;
     // Increment col & row pointers modulo 8 (should be col_max, row_max?)
-    if ( ! ( col_ptr = ( col_ptr + 1 ) % MATRIX_COLS ) ) {
-      if ( ! ( row_ptr = ( row_ptr + 1 ) % MATRIX_ROWS ) ) {
-        // On row wrap around 7 -> 0 read the matrix
+    if ( ! ( switch_ptr = ( switch_ptr + 1 ) % MATRIX_SWITCHES ) ) {
+      // On row wrap around 7 -> 0 read the next row
+      if ( ! ( node_ptr = ( node_ptr + 1 ) % MATRIX_NODES ) ) {
+        // On row wrap around 7 -> 0 re-read the matrix
         last_read_time = micros();
-        readMatrix( row_max, col_max );          
+        readMatrix( node_max, switch_max );          
         last_read_time = micros() - last_read_time;
-        return 0;
+        return 0; // return neutral code
       }
     }
   }
 }  
 
 IO& IO::unscan() { // Mark the last keypress as unprocessed so that will generate another scan() event
-  ist[row_ptr][col_ptr] ^= ( 1 << bitpos );
+  ist[node_ptr][switch_ptr] ^= ( 1 << io_ptr );
   return *this;
 }

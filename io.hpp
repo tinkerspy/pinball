@@ -5,8 +5,8 @@
 
 #define PULSE_WIDTH_USEC 0
 #define NUM_IOPORTS 5
-#define MATRIX_ROWS 8
-#define MATRIX_COLS 8
+#define MATRIX_NODES 8
+#define MATRIX_SWITCHES 8
 #define MAX_LEDS_PER_STRIP 256
 
 #ifdef CORE_TEENSY
@@ -36,10 +36,10 @@ class IO {
     uint8_t *gate;
     uint8_t *inputs;
     uint8_t *address;
-    uint8_t row_ptr = 0;
-    uint8_t col_ptr = 0;
-    uint8_t bitpos = 0;
-    uint8_t col_max = MATRIX_COLS;
+    uint8_t io_ptr = 0;     // 5 IO strings per controller
+    uint8_t node_ptr = 0;   // Max 8 matrix nodes within an IO string
+    uint8_t switch_ptr = 0; // Max 8 wwitches connected to a matrix node 
+    uint8_t switch_max = MATRIX_SWITCHES;
     uint32_t last_read_time = 0;
     uint8_t last_strip = 0;
     uint8_t selected = 0; 
@@ -48,12 +48,12 @@ class IO {
     int16_t led_dirty[NUM_IOPORTS];
     uint16_t led_cnt = 0;
     int16_t log_last_pixel = -1;        
-    uint8_t soll[MATRIX_ROWS][MATRIX_COLS];
-    uint8_t ist[MATRIX_ROWS][MATRIX_COLS];
-    uint8_t nc[MATRIX_ROWS][MATRIX_COLS];
+    uint8_t soll[MATRIX_NODES][MATRIX_SWITCHES];
+    uint8_t ist[MATRIX_NODES][MATRIX_SWITCHES];
+    uint8_t nc[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t row_map[NUM_IOPORTS];
-    uint8_t row_max;
-    IO& readRow( uint8_t row, uint8_t mx_width = MATRIX_COLS );
+    uint8_t node_max; 
+    IO& readRow( uint8_t row, uint8_t mx_width = MATRIX_SWITCHES );
     IO& readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init = false );
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
     IO& select( int row, bool latch = false );
@@ -76,6 +76,5 @@ class IO {
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );
     IO& invert( uint8_t c1, uint8_t c2, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0 );
-
 
 };

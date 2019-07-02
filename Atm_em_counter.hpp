@@ -8,6 +8,9 @@
 #define DIGIT_DELAY_MS 120
 
 /*  
+
+ 4 + 1 digit electromagnetic counter with 4 coils, uses three 'nine' contacts and one 'zero' wired in parallel/series for feedback.
+    
 0|1|2|3|X  <-  Reel numbering (X=dummy reel)
   0: 10000's
   1: 1000's
@@ -15,9 +18,10 @@
   3: 10's
 
  Switch wiring, c0 is normally closed, c1..c3 are normally open:
-                    /-> c1 (9) >-\  
- GND -> c0 (!0) >==<--> c2 (9) >-->==> input (pullup)
-                    \-> c3 (9) >-/ 
+ 
+                              /-> c1 (9) >-\  
+ matrix strobe -> c0 (!0) >==<--> c2 (9) >-->==> matrix input line
+                              \-> c3 (9) >-/ 
 
  Worst case: 10000 (49 pulses), best case: 99880 (6 pulses)
 
@@ -25,12 +29,12 @@
  polling the switch matrix to refresh the buffer. Usually this is done by the Atm_playfield object.
 */
 
-class em_counter_sim {
+class em_counter_simulator {
   // This class simulates the hardware counter behaviour for testing purposes
   public: 
     int reel[4];
 
-    em_counter_sim() {
+    em_counter_simulator() {
       set( 0, 0, 0, 0 );
     }
 
@@ -104,7 +108,7 @@ class Atm_em_counter: public Machine {
   int event( int id ); 
   void action( int id ); 
   Atm_em_counter& pulse( uint8_t reel, uint8_t force = 0 );
-  int sensor( void ); // Sensor (simulation)
+  int sensor( void ); 
 
   Atm_playfield* playfield;
   int coil[4];
@@ -118,7 +122,7 @@ class Atm_em_counter: public Machine {
   atm_timer_millis timer;
 
 #ifdef SIMULATE
-  public: em_counter_sim sim;
+  public: em_counter_simulator sim;
 #endif
     
 };

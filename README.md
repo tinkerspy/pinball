@@ -1,4 +1,4 @@
-# pinball
+# Automaton Pinball
 
 Pinball programming framework being built on a 1973 Williams OXO pinball machine.
 

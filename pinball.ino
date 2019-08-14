@@ -31,7 +31,7 @@ void setup() {
   
   playfield.begin( io, leds ).debounce( 20, 20, 0 );
 
-  counter.begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ); 
+  counter.begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ); 
 
   playfield
     .leds()

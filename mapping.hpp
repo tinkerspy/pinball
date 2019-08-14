@@ -29,6 +29,7 @@ enum {
   PROFILE_GI,
   PROFILE_OXO,
   PROFILE_COUNTER,
+  PROFILE_BRIGHT,
 };
 
 /* 
@@ -51,10 +52,11 @@ const int16_t profile_definition[] = {
   PROFILE_GI,          0,   0,  0, 255, -1,
   PROFILE_OXO,         0,   0,  0, 127, -1,
   PROFILE_COUNTER,     0, 255, 30,   0, -1,
+  PROFILE_BRIGHT,      0,   0,  0, 255, -1,
   -1,  
 };
 
-// Coils & leds (outputs)
+// Coils & leds (outputs) /////////////////////////////////////////////////////////////////////////////////
 
 enum { 
 /* coil node 1 */
@@ -103,11 +105,19 @@ enum {
   COIL_CHIME_1K,
   COIL_KNOCKER,
   
-  COIL_COUNTER0_10, // Strip on P3 (headbox)
-  COIL_COUNTER0_100, 
-  COIL_COUNTER0_1K,
-  COIL_COUNTER0_10K, // Let op: strip staat op length=4!
-
+  COIL_COUNTER0_10, COIL_COUNTER0_100, COIL_COUNTER0_1K, COIL_COUNTER0_10K, // Strip on P3 (headbox)
+  COIL_COUNTER2_10, COIL_COUNTER2_100, COIL_COUNTER2_1K, COIL_COUNTER2_10K,
+  COIL_COUNTER3_10K, COIL_COUNTER3_1K, COIL_COUNTER3_100, COIL_COUNTER3_10,
+  COIL_COUNTER1_10K, COIL_COUNTER1_1K, COIL_COUNTER1_100, COIL_COUNTER1_10,
+  LED_UP1,
+  LED_OXO_ANI3, LED_OXO_ANI2, LED_OXO_ANI1,
+  LED_UP0, LED_UP3, LED_UP2,
+  LED_TILT,
+  LED_PLAY4, LED_PLAY3, LED_PLAY2, LED_PLAY1,
+  LED_AGAIN2, LED_AGAIN1,
+  LED_BALL3, LED_BALL5, LED_BALL2, LED_BALL4, LED_BALL1,
+  LED_GAME_OVER,
+  
   /* Virtual LED groups - up to 32 - are declared after physical leds */
   LED_KICKER_GRP,
   LED_UP_LANE_GRP,  
@@ -120,15 +130,21 @@ enum {
   COIL_COUNTER1_GRP,
   COIL_COUNTER2_GRP,
   COIL_COUNTER3_GRP,
+  LED_UP_GRP,
+  LED_PLAY_GRP,
+  LED_BALL_GRP,
+  LED_AGAIN_GRP,
+  LED_OXO_ANI_GRP,
+  LED_HEADBOX_GRP,
 };
 
-// Switches (inputs)
+// Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
 
 enum { 
 /* Dummy, switches start at 1 and go up to 320 */  
   NULL_SW,
 /* Physical switches */  
-  TARGET_B,
+  TARGET_B, // MX10
   PORT_3X,
   PORT_3O,
   PORT_2X,
@@ -136,7 +152,7 @@ enum {
   PORT_1X,
   PORT_1O,
   TARGET_A,
-  KICKER_L,
+  KICKER_L, // MX11
   UP_LANE_L,
   BUMPER_A,
   BUMPER_C,
@@ -144,7 +160,7 @@ enum {
   BUMPER_B,
   UP_LANE_R,
   TARGET_C,
-  OUT_LANE,
+  OUT_LANE, // MX12
   IN_LANE_L,
   SLING_L,
   SLING_R,
@@ -152,7 +168,7 @@ enum {
   IN_LANE_R,
   BALL_ENTER,
   BALL_EXIT,
-  SWITCH211,
+  SWITCH211, // MX21
   SWITCH212,
   SWITCH213,
   FLIPPER_L,
@@ -160,17 +176,20 @@ enum {
   SWITCH216,
   SWITCH217,
   FRONTBTN,
-  SWITCH311,
-  COUNTER0,
-  COUNTER1,
+  COUNTER0, // MX31
   COUNTER2,
+  SWITCH313,
+  SWITCH314,
+  SWITCH315,
+  SWITCH316,
+  COUNTER1,
   COUNTER3,
   
 /* Virtual switches (for elements without physical switches) */  
   SAVE_GATE,
 };
 
-/* group_map - Defines virtual LEDs (groups of leds)
+/* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////
  *  
  * Record starts with the group ID followed by the elements, ended by a -1 entry.
  * The last record in the list is followed by a second -1 entry to signal end of list 
@@ -222,13 +241,29 @@ const int16_t group_definition[] = {
     LED_OXO_8A, LED_OXO_8B,
     LED_OXO_9A, LED_OXO_9B,
     -1,  
-  // Add groups per score counter
   COIL_COUNTER0_GRP,
     COIL_COUNTER0_10K, COIL_COUNTER0_1K, COIL_COUNTER0_100, COIL_COUNTER0_10, -1,
-//COIL_COUNTER1_GRP,
-//  COIL_COUNTER1_10K, COIL_COUNTER1_1K, COIL_COUNTER1_100, COIL_COUNTER1_10, -1,
+  COIL_COUNTER1_GRP,
+    COIL_COUNTER1_10K, COIL_COUNTER1_1K, COIL_COUNTER1_100, COIL_COUNTER1_10, -1,
+  COIL_COUNTER2_GRP,
+    COIL_COUNTER2_10K, COIL_COUNTER2_1K, COIL_COUNTER2_100, COIL_COUNTER2_10, -1,
+  COIL_COUNTER3_GRP,
+    COIL_COUNTER3_10K, COIL_COUNTER3_1K, COIL_COUNTER3_100, COIL_COUNTER3_10, -1,
+  LED_UP_GRP,
+    LED_UP0, LED_UP1, LED_UP2, LED_UP3, -1,
+  LED_PLAY_GRP,
+    LED_PLAY1, LED_PLAY2, LED_PLAY3, LED_PLAY4, -1,
+  LED_BALL_GRP,
+    LED_BALL1, LED_BALL2, LED_BALL3, LED_BALL4, LED_BALL5, -1,  
+  LED_AGAIN_GRP,
+    LED_AGAIN1, LED_AGAIN2, -1,
+  LED_OXO_ANI_GRP,
+    LED_OXO_ANI1, LED_OXO_ANI2, LED_OXO_ANI3, -1,
+  LED_HEADBOX_GRP,
+    LED_UP_GRP, LED_PLAY_GRP, LED_BALL_GRP, LED_AGAIN_GRP, LED_OXO_ANI_GRP, LED_GAME_OVER, LED_TILT, -1,
   -1, 
 };
+
 
 
 #define SWITCH_NAME( sw ) switch_names + ( sw * 11 )
@@ -267,10 +302,12 @@ char switch_names[] =
   "SWITCH216 \0"
   "SWITCH217 \0"
   "FRONTBTN  \0"
-  "SWITCH311 \0"
   "COUNTER0  \0"
-  "COUNTER1  \0"
   "COUNTER2  \0"
+  "SWITCH313 \0"
+  "SWITCH314 \0"
+  "SWITCH315 \0"
+  "SWITCH316 \0"
+  "COUNTER1  \0"
   "COUNTER3  \0"
-  "FLASHERS \0";
-  
+  "FLASHERS  \0";

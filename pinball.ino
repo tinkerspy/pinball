@@ -22,7 +22,7 @@ void setup() {
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
     .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet DUMMY!!!
-    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P3/headbox
+    .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
     .invert( BALL_ENTER )
     .retrigger()
     .show();
@@ -194,6 +194,9 @@ void setup() {
       .onPress( counter, counter.EVT_RESET );
 
   Serial.println( FreeRam() );
+
+  leds.profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
+  leds.on( LED_HEADBOX_GRP );
     
   /*
   TODO:

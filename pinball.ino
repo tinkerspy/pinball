@@ -10,10 +10,8 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter[4]; 
-Atm_timer timer;
 Atm_score score;
-
-int number_of_players;
+Atm_scalar player, ball, up, bonus;
 
 void setup() {
   delay( 1000 );
@@ -265,15 +263,18 @@ void loop() {
   }
 
   if ( io.isPressed( FRONTBTN ) ) {
-    counter.reset();
-    game.players( 1 );
+    score.reset();
+    balls.reset();
+    players.reset();
     Serial.println( "Counter reset started" );
-    while ( counter.state() ) automaton.run();
+    while ( score.state() ) automaton.run();
     Serial.println( "Counter reset finished" );
-    for ( int p = 0; p < game.players(); p++ ) {
-      for ( int b = 0; b < NUMBER_OF_BALLS; b++ ) {
+    // Wait for the first score activity??? if ( score.touched() );
+    for ( int p = 0; p < players.state(); p++ ) {
+      for ( int b = 0; b < 5; b++ ) {
         do {
-          game.select( p, b );
+          up.select( p );
+          balls.select( b );
           leds.off( LED_FLASHER_GRP );
           Serial.println( "Serve ball" );
           playfield.element( BALL_EXIT ).kick();

@@ -137,9 +137,9 @@ void Atm_em_counter::action( int id ) {
       memset( soll, 0, sizeof( soll ) );
       memset( ist, 0, sizeof( ist ) );
       memset( solved, 0, sizeof( solved ) );
-      resetting = true;
       return;
     case ENT_PULS0:
+      resetting = true;
       pulse( 0 );
       return;
     case ENT_PULS1:
@@ -152,6 +152,7 @@ void Atm_em_counter::action( int id ) {
       pulse( 3 );
       return;
     case ENT_FRST:
+      resetting = true;
       return;
     case ENT_SCND:
       solved[last_pulse] = 1;

@@ -9,8 +9,10 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 Atm_oxo_field oxo;
-Atm_em_counter counter; 
+Atm_em_counter counter[4]; 
 Atm_timer timer;
+Atm_score score;
+
 int number_of_players;
 
 void setup() {
@@ -31,7 +33,11 @@ void setup() {
   
   playfield.begin( io, leds ).debounce( 20, 20, 0 );
 
-  counter.begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ); 
+  score.begin()
+    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ); 
 
   playfield
     .leds()
@@ -48,57 +54,57 @@ void setup() {
   playfield
     .element( PORT_1O )
       .onPress( oxo, oxo.EVT_1O )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
 
   playfield
     .element( PORT_1X )
       .onPress( oxo, oxo.EVT_1X )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
       
   playfield
     .element( PORT_2O )
       .onPress( oxo, oxo.EVT_2O )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
       
   playfield
     .element( PORT_2X )
       .onPress( oxo, oxo.EVT_2X )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
       
   playfield
     .element( PORT_3O )
       .onPress( oxo, oxo.EVT_3O )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
       
   playfield
     .element( PORT_3X )
       .onPress( oxo, oxo.EVT_3X )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
   
   playfield
     .element( TARGET_A, -1, LED_TARGET_A )
       .autoLight( true )
       .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON )
-      .onScore( counter, counter.EVT_100 ); 
+      .onScore( score, score.EVT_100 ); 
   
   playfield
     .element( TARGET_B, -1, LED_TARGET_B )
       .autoLight( true )
       .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ) 
-      .onScore( counter, counter.EVT_100 ); 
+      .onScore( score, score.EVT_100 ); 
 
   playfield
     .element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER )
-      .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+      .onScore( score, score.EVT_10, score.EVT_100 ); 
 
   playfield
     .element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER )
-      .onScore( counter, counter.EVT_10, counter.EVT_100 ); 
+      .onScore( score, score.EVT_10, score.EVT_100 ); 
 
   playfield
     .element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
       .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
-      .onScore( counter, counter.EVT_100, counter.EVT_1000 ); 
+      .onScore( score, score.EVT_100, score.EVT_1000 ); 
 
   playfield
     .watch( LED_TARGET_GRP )
@@ -107,29 +113,29 @@ void setup() {
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( counter, counter.EVT_500, counter.EVT_5000 );
+      .onScore( score, score.EVT_500, score.EVT_5000 );
 
   playfield
     .element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( counter, counter.EVT_500, counter.EVT_5000 );
+      .onScore( score, score.EVT_500, score.EVT_5000 );
     
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_4 ) 
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
+      .onScore( score, score.EVT_1000, score.EVT_5000 );
 
   playfield
     .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
       .onPress( false, oxo, oxo.EVT_6 )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( counter, counter.EVT_1000, counter.EVT_5000 );
+      .onScore( score, score.EVT_1000, score.EVT_5000 );
     
   playfield
     .element(  TARGET_C )
       .onPress( oxo, oxo.EVT_5 )
-      .onScore( counter, counter.EVT_500 );
+      .onScore( score, score.EVT_500 );
 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO )
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
@@ -141,33 +147,33 @@ void setup() {
   playfield
     .element( IN_LANE_L )
       .onPress( oxo, oxo.EVT_7 )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
     
   playfield
     .element( IN_LANE_R )
       .onPress( oxo, oxo.EVT_9 )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
     
   playfield
     .element( SLING_L, COIL_SLING_L, -1 )
       .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
-      .onScore( counter, counter.EVT_10 );
+      .onScore( score, score.EVT_10 );
 
   playfield
     .element( SLING_R, COIL_SLING_R, -1 )
       .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
-      .onScore( counter, counter.EVT_10 );
+      .onScore( score, score.EVT_10 );
 
   playfield
     .element(  ROLLOVER )
       .onPress( oxo, oxo.EVT_8 )
-      .onScore( counter, counter.EVT_500 );
+      .onScore( score, score.EVT_500 );
 
   playfield
     .element( OUT_LANE )
-      .onScore( counter, counter.EVT_1000 );
+      .onScore( score, score.EVT_1000 );
 
   playfield
     .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER )
@@ -191,7 +197,7 @@ void setup() {
 
   playfield
     .element( FRONTBTN )
-      .onPress( counter, counter.EVT_RESET );
+      .onPress( score, score.EVT_RESET );
 
   Serial.println( FreeRam() );
 
@@ -246,7 +252,7 @@ void loop() {
       if ( game.touched() ) {
         Serial.println( "Collecting bonus" );
         playfield.enable( 0 );
-        bonus.trigger( leds.active( TRIPLE_BONUS ) ? bonus.EVT_TRIPLE : bonus.EVT_SINGLE );
+        bonus.collect( leds.active( TRIPLE_BONUS ) ? 1000 : 3000 );
         while ( bonus.state() ) automaton.run();
       }
       if ( !leds.active( SHOOTS_AGAIN ) ) { 

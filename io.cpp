@@ -1,6 +1,6 @@
 #include "IO.hpp"
 
-#define DEBUG
+#undef DEBUG
 
 IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate ) {
   this->pin_clock = pin_clock;

@@ -15,6 +15,7 @@ Atm_score& Atm_score::begin() {
   // clang-format on
   Machine::begin( state_table, ELSE );
   score_touched = false;
+  selected = 0;
   return *this;          
 }
 
@@ -45,6 +46,7 @@ void Atm_score::action( int id ) {
         counter[i]->trigger( Atm_em_counter::EVT_RESET );
       }
       score_touched = false;
+      selected = 0;
       return;
     case ENT_FINISHED:
       return;

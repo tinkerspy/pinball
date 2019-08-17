@@ -39,7 +39,8 @@ void setup() {
 
   playfield
     .leds()
-      .profile( LED_FLASHER_GRP, PROFILE_LED );
+      .profile( LED_FLASHER_GRP, PROFILE_LED )
+      .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
   // Turn on the General Illumination
   playfield
@@ -199,8 +200,11 @@ void setup() {
 
   Serial.println( FreeRam() );
 
-  leds.profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
-  leds.on( LED_HEADBOX_GRP );
+  leds.scalar( LED_BALL_GRP, 0 );
+  leds.scalar( LED_PLAY_GRP, 2 );
+  leds.scalar( LED_UP_GRP, 0 );
+
+
     
   /*
   TODO:

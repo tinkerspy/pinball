@@ -188,6 +188,47 @@ Atm_led_scheduler& Atm_led_scheduler::group_profile( int16_t ledno, uint8_t prof
   return *this;
 }
 
+Atm_led_scheduler& Atm_led_scheduler::scalar( int16_t ledno, int8_t index, bool fill /* = false */ ) {
+  if ( ledno >= number_of_leds ) {
+    uint8_t cnt = 0;
+    const int16_t* p = group( ledno );
+    while ( *p != -1 ) {
+      if ( fill ) {
+        if ( cnt <= index ) {
+          on( *p++, true );
+        } else {
+          off( *p++, true );
+        }        
+      } else {
+        if ( cnt == index ) {
+          on( *p++, true );
+        } else {
+          off( *p++, true );
+        }
+      }
+      cnt++;
+    }
+    trigger( EVT_UPDATE );
+  }
+  return *this;
+}
+
+int16_t Atm_led_scheduler::scalar( int16_t ledno ) {
+  int16_t r = -1;
+  if ( ledno >= number_of_leds ) {
+    uint8_t cnt = 0;
+    const int16_t* p = group( ledno );
+    while ( *p != -1 ) {
+      if ( active( *p++ ) ) {
+        r = cnt;
+      }
+      cnt++;
+    }
+  }
+  return r;
+}
+
+
 Atm_led_scheduler& Atm_led_scheduler::on( int ledno, bool no_update /* = false */  ) {
   if ( ledno > -1 ) {
     if ( ledno >= number_of_leds ) return group_on( ledno );

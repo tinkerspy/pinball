@@ -54,6 +54,8 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& update( void );
 
   Atm_led_scheduler& on( int ledno, bool no_update = false ); 
+  Atm_led_scheduler& scalar( int16_t ledno, int8_t index, bool fill = false ); 
+  int16_t scalar( int16_t ledno ); 
   Atm_led_scheduler& toggle( int ledno, int v = -1 ); 
   Atm_led_scheduler& off( int ledno, bool no_update = false ); 
   Atm_led_scheduler& off( void );
@@ -66,6 +68,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& onWatch( int16_t ledno, Machine* machine, int16_t event );
   Atm_led_scheduler& led_register( int16_t ledno, uint8_t idx );
   int16_t count( int16_t ledno, int8_t led_active = -1 );
+  
   
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );

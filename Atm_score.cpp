@@ -14,6 +14,7 @@ Atm_score& Atm_score::begin() {
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
+  score_touched = false;
   return *this;          
 }
 
@@ -43,6 +44,7 @@ void Atm_score::action( int id ) {
       for ( int i = 0; i < machine_count; i++ ) {
         counter[i]->trigger( Atm_em_counter::EVT_RESET );
       }
+      score_touched = false;
       return;
     case ENT_FINISHED:
       return;
@@ -52,6 +54,10 @@ void Atm_score::action( int id ) {
 Atm_score& Atm_score::select( uint8_t n ) {
   selected = n;
   return *this;
+}
+
+bool Atm_score::touched( void ) {
+  return score_touched;
 }
 
 Atm_score& Atm_score::addCounter( Machine& machine ) {
@@ -65,22 +71,25 @@ Atm_score& Atm_score::addCounter( Machine& machine ) {
  */
 
 Atm_score& Atm_score::trigger( int event ) {  
-  switch ( event ) {
-    case EVT_10:
-      counter[selected]->trigger( Atm_em_counter::EVT_10 );
-      return *this;
-    case EVT_100:
-      counter[selected]->trigger( Atm_em_counter::EVT_100 );
-      return *this;
-    case EVT_1000:
-      counter[selected]->trigger( Atm_em_counter::EVT_1000 );
-      return *this;
-    case EVT_500:
-      counter[selected]->trigger( Atm_em_counter::EVT_500 );
-      return *this;
-    case EVT_5000:
-      counter[selected]->trigger( Atm_em_counter::EVT_5000 );
-      return *this;
+  if ( event > ELSE ) {
+    score_touched = true;
+    switch ( event ) {
+      case EVT_10:
+        counter[selected]->trigger( Atm_em_counter::EVT_10 );
+        return *this;
+      case EVT_100:
+        counter[selected]->trigger( Atm_em_counter::EVT_100 );
+        return *this;
+      case EVT_1000:
+        counter[selected]->trigger( Atm_em_counter::EVT_1000 );
+        return *this;
+      case EVT_500:
+        counter[selected]->trigger( Atm_em_counter::EVT_500 );
+        return *this;
+      case EVT_5000:
+        counter[selected]->trigger( Atm_em_counter::EVT_5000 );
+        return *this;
+    }
   }
   Machine::trigger( event );
   return *this;

@@ -44,9 +44,11 @@ int Atm_playfield::event( int id ) {
 void Atm_playfield::action( int id ) {
   switch ( id ) {
     case ENT_SCAN:
+      pf_enabled = true;
       scan_matrix( true );
       return;
     case ENT_DISABLED:
+      pf_enabled = false;
       scan_matrix( false );
       return;
   }
@@ -67,11 +69,6 @@ Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t r, uint16
   prof[n].retrigger_delay = r; 
   return *this;   
 }
-  
-Atm_playfield& Atm_playfield::persistent( int16_t n, bool v /* = true */ ) {
-  prof[n].persistent = v ? 1 : 0; 
-  return *this;   
-}
 
 Atm_playfield& Atm_playfield::disable() {
   trigger( EVT_DISABLE );
@@ -81,6 +78,10 @@ Atm_playfield& Atm_playfield::disable() {
 Atm_playfield& Atm_playfield::enable() {
   trigger( EVT_ENABLE );
   return *this;   
+}
+
+bool Atm_playfield::enabled() {
+  return pf_enabled;   
 }
 
 bool Atm_playfield::isPressed( int16_t n ) {
@@ -97,11 +98,13 @@ void Atm_playfield::scan_matrix( bool active ) {
 void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   uint16_t millis_passed;
   millis_passed = (uint16_t) millis() - prof[n].last_change;
+/*
   Serial.print( n );
   Serial.print( " make_delay: " );
   Serial.print( prof[n].make_delay );
   Serial.print( " break_delay: " );
   Serial.println( prof[n].break_delay );
+  */
   if ( v ) {
     if ( prof[n].make_delay > 0 ) {
   //    Serial.print( "make_delay: " );

@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_scalar& Atm_scalar::begin() {
+Atm_scalar& Atm_scalar::begin( Atm_led_scheduler& leds, int16_t led_group, int16_t def, int16_t max, bool fill /* = false */ ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*               ON_ENTER    ON_LOOP  ON_EXIT  EVT_ZERO  EVT_COUNTER  EVT_TIMER  EVT_ADVANCE  EVT_RESET  EVT_COLLECT  ELSE */
@@ -16,6 +16,12 @@ Atm_scalar& Atm_scalar::begin() {
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
+  this->max = max;
+  this->def = def;
+  this->fill_mode = fill;
+  this->leds = &leds;
+  this->led_group = led_group;
+  this->leds->scalar( this->led_group, this->def, this->fill_mode );
   return *this;          
 }
 
@@ -26,7 +32,7 @@ Atm_scalar& Atm_scalar::begin() {
 int Atm_scalar::event( int id ) {
   switch ( id ) {
     case EVT_ZERO:
-      return 0;
+      return leds->scalar( led_group ) == -1;      
     case EVT_COUNTER:
       return 0;
     case EVT_TIMER:
@@ -40,14 +46,25 @@ int Atm_scalar::event( int id ) {
  */
 
 void Atm_scalar::action( int id ) {
+  int16_t current;
   switch ( id ) {
     case ENT_NEXT:
+      current = leds->scalar( led_group );
+      if ( !lock_advance && current < max ) 
+        leds->scalar( led_group, current + 1 ); 
       return;
     case ENT_RESET:
+      leds->scalar( led_group, def, fill_mode );
+      lock( false );
       return;
     case ENT_COLLECT:
       return;
   }
+}
+
+Atm_scalar& Atm_scalar::lock( bool v  /* = true */ ) {
+  lock_advance = v;
+  return *this;
 }
 
 /* Optionally override the default trigger() method
@@ -64,7 +81,7 @@ Atm_scalar& Atm_scalar::trigger( int event ) {
  */
 
 int Atm_scalar::state( void ) {
-  return Machine::state();
+  return leds->scalar( led_group );
 }
 
 /* Nothing customizable below this line                          
@@ -99,6 +116,3 @@ Atm_scalar& Atm_scalar::trace( Stream & stream ) {
     "SCALAR\0EVT_ZERO\0EVT_COUNTER\0EVT_TIMER\0EVT_ADVANCE\0EVT_RESET\0EVT_COLLECT\0ELSE\0IDLE\0NEXT\0RESET\0COLLECT\0WAIT" );
   return *this;
 }
-
-
-

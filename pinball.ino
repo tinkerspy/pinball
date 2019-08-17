@@ -11,7 +11,7 @@ Atm_playfield playfield;
 Atm_oxo_field oxo;
 Atm_em_counter counter[4]; 
 Atm_score score;
-Atm_scalar player, ball, up, bonus;
+Atm_scalar players, bonus;
 
 void setup() {
   delay( 1000 );
@@ -29,7 +29,7 @@ void setup() {
 
   leds.begin( io, group_definition, profile_definition );
   
-  playfield.begin( io, leds ).debounce( 20, 20, 0 );
+  playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
 
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) )
@@ -42,6 +42,8 @@ void setup() {
       .profile( LED_FLASHER_GRP, PROFILE_LED )
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
+  players.begin( leds, LED_PLAY_GRP, 0, 3 );
+  
   // Turn on the General Illumination
   playfield
     .leds()
@@ -112,12 +114,14 @@ void setup() {
   playfield
     .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_500, score.EVT_5000 );
+      .onScore( score, score.EVT_500, score.EVT_5000 )
+      .persistent();
 
   playfield
     .element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_500, score.EVT_5000 );
+      .onScore( score, score.EVT_500, score.EVT_5000 )
+      .persistent();
     
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
@@ -191,104 +195,66 @@ void setup() {
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield
-    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_SHOOTS_AGAIN, PROFILE_FEEDER )
-      .onPress( playfield.led( LED_FLASHER_GRP ), Atm_element::EVT_OFF );
+    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_AGAIN_GRP, PROFILE_FEEDER )
+    .autoKick( false )
+    .onPress( playfield, playfield.EVT_DISABLE );
 
   playfield
     .element( FRONTBTN )
-      .onPress( score, score.EVT_RESET );
+      .persistent( true )
+      .onPress( players, players.EVT_ADVANCE );
 
   Serial.println( FreeRam() );
 
   leds.scalar( LED_BALL_GRP, 0 );
-  leds.scalar( LED_PLAY_GRP, 2 );
   leds.scalar( LED_UP_GRP, 0 );
-
-
-    
-  /*
-  TODO:
-  - Atm_bonus bonus;
-  - Atm_game game;
-  - playfield.enable( 0 ); playfield.persistent( sw1, sw2, sw3 );
-
-  game.begin( LED_NO_OF_PLAYERS, LED_ACTIVE_PLAYER, LED_ACTIVE_BALL )
-    .add( counter[0] )
-    .add( counter[1] )
-    .add( counter[2] )
-    .add( counter[3] );
-
-  game.reset(); // EVT
-  game.add_player(); // EVT
-  game.advance(); // EVT
-  EVT_10..EVT_5000 -> counter
-  
-  game.state();   
-  game.onScore();
-  game.ball();
-  game.player();
-  game.touched(); // ball scored > 0
-        
-   */
+  leds.on( LED_GAME_OVER );
 
 }
 
 void loop() {
-/*  
-  if ( isPressed( FRONTBTN ) ) {
-    Serial.println( "Resetting counters" );
-    game.reset();
-    while ( game.state() ) automaton.run();
-    Serial.println( "Initializing game (add players, wait for game activity)" );
-    game.initBall();
-    playfield.enable( 1 );
-    while ( !game.touched() ) automaton.run();
-    Serial.println( "Game started" );
-    do {
-      Serial.println( "Ball start" );
-      game.initBall();
-      playfield.enable( 1 );
-      Serial.println( "Ball play in progress" );
-      while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
-      Serial.println( "Ball play finished" );
-      if ( game.touched() ) {
-        Serial.println( "Collecting bonus" );
-        playfield.enable( 0 );
-        bonus.collect( leds.active( TRIPLE_BONUS ) ? 1000 : 3000 );
-        while ( bonus.state() ) automaton.run();
-      }
-      if ( !leds.active( SHOOTS_AGAIN ) ) { 
-        Serial.println( "Advance game ball/player" );
-        game.advance();
-      }
-      Serial.println( "Clear playfield" );
-      leds.off( LED_GROUP_FLASHERS );
-    } while ( game.state() );  
-  }
-
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
-    balls.reset();
     players.reset();
-    Serial.println( "Counter reset started" );
+    leds.off( LED_GAME_OVER );
+    leds.scalar( LED_BALL_GRP, 0 );
+    leds.scalar( LED_UP_GRP, 0 );
+    leds.off( LED_FLASHER_GRP );
+    Serial.print( millis() );
+    Serial.println( " Counter reset started" );
     while ( score.state() ) automaton.run();
-    Serial.println( "Counter reset finished" );
-    // Wait for the first score activity??? if ( score.touched() );
-    for ( int p = 0; p < players.state(); p++ ) {
-      for ( int b = 0; b < 5; b++ ) {
+    Serial.print( millis() );
+    Serial.println( " Counter reset finished" );
+    Serial.println( "Kick off" );
+    if ( io.isPressed( BALL_EXIT ) ) leds.on( COIL_BALL_FEEDER );
+    playfield.enable();
+    while ( !score.touched() ) automaton.run();
+    players.lock();
+    for ( int b = 0; b < 5; b++ ) {
+      for ( int p = 0; p < players.state() + 1; p++ ) {
         do {
-          up.select( p );
-          balls.select( b );
-          leds.off( LED_FLASHER_GRP );
-          Serial.println( "Serve ball" );
-          playfield.element( BALL_EXIT ).kick();
-          Serial.println( "Ball play in progress" );
-          while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
-          Serial.println( "Ball play finished" );      
-        while ( leds.active( SHOOTS_AGAIN ) );
+          Serial.print( millis() );
+          Serial.print( " Serve player " );
+          Serial.print( p  );
+          Serial.print( ", ball " );
+          Serial.println( b  );
+          if ( b > 0 || p > 0 ) {
+            leds.scalar( LED_UP_GRP, p );
+            leds.scalar( LED_BALL_GRP, b );
+            leds.off( LED_FLASHER_GRP );
+            leds.on( COIL_BALL_FEEDER );
+            score.select( p );
+          }
+          Serial.print( millis() );
+          Serial.println( " Ball play in progress" );
+          playfield.enable();
+          while ( playfield.enabled() ) automaton.run();
+          Serial.print( millis() );
+          Serial.println( " Ball play finished" );      
+        } while ( leds.active( LED_AGAIN0 ) );
       }
     }
+    leds.on( LED_GAME_OVER );
   }
-  */
   automaton.run();
 }

@@ -22,6 +22,7 @@ class Atm_score: public Machine {
   Atm_score& addCounter( Machine& machine );
   Atm_score& select( uint8_t n );
   Atm_score& reset( void );
+  bool touched( void );
 
  private:
   enum { ENT_RESET, ENT_FINISHED }; // ACTIONS
@@ -33,5 +34,6 @@ class Atm_score: public Machine {
   Machine* counter[MAX_COUNTER];
   uint8_t machine_count = 0;
   uint8_t selected = 0;
+  bool score_touched = false;
 
 };

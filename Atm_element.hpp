@@ -51,6 +51,7 @@ class Atm_element: public Machine {
   Atm_element& autoLight( int v = 1 ); // Default false, switch triggers light
   Atm_element& autoKick( int v = 1 ); // Default true, switch triggers coil 
   Atm_element& debounce( uint8_t b, uint16_t r, uint16_t m );
+  Atm_element& persistent( bool v = true );
   
   uint32_t idle( void ); // Number of millis element has been idle
   bool idle( uint32_t maximum ); // Element has been idle for at most 'maximum' millis  
@@ -66,7 +67,7 @@ class Atm_element: public Machine {
   int score_lit = 0, score_unlit = 0;
   Machine *counter;
   Atm_playfield *playfield;
-  bool switch_state;
+  bool switch_state, element_persistent;
   uint32_t changed;
   uint8_t watch_state = 0;
   int16_t led_cnt = 0, watch_cnt = 0, switchno = -1;

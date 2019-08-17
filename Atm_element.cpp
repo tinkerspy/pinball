@@ -28,6 +28,7 @@ Atm_element& Atm_element::begin( Atm_playfield &playfield, int16_t pf_switch /* 
   autolight = false;
   autokick = true;
   memset( connectors, 0, sizeof( connectors ) ); // Needed for dynamically allocated memory?
+  element_persistent = false;
   changed = millis();
   return *this;          
 }
@@ -71,23 +72,25 @@ void Atm_element::action( int id ) {
   changed = millis();
   switch ( id ) {
     case ENT_KICKING:
-      switch_state = true;
-      if ( autokick ) 
-        playfield->leds().on( coil_led );
-      if ( autolight ) { 
-        connectors[ON_LIGHT+1].push( 1 ); 
-        playfield->leds().on( light_led );
-      }
-      //connectors[ON_KICK+2].push( 1 );
-      if ( state() ) {  
-        connectors[ON_KICK+1].push( 1 );
-      } else {
-        connectors[ON_KICK+0].push( 1 );
-      }
-      if ( state() ) { 
-        if ( score_lit) counter->trigger( score_lit );
-      } else {
-        if ( score_unlit) counter->trigger( score_unlit );
+      if ( playfield->enabled() || element_persistent ) {
+        switch_state = true;
+        if ( autokick ) 
+          playfield->leds().on( coil_led );
+        if ( autolight ) { 
+          connectors[ON_LIGHT+1].push( 1 ); 
+          playfield->leds().on( light_led );
+        }
+        //connectors[ON_KICK+2].push( 1 );
+        if ( state() ) {  
+          connectors[ON_KICK+1].push( 1 );
+        } else {
+          connectors[ON_KICK+0].push( 1 );
+        }
+        if ( state() ) { 
+          if ( score_lit) counter->trigger( score_lit );
+        } else {
+          if ( score_unlit) counter->trigger( score_unlit );
+        }
       }
       return;
     case ENT_INIT:
@@ -134,6 +137,10 @@ bool Atm_element::idle( uint32_t maximum ) { // maximum time idle
   return ( millis() - changed ) < maximum;
 }
 
+Atm_element& Atm_element::persistent( bool v /* = true */ ) {
+  element_persistent = true;
+  return *this;
+}
 
 Atm_element& Atm_element::debounce( uint8_t b, uint16_t r, uint16_t m ) {
   playfield->debounce( switchno, b, r, m );

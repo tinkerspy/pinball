@@ -5,11 +5,12 @@
 Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER,     ELSE */
-    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     WAIT,
-    /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,       -1,
-    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     SCAN,
-    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1, DISABLED, 
+    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY,     ELSE */
+    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     READY,     WAIT,
+    /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,     READY,       -1,
+    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     READY,     SCAN,
+    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1,     READY, DISABLED, 
+    /*  READY    */    ENT_READY,      -1,      -1,          -1,      SCAN,        -1,        -1,    READY, 
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -48,6 +49,10 @@ void Atm_playfield::action( int id ) {
       scan_matrix();
       return;
     case ENT_DISABLED:
+      pf_enabled = false;
+      scan_matrix();
+      return;
+    case ENT_READY:
       pf_enabled = false;
       scan_matrix();
       return;
@@ -176,6 +181,9 @@ Atm_playfield& Atm_playfield::defineProfile( uint8_t prof, uint16_t T0, uint32_t
   return *this;
 }
 
+bool Atm_playfield::ready() {
+  return state() == READY;
+}
 
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
@@ -229,6 +237,6 @@ Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int id
 
 Atm_playfield& Atm_playfield::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED" );
+    "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
   return *this;
 }

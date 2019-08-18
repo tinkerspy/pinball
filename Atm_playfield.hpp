@@ -32,8 +32,8 @@ struct switch_record {
 class Atm_playfield: public Machine { // Beter: Atm_switch_zone
 
  public:
-  enum { IDLE, WAIT, SCAN, DISABLED }; 
-  enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, ELSE }; // EVENTS
+  enum { IDLE, WAIT, SCAN, DISABLED, READY }; 
+  enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, ELSE }; // EVENTS
   Atm_playfield( void ) : Machine() {};
   Atm_playfield& begin( IO& io, Atm_led_scheduler& led );
   Atm_playfield& trace( Stream & stream );
@@ -49,6 +49,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& disable();
   Atm_playfield& enable();
   bool enabled();
+  bool ready();
   Atm_element& element( int16_t n, int16_t coil_led = -1, int16_t light_led = -1, int8_t coil_profile = -1 , int8_t led_profile = -1 );
   Atm_element& watch( int16_t light_led, int16_t cnt = -1 );
   Atm_element& led( int16_t light_led, int8_t led_profile = -1 );
@@ -58,7 +59,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   switch_record prof[MAX_SWITCHES + 1 ];
 
  protected:
-  enum { ENT_SCAN, ENT_DISABLED }; // ACTIONS
+  enum { ENT_SCAN, ENT_DISABLED, ENT_READY }; // ACTIONS
   enum { ON_PRESS, ON_RELEASE = MAX_SWITCHES, CONN_MAX = MAX_SWITCHES * 2 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 

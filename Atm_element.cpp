@@ -86,10 +86,12 @@ void Atm_element::action( int id ) {
         } else {
           connectors[ON_KICK+0].push( 1 );
         }
-        if ( state() ) { 
-          if ( score_lit) counter->trigger( score_lit );
-        } else {
-          if ( score_unlit) counter->trigger( score_unlit );
+        if ( playfield->enabled() ) {
+          if ( state() ) { 
+            if ( score_lit) counter->trigger( score_lit );
+          } else {
+            if ( score_unlit) counter->trigger( score_unlit );
+          }
         }
       }
       return;

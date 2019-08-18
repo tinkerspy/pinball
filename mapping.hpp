@@ -136,6 +136,7 @@ enum {
   LED_AGAIN_GRP,
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
+  LED_OXO_XXX,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -168,8 +169,8 @@ enum {
   IN_LANE_R,
   BALL_ENTER,
   BALL_EXIT,
-  SWITCH211, // MX21
-  SWITCH212,
+  TILT_PEND, // MX21
+  TILT_RAMP,
   SWITCH213,
   FLIPPER_L,
   FLIPPER_R,
@@ -241,6 +242,8 @@ const int16_t group_definition[] = {
     LED_OXO_8A, LED_OXO_8B,
     LED_OXO_9A, LED_OXO_9B,
     -1,  
+  LED_OXO_XXX,
+    LED_OXO_1B, LED_OXO_2B, LED_OXO_3B, LED_OXO_4B, LED_OXO_5B, LED_OXO_6B, LED_OXO_7B, LED_OXO_8B, LED_OXO_9B, -1,  
   COIL_COUNTER0_GRP,
     COIL_COUNTER0_10K, COIL_COUNTER0_1K, COIL_COUNTER0_100, COIL_COUNTER0_10, -1,
   COIL_COUNTER1_GRP,
@@ -294,8 +297,8 @@ char switch_names[] =
   "IN_LANE_R \0"
   "BALL_ENTER\0"
   "BALL_EXIT \0" 
-  "SWITCH211 \0"
-  "SWITCH212 \0"
+  "TILT_PEND \0"
+  "TILT_RAMP \0"
   "SWITCH213 \0"
   "FLIPPER_L \0"
   "FLIPPER_R \0"

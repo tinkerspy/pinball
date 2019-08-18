@@ -184,24 +184,22 @@ void Atm_em_counter::action( int id ) {
  */
 
 Atm_em_counter& Atm_em_counter::trigger( int event ) {
-  if ( playfield->enabled() ) {
-    switch ( event ) {
-      case EVT_10:
-        set( value + 1 );
-        return *this;
-      case EVT_100:
-        set( value + 10 );
-        return *this;
-      case EVT_500:
-        set( value + 50 );
-        return *this;
-      case EVT_1000:
-        set( value + 100 );
-        return *this;
-      case EVT_5000:
-        set( value + 500 );
-        return *this;
-    }
+  switch ( event ) {
+    case EVT_10:
+      set( value + 1 );
+      return *this;
+    case EVT_100:
+      set( value + 10 );
+      return *this;
+    case EVT_500:
+      set( value + 50 );
+      return *this;
+    case EVT_1000:
+      set( value + 100 );
+      return *this;
+    case EVT_5000:
+      set( value + 500 );
+      return *this;
   }
   Machine::trigger( event );
   return *this;

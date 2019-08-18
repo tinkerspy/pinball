@@ -43,7 +43,8 @@ void setup() {
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
   players.begin( leds, LED_PLAY_GRP, 0, 3 );
-  bonus.begin( leds, -1, 0, 9 );
+  bonus.begin( leds, -1, 0, 9 )
+    .onCollect( score, score.EVT_1000 );
   
   // Turn on the General Illumination
   playfield
@@ -145,7 +146,7 @@ void setup() {
     .onSet( bonus, bonus.EVT_ADVANCE )
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
-  playfield
+  playfield // Replace this by onFull trigger on the bonus ladder
     .watch( LED_OXO_CELLS, 9 )
       .onLight( true, playfield.element( UP_LANE_L ), Atm_element::EVT_ON ); // UP_LANE_R should automatically follow
 
@@ -198,8 +199,16 @@ void setup() {
 
   playfield
     .element( BALL_EXIT, COIL_BALL_FEEDER, LED_AGAIN_GRP, PROFILE_FEEDER )
-    .autoKick( false )
-    .onPress( playfield, playfield.EVT_DISABLE );
+      .autoKick( false )
+      .onPress( playfield, playfield.EVT_READY );
+
+  playfield
+    .element( TILT_PEND, LED_TILT, -1, PROFILE_BRIGHT )
+      .onPress( playfield, playfield.EVT_DISABLE );
+
+  playfield
+    .element( TILT_RAMP, LED_TILT, -1, PROFILE_BRIGHT )
+      .onPress( playfield, playfield.EVT_DISABLE );
 
   playfield
     .element( FRONTBTN )
@@ -212,13 +221,15 @@ void setup() {
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
 
+  leds.on( LED_OXO_ANI_GRP );
+
 }
 
 void loop() {
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
-    players.reset();
     bonus.reset();
+    players.reset();
     leds.scalar( LED_BALL_GRP, 0 );
     leds.scalar( LED_UP_GRP, 0 );
     leds.off( LED_FLASHER_GRP );
@@ -232,20 +243,32 @@ void loop() {
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {
       for ( int player = 0; player < players.state() + 1; player++ ) {
         do {
+          leds.scalar( LED_UP_GRP, player );
+          leds.scalar( LED_BALL_GRP, ball );
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           if ( !( player == 0 && ball == 0 ) ) {
-            leds.scalar( LED_UP_GRP, player );
-            leds.scalar( LED_BALL_GRP, ball );
             leds.off( LED_FLASHER_GRP );
+            while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
             leds.on( COIL_BALL_FEEDER );
             score.select( player );
             bonus.reset();
+            if ( ball == 4 ) {
+              bonus.multiplier( 3 );
+              leds.on( LED_TRIPLE_BONUS );
+              Serial.println( "Triple bonus!" );
+            }
           }
           Serial.printf( "%d Ball play in progress\n", millis() );
           playfield.enable();
           while ( playfield.enabled() ) automaton.run();
-          Serial.printf( "%s Ball play finished\n", millis() );     
-          // Re-enable playfield and collect bonus 
+          Serial.printf( "%d Ball play finished\n", millis() );     
+          // Re-enable playfield and collect bonus
+          Serial.printf( "%d Bonus collect: %d\n", millis(), bonus.state() );
+          bonus.collect(); 
+          while ( !bonus.state() ) automaton.run();
+          while ( bonus.state() ) automaton.run();
+          Serial.printf( "%d Bonus collect done\n", millis() );
+          automaton.delay( 1000 );
         } while ( leds.active( LED_AGAIN0 ) );
       }
     }

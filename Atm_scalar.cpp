@@ -59,7 +59,6 @@ void Atm_scalar::action( int id ) {
           leds->scalar( led_group, ++value, fill_mode ); 
         }
       }
-      //Serial.printf( "%d Scalar %d\n", millis(), value );
       return;
     case ENT_RESET:
       value = def;
@@ -71,7 +70,6 @@ void Atm_scalar::action( int id ) {
       countdown = value;
       return;
     case ENT_COLLOOP:
-      Serial.printf( "%d COLLECT %d!\n", millis(), countdown );
       push( connectors, ON_COLLECT, 0, --countdown, 0 );
       leds->scalar( led_group, countdown, fill_mode );
       return;

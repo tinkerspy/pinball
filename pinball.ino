@@ -255,17 +255,15 @@ void loop() {
             if ( ball == 4 ) {
               bonus.multiplier( 3 );
               leds.on( LED_TRIPLE_BONUS );
-              Serial.println( "Triple bonus!" );
+              Serial.printf( "%d Triple bonus!\n", millis() );
             }
           }
           Serial.printf( "%d Ball play in progress\n", millis() );
           playfield.enable();
           while ( playfield.enabled() ) automaton.run();
           Serial.printf( "%d Ball play finished\n", millis() );     
-          // Re-enable playfield and collect bonus
           Serial.printf( "%d Bonus collect: %d\n", millis(), bonus.state() );
           bonus.collect(); 
-          while ( !bonus.state() ) automaton.run();
           while ( bonus.state() ) automaton.run();
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );

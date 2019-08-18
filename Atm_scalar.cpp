@@ -22,6 +22,7 @@ Atm_scalar& Atm_scalar::begin( Atm_led_scheduler& leds, int16_t led_group, int16
   this->leds = &leds;
   this->led_group = led_group;
   this->leds->scalar( this->led_group, this->def, this->fill_mode );
+  value = this->def;
   return *this;          
 }
 
@@ -32,7 +33,7 @@ Atm_scalar& Atm_scalar::begin( Atm_led_scheduler& leds, int16_t led_group, int16
 int Atm_scalar::event( int id ) {
   switch ( id ) {
     case EVT_ZERO:
-      return leds->scalar( led_group ) == -1;      
+      return value == -1;      
     case EVT_COUNTER:
       return 0;
     case EVT_TIMER:
@@ -49,12 +50,12 @@ void Atm_scalar::action( int id ) {
   int16_t current;
   switch ( id ) {
     case ENT_NEXT:
-      current = leds->scalar( led_group );
       if ( !lock_advance && current < max ) 
-        leds->scalar( led_group, current + 1 ); 
+        leds->scalar( led_group, ++value, fill_mode ); 
       return;
     case ENT_RESET:
-      leds->scalar( led_group, def, fill_mode );
+      value = def;
+      leds->scalar( led_group, value, fill_mode );
       lock( false );
       return;
     case ENT_COLLECT:
@@ -81,7 +82,7 @@ Atm_scalar& Atm_scalar::trigger( int event ) {
  */
 
 int Atm_scalar::state( void ) {
-  return leds->scalar( led_group );
+  return value;
 }
 
 /* Nothing customizable below this line                          

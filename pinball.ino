@@ -43,6 +43,7 @@ void setup() {
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
   players.begin( leds, LED_PLAY_GRP, 0, 3 );
+  bonus.begin( leds, -1, 0, 9 );
   
   // Turn on the General Illumination
   playfield
@@ -141,6 +142,7 @@ void setup() {
       .onScore( score, score.EVT_500 );
 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO )
+    .onSet( bonus, bonus.EVT_ADVANCE )
     .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
 
   playfield
@@ -216,45 +218,39 @@ void loop() {
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
     players.reset();
-    leds.off( LED_GAME_OVER );
+    bonus.reset();
     leds.scalar( LED_BALL_GRP, 0 );
     leds.scalar( LED_UP_GRP, 0 );
     leds.off( LED_FLASHER_GRP );
-    Serial.print( millis() );
-    Serial.println( " Counter reset started" );
+    Serial.printf( "%d Counter reset started\n", millis() );
     while ( score.state() ) automaton.run();
-    Serial.print( millis() );
-    Serial.println( " Counter reset finished" );
-    Serial.println( "Kick off" );
+    Serial.printf( "%d Counter reset finished\n", millis() );
     if ( io.isPressed( BALL_EXIT ) ) leds.on( COIL_BALL_FEEDER );
     playfield.enable();
     while ( !score.touched() ) automaton.run();
     players.lock();
-    for ( int b = 0; b < 5; b++ ) {
-      for ( int p = 0; p < players.state() + 1; p++ ) {
+    for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {
+      for ( int player = 0; player < players.state() + 1; player++ ) {
         do {
-          Serial.print( millis() );
-          Serial.print( " Serve player " );
-          Serial.print( p  );
-          Serial.print( ", ball " );
-          Serial.println( b  );
-          if ( b > 0 || p > 0 ) {
-            leds.scalar( LED_UP_GRP, p );
-            leds.scalar( LED_BALL_GRP, b );
+          Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
+          if ( !( player == 0 && ball == 0 ) ) {
+            leds.scalar( LED_UP_GRP, player );
+            leds.scalar( LED_BALL_GRP, ball );
             leds.off( LED_FLASHER_GRP );
             leds.on( COIL_BALL_FEEDER );
-            score.select( p );
+            score.select( player );
+            bonus.reset();
           }
-          Serial.print( millis() );
-          Serial.println( " Ball play in progress" );
+          Serial.printf( "%d Ball play in progress\n", millis() );
           playfield.enable();
           while ( playfield.enabled() ) automaton.run();
-          Serial.print( millis() );
-          Serial.println( " Ball play finished" );      
+          Serial.printf( "%s Ball play finished\n", millis() );     
+          // Re-enable playfield and collect bonus 
         } while ( leds.active( LED_AGAIN0 ) );
       }
     }
     leds.on( LED_GAME_OVER );
+    players.lock();
   }
   automaton.run();
 }

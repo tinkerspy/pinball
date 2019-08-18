@@ -45,11 +45,11 @@ void Atm_playfield::action( int id ) {
   switch ( id ) {
     case ENT_SCAN:
       pf_enabled = true;
-      scan_matrix( true );
+      scan_matrix();
       return;
     case ENT_DISABLED:
       pf_enabled = false;
-      scan_matrix( false );
+      scan_matrix();
       return;
   }
 }
@@ -88,7 +88,7 @@ bool Atm_playfield::isPressed( int16_t n ) {
   return io->isPressed( n );
 }
 
-void Atm_playfield::scan_matrix( bool active ) {
+void Atm_playfield::scan_matrix( void ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
     switch_changed( abs( sw ), sw > 0 );

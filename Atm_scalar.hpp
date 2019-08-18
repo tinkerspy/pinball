@@ -27,4 +27,5 @@ class Atm_scalar: public Machine {
   int16_t max, def, led_group;
   bool fill_mode = false;
   atm_timer_millis timer;
+  int16_t value;
 };

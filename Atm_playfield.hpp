@@ -63,7 +63,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
-  void scan_matrix( bool active );
+  void scan_matrix( void );
   void switch_changed( int16_t n, uint8_t v );
   
   int no_of_rows, no_of_cols;

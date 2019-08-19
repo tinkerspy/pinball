@@ -100,9 +100,9 @@ enum {
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
   LED_OXO_O, LED_OXO_X, // FIXME these are the other way around!
 
-  COIL_CHIME_10,  // Dummy entries for led strip on P2 (cabinet)
-  COIL_CHIME_100,
-  COIL_CHIME_1K,
+  COIL_CHIME0,  // Dummy entries for led strip on P2 (cabinet)
+  COIL_CHIME1,
+  COIL_CHIME2,
   COIL_KNOCKER,
   
   COIL_COUNTER0_10, COIL_COUNTER0_100, COIL_COUNTER0_1K, COIL_COUNTER0_10K, // Strip on P3 (headbox)
@@ -188,6 +188,9 @@ enum {
   
 /* Virtual switches (for elements without physical switches) */  
   SAVE_GATE,
+  CHIME0,
+  CHIME1,
+  CHIME2,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////

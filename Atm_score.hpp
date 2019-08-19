@@ -17,9 +17,9 @@ class Atm_score: public Machine {
   int state( void );
   Atm_score& onReset( Machine& machine, int event = 0 );
   Atm_score& onReset( atm_cb_push_t callback, int idx = 0 );
-  Atm_score& onScore( Machine& machine, int event = 0 );
-  Atm_score& onScore( atm_cb_push_t callback, int idx = 0 );
-  Atm_score& addCounter( Machine& machine );
+  Atm_score& onDigit( int sub, Machine& machine, int event = 0 ); // WARNING: call after addCounter() 
+  Atm_score& onDigit( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_score& addCounter( Atm_em_counter& machine );
   Atm_score& select( uint8_t n );
   Atm_score& reset( void );
   bool touched( void );
@@ -31,7 +31,7 @@ class Atm_score: public Machine {
   int event( int id ); 
   void action( int id ); 
 
-  Machine* counter[MAX_COUNTER];
+  Atm_em_counter* counter[MAX_COUNTER];
   uint8_t machine_count = 0;
   uint8_t selected = 0;
   bool score_touched = false;

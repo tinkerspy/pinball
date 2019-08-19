@@ -9,7 +9,7 @@
  */
  
 
-Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_switch, int16_t group_id, int profile ) {
+Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_switch, int16_t led_group_id, int profile ) {
   
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -63,12 +63,12 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   this->playfield = &playfield;
   this->sensor_switch = sensor_switch;
   pinMode( sensor_switch, INPUT_PULLUP );
-  const int16_t* p = playfield.leds().group( group_id );
+  const int16_t* p = playfield.leds().group( led_group_id );
   playfield.leds().profile( this->coil[0] = p[0], profile );
   playfield.leds().profile( this->coil[1] = p[1], profile );
   playfield.leds().profile( this->coil[2] = p[2], profile );
   playfield.leds().profile( this->coil[3] = p[3], profile );
-  value = 0;
+  current_value = 0;
   memset( soll, 0, sizeof( soll ) );
   memset( ist, 0, sizeof( ist ) );
   memset( solved, 0, sizeof( solved ) );
@@ -110,25 +110,25 @@ int Atm_em_counter::event( int id ) {
  * This generates the 'output' for the state machine
  *
  * Available connectors:
- *   push( connectors, ON_SCORE, <sub>, <v>, <up> );
+ *   push( connectors, ON_DIGIT, <sub>, <v>, <up> );
  */
 
 void Atm_em_counter::action( int id ) {
   switch ( id ) {
     case ENT_DIG0:
-      pulse ( 0, true );
+      pulse( 0, true );
       return;
     case ENT_DIG1:
-      pulse( 1, true );
-      push( connectors, ON_SCORE, 2, 1000, 1 );
+      pulse( 1, true, RECURSIVE );
+      push( connectors, ON_DIGIT, 2, 1000, 1 );
       return;
     case ENT_DIG2:
-      pulse( 2, true );
-      push( connectors, ON_SCORE, 1, 100, 1 );
+      pulse( 2, true, RECURSIVE );
+      push( connectors, ON_DIGIT, 1, 100, 1 );
       return;
     case ENT_DIG3:
-      pulse( 3, true );
-      push( connectors, ON_SCORE, 0, 10, 1 );
+      pulse( 3, true, RECURSIVE );
+      push( connectors, ON_DIGIT, 0, 10, 1 );
       return;
     case ENT_ZERO:
       set( 0 );
@@ -174,7 +174,7 @@ void Atm_em_counter::action( int id ) {
       memset( solved, 0, sizeof( solved ) );
       resetting = false;
       touched = false;
-      value = 0;
+      current_value = 0;
       return;
   }
 }
@@ -186,19 +186,19 @@ void Atm_em_counter::action( int id ) {
 Atm_em_counter& Atm_em_counter::trigger( int event ) {
   switch ( event ) {
     case EVT_10:
-      set( value + 1 );
+      set( current_value + 1 );
       return *this;
     case EVT_100:
-      set( value + 10 );
+      set( current_value + 10 );
       return *this;
     case EVT_500:
-      set( value + 50 );
+      set( current_value + 50 );
       return *this;
     case EVT_1000:
-      set( value + 100 );
+      set( current_value + 100 );
       return *this;
     case EVT_5000:
-      set( value + 500 );
+      set( current_value + 500 );
       return *this;
   }
   Machine::trigger( event );
@@ -213,14 +213,18 @@ int Atm_em_counter::state( void ) {
   return Machine::state();
 }
 
+uint16_t Atm_em_counter::value( void ) {
+  return current_value * 10;
+}
+
 Atm_em_counter& Atm_em_counter::set( uint16_t v ) {
-  value = v;
+  current_value = v;
   soll[3] = v % 10;
   soll[2] = v % 100 / 10;
   soll[1] = v % 1000 / 100;
   soll[0] = v % 10000 / 1000;
 //  Serial.print( "set: " );
-//  Serial.println( value );
+//  Serial.println( current_value );
   trigger( EVT_CHANGE );
   return *this;
 }
@@ -234,31 +238,34 @@ Atm_em_counter& Atm_em_counter::set_hw( uint16_t v ) {
 }
 
 Atm_em_counter& Atm_em_counter::add( int16_t v ) {
-  set( value + v );
+  set( current_value + v );
   return *this;
 }
 
-Atm_em_counter& Atm_em_counter::pulse( uint8_t reel, uint8_t force ) {
-  if ( force || solved[reel] == 0 ) {
-    ist[reel] = ( ist[reel] + 1 ) % 10;
-#ifdef SIMULATE
-    sim.pulse( reel );
-#else
-    playfield->leds().on( coil[reel] );
-#endif
-/*
-    Serial.print( millis() );
-    Serial.print( " Pulse reel " );
-    Serial.print( reel );
-    Serial.print( ": " );
-    Serial.print( ist[reel] );
-    Serial.print( " -> " );
-    Serial.print( soll[reel] );
-    Serial.print( ", " );
-    dump_ist( Serial, false );
-*/   
-    last_pulse = reel;
-    touched = true;
+Atm_em_counter& Atm_em_counter::pulse( int8_t reel, uint8_t force /* = 0 */, uint8_t recursive /* = 0 */ ) {
+  if ( reel >= 0 ) {
+    if ( force || solved[reel] == 0 ) {
+      ist[reel] = ( ist[reel] + 1 ) % 10;
+  #ifdef SIMULATE
+      sim.pulse( reel );
+  #else
+      playfield->leds().on( coil[reel] );
+  #endif
+      if ( ist[reel] == 0 && recursive ) pulse( reel - 1, force, recursive ); 
+  /*
+      Serial.print( millis() );
+      Serial.print( " Pulse reel " );
+      Serial.print( reel );
+      Serial.print( ": " );
+      Serial.print( ist[reel] );
+      Serial.print( " -> " );
+      Serial.print( soll[reel] );
+      Serial.print( ", " );
+      dump_ist( Serial, false );
+  */   
+      last_pulse = reel;
+      touched = true;
+    }
   }
   return *this;
 }
@@ -317,23 +324,13 @@ Atm_em_counter& Atm_em_counter::zero() {
  * onScore() push connector variants ( slots 3, autostore 0, broadcast 0 )
  */
 
-Atm_em_counter& Atm_em_counter::onScore( Machine& machine, int event ) {
-  onPush( connectors, ON_SCORE, 0, 3, 1, machine, event );
+Atm_em_counter& Atm_em_counter::onDigit( int sub, Machine& machine, int event ) {
+  onPush( connectors, ON_DIGIT, sub, 3, 0, machine, event );
   return *this;
 }
 
-Atm_em_counter& Atm_em_counter::onScore( atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_SCORE, 0, 3, 1, callback, idx );
-  return *this;
-}
-
-Atm_em_counter& Atm_em_counter::onScore( int sub, Machine& machine, int event ) {
-  onPush( connectors, ON_SCORE, sub, 3, 0, machine, event );
-  return *this;
-}
-
-Atm_em_counter& Atm_em_counter::onScore( int sub, atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_SCORE, sub, 3, 0, callback, idx );
+Atm_em_counter& Atm_em_counter::onDigit( int sub, atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_DIGIT, sub, 3, 0, callback, idx );
   return *this;
 }
 

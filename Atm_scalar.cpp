@@ -51,11 +51,10 @@ int Atm_scalar::event( int id ) {
  */
 
 void Atm_scalar::action( int id ) {
-  int16_t current;
   switch ( id ) {
     case ENT_NEXT:
       if ( !lock_advance ) { 
-        if ( current < max ) { 
+        if ( value < max ) { 
           leds->scalar( led_group, ++value, fill_mode ); 
         }
       }

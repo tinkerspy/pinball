@@ -5,7 +5,9 @@
 #include "Atm_playfield.hpp"
 
 #undef SIMULATE
+
 #define DIGIT_DELAY_MS 120
+#define RECURSIVE true
 
 /*  
 
@@ -83,16 +85,15 @@ class Atm_em_counter: public Machine {
     SCND, SCND1, SCND1W, SCND2, SCND2W, SCND3, SCND3W, THRD, THRD1, THRD1W, THRD2, THRD2W, THRD3, THRD3W, FRTH, FRTH0, FRTHW, FFTH }; // STATES
   enum { EVT_CLEAN, EVT_LO, EVT_HI, EVT_DIG3, EVT_DIG2, EVT_DIG1, EVT_DIG0, EVT_RESET, EVT_ZERO, EVT_TIMER, EVT_CHANGE, ELSE, EVT_10, EVT_100, EVT_500, EVT_1000, EVT_5000 }; // EVENTS
   Atm_em_counter( void ) : Machine() {};
-  Atm_em_counter& begin( Atm_playfield& playfield, int16_t sensor_switch,  int16_t group_id, int profile );
+  Atm_em_counter& begin( Atm_playfield& playfield, int16_t sensor_switch,  int16_t led_group_id, int profile );
   Atm_em_counter& trace( Stream & stream );
   Atm_em_counter& trigger( int event );
   int state( void );
-  Atm_em_counter& onScore( Machine& machine, int event = 0 ); // This is actually onPulse() (ENT_DIG0..ENT_DIG3) 
-  Atm_em_counter& onScore( atm_cb_push_t callback, int idx = 0 );
-  Atm_em_counter& onScore( int sub, Machine& machine, int event = 0 );
-  Atm_em_counter& onScore( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_em_counter& onDigit( int sub, Machine& machine, int event = 0 );
+  Atm_em_counter& onDigit( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_em_counter& reset( void );
   Atm_em_counter& zero( void );
+  uint16_t value( void );
   Atm_em_counter& set( uint16_t v );
   Atm_em_counter& set_hw( uint16_t v ); // mag later weg
   Atm_em_counter& add( int16_t v );
@@ -103,16 +104,16 @@ class Atm_em_counter: public Machine {
 
  private:
   enum { ENT_DIG0, ENT_DIG1, ENT_DIG2, ENT_DIG3, ENT_ZERO, ENT_RESET, ENT_PULS0, ENT_PULS1, ENT_PULS2, ENT_PULS3, ENT_FRST, ENT_SCND, ENT_THRD, ENT_FRTH, ENT_FFTH }; // ACTIONS
-  enum { ON_SCORE, CONN_MAX = 3 }; // CONNECTORS
+  enum { ON_DIGIT, CONN_MAX = 3 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
-  Atm_em_counter& pulse( uint8_t reel, uint8_t force = 0 );
+  Atm_em_counter& pulse( int8_t reel, uint8_t force = 0, uint8_t recursive = 0 );
   int sensor( void ); 
 
   Atm_playfield* playfield;
   int coil[4];
-  int value;
+  int current_value;
   uint8_t ist[4], soll[4];
   int16_t sensor_switch;
   uint8_t last_pulse;

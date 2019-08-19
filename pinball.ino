@@ -21,7 +21,7 @@ void setup() {
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
-    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet DUMMY!!!
+    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet DUMMY for now!!!
     .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
     .invert( BALL_ENTER )
     .retrigger()
@@ -32,10 +32,13 @@ void setup() {
   playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
 
   score.begin()
-    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ); 
+    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
+    .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
+    .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
+    .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK ); 
 
   playfield
     .leds()
@@ -43,7 +46,7 @@ void setup() {
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
   players.begin( leds, LED_PLAY_GRP, 0, 3 );
-  bonus.begin( leds, -1, 0, 9 )
+  bonus.begin( leds, -1, 0, 9 ) // wacht ff, volgens mij begint deze toch bij 1! (def 0)
     .onCollect( score, score.EVT_1000 );
   
   // Turn on the General Illumination
@@ -144,11 +147,11 @@ void setup() {
 
   oxo.begin( playfield, LED_OXO_GRP, PROFILE_OXO )
     .onSet( bonus, bonus.EVT_ADVANCE )
-    .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow
+    .onMatch( playfield.element( KICKER_L ), Atm_element::EVT_ON ); // LED_KICKER_R should automatically follow (linked via LED_KICKER_GRP)
 
   playfield // Replace this by onFull trigger on the bonus ladder
     .watch( LED_OXO_CELLS, 9 )
-      .onLight( true, playfield.element( UP_LANE_L ), Atm_element::EVT_ON ); // UP_LANE_R should automatically follow
+      .onLight( true, playfield.element( UP_LANE_L ), Atm_element::EVT_ON ); // UP_LANE_R should automatically follow (linked via LED_UP_LANE_GRP)
 
   playfield
     .element( IN_LANE_L )
@@ -223,6 +226,7 @@ void setup() {
 
   leds.on( LED_OXO_ANI_GRP );
 
+
 }
 
 void loop() {
@@ -236,7 +240,7 @@ void loop() {
     Serial.printf( "%d Counter reset started\n", millis() );
     while ( score.state() ) automaton.run();
     Serial.printf( "%d Counter reset finished\n", millis() );
-    if ( io.isPressed( BALL_EXIT ) ) leds.on( COIL_BALL_FEEDER );
+    if ( io.isPressed( BALL_EXIT ) ) leds.on( COIL_BALL_FEEDER ); 
     playfield.enable();
     while ( !score.touched() ) automaton.run();
     players.lock();
@@ -248,7 +252,7 @@ void loop() {
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           if ( !( player == 0 && ball == 0 ) ) {
             leds.off( LED_FLASHER_GRP );
-            while ( !io.isPressed( BALL_EXIT ) ) automaton.run();
+            while ( !io.isPressed( BALL_EXIT ) ) automaton.run(); 
             leds.on( COIL_BALL_FEEDER );
             score.select( player );
             bonus.reset();
@@ -264,12 +268,12 @@ void loop() {
           Serial.printf( "%d Ball play finished\n", millis() );     
           Serial.printf( "%d Bonus collect: %d\n", millis(), bonus.state() );
           bonus.collect(); 
-          while ( bonus.state() ) automaton.run();
+          while ( bonus.state() ) automaton.run(); // should be > -1???
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
         } while ( leds.active( LED_AGAIN0 ) );
-      }
-    }
+      } // player
+    } // ball
     leds.on( LED_GAME_OVER );
     players.lock();
   }

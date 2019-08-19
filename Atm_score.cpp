@@ -1,4 +1,5 @@
 #include "Atm_score.hpp"
+#include "Atm_em_counter.hpp"
 
 /* Add optional parameters for the state machine to begin()
  * Add extra initialization code
@@ -62,7 +63,7 @@ bool Atm_score::touched( void ) {
   return score_touched;
 }
 
-Atm_score& Atm_score::addCounter( Machine& machine ) {
+Atm_score& Atm_score::addCounter( Atm_em_counter& machine ) {
   counter[machine_count] = &machine;
   machine_count++;
   return *this;
@@ -136,19 +137,20 @@ Atm_score& Atm_score::onReset( atm_cb_push_t callback, int idx ) {
   return *this;
 }
 
-/*
- * onScore() push connector variants ( slots 1, autostore 0, broadcast 0 )
- */
-
-Atm_score& Atm_score::onScore( Machine& machine, int event ) {
-  onPush( connectors, ON_SCORE, 0, 1, 1, machine, event );
+Atm_score& Atm_score::onDigit( int sub, Machine& machine, int event ) {
+  for ( int i = 0; i < machine_count; i++ ) {
+    counter[i]->onDigit( sub, machine, event );
+  }
   return *this;
 }
 
-Atm_score& Atm_score::onScore( atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_SCORE, 0, 1, 1, callback, idx );
+Atm_score& Atm_score::onDigit( int sub, atm_cb_push_t callback, int idx ) {
+  for ( int i = 0; i < machine_count; i++ ) {
+    counter[i]->onDigit( sub, callback, idx );
+  }
   return *this;
 }
+
 
 /* State trace method
  * Sets the symbol table and the default logging method for serial monitoring

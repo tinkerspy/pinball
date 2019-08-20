@@ -58,7 +58,6 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   Machine::begin( state_table, ELSE );
   this->playfield = &playfield;
   this->sensor_switch = sensor_switch;
-  pinMode( sensor_switch, INPUT_PULLUP );
   const int16_t* p = playfield.leds().group( led_group_id );
   playfield.leds().profile( this->coil[0] = p[0], profile );
   playfield.leds().profile( this->coil[1] = p[1], profile );

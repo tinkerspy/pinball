@@ -4,8 +4,6 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
-#undef SIMULATE
-
 #define DIGIT_DELAY_MS 120
 #define RECURSIVE true
 
@@ -31,53 +29,6 @@
  polling the switch matrix to refresh the buffer. Usually this is done by the Atm_playfield object.
 */
 
-class em_counter_simulator {
-  // This class simulates the hardware counter behaviour for testing purposes
-  public: 
-    int reel[4];
-
-    em_counter_simulator() {
-      set( 0, 0, 0, 0 );
-    }
-
-    void pulse( int n ) {
-      reel[n] = ( reel[n] + 1 ) % 10;
-      //print( n );
-    }
-
-    void set( int r0, int r1, int r2, int r3 ) {
-      reel[0] = r0;
-      reel[1] = r1;
-      reel[2] = r2;
-      reel[3] = r3;
-      Serial.print( "Set: " );
-      print();
-    }
-
-    bool sensor( int quiet = 0 ) {
-      //if ( !quiet) Serial.print( "." );
-      return reel[0] != 0 && ( reel[1] == 9 || reel[2] == 9 || reel[3] == 9 );
-    }
-    
-    bool zero() {
-      return reel[0] == 0 && reel[1] == 0 && reel[2] == 0 && reel[3] == 0;
-    }
-
-    void print( int p = -1, int s = 0 ) {
-      if ( p > -1 ) {
-        Serial.print( p );
-        Serial.print( " -> " );
-      }
-      Serial.print( reel[0] );
-      Serial.print( reel[1] );
-      Serial.print( reel[2] );
-      Serial.print( reel[3] );
-      Serial.println( s ? ( sensor( 1 ) ? " HI" : " LO" ) : "" );
-    }
-
-};
-
-
 class Atm_em_counter: public Machine {
 
  public:
@@ -95,12 +46,7 @@ class Atm_em_counter: public Machine {
   Atm_em_counter& zero( void );
   uint16_t value( void );
   Atm_em_counter& set( uint16_t v );
-  Atm_em_counter& set_hw( uint16_t v ); // mag later weg
-  Atm_em_counter& add( int16_t v );
-  Atm_em_counter& dump_soll( Stream & stream ); // Mag later weg
-  Atm_em_counter& dump_ist( Stream & stream, int plus = 1 ); // Mag later weg
-  
-
+  Atm_em_counter& add( int16_t v );  
 
  private:
   enum { ENT_DIG0, ENT_DIG1, ENT_DIG2, ENT_DIG3, ENT_ZERO, ENT_RESET, ENT_PULS0, ENT_PULS1, ENT_PULS2, ENT_PULS3, ENT_FRST, ENT_SCND, ENT_THRD, ENT_FRTH, ENT_FFTH }; // ACTIONS
@@ -121,9 +67,5 @@ class Atm_em_counter: public Machine {
   bool resetting, touched;
 
   atm_timer_millis timer;
-
-#ifdef SIMULATE
-  public: em_counter_simulator sim;
-#endif
     
 };

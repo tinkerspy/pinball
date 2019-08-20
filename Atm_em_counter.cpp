@@ -2,10 +2,6 @@
 
 /* Add optional parameters for the state machine to begin()
  * Add extra initialization code
- * 
- * simulation
- * ist/soll
- * calibration/check
  */
  
 
@@ -229,14 +225,6 @@ Atm_em_counter& Atm_em_counter::set( uint16_t v ) {
   return *this;
 }
 
-Atm_em_counter& Atm_em_counter::set_hw( uint16_t v ) {
-  ist[3] = v % 10;
-  ist[2] = v % 100 / 10;
-  ist[1] = v % 1000 / 100;
-  ist[0] = v % 10000 / 1000;
-  return *this;
-}
-
 Atm_em_counter& Atm_em_counter::add( int16_t v ) {
   set( current_value + v );
   return *this;
@@ -246,23 +234,8 @@ Atm_em_counter& Atm_em_counter::pulse( int8_t reel, uint8_t force /* = 0 */, uin
   if ( reel >= 0 ) {
     if ( force || solved[reel] == 0 ) {
       ist[reel] = ( ist[reel] + 1 ) % 10;
-  #ifdef SIMULATE
-      sim.pulse( reel );
-  #else
       playfield->leds().on( coil[reel] );
-  #endif
       if ( ist[reel] == 0 && recursive ) pulse( reel - 1, force, recursive ); 
-  /*
-      Serial.print( millis() );
-      Serial.print( " Pulse reel " );
-      Serial.print( reel );
-      Serial.print( ": " );
-      Serial.print( ist[reel] );
-      Serial.print( " -> " );
-      Serial.print( soll[reel] );
-      Serial.print( ", " );
-      dump_ist( Serial, false );
-  */   
       last_pulse = reel;
       touched = true;
     }
@@ -271,35 +244,7 @@ Atm_em_counter& Atm_em_counter::pulse( int8_t reel, uint8_t force /* = 0 */, uin
 }
 
 int Atm_em_counter::sensor( void ) {
-#ifdef SIMULATE
-  return sim.sensor();
-#else 
   return playfield->isPressed( sensor_switch );
-#endif
-  
-}
-
-Atm_em_counter& Atm_em_counter::dump_soll( Stream & stream ) {
-  stream.print( "soll: " ); 
-  stream.print( soll[0] ); 
-  stream.print( soll[1] ); 
-  stream.print( soll[2] ); 
-  stream.println( soll[3] ); 
-  return *this;
-}
-
-Atm_em_counter& Atm_em_counter::dump_ist( Stream & stream, int plus ) {
-  stream.print( "ist: " ); 
-  stream.print( ist[0] ); 
-  stream.print( ist[1] ); 
-  stream.print( ist[2] ); 
-  stream.print( ist[3] ); 
-  if ( plus ) {
-    stream.println( sensor() ? " +" : " -" ); 
-  } else {
-    stream.println();
-  }
-  return *this;
 }
 
 /* Nothing customizable below this line                          

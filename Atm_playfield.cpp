@@ -59,19 +59,19 @@ void Atm_playfield::action( int id ) {
   }
 }
 
-Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint16_t m ) {
+Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t t, uint16_t m ) {
   for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
     prof[i].break_delay = b; 
     prof[i].make_delay = m; 
-    prof[i].retrigger_delay = r; 
+    prof[i].throttle_delay = t; 
   }
   return *this;   
 }
 
-Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t r, uint16_t m ) {
+Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t t, uint16_t m ) {
   prof[n].break_delay = b; 
   prof[n].make_delay = m; 
-  prof[n].retrigger_delay = r; 
+  prof[n].throttle_delay = t; 
   return *this;   
 }
 
@@ -111,6 +111,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
   Serial.println( prof[n].break_delay );
   */
   if ( v ) {
+    
     if ( prof[n].make_delay > 0 ) {
   //    Serial.print( "make_delay: " );
       if ( !prof[n].make_wait ) prof[n].last_change = millis();
@@ -125,7 +126,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       }
       prof[n].make_wait = 0;
     } 
-    if ( millis_passed > prof[n].retrigger_delay ) {
+    if ( millis_passed > prof[n].throttle_delay ) {
       prof[n].switch_state = 1;
       push( connectors, ON_PRESS, n, n, 1 ); 
       if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 

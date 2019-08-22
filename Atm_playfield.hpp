@@ -5,6 +5,7 @@
 #include <Automaton.h>
 #include "Atm_element.hpp"
 #include "Atm_led_scheduler.hpp"
+#include "debounce.hpp"
 
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
@@ -17,9 +18,9 @@ struct switch_record {
     uint8_t persistent : 1;
     uint8_t disabled : 1;
     uint8_t make_wait : 1;
-    uint8_t break_delay;
     uint16_t make_delay; 
-    uint16_t retrigger_delay;
+    uint16_t break_delay;
+    uint16_t throttle_delay;
     uint16_t last_change;
     bool initialized; 
 #ifdef DYNAMIC_ELEMENTS    
@@ -44,8 +45,8 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );
   Atm_playfield& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_playfield& debounce( uint8_t b, uint16_t r, uint16_t m );
-  Atm_playfield& debounce( int16_t n, uint8_t b, uint16_t r, uint16_t m );  
+  Atm_playfield& debounce( uint8_t b, uint16_t t, uint16_t m );
+  Atm_playfield& debounce( int16_t n, uint8_t b, uint16_t t, uint16_t m );  
   Atm_playfield& disable();
   Atm_playfield& enable();
   bool enabled();
@@ -77,4 +78,5 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   atm_timer_millis timer;
   bool pf_enabled = false;
   IO *io;
+  Debounce deb;
 };

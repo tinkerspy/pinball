@@ -96,55 +96,20 @@ bool Atm_playfield::isPressed( int16_t n ) {
 void Atm_playfield::scan_matrix( void ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
-    switch_changed( abs( sw ), sw > 0 );
-  }
-}
-
-void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
-  uint16_t millis_passed;
-  millis_passed = (uint16_t) millis() - prof[n].last_change;
-/*
-  Serial.print( n );
-  Serial.print( " make_delay: " );
-  Serial.print( prof[n].make_delay );
-  Serial.print( " break_delay: " );
-  Serial.println( prof[n].break_delay );
-  */
-  if ( v ) {
-    
-    if ( prof[n].make_delay > 0 ) {
-  //    Serial.print( "make_delay: " );
-      if ( !prof[n].make_wait ) prof[n].last_change = millis();
-      millis_passed = (uint16_t) millis() - prof[n].last_change;
-  //    Serial.print( millis_passed );
-  //    Serial.print( " < " );
-  //    Serial.println( prof[n].make_delay );
-      if ( millis_passed < prof[n].make_delay ) {
-        prof[n].make_wait = 1;
-        io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
-        return;
+    bool press = sw > 0;
+    int16_t n = abs( sw );
+    if ( deb.debounce( n, press, prof[n].make_delay, prof[n].break_delay, prof[n].throttle_delay ) ) {
+      if ( press ) {
+        push( connectors, ON_PRESS, n, n, 1 ); 
+        if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK );       
+      } else {
+        push( connectors, ON_RELEASE, n, n, 0 ); 
+        if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );      
       }
-      prof[n].make_wait = 0;
-    } 
-    if ( millis_passed > prof[n].throttle_delay ) {
-      prof[n].switch_state = 1;
-      push( connectors, ON_PRESS, n, n, 1 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
-    }
-  } else {
-    if ( ( millis_passed >= prof[n].break_delay ) ) {
-      prof[n].switch_state = 0;      
-      push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
+    } else {
+      io->unscan();
     }
   }
-  io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
 }
 
 Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, int8_t coil_profile /* -1 */, int8_t led_profile /* -1 */ ) {

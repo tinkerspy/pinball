@@ -237,13 +237,13 @@ void setup() {
 
 
 void loop() {
-  automaton.run(); // <<<<<<<<<< IDLE
+  automaton.run(); 
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
     players.reset();
     leds.off( LED_FLASHER_GRP );
     Serial.printf( "%d Counter reset\n", millis() );
-    while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
+    while ( score.state() ) automaton.run(); 
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < players.state() + 1; player++ ) {
         do {
@@ -260,14 +260,14 @@ void loop() {
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           leds.on( COIL_BALL_FEEDER );
           playfield.enable();
-          while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
+          while ( playfield.enabled() ) automaton.run(); 
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(),  bonus.state() );     
           bonus.collect(); 
-          while ( bonus.state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
+          while ( bonus.state() ) automaton.run(); 
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 500 );
           players.lock();
-        } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
+        } while ( leds.active( LED_AGAIN0 ) ); 
       } 
     } 
     leds.on( LED_GAME_OVER );

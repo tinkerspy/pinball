@@ -204,7 +204,8 @@ void setup() {
   playfield
     .element( BALL_EXIT, COIL_BALL_FEEDER, LED_AGAIN_GRP, PROFILE_FEEDER )
       .autoKick( false )
-      .onPress( playfield, playfield.EVT_READY );
+      .onPress( playfield, playfield.EVT_READY )
+      .onLight( playfield.element( KNOCKER, COIL_KNOCKER), Atm_element::EVT_KICK );
 
   playfield
     .element( TILT_PEND, LED_TILT, -1, PROFILE_BRIGHT )
@@ -237,13 +238,12 @@ void setup() {
 
 
 void loop() {
-  automaton.run(); // <<<<<<<<<< IDLE
+  automaton.run(); 
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
     players.reset();
     leds.off( LED_FLASHER_GRP );
-    Serial.printf( "%d Counter reset\n", millis() );
-    while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
+    while ( score.state() ) automaton.run(); 
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < players.state() + 1; player++ ) {
         do {
@@ -255,19 +255,15 @@ void loop() {
           if ( ball == 4 ) {
             bonus.multiplier( 3 );
             leds.on( LED_TRIPLE_BONUS );
-            Serial.printf( "%d Triple bonus!\n", millis() );
           }
-          Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           leds.on( COIL_BALL_FEEDER );
           playfield.enable();
-          while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
-          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(),  bonus.state() );     
+          while ( playfield.enabled() ) automaton.run(); 
           bonus.collect(); 
-          while ( bonus.state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
-          Serial.printf( "%d Bonus collect done\n", millis() );
+          while ( bonus.state() ) automaton.run(); 
           automaton.delay( 500 );
           players.lock();
-        } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
+        } while ( leds.active( LED_AGAIN0 ) ); 
       } 
     } 
     leds.on( LED_GAME_OVER );

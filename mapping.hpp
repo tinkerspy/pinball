@@ -191,6 +191,7 @@ enum {
   CHIME0,
   CHIME1,
   CHIME2,
+  KNOCKER,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////

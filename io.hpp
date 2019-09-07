@@ -43,6 +43,7 @@ class IO {
     uint32_t last_read_time = 0;
     uint8_t last_strip = 0;
     uint8_t selected = 0; 
+    uint8_t switch_map;
     IO_Adafruit_NeoPixel *led_strip[NUM_IOPORTS];
     logical_led led[NUM_IOPORTS * MAX_LEDS_PER_STRIP];
     int16_t led_dirty[NUM_IOPORTS];

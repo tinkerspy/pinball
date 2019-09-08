@@ -270,8 +270,6 @@ const int16_t group_definition[] = {
   -1, 
 };
 
-
-
 #define SWITCH_NAME( sw ) switch_names + ( sw * 11 )
 
 char switch_names[] = 
@@ -317,3 +315,50 @@ char switch_names[] =
   "COUNTER1  \0"
   "COUNTER3  \0"
   "FLASHERS  \0";
+
+enum { 
+  EVT_OXO_1O, EVT_OXO_1X, EVT_OXO_2O, EVT_OXO_2X, EVT_OXO_3O, EVT_OXO_3X,             
+  EVT_OXO_4, EVT_OXO_5, EVT_OXO_6, EVT_OXO_7, EVT_OXO_8, EVT_OXO_9, 
+  EVT_OXO_TOGGLE, 
+};
+
+const int16_t oxo_led_actions[] = {
+  
+  EVT_OXO_1O, 'J', LED_OXO_1A, -1, 0, 'H', -1, -1, LED_OXO_1A, 'H', -1, -1, LED_OXO_1C, 'T', -1, -1, 1, -1,
+  EVT_OXO_1X, 'J', LED_OXO_1B, -1, 0, 'H', -1, -1, LED_OXO_1B, 'T', -1, -1, 1, -1,
+  EVT_OXO_2O, 'J', LED_OXO_2A, -1, 0, 'H', -1, -1, LED_OXO_2A, 'H', -1, -1, LED_OXO_2C, 'T', -1, -1, 2, -1,
+  EVT_OXO_2X, 'J', LED_OXO_2B, -1, 0, 'H', -1, -1, LED_OXO_2B, 'T', -1, -1, 2, -1,
+  EVT_OXO_3O, 'J', LED_OXO_3A, -1, 0, 'H', -1, -1, LED_OXO_3A, 'H', -1, -1, LED_OXO_3C, 'T', -1, -1, 3, -1,
+  EVT_OXO_3X, 'J', LED_OXO_3B, -1, 0, 'H', -1, -1, LED_OXO_3B, 'T', -1, -1, 3, -1,
+
+  EVT_OXO_4, 'J', LED_OXO_4A, -1, 0, 'J', LED_OXO_4B, -1, 0, 'H', LED_OXO_X, LED_OXO_4B, LED_OXO_4A, 'H', LED_OXO_X, LED_OXO_4B, LED_OXO_4C, 'T', -1, -1, 4, -1,
+  EVT_OXO_5, 'J', LED_OXO_5A, -1, 0, 'J', LED_OXO_5B, -1, 0, 'H', LED_OXO_X, LED_OXO_5B, LED_OXO_5A, 'H', LED_OXO_X, LED_OXO_5B, LED_OXO_5C, 'T', -1, -1, 5, -1,
+  EVT_OXO_6, 'J', LED_OXO_6A, -1, 0, 'J', LED_OXO_6B, -1, 0, 'H', LED_OXO_X, LED_OXO_6B, LED_OXO_6A, 'H', LED_OXO_X, LED_OXO_6B, LED_OXO_6C, 'T', -1, -1, 6, -1,
+  EVT_OXO_7, 'J', LED_OXO_7A, -1, 0, 'J', LED_OXO_7B, -1, 0, 'H', LED_OXO_X, LED_OXO_7B, LED_OXO_7A, 'H', LED_OXO_X, LED_OXO_7B, LED_OXO_7C, 'T', -1, -1, 7, -1,
+  EVT_OXO_8, 'J', LED_OXO_8A, -1, 0, 'J', LED_OXO_8B, -1, 0, 'H', LED_OXO_X, LED_OXO_8B, LED_OXO_8A, 'H', LED_OXO_X, LED_OXO_8B, LED_OXO_8C, 'T', -1, -1, 8, -1,
+  EVT_OXO_9, 'J', LED_OXO_9A, -1, 0, 'J', LED_OXO_9B, -1, 0, 'H', LED_OXO_X, LED_OXO_9B, LED_OXO_9A, 'H', LED_OXO_X, LED_OXO_9B, LED_OXO_9C, 'T', -1, -1, 9, -1,
+
+  EVT_OXO_TOGGLE, 'J', LED_OXO_X, 0, 2, 'L', -1, -1, LED_OXO_X, 'H', -1, -1, LED_OXO_O, 'J', -1, -1, 2, 'L', -1, -1, LED_OXO_O, 'H', -1, -1, LED_OXO_X, -1,    
+  -1,
+};      
+
+const int16_t oxo_led_matches[] = {
+    0, LED_OXO_1A, LED_OXO_2A, LED_OXO_3A, -1,
+    1, LED_OXO_1B, LED_OXO_2B, LED_OXO_3B, -1,
+    2, LED_OXO_4A, LED_OXO_5A, LED_OXO_6A, -1,
+    3, LED_OXO_4B, LED_OXO_5B, LED_OXO_6B, -1,
+    4, LED_OXO_7A, LED_OXO_8A, LED_OXO_9A, -1,
+    5, LED_OXO_7B, LED_OXO_8B, LED_OXO_9B, -1,
+    6, LED_OXO_1A, LED_OXO_4A, LED_OXO_7A, -1,
+    7, LED_OXO_1B, LED_OXO_4B, LED_OXO_7B, -1,
+    8, LED_OXO_2A, LED_OXO_5A, LED_OXO_8A, -1,
+    9, LED_OXO_2B, LED_OXO_5B, LED_OXO_8B, -1,
+    10, LED_OXO_3A, LED_OXO_6A, LED_OXO_9A, -1,
+    11, LED_OXO_3B, LED_OXO_6B, LED_OXO_9B, -1,
+    12, LED_OXO_1A, LED_OXO_5A, LED_OXO_9A, -1,
+    13, LED_OXO_1B, LED_OXO_5B, LED_OXO_9B, -1,
+    14, LED_OXO_3A, LED_OXO_5A, LED_OXO_7A, -1,    
+    15, LED_OXO_3B, LED_OXO_5B, LED_OXO_7B, -1,
+    -1,    
+};
+  

@@ -339,7 +339,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH147,
   'S', -1, -1, EVT_OXO_MATCH159,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_1X, 
@@ -350,7 +349,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH147,
   'S', -1, -1, EVT_OXO_MATCH159,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_2O, 
@@ -361,7 +359,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH123,
   'S', -1, -1, EVT_OXO_MATCH258,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_2X, 
@@ -371,7 +368,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH123,
   'S', -1, -1, EVT_OXO_MATCH258,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_3O, 
@@ -383,7 +379,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH369,
   'S', -1, -1, EVT_OXO_MATCH357,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_3X, 
@@ -394,7 +389,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH369,
   'S', -1, -1, EVT_OXO_MATCH357,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
 
   EVT_OXO_4, 
@@ -405,7 +399,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH147,
   'S', -1, -1, EVT_OXO_MATCH456,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_5, 
@@ -418,7 +411,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH357,
   'S', -1, -1, EVT_OXO_MATCH456,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_6, 
@@ -429,7 +421,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH369,
   'S', -1, -1, EVT_OXO_MATCH456,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_7, 
@@ -441,7 +432,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH147,
   'S', -1, -1, EVT_OXO_MATCH357,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_8, 
@@ -452,7 +442,6 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH258,
   'S', -1, -1, EVT_OXO_MATCH789,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
   
   EVT_OXO_9, 
@@ -464,14 +453,13 @@ const int16_t oxo_device_script[] = {
   'S', -1, -1, EVT_OXO_MATCH369,
   'S', -1, -1, EVT_OXO_MATCH789,
   'S', -1, -1, EVT_OXO_MATCHALL,
-  'T', -1, -1, OXO_SET_SQUARE, 
   -1,
 
   EVT_OXO_TOGGLE, 
-  'J', LED_OXO_X, 0, 2, 
+  'J', LED_OXO_X, 0, 3, 
   'L', -1, -1, LED_OXO_X, 
   'H', -1, -1, LED_OXO_O, 
-  'J', -1, -1, 2, 
+  'J', -1, -1, -1, 
   'L', -1, -1, LED_OXO_O, 
   'H', -1, -1, LED_OXO_X, 
   -1,    
@@ -558,6 +546,7 @@ const int16_t oxo_device_script[] = {
   -1,
 
   EVT_OXO_MATCHALL,
+  'T', -1, -1, OXO_SET_SQUARE, 
   'C', LED_OXO_1A, 1, 0,
   'C', LED_OXO_2A, 1, 0,
   'C', LED_OXO_3A, 1, 0,

@@ -8,6 +8,7 @@
 IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
+
 Atm_oxo_field oxo;
 Atm_em_counter counter[4]; 
 Atm_score score;
@@ -232,6 +233,7 @@ void setup() {
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
   animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();
   animation[2].begin( 600 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI2 ); }).repeat().start();
+  // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
     
 }
 

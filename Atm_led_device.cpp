@@ -109,6 +109,7 @@ void Atm_led_device::run_code( int16_t e ) {
             if ( action_f > -1 ) 
               trigger_flags |= ( 1 << action_f );
           }
+          sleep( 0 );
           break;
       };
     }

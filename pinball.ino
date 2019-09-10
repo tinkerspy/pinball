@@ -10,6 +10,7 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 
 Atm_oxo_field oxo;
+Atm_led_device oxo_device;
 Atm_em_counter counter[4]; 
 Atm_score score;
 Atm_scalar players, bonus;
@@ -50,7 +51,13 @@ void setup() {
   players.begin( leds, LED_PLAY_GRP, 0, 3 );
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
-  
+
+  oxo_device.begin( leds, oxo_device_script )
+    .onChange( OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
+    .onChange( OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
+    .onChange( OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON )
+    .trigger( EVT_OXO_TOGGLE );
+      
   // Turn on the General Illumination
   playfield
     .leds()

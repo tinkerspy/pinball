@@ -73,9 +73,6 @@ void Atm_led_device::run_event( int16_t e ) {
       int16_t selector = *p++;
       int16_t action_t = *p++;
       int16_t action_f = *p++;
-  
-      // FIXME check what led.active( -1 ) doet, en on( -1 )...
-      
       switch ( opcode ) {
         case 'J':
           if ( leds->active( selector ) ) {

@@ -13,7 +13,7 @@ Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, const int16_t* d
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  parseDefinition( device_script );
+  parse_code( device_script );
   this->leds = &leds;
   trigger_flags = 0;
   return *this;          
@@ -51,20 +51,20 @@ void Atm_led_device::action( int id ) {
   }
 }
 
-Atm_led_device& Atm_led_device::parseDefinition( const int16_t* device_def ) {
-  while ( device_def[0] != -1 ) {
-    int did = device_def[0];
-    event_ptr[did] = &device_def[1];
-    device_def++;
-    while ( device_def[0] != -1 ) {
-      device_def++;
+Atm_led_device& Atm_led_device::parse_code( const int16_t* device_script ) {
+  while ( device_script[0] != -1 ) {
+    int did = device_script[0];
+    event_ptr[did] = &device_script[1];
+    device_script++;
+    while ( device_script[0] != -1 ) {
+      device_script++;
     }
-    device_def++;
+    device_script++;
   }
   return *this;
 }
 
-void Atm_led_device::run_event( int16_t e ) {
+void Atm_led_device::run_code( int16_t e ) {
   if ( e > -1 ) {
     int counter = 0;
     const int16_t* p = event_ptr[e];
@@ -96,7 +96,7 @@ void Atm_led_device::run_event( int16_t e ) {
           leds->off( leds->active( selector ) ? action_t : action_f );
           break;
         case 'S':
-          run_event( leds->active( selector ) ? action_t : action_f );
+          run_code( leds->active( selector ) ? action_t : action_f );
           break;
         case 'C':
           counter += leds->active( selector ) ? action_t : action_f;
@@ -110,8 +110,6 @@ void Atm_led_device::run_event( int16_t e ) {
               trigger_flags |= ( 1 << action_f );
           }
           break;
-        case -1:
-          return;
       };
     }
   }
@@ -122,7 +120,7 @@ void Atm_led_device::run_event( int16_t e ) {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  run_event( event );
+  run_code( event );
   return *this;
 }
 

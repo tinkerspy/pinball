@@ -19,7 +19,6 @@ class Atm_led_device: public Machine {
   Atm_led_device& onChange( atm_cb_push_t callback, int idx = 0 );
   Atm_led_device& onChange( int sub, Machine& machine, int event = 0 );
   Atm_led_device& onChange( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_led_device& parseDefinition( const int16_t* device_def );
 
  private:
   enum { ENT_NOTIFY }; // ACTIONS
@@ -27,7 +26,8 @@ class Atm_led_device: public Machine {
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
-  void run_event( int16_t e );
+  void run_code( int16_t e );
+  Atm_led_device& parse_code( const int16_t* device_script );
 
   const int16_t* event_ptr[MAX_EVENTS];
   uint8_t trigger_flags; 

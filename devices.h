@@ -64,8 +64,6 @@ const int16_t flipper_firmware[] = {
   -1,
 };
 
-enum { OXO_SET_SQUARE, OXO_MATCH_ROW, OXO_MATCH_ALL }; // Emitted events 
-
 enum { // Received events
   EVT_OXO_INIT,
   EVT_OXO_PRESS,
@@ -78,6 +76,8 @@ enum { // Received events
   SUB_OXO_MATCH159, SUB_OXO_MATCH357, 
   SUB_OXO_MATCHALL,
 };
+
+enum { OXO_SET_SQUARE, OXO_MATCH_ROW, OXO_MATCH_ALL }; // Emitted events 
 
 enum { // begin() argument placeholders
     ARG_OXO_1A, ARG_OXO_1B, ARG_OXO_1C, 

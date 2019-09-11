@@ -367,6 +367,26 @@ int16_t Atm_led_scheduler::count( int16_t ledno, int8_t led_active /* = -1 */ ) 
   return cnt;
 }
 
+// Returns the n'th led in a led group or -1
+// Single led is group of 1, -1 led always returns -1
+
+int16_t Atm_led_scheduler::index( int16_t ledno, int16_t n ) {
+  int16_t cnt = 0;
+  if ( ledno > -1 ) {
+    if ( ledno < number_of_leds ) { // Physical led, return ledno 
+        return n == 0 ? ledno : -1;  
+    } else {   // Virtual led -> expand & recurse
+      const int16_t* p = group( ledno );
+      while ( *p != -1 ) {
+        if ( cnt++ == n ) return *p; 
+        p++;
+      }
+    }    
+  }
+  return -1;  
+}
+
+
 
 Atm_led_scheduler& Atm_led_scheduler::onWatch( int16_t ledno, Machine& machine, int16_t event ) {
   if ( watcher_cnt < MAX_WATCHERS ) {

@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, const int16_t* device_script ) {
+Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, int16_t led_group, const int16_t* device_script ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  ELSE */
@@ -15,6 +15,7 @@ Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, const int16_t* d
   Machine::begin( state_table, ELSE );
   parse_code( device_script );
   this->leds = &leds;
+  this->led_group = led_group;
   global_counter = 0;
   trigger_flags = 0;
   run_code( 0 );
@@ -55,14 +56,17 @@ void Atm_led_device::action( int id ) {
 }
 
 Atm_led_device& Atm_led_device::parse_code( const int16_t* device_script ) {
+  while ( device_script[0] != -1 ) device_script++;
+  device_script++;
   while ( device_script[0] != -1 ) {
     int did = device_script[0];
     event_ptr[did] = &device_script[1];
-    device_script++;
+    device_script += 1;
     while ( device_script[0] != -1 ) {
-      device_script++;
+      //Serial.printf( "parse %03d: %c %d ? %d : %d\n", did, device_script[0], device_script[1], device_script[2], device_script[3] );
+      device_script += 4;
     }
-    device_script++;
+    device_script += 1;
   }
   return *this;
 }
@@ -76,30 +80,31 @@ void Atm_led_device::run_code( int16_t e ) {
       int16_t action_t = *p++;
       int16_t action_f = *p++;
       int16_t selected_action = 0;
+      //Serial.printf( "%d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
       switch ( opcode ) {
         // Add: JC jump on counter, RP repeat event with delay
         case 'J':
-          selected_action = leds->active( selector ) ? action_t : action_f;
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action  > -1 ) {
-            p += action_t * 4;          
+            p += selected_action * 4;          
           } else {
             return;
           }            
           break;
         case 'H': // HIGH: led on
-          selected_action = leds->active( selector ) ? action_t : action_f;
-          leds->on( selected_action );
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
+          leds->on( leds->index( led_group, selected_action ) );
           break;
         case 'L': // LOW: led off
-          selected_action = leds->active( selector ) ? action_t : action_f;
-          leds->off( selected_action );
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
+          leds->off( leds->index( led_group, selected_action ) );
           break;
         case 'S': // SUB: subroutine call
-          selected_action = leds->active( selector ) ? action_t : action_f;
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           run_code( selected_action );
           break;
         case 'I': // INC: increment counter          
-          selected_action = leds->active( selector ) ? action_t : action_f;
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
             global_counter += selected_action;
           } else {
@@ -107,7 +112,7 @@ void Atm_led_device::run_code( int16_t e ) {
           }
           break;
         case 'D': // DEC: decrement counter
-          selected_action = leds->active( selector ) ? action_t : action_f;
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
             global_counter -= selected_action;
           } else {
@@ -117,11 +122,11 @@ void Atm_led_device::run_code( int16_t e ) {
         case 'T': // TRIG: trigger external event on counter
           selected_action = ( global_counter == selector ) ? action_t : action_f;
           if ( selected_action > -1 ) {
-              trigger_flags |= ( 1 << action_t );
+              trigger_flags |= ( 1 << selected_action );
           } 
           sleep( 0 );
           break;
-      };
+      }
     }
   }
 }
@@ -132,6 +137,7 @@ void Atm_led_device::run_code( int16_t e ) {
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
   run_code( event );
+  Serial.println( "Survived" );
   return *this;
 }
 

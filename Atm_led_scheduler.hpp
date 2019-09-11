@@ -68,7 +68,7 @@ class Atm_led_scheduler: public Machine {
   Atm_led_scheduler& onWatch( int16_t ledno, Machine* machine, int16_t event );
   Atm_led_scheduler& led_register( int16_t ledno, uint8_t idx );
   int16_t count( int16_t ledno, int8_t led_active = -1 );
-  
+  int16_t index( int16_t led_group, int16_t idx );
   
   uint8_t debug;
   Atm_led_scheduler& dump( Stream& stream );

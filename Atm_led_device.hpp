@@ -11,7 +11,7 @@ class Atm_led_device: public Machine {
   enum { IDLE, NOTIFY }; // STATES
   enum { EVT_NOTIFY, ELSE }; // EVENTS
   Atm_led_device( void ) : Machine() {};
-  Atm_led_device& begin( Atm_led_scheduler &leds, const int16_t* device_script );
+  Atm_led_device& begin( Atm_led_scheduler &leds, int16_t led_group, const int16_t* device_script );
   Atm_led_device& trace( Stream & stream );
   Atm_led_device& trigger( int event );
   int state( void );
@@ -33,4 +33,5 @@ class Atm_led_device: public Machine {
   uint8_t trigger_flags; 
   Atm_led_scheduler *leds;
   int16_t global_counter;
+  int16_t led_group;
 };

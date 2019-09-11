@@ -53,7 +53,7 @@ void setup() {
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
 
-  oxo_device.begin( leds, LED_OXO_GRP, tictactoe_firmware )
+  oxo_device.begin( playfield, LED_OXO_GRP, tictactoe_firmware )
     .trace( Serial )
     .onChange( OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
     .onChange( OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
@@ -62,8 +62,7 @@ void setup() {
   automaton.delay( 1000 );
   oxo_device.trigger( EVT_OXO_1X );
   automaton.delay( 10000 );
-
-      
+   
   // Turn on the General Illumination
   playfield
     .leds()

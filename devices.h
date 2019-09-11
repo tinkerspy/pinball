@@ -4,7 +4,7 @@ enum { EVT_BUMPER_INIT, EVT_BUMPER_PRESS, EVT_BUMPER_RELEASE, EVT_BUMPER_LIGHT_O
 enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; 
 enum { BUMPER_SCORE_ON, BUMPER_SCORE_OFF, BUMPER_LIGHT_ON, BUMPER_LIGHT_OFF };
 
-const int16_t bumper_firmware[] = {
+int16_t bumper_firmware[] = {
   EVT_BUMPER_INIT,
   EVT_BUMPER_PRESS,
   EVT_BUMPER_RELEASE,  
@@ -42,7 +42,7 @@ const int16_t bumper_firmware[] = {
 enum { EVT_FLIPPER_INIT, EVT_FLIPPER_PRESS, EVT_FLIPPER_RELEASE };
 enum { ARG_FLIPPER_COIL }; 
 
-const int16_t flipper_firmware[] = {
+int16_t flipper_firmware[] = {
   EVT_FLIPPER_INIT,
   EVT_FLIPPER_PRESS,
   EVT_FLIPPER_RELEASE,  
@@ -92,7 +92,7 @@ enum { // begin() argument placeholders
     ARG_OXO_O, ARG_OXO_X,
 };
 
-const int16_t tictactoe_firmware[] = {
+int16_t tictactoe_firmware[] = {
 
   EVT_OXO_INIT,
   EVT_OXO_PRESS,

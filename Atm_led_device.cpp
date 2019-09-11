@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, int16_t led_group, const int16_t* device_script ) {
+Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  ELSE */
@@ -14,7 +14,8 @@ Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, int16_t led_grou
   // clang-format on
   Machine::begin( state_table, ELSE );
   parse_code( device_script );
-  this->leds = &leds;
+  this->playfield = &playfield;
+  this->leds = &playfield.leds();
   this->led_group = led_group;
   global_counter = 0;
   trigger_flags = 0;
@@ -73,6 +74,8 @@ Atm_led_device& Atm_led_device::parse_code( const int16_t* device_script ) {
 
 void Atm_led_device::run_code( int16_t e ) {
   if ( e > -1 ) {
+    // TODO convert to source jumptable
+    // TODO check for table entry > 0 
     const int16_t* p = event_ptr[e];
     while ( *p != -1 ) {
       int16_t opcode = *p++;
@@ -147,6 +150,22 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
 
 int Atm_led_device::state( void ) {
   return global_counter;
+}
+
+
+Atm_led_device& Atm_led_device::init( void ) {
+  run_code( 0 );
+  return *this;  
+}
+
+Atm_led_device& Atm_led_device::press( void ) {
+  run_code( 1 );
+  return *this;  
+}
+
+Atm_led_device& Atm_led_device::release( void ) {
+  run_code( 2 );
+  return *this;  
 }
 
 /* Nothing customizable below this line                          

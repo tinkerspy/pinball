@@ -15,7 +15,9 @@ Atm_led_device& Atm_led_device::begin( Atm_led_scheduler &leds, const int16_t* d
   Machine::begin( state_table, ELSE );
   parse_code( device_script );
   this->leds = &leds;
+  global_counter = 0;
   trigger_flags = 0;
+  run_code( 0 );
   return *this;          
 }
 
@@ -47,6 +49,7 @@ void Atm_led_device::action( int id ) {
           push( connectors, ON_CHANGE, i, i, 0 );
         }
       }
+      trigger_flags = 0;
       return;
   }
 }
@@ -66,49 +69,56 @@ Atm_led_device& Atm_led_device::parse_code( const int16_t* device_script ) {
 
 void Atm_led_device::run_code( int16_t e ) {
   if ( e > -1 ) {
-    int counter = 0;
     const int16_t* p = event_ptr[e];
     while ( *p != -1 ) {
       int16_t opcode = *p++;
       int16_t selector = *p++;
       int16_t action_t = *p++;
       int16_t action_f = *p++;
+      int16_t selected_action = 0;
       switch ( opcode ) {
+        // Add: JC jump on counter, RP repeat event with delay
         case 'J':
-          if ( leds->active( selector ) ) {
-            if ( action_t > - 1 ) {
-              p += action_t * 4;          
-            } else {
-              return;
-            }
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          if ( selected_action  > -1 ) {
+            p += action_t * 4;          
           } else {
-            if ( action_f > - 1 ) {
-              p += action_f * 4;          
-            } else {
-              return;
-            }
+            return;
+          }            
+          break;
+        case 'H': // HIGH: led on
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          leds->on( selected_action );
+          break;
+        case 'L': // LOW: led off
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          leds->off( selected_action );
+          break;
+        case 'S': // SUB: subroutine call
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          run_code( selected_action );
+          break;
+        case 'I': // INC: increment counter          
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          if ( selected_action > - 1 ) {
+            global_counter += selected_action;
+          } else {
+            global_counter = 0;
           }
           break;
-        case 'H':
-          leds->on( leds->active( selector ) ? action_t : action_f );
+        case 'D': // DEC: decrement counter
+          selected_action = leds->active( selector ) ? action_t : action_f;
+          if ( selected_action > - 1 ) {
+            global_counter -= selected_action;
+          } else {
+            global_counter = 0;
+          }
           break;
-        case 'L':
-          leds->off( leds->active( selector ) ? action_t : action_f );
-          break;
-        case 'S':
-          run_code( leds->active( selector ) ? action_t : action_f );
-          break;
-        case 'C':
-          counter += leds->active( selector ) ? action_t : action_f;
-          break;
-        case 'T':
-          if ( counter == selector ) {
-            if ( action_t > -1 ) 
+        case 'T': // TRIG: trigger external event on counter
+          selected_action = ( global_counter == selector ) ? action_t : action_f;
+          if ( selected_action > -1 ) {
               trigger_flags |= ( 1 << action_t );
-          } else {
-            if ( action_f > -1 ) 
-              trigger_flags |= ( 1 << action_f );
-          }
+          } 
           sleep( 0 );
           break;
       };
@@ -130,7 +140,7 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
  */
 
 int Atm_led_device::state( void ) {
-  return Machine::state();
+  return global_counter;
 }
 
 /* Nothing customizable below this line                          

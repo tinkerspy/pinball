@@ -1,5 +1,6 @@
-#include "Neon.hpp"
-#include "mapping.hpp"
+#include "Neon.h"
+#include "mapping.h"
+#include "devices.h"
 #include "Atm_oxo_field.hpp"
 #include "freeram.hpp"
 
@@ -52,11 +53,10 @@ void setup() {
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
 
-  oxo_device.begin( leds, oxo_device_script )
+  oxo_device.begin( leds, tictactoe_firmware )
     .onChange( OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
     .onChange( OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
-    .onChange( OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON )
-    .trigger( EVT_OXO_TOGGLE );
+    .onChange( OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
       
   // Turn on the General Illumination
   playfield

@@ -32,4 +32,5 @@ class Atm_led_device: public Machine {
   const int16_t* event_ptr[MAX_EVENTS];
   uint8_t trigger_flags; 
   Atm_led_scheduler *leds;
+  int16_t global_counter;
 };

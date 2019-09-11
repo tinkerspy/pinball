@@ -13,7 +13,7 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  parse_code( device_script );
+  script = parse_code( device_script );
   this->playfield = &playfield;
   this->leds = &playfield.leds();
   this->led_group = led_group;
@@ -56,34 +56,33 @@ void Atm_led_device::action( int id ) {
   }
 }
 
-Atm_led_device& Atm_led_device::parse_code( const int16_t* device_script ) {
-  while ( device_script[0] != -1 ) device_script++;
-  device_script++;
-  while ( device_script[0] != -1 ) {
-    int did = device_script[0];
-    event_ptr[did] = &device_script[1];
-    device_script += 1;
-    while ( device_script[0] != -1 ) {
-      //Serial.printf( "parse %03d: %c %d ? %d : %d\n", did, device_script[0], device_script[1], device_script[2], device_script[3] );
-      device_script += 4;
+int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
+  int16_t* p = device_script;
+  while ( p[0] != -1 ) *p++ = 0;
+  p++;
+  while ( p[0] != -1 ) {
+    int did = p[0];
+    device_script[did] = ( p - device_script ) + 1;
+    p++;
+    while ( p[0] != -1 ) {
+      //Serial.printf( "parse %03d: %c %d ? %d : %d\n", did, p[0], p[1], p[2], p[3] );
+      p += 4;
     }
-    device_script += 1;
+    p++;
   }
-  return *this;
+  return device_script;
 }
 
 void Atm_led_device::run_code( int16_t e ) {
-  if ( e > -1 ) {
-    // TODO convert to source jumptable
-    // TODO check for table entry > 0 
-    const int16_t* p = event_ptr[e];
-    while ( *p != -1 ) {
-      int16_t opcode = *p++;
-      int16_t selector = *p++;
-      int16_t action_t = *p++;
-      int16_t action_f = *p++;
+  if ( e > -1 && script[e] > 0 ) {
+    int16_t p = script[e];
+    while ( script[p] != -1 ) {
+      int16_t opcode = script[p++];
+      int16_t selector = script[p++];
+      int16_t action_t = script[p++];
+      int16_t action_f = script[p++];
       int16_t selected_action = 0;
-      //Serial.printf( "%d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
+      //Serial.printf( "%d(%d): %c %d ? %d : %d\n", e, p, opcode, selector, action_t, action_f );
       switch ( opcode ) {
         // Add: JC jump on counter, RP repeat event with delay
         case 'J':

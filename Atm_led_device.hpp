@@ -4,8 +4,6 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
-#define MAX_EVENTS 64 
-
 class Atm_led_device: public Machine {
 
  public:
@@ -31,12 +29,11 @@ class Atm_led_device: public Machine {
   int event( int id ); 
   void action( int id ); 
   void run_code( int16_t e );
-  Atm_led_device& parse_code( const int16_t* device_script );
-
-  const int16_t* event_ptr[MAX_EVENTS];
+  int16_t* parse_code( int16_t* device_script );
   uint8_t trigger_flags; 
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;
   int16_t global_counter;
   int16_t led_group;
+  int16_t* script;
 };

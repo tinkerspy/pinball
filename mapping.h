@@ -60,6 +60,7 @@ const int16_t profile_definition[] = {
   -1,  
 };
 
+
 // Coils & leds (outputs) /////////////////////////////////////////////////////////////////////////////////
 
 enum { 
@@ -295,6 +296,19 @@ const int16_t group_definition[] = {
     LED_UP_GRP, LED_PLAY_GRP, LED_BALL_GRP, LED_AGAIN_GRP, LED_OXO_ANI_GRP, LED_GAME_OVER, LED_TILT, -1,
   -1, 
 };
+
+// New style profiles table for leds and switches (debounce):
+
+const int16_t profiles[] = {
+/*                   L/S        T0   L1  T1   L2      ITEMS/GROUPS */ 
+/* DEFAULT LED    */ 'L',        0, 255, 30,   0,     -1,
+/* OXO WIDGET     */ 'L',        0, 255, 30,   0,     LED_OXO_GRP, LED_OXO_X, LED_OXO_O, -1,
+/* FLASHERS       */ 'L',        0,   0,  0, 127,     LED_FLASHER_GRP, -1,
+/*                              MK,  BR, DT */ 
+/* DEFAULT SWITCH */ 'S',       20,  20,  0,          -1, 
+  -1,  
+};
+
 
 #define SWITCH_NAME( sw ) switch_names + ( sw * 11 )
 

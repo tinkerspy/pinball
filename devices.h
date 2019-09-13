@@ -32,8 +32,8 @@ class std_firmware {
 
   static int16_t dual_flipper[];
 
-  enum { EVT_FLIPPER_INIT, EVT_FLIPPER_PRESS, EVT_FLIPPER_RELEASE };
-  enum { ARG_FLIPPER_COIL }; 
+  enum { EVT_FLIPPER_INIT, EVT_FLIPPER_PRESS_L, EVT_FLIPPER_RELEASE_L, EVT_FLIPPER_PRESS_R, EVT_FLIPPER_RELEASE_R };
+  enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
 
   static int16_t tictactoe[];
 
@@ -346,21 +346,32 @@ int16_t std_firmware::dual_target[] = {
 
 int16_t std_firmware::dual_flipper[] = {
   EVT_FLIPPER_INIT,
-  EVT_FLIPPER_PRESS,
-  EVT_FLIPPER_RELEASE,  
+  EVT_FLIPPER_PRESS_L,
+  EVT_FLIPPER_RELEASE_L,  
+  EVT_FLIPPER_PRESS_R,
+  EVT_FLIPPER_RELEASE_R,  
   -1,
 
   EVT_FLIPPER_INIT,
   'P', -1, -1, 0,  // Not persistent
-  'L', -1, -1, ARG_FLIPPER_COIL,
+  'L', -1, -1, ARG_FLIPPER_COIL_L,
+  'L', -1, -1, ARG_FLIPPER_COIL_R,
   -1,
 
-  EVT_FLIPPER_PRESS,
-  'H', -1, -1, ARG_FLIPPER_COIL,
+  EVT_FLIPPER_PRESS_L,
+  'H', -1, -1, ARG_FLIPPER_COIL_L,
   -1,
 
-  EVT_FLIPPER_RELEASE,
-  'L', -1, -1, ARG_FLIPPER_COIL,
+  EVT_FLIPPER_RELEASE_L,
+  'L', -1, -1, ARG_FLIPPER_COIL_L,
+  -1,
+
+  EVT_FLIPPER_PRESS_R,
+  'H', -1, -1, ARG_FLIPPER_COIL_R,
+  -1,
+
+  EVT_FLIPPER_RELEASE_R,
+  'L', -1, -1, ARG_FLIPPER_COIL_R,
   -1,
 
   -1,

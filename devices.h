@@ -70,8 +70,6 @@ class std_firmware {
 
   enum { // Inputs & Subs
     IN_OXO_INIT,
-    IN_OXO_PRESS,
-    IN_OXO_RELEASE,  
     IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
     IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
     IN_OXO_TOGGLE, 
@@ -420,8 +418,6 @@ int16_t std_firmware::dual_flipper[] = {
 int16_t std_firmware::tictactoe[] = {
 
   IN_OXO_INIT,
-  IN_OXO_PRESS,
-  IN_OXO_RELEASE,  
   IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
   IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
   IN_OXO_TOGGLE, 

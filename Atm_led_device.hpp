@@ -36,4 +36,6 @@ class Atm_led_device: public Machine {
   int16_t global_counter;
   int16_t led_group;
   int16_t* script;
+  uint8_t input_persistence, output_persistence;
+  int16_t numberOfInputs;
 };

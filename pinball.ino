@@ -11,7 +11,7 @@ Atm_led_scheduler leds;
 Atm_playfield playfield;
 
 Atm_oxo_field oxo;
-Atm_led_device oxo_device;
+Atm_led_device oxo_device, multilane_device;
 Atm_em_counter counter[4]; 
 Atm_score score;
 Atm_scalar players, bonus;
@@ -53,15 +53,27 @@ void setup() {
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
 
-  oxo_device.begin( playfield, LED_OXO_GRP, tictactoe_firmware )
+  oxo_device.begin( playfield, LED_OXO_GRP, std_firmware::tictactoe )
     .trace( Serial )
-    .onChange( OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
-    .onChange( OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
-    .onChange( OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
+    .onChange( std_firmware::OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
+    .onChange( std_firmware::OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
+    .onChange( std_firmware::OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
 
-  automaton.delay( 1000 );
-  oxo_device.trigger( EVT_OXO_1X );
-  automaton.delay( 10000 );
+  playfield.enable();
+  oxo_device.trigger( std_firmware::EVT_OXO_3X );
+
+//  playfield.device( MULTILANE_GRP, -1, std_firmware::multilane6 )
+
+/*
+  multilane_device.begin( playfield, -1, std_firmware::multilane6 )  
+    .onChange( std_firmware::MLANE_SCORE, score, score.EVT_1000 )
+    .onChange( std_firmware::MLANE0, oxo_device, std_firmware::EVT_OXO_1O )
+    .onChange( std_firmware::MLANE1, oxo_device, std_firmware::EVT_OXO_1X )
+    .onChange( std_firmware::MLANE2, oxo_device, std_firmware::EVT_OXO_2O )
+    .onChange( std_firmware::MLANE3, oxo_device, std_firmware::EVT_OXO_2X )
+    .onChange( std_firmware::MLANE4, oxo_device, std_firmware::EVT_OXO_3O )
+    .onChange( std_firmware::MLANE5, oxo_device, std_firmware::EVT_OXO_3X );
+*/
    
   // Turn on the General Illumination
   playfield

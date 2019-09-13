@@ -19,6 +19,8 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   this->led_group = led_group;
   global_counter = 0;
   trigger_flags = 0;
+  input_persistence = 0; 
+  output_persistence = 0;
   run_code( 0 );
   return *this;          
 }
@@ -47,8 +49,8 @@ void Atm_led_device::action( int id ) {
     case ENT_NOTIFY:
       for ( uint8_t i = 0; i < 8; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
-          trigger_flags &= ~( 1 << i );
-          push( connectors, ON_CHANGE, i, i, 0 );
+          if ( playfield->enabled() ) 
+            push( connectors, ON_CHANGE, i, i, 0 );
         }
       }
       trigger_flags = 0;
@@ -59,13 +61,15 @@ void Atm_led_device::action( int id ) {
 int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   int16_t* p = device_script;
   while ( p[0] != -1 ) *p++ = 0;
+  numberOfInputs = p - device_script;
   p++;
   while ( p[0] != -1 ) {
     int did = p[0];
     device_script[did] = ( p - device_script ) + 1;
     p++;
     while ( p[0] != -1 ) {
-      //Serial.printf( "parse %03d: %c %d ? %d : %d\n", did, p[0], p[1], p[2], p[3] );
+      //if ( callback_trace ) 
+      //  stream_trace->printf( "Atm_led_device parse %03d: %c %d ? %d : %d\n", did, p[0], p[1], p[2], p[3] );
       p += 4;
     }
     p++;
@@ -74,7 +78,7 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
 }
 
 void Atm_led_device::run_code( int16_t e ) {
-  if ( e > -1 && script[e] > 0 ) {
+  if ( e > -1 && e < numberOfInputs && script[e] > 0 ) {
     int16_t p = script[e];
     while ( script[p] != -1 ) {
       int16_t opcode = script[p++];
@@ -82,7 +86,8 @@ void Atm_led_device::run_code( int16_t e ) {
       int16_t action_t = script[p++];
       int16_t action_f = script[p++];
       int16_t selected_action = 0;
-      //Serial.printf( "%d(%d): %c %d ? %d : %d\n", e, p, opcode, selector, action_t, action_f );
+      if ( callback_trace ) 
+        stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
       switch ( opcode ) {
         // Add: JC jump on counter, RP repeat event with delay
         case 'J':
@@ -128,6 +133,11 @@ void Atm_led_device::run_code( int16_t e ) {
           } 
           sleep( 0 );
           break;
+        case 'P':
+          selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
+          input_persistence = selected_action;
+          output_persistence = selected_action;
+          break;
       }
     }
   }
@@ -138,8 +148,8 @@ void Atm_led_device::run_code( int16_t e ) {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  run_code( event );
-  Serial.println( "Survived" );
+  if ( playfield->enabled() )
+    run_code( event );
   return *this;
 }
 

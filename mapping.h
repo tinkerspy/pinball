@@ -53,6 +53,10 @@ const int16_t profile_definition[] = {
   PROFILE_OXO,         0,   0,  0, 127, -1,
   PROFILE_COUNTER,     0, 255, 30,   0, -1,
   PROFILE_BRIGHT,      0,   0,  0, 255, -1,
+
+//SPROFILE_DEFAULT    20,  20,  0,  -1, 
+//SPROFILE_ROLLOVER   20,  20,  0,  -1, 
+
   -1,  
 };
 
@@ -203,6 +207,28 @@ enum {
  */
 
 const int16_t group_definition[] = {
+/*  
+  LED_KICKER_GRP, // jumptable
+  LED_UP_LANE_GRP,  
+  LED_OXO_GRP,
+  LED_OXO_CELLS,
+  LED_BUMPER_GRP,
+  LED_FLASHER_GRP,
+  LED_TARGET_GRP,
+  COIL_COUNTER0_GRP,
+  COIL_COUNTER1_GRP,
+  COIL_COUNTER2_GRP,
+  COIL_COUNTER3_GRP,
+  LED_UP_GRP,
+  LED_PLAY_GRP,
+  LED_BALL_GRP,
+  LED_AGAIN_GRP,
+  LED_OXO_ANI_GRP,
+  LED_HEADBOX_GRP,
+  LED_OXO_XXX,
+  -1,
+*/
+  
   LED_KICKER_GRP, 
     LED_KICKER_L, LED_KICKER_R, -1,
   LED_UP_LANE_GRP, 
@@ -315,4 +341,3 @@ char switch_names[] =
   "COUNTER1  \0"
   "COUNTER3  \0"
   "FLASHERS  \0";
-

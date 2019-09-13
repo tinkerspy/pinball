@@ -322,6 +322,7 @@ int16_t std_firmware::dual_target[] = {
   -1,
   
   EVT_TARGET_PRESS_A,
+  'J', ARG_TARGET_LED_A, -1, 0,
   'H', -1, -1, ARG_TARGET_LED_A,
   'T', -1, -1, TARGET_LED_A_ON,
   'J', ARG_TARGET_LED_B, 0, -1,
@@ -329,13 +330,14 @@ int16_t std_firmware::dual_target[] = {
   -1,
    
   EVT_TARGET_PRESS_B,
+  'J', ARG_TARGET_LED_B, -1, 0,
   'H', -1, -1, ARG_TARGET_LED_B,
   'T', -1, -1, TARGET_LED_B_ON,
   'J', ARG_TARGET_LED_A, 0, -1,
   'T', -1, -1, TARGET_ALL_ON,
   -1,
 
-  EVT_TARGET_CLEAR,
+  EVT_TARGET_CLEAR, // Only send off events if leds were on in the first place?
   'L', -1, -1, ARG_TARGET_LED_A,
   'L', -1, -1, ARG_TARGET_LED_B,
   'T', -1, -1, TARGET_LED_A_OFF,

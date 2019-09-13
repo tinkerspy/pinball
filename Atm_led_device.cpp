@@ -47,7 +47,7 @@ int Atm_led_device::event( int id ) {
 void Atm_led_device::action( int id ) {
   switch ( id ) {
     case ENT_NOTIFY:
-      for ( uint8_t i = 0; i < 8; i++ ) {
+      for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() ) 
             push( connectors, ON_CHANGE, i, i, 0 );
@@ -65,7 +65,12 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   p++;
   while ( p[0] != -1 ) {
     int did = p[0];
-    device_script[did] = ( p - device_script ) + 1;
+    if ( did > 0 && did < numberOfInputs ) {
+      device_script[did] = ( p - device_script ) + 1;
+    } else {
+      if ( callback_trace ) 
+        stream_trace->printf( "Parse error: illegal device id %d (max number of inputs: %d)\n", did, numberOfInputs );        
+    }
     p++;
     while ( p[0] != -1 ) {
       //if ( callback_trace ) 
@@ -90,7 +95,7 @@ void Atm_led_device::run_code( int16_t e ) {
         stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
       switch ( opcode ) {
         // Add: JC jump on counter, RP repeat event with delay
-        case 'J':
+        case 'J': // JL - Jump on LED state
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action  > -1 ) {
             p += selected_action * 4;          
@@ -98,19 +103,19 @@ void Atm_led_device::run_code( int16_t e ) {
             return;
           }            
           break;
-        case 'H': // HIGH: led on
+        case 'H': // ON - HIGH: led on
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           leds->on( leds->index( led_group, selected_action ) );
           break;
-        case 'L': // LOW: led off
+        case 'L': // OF - LOW: led off
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           leds->off( leds->index( led_group, selected_action ) );
           break;
-        case 'S': // SUB: subroutine call
+        case 'S': // SB - SUB: subroutine call
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           run_code( selected_action );
           break;
-        case 'I': // INC: increment counter          
+        case 'I': // IC - INC: increment counter          
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
             global_counter += selected_action;
@@ -118,7 +123,7 @@ void Atm_led_device::run_code( int16_t e ) {
             global_counter = 0;
           }
           break;
-        case 'D': // DEC: decrement counter
+        case 'D': // DC - DEC: decrement counter
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
             global_counter -= selected_action;
@@ -126,14 +131,14 @@ void Atm_led_device::run_code( int16_t e ) {
             global_counter = 0;
           }
           break;
-        case 'T': // TRIG: trigger external event on counter
+        case 'T': // TC - TRIG: trigger external event on counter
           selected_action = ( global_counter == selector ) ? action_t : action_f;
           if ( selected_action > -1 ) {
               trigger_flags |= ( 1 << selected_action );
           } 
           sleep( 0 );
           break;
-        case 'P':
+        case 'P': // IP/OP - Input persistence / Output persistence (default off)
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           input_persistence = selected_action;
           output_persistence = selected_action;

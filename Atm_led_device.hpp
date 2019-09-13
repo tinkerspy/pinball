@@ -24,13 +24,13 @@ class Atm_led_device: public Machine {
 
  private:
   enum { ENT_NOTIFY }; // ACTIONS
-  enum { ON_CHANGE, CONN_MAX = 8 }; // CONNECTORS
+  enum { ON_CHANGE, CONN_MAX = 16 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
   void run_code( int16_t e );
   int16_t* parse_code( int16_t* device_script );
-  uint8_t trigger_flags; 
+  uint16_t trigger_flags; 
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;
   int16_t global_counter;

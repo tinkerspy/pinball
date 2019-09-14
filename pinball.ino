@@ -32,7 +32,7 @@ void setup() {
     .retrigger()
     .show();
 
-  leds.begin( io, group_definition, profile_definition );
+  leds.begin( io, led_group_definition, profile_definition );
   
   playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
 

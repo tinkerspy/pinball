@@ -72,9 +72,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   void scan_matrix( void );
   void switch_changed( int16_t n, uint8_t v );
   
-  int no_of_rows, no_of_cols;
-  int8_t* cols;
-  int8_t* rows;
+  uint16_t numberofSwitches;
   bool active;
   int8_t scan_col = 0;
   Atm_led_scheduler *pleds;

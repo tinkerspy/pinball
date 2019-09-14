@@ -123,7 +123,7 @@ enum {
   LED_BALL3, LED_BALL5, LED_BALL2, LED_BALL4, LED_BALL1,
   LED_GAME_OVER,
   
-  /* Virtual LED groups - up to 32 - are declared after physical leds */
+  /* Virtual LED groups are declared after physical leds */
   LED_KICKER_GRP,
   LED_UP_LANE_GRP,  
   LED_OXO_GRP,
@@ -190,11 +190,13 @@ enum {
   COUNTER1,
   COUNTER3,
   
-/* Virtual switches (for elements without physical switches) */  
+/* Virtual switch groups are declared after physical switches */
   SAVE_GATE,
   CHIME0,
   CHIME1,
   CHIME2,
+  MULTILANE,
+  DUAL_TARGET,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////
@@ -206,7 +208,7 @@ enum {
  * are performed on the group.
  */
 
-const int16_t group_definition[] = {
+const int16_t led_group_definition[] = {
 /*  
   LED_KICKER_GRP, // jumptable
   LED_UP_LANE_GRP,  
@@ -294,15 +296,41 @@ const int16_t group_definition[] = {
   -1, 
 };
 
+int16_t switch_group_definition[] = {
+  SAVE_GATE,    
+  CHIME0,
+  CHIME1,
+  CHIME2,
+  MULTILANE,
+  DUAL_TARGET,
+  -1,
+
+  SAVE_GATE, -1,
+  CHIME0, -1,
+  CHIME1, -1,
+  CHIME2, -1,
+  MULTILANE,
+    PORT_1O, PORT_1X, PORT_2O, PORT_2X, PORT_3O, PORT_3X, -1,
+  DUAL_TARGET,
+    TARGET_A, TARGET_B, -1,
+
+  -1,
+};
+
+
 // New style profiles table for leds and switches (debounce):
 
 const int16_t profiles[] = {
+
 /*                   L/S        T0   L1  T1   L2      ITEMS/GROUPS */ 
 /* DEFAULT LED    */ 'L',        0, 255, 30,   0,     -1,
 /* OXO WIDGET     */ 'L',        0, 255, 30,   0,     LED_OXO_GRP, LED_OXO_X, LED_OXO_O, -1,
 /* FLASHERS       */ 'L',        0,   0,  0, 127,     LED_FLASHER_GRP, -1,
+
 /*                              MK,  BR, DT */ 
 /* DEFAULT SWITCH */ 'S',       20,  20,  0,          -1, 
+/* LANE SWITCH */    'S',       20,  20,  0,          MULTILANE, -1, 
+
   -1,  
 };
 

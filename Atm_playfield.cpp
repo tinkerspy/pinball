@@ -19,7 +19,8 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   memset( connectors, 0, sizeof( connectors ) );
   memset( prof, 0, sizeof( prof ) );
   debounce( 5, 0, 0 );
-  timer.set( STARTUP_DELAY_MS );  
+  timer.set( STARTUP_DELAY_MS );
+  numberofSwitches = io.numSwitches();  
   return *this;          
 }
 

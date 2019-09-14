@@ -17,6 +17,7 @@
 
 namespace std_firmware {
 
+
 // A single switch that fires off two events
 
 enum { IN_SINGLES_INIT, IN_SINGLES_PRESS, IN_SINGLES_RELEASE };
@@ -300,6 +301,7 @@ int16_t bumper_code[] = {
 
   -1,
 };
+
 
 // Dual target device
 

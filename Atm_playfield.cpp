@@ -157,6 +157,25 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
   return *prof[n].element;
 }
 
+// TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
+
+Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */ ) {
+  if ( n == -1 ) { // Create a floating device
+    Atm_led_device* device = new Atm_led_device();
+    device->begin( *this, led_group, device_script );
+    return *device;
+  }
+  if ( !prof[n].device_initialized ) { 
+    prof[n].device = new Atm_led_device(); // Create attached device 
+    prof[n].device->begin( *this, led_group, device_script );
+    prof[n].device_initialized = true;
+  } else { 
+    if ( device_script ) prof[n].device->set_script( device_script );
+    if ( led_group ) prof[n].device->set_led( led_group );
+  }
+  return *prof[n].device;
+}
+
 // The led/watch objects should perhaps be stored in a separate pointer table so that they can be accessed later
 
 Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {

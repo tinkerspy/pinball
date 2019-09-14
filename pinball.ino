@@ -10,12 +10,13 @@ IO io;
 Atm_led_scheduler leds;
 Atm_playfield playfield;
 
-//Atm_oxo_field oxo;
-Atm_led_device oxo_device, multilane_device;
+Atm_led_device oxo, multilane;
 Atm_em_counter counter[4]; 
 Atm_score score;
 Atm_scalar players, bonus;
 Atm_timer animation[3];
+
+using namespace std_firmware; 
 
 void setup() {
   delay( 1000 );
@@ -53,28 +54,28 @@ void setup() {
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
 
-  leds.profile( LED_OXO_GRP, PROFILE_OXO );
-  oxo_device.begin( playfield, LED_OXO_GRP, std_firmware::tictactoe )
-    .onChange( std_firmware::OUT_OXO_SET_SQUARE, bonus, bonus.EVT_ADVANCE )
-    .onChange( std_firmware::OUT_OXO_MATCH_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
-    .onChange( std_firmware::OUT_OXO_MATCH_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
+  leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
+  
+  oxo.begin( playfield, LED_OXO_GRP, tictactoe_code )
+    .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
+    .onChange( OUT_OXO_WIN_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
+    .onChange( OUT_OXO_WIN_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
 
-  multilane_device.begin( playfield, -1, std_firmware::multilane ) 
-    .onChange( std_firmware::OUT_LANE0, oxo_device, std_firmware::IN_OXO_1O )
-    .onChange( std_firmware::OUT_LANE1, oxo_device, std_firmware::IN_OXO_1X )
-    .onChange( std_firmware::OUT_LANE2, oxo_device, std_firmware::IN_OXO_2O )
-    .onChange( std_firmware::OUT_LANE3, oxo_device, std_firmware::IN_OXO_2X )
-    .onChange( std_firmware::OUT_LANE4, oxo_device, std_firmware::IN_OXO_3O )
-    .onChange( std_firmware::OUT_LANE5, oxo_device, std_firmware::IN_OXO_3X )
-    .onChange( std_firmware::OUT_LANE_SCORE, score, score.EVT_1000 );
+  multilane.begin( playfield, -1, multilane_code ) 
+    .onChange( OUT_LANE0, oxo, IN_OXO_1O )
+    .onChange( OUT_LANE1, oxo, IN_OXO_1X )
+    .onChange( OUT_LANE2, oxo, IN_OXO_2O )
+    .onChange( OUT_LANE3, oxo, IN_OXO_2X )
+    .onChange( OUT_LANE4, oxo, IN_OXO_3O )
+    .onChange( OUT_LANE5, oxo, IN_OXO_3X )
+    .onChange( OUT_LANE_SCORE, score, score.EVT_1000 );
 
-  playfield.onPress( PORT_1O, multilane_device, std_firmware::IN_LANE_PRESS0 );
-  playfield.onPress( PORT_1X, multilane_device, std_firmware::IN_LANE_PRESS1 );
-  playfield.onPress( PORT_2O, multilane_device, std_firmware::IN_LANE_PRESS2 );
-  playfield.onPress( PORT_2X, multilane_device, std_firmware::IN_LANE_PRESS3 );
-  playfield.onPress( PORT_3O, multilane_device, std_firmware::IN_LANE_PRESS4 );
-  playfield.onPress( PORT_3X, multilane_device, std_firmware::IN_LANE_PRESS5 );
-
+  playfield.onPress( PORT_1O, multilane, IN_LANE_PRESS0 );
+  playfield.onPress( PORT_1X, multilane, IN_LANE_PRESS1 );
+  playfield.onPress( PORT_2O, multilane, IN_LANE_PRESS2 );
+  playfield.onPress( PORT_2X, multilane, IN_LANE_PRESS3 );
+  playfield.onPress( PORT_3O, multilane, IN_LANE_PRESS4 );
+  playfield.onPress( PORT_3X, multilane, IN_LANE_PRESS5 );
    
   // Turn on the General Illumination
   playfield
@@ -127,46 +128,46 @@ void setup() {
     
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
-      .onPress( false, oxo_device, std_firmware::IN_OXO_4 ) 
+      .onPress( false, oxo, IN_OXO_4 ) 
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( score, score.EVT_1000, score.EVT_5000 );
 
   playfield
     .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
-      .onPress( false, oxo_device, std_firmware::IN_OXO_6 )
+      .onPress( false, oxo, IN_OXO_6 )
       .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( score, score.EVT_1000, score.EVT_5000 );
     
   playfield
     .element(  TARGET_C )
-      .onPress( oxo_device, std_firmware::IN_OXO_5 )
+      .onPress( oxo, IN_OXO_5 )
       .onScore( score, score.EVT_500 );
 
   playfield
     .element( IN_LANE_L )
-      .onPress( oxo_device, std_firmware::IN_OXO_7 )
+      .onPress( oxo, IN_OXO_7 )
       .onScore( score, score.EVT_1000 );
     
   playfield
     .element( IN_LANE_R )
-      .onPress( oxo_device, std_firmware::IN_OXO_9 )
+      .onPress( oxo, IN_OXO_9 )
       .onScore( score, score.EVT_1000 );
     
   playfield
     .element( SLING_L, COIL_SLING_L, -1 )
       .debounce( 20, 200, 0 )
-      .onPress( oxo_device, std_firmware::IN_OXO_TOGGLE )
+      .onPress( oxo, IN_OXO_TOGGLE )
       .onScore( score, score.EVT_10 );
 
   playfield
     .element( SLING_R, COIL_SLING_R, -1 )
       .debounce( 20, 200, 0 )
-      .onPress( oxo_device, std_firmware::IN_OXO_TOGGLE )
+      .onPress( oxo, IN_OXO_TOGGLE )
       .onScore( score, score.EVT_10 );
 
   playfield
     .element(  ROLLOVER )
-      .onPress( oxo_device, std_firmware::IN_OXO_8 )
+      .onPress( oxo, IN_OXO_8 )
       .onScore( score, score.EVT_500 );
 
   playfield
@@ -216,12 +217,12 @@ void setup() {
   leds.scalar( LED_BALL_GRP, 0 );
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
-/*
+
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
   animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();
   animation[2].begin( 600 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI2 ); }).repeat().start();
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
-*/
+
     
 }
 

@@ -14,59 +14,59 @@
  *  
  */
 
-class std_firmware {
+namespace std_firmware {
 
-  public: 
+//  public: 
   
-  static int16_t multilane[];
+//  static int16_t multilane[];
 
   enum { IN_LANE_INIT, IN_LANE_PRESS0, IN_LANE_RELEASE0, IN_LANE_PRESS1, IN_LANE_RELEASE1, IN_LANE_PRESS2, IN_LANE_RELEASE2, // Inputs
           IN_LANE_PRESS3, IN_LANE_RELEASE3, IN_LANE_PRESS4, IN_LANE_RELEASE4, IN_LANE_PRESS5, IN_LANE_RELEASE5, 
           IN_LANE_PRESS6, IN_LANE_RELEASE6, IN_LANE_PRESS7, IN_LANE_RELEASE7 };
   enum { OUT_LANE_SCORE, OUT_LANE0, OUT_LANE1, OUT_LANE2, OUT_LANE3, OUT_LANE4, OUT_LANE5, OUT_LANE6, OUT_LANE7 }; // Outputs
 
-  static int16_t bumper[];
+//  static int16_t bumper[];
 
   enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
   enum { OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
   enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
 
-  static int16_t dual_flipper[];
+ // static int16_t dual_flipper[];
 
   enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
   enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
 
-  static int16_t dual_slingshot[];
+ // static int16_t dual_slingshot[];
 
   enum { IN_SLING_INIT, IN_SLING_PRESS_L, IN_SLING_RELEASE_L, IN_SLING_PRESS_R, IN_SLING_RELEASE_R };
   enum { OUT_SLING_SCORE, OUT_SLING_KICK };
   enum { ARG_SLING_COIL_L, ARG_SLING_COIL_R };
   
-  static int16_t dual_kicker[];
+ // static int16_t dual_kicker[];
 
   enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R };
   enum { OUT_KICKER_SCORE, OUT_KICKER_KICK };
   enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R };
   
-  static int16_t dual_lane_leds[];
+ // static int16_t dual_lane_leds[];
 
   enum { IN_LANELED_INIT, IN_LANELED_PRESS0, IN_LANELED_RELEASE0, IN_LANELED_PRESS1, IN_LANELED_RELEASE1, IN_LANELED_ON, IN_LANELED_OFF };
   enum { OUT_LANELED_SCORE, OUT_LANELED_SCORE_ON, OUT_LANELED_SCORE_OFF, OUT_LANELED_PRESS_ON, OUT_LANELED_PRESS_OFF };
   enum { ARG_LANELED_LED0, ARG_LANELED_LED1 };
 
-  static int16_t single_led[];
+ // static int16_t single_led[];
   
   enum { IN_SINGLE_INIT, IN_SINGLE_ON, IN_SINGLE_OFF };
   enum { OUT_SINGLE_LED_ON, OUT_SINGLE_LED_OFF };
   enum { ARG_LED };
 
-  static int16_t dual_target[];
+ // static int16_t dual_target[];
   
   enum { IN_TARGET_INIT, IN_TARGET_PRESS_A, IN_TARGET_RELEASE_A, IN_TARGET_PRESS_B, IN_TARGET_RELEASE_B, IN_TARGET_CLEAR };
   enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF };
   enum { ARG_TARGET_LED_A, ARG_TARGET_LED_B };
 
-  static int16_t tictactoe[];
+ // static int16_t tictactoe[];
 
   enum { // Inputs & Subs
     IN_OXO_INIT,
@@ -79,7 +79,7 @@ class std_firmware {
     SUB_OXO_MATCHALL,
   };
   
-  enum { OUT_OXO_SET_SQUARE, OUT_OXO_MATCH_ROW, OUT_OXO_MATCH_ALL }; // Outputs
+  enum { OUT_OXO_SCORE, OUT_OXO_WIN_ROW, OUT_OXO_WIN_ALL }; // Outputs
   
   enum { // Arguments (leds)
     ARG_OXO_1A, ARG_OXO_1B, ARG_OXO_1C, 
@@ -94,12 +94,11 @@ class std_firmware {
     ARG_OXO_X, ARG_OXO_O,
   };
   
-};
 
 
 // A single led (or coil) that can be turned on and off
 
-int16_t std_firmware::single_led[] {
+int16_t single_led_code[] {
   IN_SINGLE_INIT, 
   IN_SINGLE_ON, 
   IN_SINGLE_OFF,
@@ -124,7 +123,7 @@ int16_t std_firmware::single_led[] {
 
 // Two independent slingshots (share score & kick)
 
-int16_t std_firmware::dual_slingshot[] {
+int16_t dual_slingshot_code[] {
   IN_SLING_INIT, 
   IN_SLING_PRESS_L, 
   IN_SLING_RELEASE_L,
@@ -154,7 +153,7 @@ int16_t std_firmware::dual_slingshot[] {
 
 // Dual kickers, same score & same kick, persistent
 
-int16_t std_firmware::dual_kicker[] {
+int16_t dual_kicker_code[] {
   IN_KICKER_INIT, 
   IN_KICKER_PRESS_L, 
   IN_KICKER_RELEASE_L,
@@ -184,7 +183,7 @@ int16_t std_firmware::dual_kicker[] {
 
 // Basic 8-way multilane device without leds
 
-int16_t std_firmware::multilane[] = {
+int16_t multilane_code[] = {
   IN_LANE_INIT, 
   IN_LANE_PRESS0, 
   IN_LANE_RELEASE0, 
@@ -254,7 +253,7 @@ int16_t std_firmware::multilane[] = {
 
 // Dual lane device with leds (both lanes share the same function)
 
-int16_t std_firmware::dual_lane_leds[] = {
+int16_t dual_lane_leds_code[] = {
   IN_LANELED_INIT, 
   IN_LANELED_PRESS0, 
   IN_LANELED_RELEASE0, 
@@ -297,7 +296,7 @@ int16_t std_firmware::dual_lane_leds[] = {
 
 // Single bumper device with led & coil
 
-int16_t std_firmware::bumper[] = {
+int16_t bumper_code[] = {
   IN_BUMPER_INIT,                       // Input event jump table (initialized by parser)
   IN_BUMPER_PRESS,
   IN_BUMPER_RELEASE,  
@@ -335,7 +334,7 @@ int16_t std_firmware::bumper[] = {
 
 // Dual target device
 
-int16_t std_firmware::dual_target[] = {
+int16_t dual_target_code[] = {
   IN_TARGET_INIT,    
   IN_TARGET_PRESS_A,
   IN_TARGET_RELEASE_A,  
@@ -379,7 +378,7 @@ int16_t std_firmware::dual_target[] = {
 
 // Dual flipper device (2 independent flippers)
 
-int16_t std_firmware::dual_flipper[] = {
+int16_t dual_flipper_code[] = {
   IN_FLIPPER_INIT,
   IN_FLIPPER_PRESS_L,
   IN_FLIPPER_RELEASE_L,  
@@ -415,7 +414,7 @@ int16_t std_firmware::dual_flipper[] = {
 
 // Williams OXO tic-tac-toe game
 
-int16_t std_firmware::tictactoe[] = {
+int16_t tictactoe_code[] = {
 
   IN_OXO_INIT,
   IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
@@ -573,7 +572,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_1B, 0, -1,
   'J', ARG_OXO_2B, 0, -1,
   'J', ARG_OXO_3B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
   
   SUB_OXO_MATCH456,
@@ -583,7 +582,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_4B, 0, -1,
   'J', ARG_OXO_5B, 0, -1,
   'J', ARG_OXO_6B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
 
   SUB_OXO_MATCH789,
@@ -593,7 +592,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_7B, 0, -1,
   'J', ARG_OXO_8B, 0, -1,
   'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
 
   SUB_OXO_MATCH147, 
@@ -603,7 +602,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_1B, 0, -1,
   'J', ARG_OXO_4B, 0, -1,
   'J', ARG_OXO_7B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
   
   SUB_OXO_MATCH258, 
@@ -613,7 +612,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_1B, 0, -1,
   'J', ARG_OXO_5B, 0, -1,
   'J', ARG_OXO_8B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
   
   SUB_OXO_MATCH369,
@@ -623,7 +622,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_3B, 0, -1,
   'J', ARG_OXO_6B, 0, -1,
   'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
   
   SUB_OXO_MATCH159, 
@@ -633,7 +632,7 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_1B, 0, -1,
   'J', ARG_OXO_5B, 0, -1,
   'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
   
   SUB_OXO_MATCH357,
@@ -643,11 +642,11 @@ int16_t std_firmware::tictactoe[] = {
   'J', ARG_OXO_3B, 0, -1,
   'J', ARG_OXO_5B, 0, -1,
   'J', ARG_OXO_7B, 0, -1,
-  'T', -1, -1, OUT_OXO_MATCH_ROW,
+  'T', -1, -1, OUT_OXO_WIN_ROW,
   -1,
 
   SUB_OXO_MATCHALL,
-  'T', -1, -1, OUT_OXO_SET_SQUARE, 
+  'T', -1, -1, OUT_OXO_SCORE, 
   'I', -1, -1, -1,
   'I', ARG_OXO_1A, 1, 0,
   'I', ARG_OXO_2A, 1, 0,
@@ -667,10 +666,10 @@ int16_t std_firmware::tictactoe[] = {
   'I', ARG_OXO_7B, 1, 0,
   'I', ARG_OXO_8B, 1, 0,
   'I', ARG_OXO_9B, 1, 0,
-  'T', 9, OUT_OXO_MATCH_ALL, -1,
+  'T', 9, OUT_OXO_WIN_ALL, -1,
   -1,
     
   -1,
 };      
 
-  
+  };

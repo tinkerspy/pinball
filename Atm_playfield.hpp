@@ -4,6 +4,7 @@
 
 #include <Automaton.h>
 #include "Atm_element.hpp"
+#include "Atm_led_device.hpp"
 #include "Atm_led_scheduler.hpp"
 
 #define MAX_SWITCHES 320
@@ -11,6 +12,7 @@
 #define STARTUP_DELAY_MS 500
 
 class Atm_element;
+class Atm_led_device;
 
 struct switch_record { 
     uint8_t switch_state : 1;
@@ -21,11 +23,13 @@ struct switch_record {
     uint16_t make_delay; 
     uint16_t retrigger_delay;
     uint16_t last_change;
-    bool initialized; 
+    bool initialized, device_initialized; 
 #ifdef DYNAMIC_ELEMENTS    
     Atm_element *element;
+    Atm_led_device *device;
 #else
     Atm_element element;
+    Atm_led_device device;
 #endif    
 };
 
@@ -51,6 +55,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   bool enabled();
   bool ready();
   Atm_element& element( int16_t n, int16_t coil_led = -1, int16_t light_led = -1, int8_t coil_profile = -1 , int8_t led_profile = -1 );
+  Atm_led_device& device( int16_t n, int16_t led_group = -1, int16_t* device_script = NULL );
   Atm_element& watch( int16_t light_led, int16_t cnt = -1 );
   Atm_element& led( int16_t light_led, int8_t led_profile = -1 );
   Atm_led_scheduler& leds();

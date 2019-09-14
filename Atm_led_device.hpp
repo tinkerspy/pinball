@@ -4,6 +4,8 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
+class Atm_playfield;
+
 class Atm_led_device: public Machine {
 
  public:
@@ -11,6 +13,8 @@ class Atm_led_device: public Machine {
   enum { EVT_NOTIFY, ELSE }; // EVENTS
   Atm_led_device( void ) : Machine() {};
   Atm_led_device& begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script );
+  Atm_led_device& set_script( int16_t* script );
+  Atm_led_device& set_led( int16_t led_group );
   Atm_led_device& trace( Stream & stream );
   Atm_led_device& trigger( int event );
   int state( void );
@@ -34,7 +38,7 @@ class Atm_led_device: public Machine {
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;
   int16_t global_counter;
-  int16_t led_group;
+  int16_t led_group = -1;
   int16_t* script;
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;

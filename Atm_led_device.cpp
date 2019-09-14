@@ -13,16 +13,26 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  script = parse_code( device_script );
+  if ( device_script ) set_script( device_script );
+  if ( led_group != -1 ) set_led( led_group );
   this->playfield = &playfield;
   this->leds = &playfield.leds();
-  this->led_group = led_group;
   global_counter = 0;
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
   run_code( 0 );
   return *this;          
+}
+
+Atm_led_device& Atm_led_device::set_script( int16_t* script ) {
+  this->script = parse_code( script );
+  return *this;
+}
+
+Atm_led_device& Atm_led_device::set_led( int16_t led_group ) {
+  this->led_group = led_group;
+  return *this;
 }
 
 /* Add C++ code for each internally handled event (input) 
@@ -64,17 +74,17 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   numberOfInputs = p - device_script;
   p++;
   while ( p[0] != -1 ) {
-    int did = p[0];
-    if ( did > -1 && did < numberOfInputs ) {
-      device_script[did] = ( p - device_script ) + 1;
+    int iid = p[0];
+    if ( iid > -1 && iid < numberOfInputs ) {
+      device_script[iid] = ( p - device_script ) + 1;
     } else {
       if ( callback_trace ) 
-        stream_trace->printf( "Parse error: illegal device id %d (max number of inputs: %d)\n", did, numberOfInputs );        
+        stream_trace->printf( "Parse error: illegal input id %d (max input number: %d)\n", iid, numberOfInputs );        
     }
     p++;
     while ( p[0] != -1 ) {
       //if ( callback_trace ) 
-      //  stream_trace->printf( "Atm_led_device parse %03d: %c %d ? %d : %d\n", did, p[0], p[1], p[2], p[3] );
+      //  stream_trace->printf( "Atm_led_device parse %03d: %c %d ? %d : %d\n", iid, p[0], p[1], p[2], p[3] );
       p += 4;
     }
     p++;
@@ -95,7 +105,7 @@ void Atm_led_device::run_code( int16_t e ) {
         stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
       switch ( opcode ) {
         // Add: JC jump on counter, RP repeat event with delay
-        case 'J': // JL - Jump on LED state
+        case 'J': // Jump on LED state
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action  > -1 ) {
             p += selected_action * 4;          
@@ -115,7 +125,7 @@ void Atm_led_device::run_code( int16_t e ) {
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           run_code( selected_action );
           break;
-        case 'I': // IC - INC: increment counter          
+        case 'I': // IC - INC: increment counter
           selected_action = leds->active( leds->index( led_group, selector ) ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
             global_counter += selected_action;
@@ -153,7 +163,7 @@ void Atm_led_device::run_code( int16_t e ) {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  if ( event == 0 || playfield->enabled() ) // EVT_INIT is always allowed!
+  if ( playfield->enabled() )
     run_code( event );
   return *this;
 }

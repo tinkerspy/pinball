@@ -2,101 +2,50 @@
 
 /* Standard firmware for the Atm_led_device programmable pinball device class
  *  
- *  multilane (no leds)
- *  bumper
- *  dual flipper
+ *  single_switch
+ *  single_led
  *  dual_slingshot
  *  dual_kicker
- *  dual_lane_leds (with synced leds)
- *  single_led
+ *  multilane
+ *  dual_lane_leds
+ *  bumper
  *  dual_target
+ *  dual flipper
  *  tictactoe
  *  
  */
 
 namespace std_firmware {
 
-//  public: 
+// A single switch that fires off two events
+
+enum { IN_SINGLES_INIT, IN_SINGLES_PRESS, IN_SINGLES_RELEASE };
+enum { OUT_SINGLES_SCORE, OUT_SINGLES_PRESS };
+
+int16_t single_switch_code[] {
+  IN_SINGLES_INIT, 
+  IN_SINGLES_PRESS, 
+  IN_SINGLES_RELEASE,
+  -1,
+
+  IN_SINGLES_INIT,
+  'P', -1, -1, 0,
+  -1,
+
+  IN_SINGLES_PRESS,
+  'T', -1, -1, OUT_SINGLES_SCORE,
+  'T', -1, -1, OUT_SINGLES_PRESS,
+  -1,
   
-//  static int16_t multilane[];
-
-  enum { IN_LANE_INIT, IN_LANE_PRESS0, IN_LANE_RELEASE0, IN_LANE_PRESS1, IN_LANE_RELEASE1, IN_LANE_PRESS2, IN_LANE_RELEASE2, // Inputs
-          IN_LANE_PRESS3, IN_LANE_RELEASE3, IN_LANE_PRESS4, IN_LANE_RELEASE4, IN_LANE_PRESS5, IN_LANE_RELEASE5, 
-          IN_LANE_PRESS6, IN_LANE_RELEASE6, IN_LANE_PRESS7, IN_LANE_RELEASE7 };
-  enum { OUT_LANE_SCORE, OUT_LANE0, OUT_LANE1, OUT_LANE2, OUT_LANE3, OUT_LANE4, OUT_LANE5, OUT_LANE6, OUT_LANE7 }; // Outputs
-
-//  static int16_t bumper[];
-
-  enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
-  enum { OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
-  enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
-
- // static int16_t dual_flipper[];
-
-  enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
-  enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
-
- // static int16_t dual_slingshot[];
-
-  enum { IN_SLING_INIT, IN_SLING_PRESS_L, IN_SLING_RELEASE_L, IN_SLING_PRESS_R, IN_SLING_RELEASE_R };
-  enum { OUT_SLING_SCORE, OUT_SLING_KICK };
-  enum { ARG_SLING_COIL_L, ARG_SLING_COIL_R };
-  
- // static int16_t dual_kicker[];
-
-  enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R };
-  enum { OUT_KICKER_SCORE, OUT_KICKER_KICK };
-  enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R };
-  
- // static int16_t dual_lane_leds[];
-
-  enum { IN_LANELED_INIT, IN_LANELED_PRESS0, IN_LANELED_RELEASE0, IN_LANELED_PRESS1, IN_LANELED_RELEASE1, IN_LANELED_ON, IN_LANELED_OFF };
-  enum { OUT_LANELED_SCORE, OUT_LANELED_SCORE_ON, OUT_LANELED_SCORE_OFF, OUT_LANELED_PRESS_ON, OUT_LANELED_PRESS_OFF };
-  enum { ARG_LANELED_LED0, ARG_LANELED_LED1 };
-
- // static int16_t single_led[];
-  
-  enum { IN_SINGLE_INIT, IN_SINGLE_ON, IN_SINGLE_OFF };
-  enum { OUT_SINGLE_LED_ON, OUT_SINGLE_LED_OFF };
-  enum { ARG_LED };
-
- // static int16_t dual_target[];
-  
-  enum { IN_TARGET_INIT, IN_TARGET_PRESS_A, IN_TARGET_RELEASE_A, IN_TARGET_PRESS_B, IN_TARGET_RELEASE_B, IN_TARGET_CLEAR };
-  enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF };
-  enum { ARG_TARGET_LED_A, ARG_TARGET_LED_B };
-
- // static int16_t tictactoe[];
-
-  enum { // Inputs & Subs
-    IN_OXO_INIT,
-    IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
-    IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
-    IN_OXO_TOGGLE, 
-    SUB_OXO_MATCH123, SUB_OXO_MATCH456, SUB_OXO_MATCH789,
-    SUB_OXO_MATCH147, SUB_OXO_MATCH258, SUB_OXO_MATCH369,
-    SUB_OXO_MATCH159, SUB_OXO_MATCH357, 
-    SUB_OXO_MATCHALL,
-  };
-  
-  enum { OUT_OXO_SCORE, OUT_OXO_WIN_ROW, OUT_OXO_WIN_ALL }; // Outputs
-  
-  enum { // Arguments (leds)
-    ARG_OXO_1A, ARG_OXO_1B, ARG_OXO_1C, 
-    ARG_OXO_2A, ARG_OXO_2B, ARG_OXO_2C,
-    ARG_OXO_3A, ARG_OXO_3B, ARG_OXO_3C,
-    ARG_OXO_4A, ARG_OXO_4B, ARG_OXO_4C,
-    ARG_OXO_5A, ARG_OXO_5B, ARG_OXO_5C,
-    ARG_OXO_6A, ARG_OXO_6B, ARG_OXO_6C,
-    ARG_OXO_7A, ARG_OXO_7B, ARG_OXO_7C,
-    ARG_OXO_8A, ARG_OXO_8B, ARG_OXO_8C,
-    ARG_OXO_9A, ARG_OXO_9B, ARG_OXO_9C,
-    ARG_OXO_X, ARG_OXO_O,
-  };
-  
+  -1,
+};
 
 
 // A single led (or coil) that can be turned on and off
+
+enum { IN_SINGLE_INIT, IN_SINGLE_ON, IN_SINGLE_OFF };
+enum { OUT_SINGLE_LED_ON, OUT_SINGLE_LED_OFF };
+enum { ARG_LED };
 
 int16_t single_led_code[] {
   IN_SINGLE_INIT, 
@@ -122,6 +71,10 @@ int16_t single_led_code[] {
 
 
 // Two independent slingshots (share score & kick)
+
+enum { IN_SLING_INIT, IN_SLING_PRESS_L, IN_SLING_RELEASE_L, IN_SLING_PRESS_R, IN_SLING_RELEASE_R };
+enum { OUT_SLING_SCORE, OUT_SLING_KICK };
+enum { ARG_SLING_COIL_L, ARG_SLING_COIL_R };
 
 int16_t dual_slingshot_code[] {
   IN_SLING_INIT, 
@@ -153,6 +106,10 @@ int16_t dual_slingshot_code[] {
 
 // Dual kickers, same score & same kick, persistent
 
+enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R };
+enum { OUT_KICKER_SCORE, OUT_KICKER_KICK };
+enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R };
+
 int16_t dual_kicker_code[] {
   IN_KICKER_INIT, 
   IN_KICKER_PRESS_L, 
@@ -182,6 +139,11 @@ int16_t dual_kicker_code[] {
 
 
 // Basic 8-way multilane device without leds
+
+enum { IN_LANE_INIT, IN_LANE_PRESS0, IN_LANE_RELEASE0, IN_LANE_PRESS1, IN_LANE_RELEASE1, IN_LANE_PRESS2, IN_LANE_RELEASE2, // Inputs
+        IN_LANE_PRESS3, IN_LANE_RELEASE3, IN_LANE_PRESS4, IN_LANE_RELEASE4, IN_LANE_PRESS5, IN_LANE_RELEASE5, 
+        IN_LANE_PRESS6, IN_LANE_RELEASE6, IN_LANE_PRESS7, IN_LANE_RELEASE7 };
+enum { OUT_LANE_SCORE, OUT_LANE0, OUT_LANE1, OUT_LANE2, OUT_LANE3, OUT_LANE4, OUT_LANE5, OUT_LANE6, OUT_LANE7 }; // Outputs
 
 int16_t multilane_code[] = {
   IN_LANE_INIT, 
@@ -253,6 +215,10 @@ int16_t multilane_code[] = {
 
 // Dual lane device with leds (both lanes share the same function)
 
+enum { IN_LANELED_INIT, IN_LANELED_PRESS0, IN_LANELED_RELEASE0, IN_LANELED_PRESS1, IN_LANELED_RELEASE1, IN_LANELED_ON, IN_LANELED_OFF };
+enum { OUT_LANELED_SCORE, OUT_LANELED_SCORE_ON, OUT_LANELED_SCORE_OFF, OUT_LANELED_PRESS_ON, OUT_LANELED_PRESS_OFF };
+enum { ARG_LANELED_LED0, ARG_LANELED_LED1 };
+
 int16_t dual_lane_leds_code[] = {
   IN_LANELED_INIT, 
   IN_LANELED_PRESS0, 
@@ -296,6 +262,10 @@ int16_t dual_lane_leds_code[] = {
 
 // Single bumper device with led & coil
 
+enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
+enum { OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
+enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
+
 int16_t bumper_code[] = {
   IN_BUMPER_INIT,                       // Input event jump table (initialized by parser)
   IN_BUMPER_PRESS,
@@ -331,8 +301,11 @@ int16_t bumper_code[] = {
   -1,
 };
 
-
 // Dual target device
+
+enum { IN_TARGET_INIT, IN_TARGET_PRESS_A, IN_TARGET_RELEASE_A, IN_TARGET_PRESS_B, IN_TARGET_RELEASE_B, IN_TARGET_CLEAR };
+enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF };
+enum { ARG_TARGET_LED_A, ARG_TARGET_LED_B };
 
 int16_t dual_target_code[] = {
   IN_TARGET_INIT,    
@@ -378,6 +351,9 @@ int16_t dual_target_code[] = {
 
 // Dual flipper device (2 independent flippers)
 
+enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
+enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
+
 int16_t dual_flipper_code[] = {
   IN_FLIPPER_INIT,
   IN_FLIPPER_PRESS_L,
@@ -413,6 +389,32 @@ int16_t dual_flipper_code[] = {
 
 
 // Williams OXO tic-tac-toe game
+
+enum { // Inputs & Subs
+  IN_OXO_INIT,
+  IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
+  IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
+  IN_OXO_TOGGLE, 
+  SUB_OXO_MATCH123, SUB_OXO_MATCH456, SUB_OXO_MATCH789,
+  SUB_OXO_MATCH147, SUB_OXO_MATCH258, SUB_OXO_MATCH369,
+  SUB_OXO_MATCH159, SUB_OXO_MATCH357, 
+  SUB_OXO_MATCHALL,
+};
+
+enum { OUT_OXO_SCORE, OUT_OXO_WIN_ROW, OUT_OXO_WIN_ALL }; // Outputs
+
+enum { // Arguments (leds)
+  ARG_OXO_1A, ARG_OXO_1B, ARG_OXO_1C, 
+  ARG_OXO_2A, ARG_OXO_2B, ARG_OXO_2C,
+  ARG_OXO_3A, ARG_OXO_3B, ARG_OXO_3C,
+  ARG_OXO_4A, ARG_OXO_4B, ARG_OXO_4C,
+  ARG_OXO_5A, ARG_OXO_5B, ARG_OXO_5C,
+  ARG_OXO_6A, ARG_OXO_6B, ARG_OXO_6C,
+  ARG_OXO_7A, ARG_OXO_7B, ARG_OXO_7C,
+  ARG_OXO_8A, ARG_OXO_8B, ARG_OXO_8C,
+  ARG_OXO_9A, ARG_OXO_9B, ARG_OXO_9C,
+  ARG_OXO_X, ARG_OXO_O,
+};
 
 int16_t tictactoe_code[] = {
 
@@ -672,4 +674,4 @@ int16_t tictactoe_code[] = {
   -1,
 };      
 
-  };
+};

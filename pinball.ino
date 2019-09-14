@@ -76,6 +76,8 @@ void setup() {
   playfield.onPress( PORT_2X, multilane, IN_LANE_PRESS3 );
   playfield.onPress( PORT_3O, multilane, IN_LANE_PRESS4 );
   playfield.onPress( PORT_3X, multilane, IN_LANE_PRESS5 );
+
+  automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
    
   // Turn on the General Illumination
   playfield

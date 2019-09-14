@@ -40,6 +40,7 @@ class IO {
     uint8_t node_ptr = 0;   // Max 8 matrix nodes within an IO string
     uint8_t switch_ptr = 0; // Max 8 wwitches connected to a matrix node 
     uint8_t switch_max = MATRIX_SWITCHES;
+    uint8_t switch_map = 0;
     uint32_t last_read_time = 0;
     uint8_t last_strip = 0;
     uint8_t selected = 0; 
@@ -47,6 +48,7 @@ class IO {
     logical_led led[NUM_IOPORTS * MAX_LEDS_PER_STRIP];
     int16_t led_dirty[NUM_IOPORTS];
     uint16_t led_cnt = 0;
+    uint16_t switch_cnt = 0;
     int16_t log_last_pixel = -1;        
     uint8_t soll[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t ist[MATRIX_NODES][MATRIX_SWITCHES];
@@ -67,6 +69,7 @@ class IO {
     IO& switchMap( uint8_t r1, uint8_t r2 = 0, uint8_t r3 = 0, uint8_t r4 = 0, uint8_t r5 = 0 );
     static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0 ); 
     uint16_t numPixels( void );
+    uint16_t numSwitches( void );
     int16_t lastPixel( void ); // Last pixel set
     bool show();
     uint16_t isPressed( int16_t code );

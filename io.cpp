@@ -90,6 +90,10 @@ uint16_t IO::numPixels( void ) {
   return led_cnt;
 }
 
+uint16_t IO::numSwitches( void ) {
+  return switch_cnt;
+}
+
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
    return (uint32_t) r << 24 | (uint32_t) g << 16 | (uint32_t) b << 8 | (uint32_t) w;
 }
@@ -124,7 +128,14 @@ IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) 
   row_map[2] = row_map[1] + r2;
   row_map[3] = row_map[2] + r3;
   row_map[4] = row_map[3] + r4;
+  switch_map = 0;
+  if ( r1 ) switch_map |= 0B00000001;
+  if ( r2 ) switch_map |= 0B00000010;
+  if ( r3 ) switch_map |= 0B00000100;
+  if ( r4 ) switch_map |= 0B00001000;
+  if ( r5 ) switch_map |= 0B00010000;
   node_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
+  switch_cnt = r1 + r2 + r3 + r4 + r5;
   return *this;
 }
 

@@ -7,8 +7,8 @@
 #define NUMBER_OF_BALLS 5
 
 IO io;
-Atm_led_scheduler leds;
-Atm_playfield playfield;
+Atm_led_scheduler leds; // IO_LED
+Atm_playfield playfield; // IO_MATRIX
 
 Atm_led_device oxo, multilane;
 Atm_em_counter counter[4]; 

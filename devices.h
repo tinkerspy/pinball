@@ -417,7 +417,6 @@ enum { // Arguments (leds)
 };
 
 int16_t tictactoe_code[] = {
-
   IN_OXO_INIT,
   IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
   IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
@@ -568,7 +567,7 @@ int16_t tictactoe_code[] = {
   -1,    
 
   SUB_OXO_MATCH123,
-  'J', ARG_OXO_1A, 0,  4,
+  'J', ARG_OXO_1A, 0,  2,
   'J', ARG_OXO_2A, 0, -1,
   'J', ARG_OXO_3A, 3, -1,
   'J', ARG_OXO_1B, 0, -1,
@@ -578,7 +577,7 @@ int16_t tictactoe_code[] = {
   -1,
   
   SUB_OXO_MATCH456,
-  'J', ARG_OXO_4A, 0,  4,
+  'J', ARG_OXO_4A, 0,  2,
   'J', ARG_OXO_5A, 0, -1,
   'J', ARG_OXO_6A, 3, -1,
   'J', ARG_OXO_4B, 0, -1,
@@ -588,7 +587,7 @@ int16_t tictactoe_code[] = {
   -1,
 
   SUB_OXO_MATCH789,
-  'J', ARG_OXO_7A, 0,  4,
+  'J', ARG_OXO_7A, 0,  2,
   'J', ARG_OXO_8A, 0, -1,
   'J', ARG_OXO_9A, 3, -1,
   'J', ARG_OXO_7B, 0, -1,
@@ -598,7 +597,7 @@ int16_t tictactoe_code[] = {
   -1,
 
   SUB_OXO_MATCH147, 
-  'J', ARG_OXO_1A, 0,  4,
+  'J', ARG_OXO_1A, 0,  2,
   'J', ARG_OXO_4A, 0, -1,
   'J', ARG_OXO_7A, 3, -1,
   'J', ARG_OXO_1B, 0, -1,
@@ -608,7 +607,7 @@ int16_t tictactoe_code[] = {
   -1,
   
   SUB_OXO_MATCH258, 
-  'J', ARG_OXO_2A, 0,  4,
+  'J', ARG_OXO_2A, 0,  2,
   'J', ARG_OXO_5A, 0, -1,
   'J', ARG_OXO_8A, 3, -1,
   'J', ARG_OXO_1B, 0, -1,
@@ -618,7 +617,7 @@ int16_t tictactoe_code[] = {
   -1,
   
   SUB_OXO_MATCH369,
-  'J', ARG_OXO_3A, 0,  4,
+  'J', ARG_OXO_3A, 0,  2,
   'J', ARG_OXO_6A, 0, -1,
   'J', ARG_OXO_9A, 3, -1,
   'J', ARG_OXO_3B, 0, -1,
@@ -628,7 +627,7 @@ int16_t tictactoe_code[] = {
   -1,
   
   SUB_OXO_MATCH159, 
-  'J', ARG_OXO_1A, 0,  4,
+  'J', ARG_OXO_1A, 0,  2,
   'J', ARG_OXO_5A, 0, -1,
   'J', ARG_OXO_9A, 3, -1,
   'J', ARG_OXO_1B, 0, -1,
@@ -638,7 +637,7 @@ int16_t tictactoe_code[] = {
   -1,
   
   SUB_OXO_MATCH357,
-  'J', ARG_OXO_3A, 0,  4,
+  'J', ARG_OXO_3A, 0,  2,
   'J', ARG_OXO_5A, 0, -1,
   'J', ARG_OXO_7A, 3, -1,
   'J', ARG_OXO_3B, 0, -1,

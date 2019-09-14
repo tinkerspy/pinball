@@ -65,7 +65,7 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   p++;
   while ( p[0] != -1 ) {
     int did = p[0];
-    if ( did > 0 && did < numberOfInputs ) {
+    if ( did > -1 && did < numberOfInputs ) {
       device_script[did] = ( p - device_script ) + 1;
     } else {
       if ( callback_trace ) 
@@ -153,7 +153,7 @@ void Atm_led_device::run_code( int16_t e ) {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  if ( playfield->enabled() )
+  if ( event == 0 || playfield->enabled() ) // EVT_INIT is always allowed!
     run_code( event );
   return *this;
 }

@@ -103,9 +103,9 @@ enum {
   LED_OXO_8A, LED_OXO_8B, LED_OXO_8C,
   LED_OXO_4A, LED_OXO_4B, LED_OXO_4C, 
   LED_OXO_7A, LED_OXO_7B, LED_OXO_7C,
-  LED_OXO_O, LED_OXO_X, // FIXME these are the other way around!
+  LED_OXO_O, LED_OXO_X, 
 
-  COIL_CHIME0,  // Dummy entries for led strip on P2 (cabinet)
+  COIL_CHIME0,  // Strip on P2 (Cabinet)
   COIL_CHIME1,
   COIL_CHIME2,
   COIL_KNOCKER,
@@ -141,7 +141,6 @@ enum {
   LED_AGAIN_GRP,
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
-  LED_OXO_XXX,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -272,8 +271,6 @@ const int16_t group_definition[] = {
     LED_OXO_8A, LED_OXO_8B,
     LED_OXO_9A, LED_OXO_9B,
     -1,  
-  LED_OXO_XXX,
-    LED_OXO_1B, LED_OXO_2B, LED_OXO_3B, LED_OXO_4B, LED_OXO_5B, LED_OXO_6B, LED_OXO_7B, LED_OXO_8B, LED_OXO_9B, -1,  
   COIL_COUNTER0_GRP,
     COIL_COUNTER0_10K, COIL_COUNTER0_1K, COIL_COUNTER0_100, COIL_COUNTER0_10, -1,
   COIL_COUNTER1_GRP,

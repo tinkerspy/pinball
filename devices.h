@@ -91,7 +91,7 @@ class std_firmware {
     ARG_OXO_7A, ARG_OXO_7B, ARG_OXO_7C,
     ARG_OXO_8A, ARG_OXO_8B, ARG_OXO_8C,
     ARG_OXO_9A, ARG_OXO_9B, ARG_OXO_9C,
-    ARG_OXO_O, ARG_OXO_X,
+    ARG_OXO_X, ARG_OXO_O,
   };
   
 };
@@ -429,7 +429,7 @@ int16_t std_firmware::tictactoe[] = {
 
   IN_OXO_INIT,
   'H', -1, -1, ARG_OXO_O, 
-  'H', -1, -1, ARG_OXO_X, 
+  'L', -1, -1, ARG_OXO_X, 
   -1,
 
   IN_OXO_1O, 

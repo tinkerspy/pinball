@@ -7,7 +7,7 @@
 #include "Atm_led_device.hpp"
 #include "Atm_led_scheduler.hpp"
 
-#define MAX_SWITCHES 320
+#define MAX_SWITCHES 512
 #define DYNAMIC_ELEMENTS
 #define STARTUP_DELAY_MS 500
 
@@ -39,7 +39,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   enum { IDLE, WAIT, SCAN, DISABLED, READY }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, ELSE }; // EVENTS
   Atm_playfield( void ) : Machine() {};
-  Atm_playfield& begin( IO& io, Atm_led_scheduler& led );
+  Atm_playfield& begin( IO& io, Atm_led_scheduler& led, int16_t* group_definition = NULL );
   Atm_playfield& trace( Stream & stream );
   Atm_playfield& trigger( int event );
   int state( void );
@@ -71,8 +71,10 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   void action( int id ); 
   void scan_matrix( void );
   void switch_changed( int16_t n, uint8_t v );
-  
-  uint16_t numberofSwitches;
+  int16_t* parseGroups( int16_t* group_def );
+
+  uint16_t numberOfSwitches, numberOfGroups;
+  int16_t* group_def;
   bool active;
   int8_t scan_col = 0;
   Atm_led_scheduler *pleds;

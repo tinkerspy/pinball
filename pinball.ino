@@ -34,7 +34,7 @@ void setup() {
 
   leds.begin( io, led_group_definition, profile_definition );
   
-  playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
+  playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 ).disable();
 
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
@@ -57,11 +57,13 @@ void setup() {
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
   oxo.begin( playfield, LED_OXO_GRP, tictactoe_code )
+    .trace( Serial )
     .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
     .onChange( OUT_OXO_WIN_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
     .onChange( OUT_OXO_WIN_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
 
-  multilane.begin( playfield, -1, multilane_code ) 
+  playfield.device( MULTILANE, -1, multilane_code ) 
+    .trace( Serial )
     .onChange( OUT_LANE0, oxo, IN_OXO_1O )
     .onChange( OUT_LANE1, oxo, IN_OXO_1X )
     .onChange( OUT_LANE2, oxo, IN_OXO_2O )
@@ -69,13 +71,6 @@ void setup() {
     .onChange( OUT_LANE4, oxo, IN_OXO_3O )
     .onChange( OUT_LANE5, oxo, IN_OXO_3X )
     .onChange( OUT_LANE_SCORE, score, score.EVT_1000 );
-
-  playfield.onPress( PORT_1O, multilane, IN_LANE_PRESS0 );
-  playfield.onPress( PORT_1X, multilane, IN_LANE_PRESS1 );
-  playfield.onPress( PORT_2O, multilane, IN_LANE_PRESS2 );
-  playfield.onPress( PORT_2X, multilane, IN_LANE_PRESS3 );
-  playfield.onPress( PORT_3O, multilane, IN_LANE_PRESS4 );
-  playfield.onPress( PORT_3X, multilane, IN_LANE_PRESS5 );
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
    

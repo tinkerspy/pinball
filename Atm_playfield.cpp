@@ -2,7 +2,7 @@
 
 // TODO: Add catchall on onPress()/onRelease()
 
-Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
+Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* group_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY,     ELSE */
@@ -20,7 +20,11 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   memset( prof, 0, sizeof( prof ) );
   debounce( 5, 0, 0 );
   timer.set( STARTUP_DELAY_MS );
-  numberofSwitches = io.numSwitches();  
+  numberOfSwitches = io.numSwitches();  
+  numberOfGroups = 0;  
+  if ( group_definition ) {
+    group_def = parseGroups( group_definition );
+  }
   return *this;          
 }
 
@@ -58,6 +62,23 @@ void Atm_playfield::action( int id ) {
       scan_matrix();
       return;
   }
+}
+
+int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
+  int16_t* p = group_def;
+  while ( p[0] != -1 ) *p++ = 0;
+  numberOfGroups = p - group_def;
+  p++;
+  while ( p[0] != -1 ) {
+    int gid = p[0] - numberOfSwitches - 1;
+    group_def[gid] = p - group_def + 1;
+    p++;
+    while ( p[0] != -1 ) {
+      p++;
+    }
+    p++;
+  }
+  return group_def;
 }
 
 Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint16_t m ) {
@@ -167,9 +188,22 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     return *device;
   }
   if ( !prof[n].device_initialized ) { 
-    prof[n].device = new Atm_led_device(); // Create attached device 
-    prof[n].device->begin( *this, led_group, device_script );
+    Atm_led_device* device = new Atm_led_device(); // Create device
+    device->begin( *this, led_group, device_script );
+    prof[n].device = device; // Attach device to one switch
     prof[n].device_initialized = true;
+    if ( n >= numberOfSwitches ) {
+      if ( group_def && n < numberOfSwitches + numberOfGroups ) {
+        int p = group_def[n - numberOfSwitches - 1];
+        while ( group_def[p] != -1 ) {
+          if ( group_def[p] < numberOfSwitches ) {
+            prof[group_def[p]].device = device;
+            prof[group_def[p]].device_initialized = true;
+          }
+          p++; 
+        }
+      }
+    }
   } else { 
     if ( device_script ) prof[n].device->set_script( device_script );
     if ( led_group ) prof[n].device->set_led( led_group );

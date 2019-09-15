@@ -91,7 +91,7 @@ uint16_t IO::numPixels( void ) {
 }
 
 uint16_t IO::numSwitches( void ) {
-  return switch_cnt;
+  return switch_cnt * 8;
 }
 
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {

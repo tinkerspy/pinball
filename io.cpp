@@ -2,6 +2,10 @@
 
 #undef DEBUG
 
+// TODO zorgvuldig alle switch events checken op geldigheid
+// Komen ze wel van een actieve matrix-node???
+// Filteren direct bij input van matrix scanner.
+
 IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate ) {
   this->pin_clock = pin_clock;
   this->pin_latch = pin_latch;
@@ -220,8 +224,9 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
 
 // Return 1-based mapped index
 
-uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) { 
-  return col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
+uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) {
+  uint16_t code = col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
+  return ( code <= switch_cnt * 8 ) ? code : 0; // Zou niet nodig moeten zijn...
 }
 
 uint16_t IO::isPressed( int16_t code ) {

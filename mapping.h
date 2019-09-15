@@ -314,7 +314,7 @@ int16_t switch_group_definition[] = {
     PORT_1O, PORT_1X, PORT_2O, PORT_2X, PORT_3O, PORT_3X, -1,
   DUAL_TARGET,
     TARGET_A, TARGET_B, -1,
-  OXO, -1,
+  OXO, OXO, -1,
 
   -1,
 };

@@ -153,7 +153,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       push( connectors, ON_PRESS, n, n, 1 ); 
       if ( prof[n].device_index ) {
         uint16_t e = 1 + ( (prof[n].device_index - 1) * 2 );
-        Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", n, prof[n].device_index, e );
+        //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", n, prof[n].device_index, e );
         prof[n].device->trigger( e );         
       } else {
       }
@@ -168,7 +168,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       push( connectors, ON_RELEASE, n, n, 0 ); 
       if ( prof[n].device_index ) {
         uint16_t e = 2 + ( (prof[n].device_index - 1) * 2 );
-        Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
+        //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
         prof[n].device->trigger( e );         
       }
       if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE ); 
@@ -194,8 +194,7 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
 Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */ ) {
-  Serial.println( "device" ); delay( 1000 );
-  if ( n == -1 ) { // Create a floating device
+  if ( n == -1 ) { // Create a floating device (untested)
     Atm_led_device* device = new Atm_led_device();
     device->begin( *this, led_group, device_script );
     return *device;
@@ -205,7 +204,6 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     device->begin( *this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
-    Serial.printf( "attach %d index %d\n", n, 1 );
     if ( n >= numberOfSwitches ) {
       if ( group_def && n < numberOfSwitches + numberOfGroups ) {
         int p = group_def[n - numberOfSwitches - 1];
@@ -214,7 +212,6 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
           if ( group_def[p] < numberOfSwitches ) {
             prof[group_def[p]].device = device;
             prof[group_def[p]].device_index = cnt + 1;
-            Serial.printf( "attach %d index %d\n", group_def[p], cnt + 1 );
           }
           cnt++;
           p++; 
@@ -223,8 +220,9 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     }
   } else { 
     if ( device_script ) prof[n].device->set_script( device_script );
-    if ( led_group ) prof[n].device->set_led( led_group );
+    if ( led_group > -1 ) prof[n].device->set_led( led_group );
   }
+  
   return *prof[n].device;
 }
 

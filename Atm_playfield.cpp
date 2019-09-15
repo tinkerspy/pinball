@@ -12,12 +12,13 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* gr
     /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1,     READY, DISABLED, 
     /*  READY    */    ENT_READY,      -1,      -1,          -1,      SCAN,        -1,        -1,    READY, 
   };
+
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->io = &io;
   this->pleds = &led;
-  memset( connectors, 0, sizeof( connectors ) );
-  memset( prof, 0, sizeof( prof ) );
+  memset( connectors, 0, sizeof( connectors ) ); // This crashes the system, why???
+  memset( prof, 0, sizeof( prof ) ); 
   debounce( 5, 0, 0 );
   timer.set( STARTUP_DELAY_MS );
   numberOfSwitches = io.numSwitches();  
@@ -85,7 +86,7 @@ Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint16_t m ) {
   for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
     prof[i].break_delay = b; 
     prof[i].make_delay = m; 
-    prof[i].retrigger_delay = r; 
+    prof[i].retrigger_delay = r;
   }
   return *this;   
 }
@@ -150,6 +151,12 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
     if ( millis_passed > prof[n].retrigger_delay ) {
       prof[n].switch_state = 1;
       push( connectors, ON_PRESS, n, n, 1 ); 
+      if ( prof[n].device_index ) {
+        uint16_t e = 1 + ( (prof[n].device_index - 1) * 2 );
+        Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", n, prof[n].device_index, e );
+        prof[n].device->trigger( e );         
+      } else {
+      }
       if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
       prof[n].last_change = millis();
       prof[n].make_wait = 0;
@@ -159,7 +166,12 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
     if ( ( millis_passed >= prof[n].break_delay ) ) {
       prof[n].switch_state = 0;      
       push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
+      if ( prof[n].device_index ) {
+        uint16_t e = 2 + ( (prof[n].device_index - 1) * 2 );
+        Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
+        prof[n].device->trigger( e );         
+      }
+      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE ); 
       prof[n].last_change = millis();
       prof[n].make_wait = 0;
       return;
@@ -182,24 +194,29 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
 Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */ ) {
+  Serial.println( "device" ); delay( 1000 );
   if ( n == -1 ) { // Create a floating device
     Atm_led_device* device = new Atm_led_device();
     device->begin( *this, led_group, device_script );
     return *device;
   }
-  if ( !prof[n].device_initialized ) { 
+  if ( prof[n].device_index == 0 ) { 
     Atm_led_device* device = new Atm_led_device(); // Create device
     device->begin( *this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
-    prof[n].device_initialized = true;
+    prof[n].device_index = 1;
+    Serial.printf( "attach %d index %d\n", n, 1 );
     if ( n >= numberOfSwitches ) {
       if ( group_def && n < numberOfSwitches + numberOfGroups ) {
         int p = group_def[n - numberOfSwitches - 1];
+        int cnt = 0;
         while ( group_def[p] != -1 ) {
           if ( group_def[p] < numberOfSwitches ) {
             prof[group_def[p]].device = device;
-            prof[group_def[p]].device_initialized = true;
+            prof[group_def[p]].device_index = cnt + 1;
+            Serial.printf( "attach %d index %d\n", group_def[p], cnt + 1 );
           }
+          cnt++;
           p++; 
         }
       }

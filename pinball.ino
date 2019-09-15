@@ -34,8 +34,12 @@ void setup() {
 
   leds.begin( io, led_group_definition, profile_definition );
   
-  playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 ).disable();
+  Serial.println( "init playfield" ); delay( 1000 );
+//  playfield.trace( Serial );
+  playfield.begin( io, leds, switch_group_definition );
 
+  playfield.debounce( 20, 20, 0 );
+  playfield.disable(); // Send trigger -> crash!!!
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
@@ -55,15 +59,17 @@ void setup() {
     .onCollect( score, score.EVT_1000 );
 
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
-  
-  oxo.begin( playfield, LED_OXO_GRP, tictactoe_code )
+
+//  oxo.begin( playfield, LED_OXO_GRP, tictactoe_code )
+  Serial.println( "init multilane" ); delay( 1000 );
+  oxo = playfield.device( OXO, LED_OXO_GRP, tictactoe_code ) //eerst MULTILANE TESTEN, dan DIT!
     .trace( Serial )
     .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
     .onChange( OUT_OXO_WIN_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
     .onChange( OUT_OXO_WIN_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
 
+  Serial.println( "init multilane" ); delay( 1000 );
   playfield.device( MULTILANE, -1, multilane_code ) 
-    .trace( Serial )
     .onChange( OUT_LANE0, oxo, IN_OXO_1O )
     .onChange( OUT_LANE1, oxo, IN_OXO_1X )
     .onChange( OUT_LANE2, oxo, IN_OXO_2O )

@@ -13,20 +13,20 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  if ( device_script ) set_script( device_script );
-  if ( led_group != -1 ) set_led( led_group );
   this->playfield = &playfield;
   this->leds = &playfield.leds();
   global_counter = 0;
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
-  run_code( 0 );
+  if ( led_group != -1 ) set_led( led_group );
+  if ( device_script ) set_script( device_script );
   return *this;          
 }
 
 Atm_led_device& Atm_led_device::set_script( int16_t* script ) {
   this->script = parse_code( script );
+  run_code( 0 );
   return *this;
 }
 

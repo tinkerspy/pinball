@@ -243,7 +243,8 @@ int16_t IO::scan() {
     uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
     if ( uint8_t changes = ist[node_ptr][switch_ptr] ^ soll_normalized ) {
       while ( io_ptr < NUM_IOPORTS ) {
-        if ( changes & ( 1 << io_ptr ) ) { // something changed
+        if ( changes & ( 1 << io_ptr ) & switch_map ) {
+        //if ( changes & ( 1 << io_ptr ) ) { // something changed
           if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
             ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
             io_ptr++; // Skip next scan() call         

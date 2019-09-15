@@ -7,7 +7,7 @@
 #include "Atm_led_device.hpp"
 #include "Atm_led_scheduler.hpp"
 
-#define MAX_SWITCHES 512
+#define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
 #define STARTUP_DELAY_MS 500
 
@@ -23,7 +23,8 @@ struct switch_record {
     uint16_t make_delay; 
     uint16_t retrigger_delay;
     uint16_t last_change;
-    bool initialized, device_initialized; 
+    bool initialized; 
+    int8_t device_index; 
 #ifdef DYNAMIC_ELEMENTS    
     Atm_element *element;
     Atm_led_device *device;

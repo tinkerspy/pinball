@@ -96,6 +96,8 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
 void Atm_led_device::run_code( int16_t e ) {
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) {
     int16_t p = script[e];
+    if ( callback_trace ) 
+      stream_trace->printf( "run_code %03d called\n", e );
     while ( script[p] != -1 ) {
       int16_t opcode = script[p++];
       int16_t selector = script[p++];
@@ -111,6 +113,8 @@ void Atm_led_device::run_code( int16_t e ) {
           if ( selected_action  > -1 ) {
             p += selected_action * 4;          
           } else {
+            if ( callback_trace ) 
+              stream_trace->printf( "run_code %03d: jump exit\n", e );
             return;
           }            
           break;
@@ -156,6 +160,8 @@ void Atm_led_device::run_code( int16_t e ) {
           break;
       }
     }
+    if ( callback_trace ) 
+      stream_trace->printf( "run_code %03d: regular exit\n", e );
   }
 }
 

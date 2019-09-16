@@ -39,9 +39,9 @@ void setup() {
 
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
-  //  .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
-  //  .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-  //  .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
+    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
     .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
     .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
     .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK ); 
@@ -112,12 +112,12 @@ void setup() {
   // The game crashes as soon as the ball enters the kicker hole...
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
-  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware ).trace( Serial )
+  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onChange( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
     .onChange( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
     .onChange( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
   ///////////////////
-
+  
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, playfield.device( OXO ), IN_OXO_4 ) 

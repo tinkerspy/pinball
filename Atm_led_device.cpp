@@ -19,6 +19,7 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
+  memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   if ( led_group != -1 ) set_led( led_group );
   if ( device_script ) set_script( device_script );
   return *this;          
@@ -60,7 +61,6 @@ void Atm_led_device::action( int id ) {
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() ) 
-            Serial.println( i ); delay( 100 );
             push( connectors, ON_CHANGE, i, i, 0 );
         }
       }

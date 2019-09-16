@@ -2,12 +2,12 @@
 
 /* Standard firmware for the Atm_led_device programmable pinball device class
  *  
- *  single_switch
- *  single_led
- *  dual_slingshot
+ *  single_led  ???
+ *  quad_led -> ledbank
+ *  dual_slingshot ???
  *  dual_kicker
- *  multilane
- *  dual_lane_leds
+ *  switchbank
+ *  dual_combo_leds
  *  bumper
  *  dual_target
  *  dual flipper
@@ -17,54 +17,141 @@
 
 namespace std_firmware {
 
+// Ledbank: 8 leds (or coils) that can be turned on (pulsed)
 
-// A single switch that fires off two events
+enum { IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_ON1, IN_LBANK_ON2, IN_LBANK_ON3, IN_LBANK_ON4, IN_LBANK_ON5, IN_LBANK_ON6, IN_LBANK_ON7, 
+          IN_LBANK_OFF0, IN_LBANK_OFF1, IN_LBANK_OFF2, IN_LBANK_OFF3, IN_LBANK_OFF4, IN_LBANK_OFF5, IN_LBANK_OFF6, IN_LBANK_OFF7,
+          IN_LBANK_ALL_ON, IN_LBANK_ALL_OFF };
+enum { ARG_LBANK_LED0, ARG_LBANK_LED1, ARG_LBANK_LED2, ARG_LBANK_LED3, ARG_LBANK_LED4, ARG_LBANK_LED5, ARG_LBANK_LED6, ARG_LBANK_LED7 };
+enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4, OUT_LBANK_ON5, OUT_LBANK_ON6, OUT_LBANK_ON7, 
+        OUT_LBANK_OFF0, OUT_LBANK_OFF1, OUT_LBANK_OFF2, OUT_LBANK_OFF3, OUT_LBANK_OFF4, OUT_LBANK_OFF5, OUT_LBANK_OFF6, OUT_LBANK_OFF7 }; 
 
-enum { IN_SINGLES_INIT, IN_SINGLES_PRESS, IN_SINGLES_RELEASE };
-enum { OUT_SINGLES_SCORE, OUT_SINGLES_PRESS };
-
-int16_t single_switch_code[] {
-  IN_SINGLES_INIT, 
-  IN_SINGLES_PRESS, 
-  IN_SINGLES_RELEASE,
+int16_t ledbank_firmware[] {
+  IN_LBANK_INIT, 
+  IN_LBANK_ON0, 
+  IN_LBANK_ON1,
+  IN_LBANK_ON2,
+  IN_LBANK_ON3,
+  IN_LBANK_ON4, 
+  IN_LBANK_ON5,
+  IN_LBANK_ON6,
+  IN_LBANK_ON7,
+  IN_LBANK_OFF0, 
+  IN_LBANK_OFF1,
+  IN_LBANK_OFF2,
+  IN_LBANK_OFF3,
+  IN_LBANK_OFF4, 
+  IN_LBANK_OFF5,
+  IN_LBANK_OFF6,
+  IN_LBANK_OFF7,
+  IN_LBANK_ALL_ON, 
+  IN_LBANK_ALL_OFF,
   -1,
 
-  IN_SINGLES_INIT,
-  'P', -1, -1, 0,
+  IN_LBANK_INIT,
+  'S', -1, -1, IN_LBANK_ALL_OFF,  
   -1,
 
-  IN_SINGLES_PRESS,
-  'T', -1, -1, OUT_SINGLES_SCORE,
-  'T', -1, -1, OUT_SINGLES_PRESS,
+  IN_LBANK_ALL_ON,
+  'H', -1, -1, ARG_LBANK_LED0,
+  'H', -1, -1, ARG_LBANK_LED1,
+  'H', -1, -1, ARG_LBANK_LED2,
+  'H', -1, -1, ARG_LBANK_LED3,
+  'H', -1, -1, ARG_LBANK_LED4,
+  'H', -1, -1, ARG_LBANK_LED5,
+  'H', -1, -1, ARG_LBANK_LED6,
+  'H', -1, -1, ARG_LBANK_LED7,
+  -1,
+
+  IN_LBANK_ALL_OFF,
+  'L', -1, -1, ARG_LBANK_LED0,
+  'L', -1, -1, ARG_LBANK_LED1,
+  'L', -1, -1, ARG_LBANK_LED2,
+  'L', -1, -1, ARG_LBANK_LED3,
+  'L', -1, -1, ARG_LBANK_LED4,
+  'L', -1, -1, ARG_LBANK_LED5,
+  'L', -1, -1, ARG_LBANK_LED6,
+  'L', -1, -1, ARG_LBANK_LED7,
+  -1,
+
+  IN_LBANK_ON0,
+  'H', -1, -1, ARG_LBANK_LED0,
+  'T', -1, -1, OUT_LBANK_ON0,
   -1,
   
-  -1,
-};
-
-
-// A single led (or coil) that can be turned on and off
-
-enum { IN_SINGLE_INIT, IN_SINGLE_ON, IN_SINGLE_OFF };
-enum { OUT_SINGLE_LED_ON, OUT_SINGLE_LED_OFF };
-enum { ARG_LED };
-
-int16_t single_led_code[] {
-  IN_SINGLE_INIT, 
-  IN_SINGLE_ON, 
-  IN_SINGLE_OFF,
-  -1,
-
-  IN_SINGLE_INIT,
-  -1,
-
-  IN_SINGLE_ON,
-  'H', -1, -1, ARG_LED,
-  'T', -1, -1, OUT_SINGLE_LED_ON,
+  IN_LBANK_OFF0,
+  'L', -1, -1, ARG_LBANK_LED0,
+  'T', -1, -1, OUT_LBANK_OFF0,
   -1,
   
-  IN_SINGLE_OFF,
-  'L', -1, -1, ARG_LED,
-  'T', -1, -1, OUT_SINGLE_LED_OFF,
+  IN_LBANK_ON1,
+  'H', -1, -1, ARG_LBANK_LED1,
+  'T', -1, -1, OUT_LBANK_ON1,
+  -1,
+  
+  IN_LBANK_OFF1,
+  'L', -1, -1, ARG_LBANK_LED1,
+  'T', -1, -1, OUT_LBANK_OFF1,
+  -1,
+  
+  IN_LBANK_ON2,
+  'H', -1, -1, ARG_LBANK_LED2,
+  'T', -1, -1, OUT_LBANK_ON2,
+  -1,
+  
+  IN_LBANK_OFF2,
+  'L', -1, -1, ARG_LBANK_LED2,
+  'T', -1, -1, OUT_LBANK_OFF2,
+  -1,
+  
+  IN_LBANK_ON3,
+  'H', -1, -1, ARG_LBANK_LED3,
+  'T', -1, -1, OUT_LBANK_ON3,
+  -1,
+  
+  IN_LBANK_OFF3,
+  'L', -1, -1, ARG_LBANK_LED3,
+  'T', -1, -1, OUT_LBANK_OFF3,
+  -1,
+  
+  IN_LBANK_ON4,
+  'H', -1, -1, ARG_LBANK_LED4,
+  'T', -1, -1, OUT_LBANK_ON4,
+  -1,
+  
+  IN_LBANK_OFF4,
+  'L', -1, -1, ARG_LBANK_LED4,
+  'T', -1, -1, OUT_LBANK_OFF4,
+  -1,
+  
+  IN_LBANK_ON5,
+  'H', -1, -1, ARG_LBANK_LED5,
+  'T', -1, -1, OUT_LBANK_ON5,
+  -1,
+  
+  IN_LBANK_OFF5,
+  'L', -1, -1, ARG_LBANK_LED5,
+  'T', -1, -1, OUT_LBANK_OFF5,
+  -1,
+  
+  IN_LBANK_ON6,
+  'H', -1, -1, ARG_LBANK_LED6,
+  'T', -1, -1, OUT_LBANK_ON6,
+  -1,
+  
+  IN_LBANK_OFF6,
+  'L', -1, -1, ARG_LBANK_LED6,
+  'T', -1, -1, OUT_LBANK_OFF6,
+  -1,
+  
+  IN_LBANK_ON7,
+  'H', -1, -1, ARG_LBANK_LED7,
+  'T', -1, -1, OUT_LBANK_ON7,
+  -1,
+  
+  IN_LBANK_OFF7,
+  'L', -1, -1, ARG_LBANK_LED7,
+  'T', -1, -1, OUT_LBANK_OFF7,
   -1,
 
   -1,
@@ -77,7 +164,7 @@ enum { IN_SLING_INIT, IN_SLING_PRESS_L, IN_SLING_RELEASE_L, IN_SLING_PRESS_R, IN
 enum { OUT_SLING_SCORE, OUT_SLING_KICK };
 enum { ARG_SLING_COIL_L, ARG_SLING_COIL_R };
 
-int16_t dual_slingshot_code[] {
+int16_t dual_slingshot_firmware[] {
   IN_SLING_INIT, 
   IN_SLING_PRESS_L, 
   IN_SLING_RELEASE_L,
@@ -105,109 +192,144 @@ int16_t dual_slingshot_code[] {
 };
 
 
-// Dual kickers, same score & same kick, persistent
+// Dual kickers, same score & same kick, persistent (could work for slingshots, except non-persistent)
 
-enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R };
-enum { OUT_KICKER_SCORE, OUT_KICKER_KICK };
-enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R };
+enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R, IN_KICKER_ON, IN_KICKER_OFF };
+enum { OUT_KICKER_SCORE_LIT, OUT_KICKER_SCORE_UNLIT, OUT_KICKER_SCORE, OUT_KICKER_KICK_LIT, OUT_KICKER_KICK_UNLIT, OUT_KICKER_KICK };
+enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R, ARG_KICKER_LED_L, ARG_KICKER_LED_R };
 
-int16_t dual_kicker_code[] {
+int16_t dual_kicker_firmware[] {
   IN_KICKER_INIT, 
   IN_KICKER_PRESS_L, 
   IN_KICKER_RELEASE_L,
   IN_KICKER_PRESS_R, 
   IN_KICKER_RELEASE_R,
+  IN_KICKER_ON,
+  IN_KICKER_OFF,
   -1,
 
   IN_KICKER_INIT,
   'P', -1, -1, 1,  // Persistent 
+  'L', -1, -1, ARG_KICKER_LED_L,
+  'L', -1, -1, ARG_KICKER_LED_R,
   -1,
 
   IN_KICKER_PRESS_L,
   'H', -1, -1, ARG_KICKER_COIL_L,
-  'T', -1, -1, OUT_KICKER_SCORE,
   'T', -1, -1, OUT_KICKER_KICK,
+  'T', -1, -1, OUT_KICKER_SCORE,
+  'J', ARG_KICKER_LED_L, 0, 3,
+  'T', -1, -1, OUT_KICKER_SCORE_LIT,
+  'T', -1, -1, OUT_KICKER_KICK_LIT,
+  'J', -1, -1, -1,
+  'T', -1, -1, OUT_KICKER_SCORE_UNLIT,
+  'T', -1, -1, OUT_KICKER_KICK_UNLIT,
   -1,
   
   IN_KICKER_PRESS_R,
   'H', -1, -1, ARG_KICKER_COIL_R,
-  'T', -1, -1, OUT_KICKER_SCORE,
   'T', -1, -1, OUT_KICKER_KICK,
+  'T', -1, -1, OUT_KICKER_SCORE,
+  'J', ARG_KICKER_LED_R, 0, 3,
+  'T', -1, -1, OUT_KICKER_SCORE_LIT,
+  'T', -1, -1, OUT_KICKER_KICK_LIT,
+  'J', -1, -1, -1,
+  'T', -1, -1, OUT_KICKER_SCORE_UNLIT,
+  'T', -1, -1, OUT_KICKER_KICK_UNLIT,
+  -1,
+
+  IN_KICKER_ON,
+  'H', -1, -1, ARG_KICKER_LED_L,
+  'H', -1, -1, ARG_KICKER_LED_R,
   -1,
   
+  IN_KICKER_OFF,
+  'L', -1, -1, ARG_KICKER_LED_L,
+  'L', -1, -1, ARG_KICKER_LED_R,
+  -1,
+ 
   -1,
 };
 
 
-// Basic 8-way multilane device without leds
+// Basic 8-way switchbank device without leds
 
-enum { IN_LANE_INIT, IN_LANE_PRESS0, IN_LANE_RELEASE0, IN_LANE_PRESS1, IN_LANE_RELEASE1, IN_LANE_PRESS2, IN_LANE_RELEASE2, // Inputs
-        IN_LANE_PRESS3, IN_LANE_RELEASE3, IN_LANE_PRESS4, IN_LANE_RELEASE4, IN_LANE_PRESS5, IN_LANE_RELEASE5, 
-        IN_LANE_PRESS6, IN_LANE_RELEASE6, IN_LANE_PRESS7, IN_LANE_RELEASE7 };
-enum { OUT_LANE_SCORE, OUT_LANE0, OUT_LANE1, OUT_LANE2, OUT_LANE3, OUT_LANE4, OUT_LANE5, OUT_LANE6, OUT_LANE7 }; // Outputs
+enum { IN_SBANK_INIT, IN_SBANK_PRESS0, IN_SBANK_RELEASE0, IN_SBANK_PRESS1, IN_SBANK_RELEASE1, IN_SBANK_PRESS2, IN_SBANK_RELEASE2, // Inputs
+        IN_SBANK_PRESS3, IN_SBANK_RELEASE3, IN_SBANK_PRESS4, IN_SBANK_RELEASE4, IN_SBANK_PRESS5, IN_SBANK_RELEASE5, 
+        IN_SBANK_PRESS6, IN_SBANK_RELEASE6, IN_SBANK_PRESS7, IN_SBANK_RELEASE7 };
+enum { OUT_SBANK_SCORE, OUT_SBANK0, OUT_SBANK1, OUT_SBANK2, OUT_SBANK3, OUT_SBANK4, OUT_SBANK5, OUT_SBANK6, OUT_SBANK7, 
+        OUT_SBANK_SCORE0, OUT_SBANK_SCORE1, OUT_SBANK_SCORE2, OUT_SBANK_SCORE3, OUT_SBANK_SCORE4, OUT_SBANK_SCORE5, OUT_SBANK_SCORE6, OUT_SBANK_SCORE7 }; // Outputs
 
-int16_t multilane_code[] = {
-  IN_LANE_INIT, 
-  IN_LANE_PRESS0, 
-  IN_LANE_RELEASE0, 
-  IN_LANE_PRESS1, 
-  IN_LANE_RELEASE1, 
-  IN_LANE_PRESS2, 
-  IN_LANE_RELEASE2, 
-  IN_LANE_PRESS3, 
-  IN_LANE_RELEASE3, 
-  IN_LANE_PRESS4, 
-  IN_LANE_RELEASE4, 
-  IN_LANE_PRESS5, 
-  IN_LANE_RELEASE5,
-  IN_LANE_PRESS6, 
-  IN_LANE_RELEASE6,
-  IN_LANE_PRESS7, 
-  IN_LANE_RELEASE7,
+int16_t switchbank_firmware[] = {
+  IN_SBANK_INIT, 
+  IN_SBANK_PRESS0, 
+  IN_SBANK_RELEASE0, 
+  IN_SBANK_PRESS1, 
+  IN_SBANK_RELEASE1, 
+  IN_SBANK_PRESS2, 
+  IN_SBANK_RELEASE2, 
+  IN_SBANK_PRESS3, 
+  IN_SBANK_RELEASE3, 
+  IN_SBANK_PRESS4, 
+  IN_SBANK_RELEASE4, 
+  IN_SBANK_PRESS5, 
+  IN_SBANK_RELEASE5,
+  IN_SBANK_PRESS6, 
+  IN_SBANK_RELEASE6,
+  IN_SBANK_PRESS7, 
+  IN_SBANK_RELEASE7,
   -1,
 
-  IN_LANE_INIT,
+  IN_SBANK_INIT,
   'P', -1, -1, 0,  // Not persistent 
   -1,
 
-  IN_LANE_PRESS0,
-  'T', -1, -1, OUT_LANE0,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS0,
+  'T', -1, -1, OUT_SBANK0,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS1,
-  'T', -1, -1, OUT_LANE1,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS1,
+  'T', -1, -1, OUT_SBANK1,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS2,
-  'T', -1, -1, OUT_LANE2,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS2,
+  'T', -1, -1, OUT_SBANK2,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS3,
-  'T', -1, -1, OUT_LANE3,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS3,
+  'T', -1, -1, OUT_SBANK3,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS4,
-  'T', -1, -1, OUT_LANE4,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS4,
+  'T', -1, -1, OUT_SBANK4,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS5,
-  'T', -1, -1, OUT_LANE5,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS5,
+  'T', -1, -1, OUT_SBANK5,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS6,
-  'T', -1, -1, OUT_LANE6,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS6,
+  'T', -1, -1, OUT_SBANK6,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
-  IN_LANE_PRESS7,
-  'T', -1, -1, OUT_LANE7,
-  'T', -1, -1, OUT_LANE_SCORE,
+  IN_SBANK_PRESS7,
+  'T', -1, -1, OUT_SBANK7,
+  'T', -1, -1, OUT_SBANK_SCORE,
+  'T', -1, -1, OUT_SBANK_SCORE0,
   -1,
 
   -1,
@@ -216,45 +338,45 @@ int16_t multilane_code[] = {
 
 // Dual lane device with leds (both lanes share the same function)
 
-enum { IN_LANELED_INIT, IN_LANELED_PRESS0, IN_LANELED_RELEASE0, IN_LANELED_PRESS1, IN_LANELED_RELEASE1, IN_LANELED_ON, IN_LANELED_OFF };
-enum { OUT_LANELED_SCORE, OUT_LANELED_SCORE_ON, OUT_LANELED_SCORE_OFF, OUT_LANELED_PRESS_ON, OUT_LANELED_PRESS_OFF };
-enum { ARG_LANELED_LED0, ARG_LANELED_LED1 };
+enum { IN_COMBO_INIT, IN_COMBO_PRESS0, IN_COMBO_RELEASE0, IN_COMBO_PRESS1, IN_COMBO_RELEASE1, IN_COMBO_ON, IN_COMBO_OFF };
+enum { OUT_COMBO_SCORE, OUT_COMBO_SCORE_ON, OUT_COMBO_SCORE_OFF, OUT_COMBO_PRESS_ON, OUT_COMBO_PRESS_OFF };
+enum { ARG_COMBO_LED0, ARG_COMBO_LED1 };
 
-int16_t dual_lane_leds_code[] = {
-  IN_LANELED_INIT, 
-  IN_LANELED_PRESS0, 
-  IN_LANELED_RELEASE0, 
-  IN_LANELED_PRESS1, 
-  IN_LANELED_RELEASE1, 
-  IN_LANELED_ON, 
-  IN_LANELED_OFF, 
+int16_t dual_combo_firmware[] = {
+  IN_COMBO_INIT, 
+  IN_COMBO_PRESS0, 
+  IN_COMBO_RELEASE0, 
+  IN_COMBO_PRESS1, 
+  IN_COMBO_RELEASE1, 
+  IN_COMBO_ON, 
+  IN_COMBO_OFF, 
   -1,
 
-  IN_LANELED_INIT,
+  IN_COMBO_INIT,
   'P', -1, -1, 0,  // Not persistent 
   -1,
 
-  IN_LANELED_PRESS0,
-  'S', -1, -1, IN_LANELED_PRESS1,
+  IN_COMBO_PRESS0,
+  'S', -1, -1, IN_COMBO_PRESS1,
   -1,
 
-  IN_LANELED_PRESS1,
-  'J', ARG_LANELED_LED0, 0, 3, 
-  'T', -1, -1, OUT_LANELED_PRESS_ON,
-  'T', -1, -1, OUT_LANELED_SCORE_ON,
+  IN_COMBO_PRESS1,
+  'J', ARG_COMBO_LED0, 0, 3, 
+  'T', -1, -1, OUT_COMBO_PRESS_ON,
+  'T', -1, -1, OUT_COMBO_SCORE_ON,
   'J', -1, -1, -1,
-  'T', -1, -1, OUT_LANELED_PRESS_OFF,
-  'T', -1, -1, OUT_LANELED_SCORE_OFF,
+  'T', -1, -1, OUT_COMBO_PRESS_OFF,
+  'T', -1, -1, OUT_COMBO_SCORE_OFF,
   -1,
 
-  IN_LANELED_ON,
-  'H', -1, -1, ARG_LANELED_LED0, 
-  'H', -1, -1, ARG_LANELED_LED1, 
+  IN_COMBO_ON,
+  'H', -1, -1, ARG_COMBO_LED0, 
+  'H', -1, -1, ARG_COMBO_LED1, 
   -1,
 
-  IN_LANELED_OFF,
-  'L', -1, -1, ARG_LANELED_LED0, 
-  'L', -1, -1, ARG_LANELED_LED1, 
+  IN_COMBO_OFF,
+  'L', -1, -1, ARG_COMBO_LED0, 
+  'L', -1, -1, ARG_COMBO_LED1, 
   -1,
 
   -1,
@@ -267,7 +389,7 @@ enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, I
 enum { OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
 enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
 
-int16_t bumper_code[] = {
+int16_t bumper_firmware[] = {
   IN_BUMPER_INIT,                       // Input event jump table (initialized by parser)
   IN_BUMPER_PRESS,
   IN_BUMPER_RELEASE,  
@@ -309,7 +431,7 @@ enum { IN_TARGET_INIT, IN_TARGET_PRESS_A, IN_TARGET_RELEASE_A, IN_TARGET_PRESS_B
 enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF };
 enum { ARG_TARGET_LED_A, ARG_TARGET_LED_B };
 
-int16_t dual_target_code[] = {
+int16_t dual_target_firmware[] = {
   IN_TARGET_INIT,    
   IN_TARGET_PRESS_A,
   IN_TARGET_RELEASE_A,  
@@ -351,12 +473,12 @@ int16_t dual_target_code[] = {
 };
 
 
-// Dual flipper device (2 independent flippers)
+// Dual flipper device (2 independent flippers + two optional slaves)
 
 enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
-enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
+enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R, ARG_FLIPPER_COIL_L1, ARG_FLIPPER_COIL_R1 }; 
 
-int16_t dual_flipper_code[] = {
+int16_t dual_flipper_firmware[] = {
   IN_FLIPPER_INIT,
   IN_FLIPPER_PRESS_L,
   IN_FLIPPER_RELEASE_L,  
@@ -368,22 +490,28 @@ int16_t dual_flipper_code[] = {
   'P', -1, -1, 0,  // Not persistent
   'L', -1, -1, ARG_FLIPPER_COIL_L,
   'L', -1, -1, ARG_FLIPPER_COIL_R,
+  'L', -1, -1, ARG_FLIPPER_COIL_L1,
+  'L', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   IN_FLIPPER_PRESS_L,
   'H', -1, -1, ARG_FLIPPER_COIL_L,
+  'H', -1, -1, ARG_FLIPPER_COIL_L1,
   -1,
 
   IN_FLIPPER_RELEASE_L,
   'L', -1, -1, ARG_FLIPPER_COIL_L,
+  'L', -1, -1, ARG_FLIPPER_COIL_L1,
   -1,
 
   IN_FLIPPER_PRESS_R,
   'H', -1, -1, ARG_FLIPPER_COIL_R,
+  'H', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   IN_FLIPPER_RELEASE_R,
   'L', -1, -1, ARG_FLIPPER_COIL_R,
+  'L', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   -1,
@@ -418,7 +546,7 @@ enum { // Arguments (leds)
   ARG_OXO_X, ARG_OXO_O,
 };
 
-int16_t tictactoe_code[] = {
+int16_t tictactoe_firmware[] = {
   IN_OXO_INIT,
   IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
   IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 

@@ -35,15 +35,13 @@ void setup() {
   
   Serial.println( "init playfield" ); delay( 1000 );
 //  playfield.trace( Serial );
-  playfield.begin( io, leds, switch_group_definition );
+  playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
 
-  playfield.debounce( 20, 20, 0 );
-  playfield.disable(); // Send trigger -> crash!!!
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
-    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
+  //  .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
+  //  .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
+  //  .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
     .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
     .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
     .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK ); 
@@ -53,34 +51,31 @@ void setup() {
       .profile( LED_FLASHER_GRP, PROFILE_LED )
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
-  players.begin( leds, LED_PLAY_GRP, 0, 3 );
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
+  players.begin( leds, LED_PLAY_GRP, 0, 3 );
 
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
-  playfield.device( OXO, LED_OXO_GRP, tictactoe_code ) //eerst MULTILANE TESTEN, dan DIT!
+  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
-    .onChange( OUT_OXO_WIN_ROW, playfield.element( KICKER_L ), Atm_element::EVT_ON )
+    .onChange( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onChange( OUT_OXO_WIN_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
 
-  playfield.device( MULTILANE, -1, multilane_code ) 
-    .onChange( OUT_LANE0, playfield.device( OXO ), IN_OXO_1O )
-    .onChange( OUT_LANE1, playfield.device( OXO ), IN_OXO_1X )
-    .onChange( OUT_LANE2, playfield.device( OXO ), IN_OXO_2O )
-    .onChange( OUT_LANE3, playfield.device( OXO ), IN_OXO_2X )
-    .onChange( OUT_LANE4, playfield.device( OXO ), IN_OXO_3O )
-    .onChange( OUT_LANE5, playfield.device( OXO ), IN_OXO_3X )
-    .onChange( OUT_LANE_SCORE, score, score.EVT_1000 );
+  playfield.device( MULTILANE, -1, switchbank_firmware ) 
+    .onChange( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
+    .onChange( OUT_SBANK1, playfield.device( OXO ), IN_OXO_1X )
+    .onChange( OUT_SBANK2, playfield.device( OXO ), IN_OXO_2O )
+    .onChange( OUT_SBANK3, playfield.device( OXO ), IN_OXO_2X )
+    .onChange( OUT_SBANK4, playfield.device( OXO ), IN_OXO_3O )
+    .onChange( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
+    .onChange( OUT_SBANK_SCORE, score, score.EVT_1000 );
 
-  Serial.println( io.numSwitches() );
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
    
   // Turn on the General Illumination
-  playfield
-    .leds()
-      .profile( COIL_GI, PROFILE_GI )
-      .on( COIL_GI );
+  leds.profile( COIL_GI, PROFILE_GI );  
+  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON0 );    
 
   // Playfield element instantiation
 
@@ -113,28 +108,26 @@ void setup() {
     .watch( LED_TARGET_GRP )
       .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_ON ); 
 
-  playfield
-    .element( KICKER_L, COIL_KICKER_L, LED_KICKER_GRP, PROFILE_KICKER )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_500, score.EVT_5000 )
-      .persistent();
+  ///////////////////
+  // The game crashes as soon as the ball enters the kicker hole...
+  leds.profile( COIL_KICKER_L, PROFILE_KICKER );
+  leds.profile( COIL_KICKER_R, PROFILE_KICKER );
+  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware ).trace( Serial )
+    .onChange( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
+    .onChange( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
+    .onChange( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
+  ///////////////////
 
-  playfield
-    .element( KICKER_R, COIL_KICKER_R, LED_KICKER_GRP, PROFILE_KICKER )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_500, score.EVT_5000 )
-      .persistent();
-    
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, playfield.device( OXO ), IN_OXO_4 ) 
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
+      .onPress(  true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( score, score.EVT_1000, score.EVT_5000 );
 
   playfield
     .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
       .onPress( false, playfield.device( OXO ), IN_OXO_6 )
-      .onPress( true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
+      .onPress(  true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( score, score.EVT_1000, score.EVT_5000 );
     
   playfield
@@ -165,7 +158,7 @@ void setup() {
       .onScore( score, score.EVT_10 );
 
   playfield
-    .element(  ROLLOVER )
+    .element( ROLLOVER )
       .onPress( playfield.device( OXO ), IN_OXO_8 )
       .onScore( score, score.EVT_500 );
 
@@ -173,13 +166,10 @@ void setup() {
     .element( OUT_LANE )
       .onScore( score, score.EVT_1000 );
 
-  playfield
-    .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0, 0 );
-
-  playfield  
-    .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0, 0 );
+  playfield.debounce( FLIPPER_L, 5, 0, 0 );    
+  playfield.debounce( FLIPPER_R, 5, 0, 0 );    
+  leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
+  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
   
   playfield
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
@@ -216,14 +206,14 @@ void setup() {
   leds.scalar( LED_BALL_GRP, 0 );
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
-/*
+
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
   animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();
   animation[2].begin( 600 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI2 ); }).repeat().start();
-  */
+
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
-    
+  playfield.disable();     
 }
 
 

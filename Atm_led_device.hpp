@@ -28,7 +28,7 @@ class Atm_led_device: public Machine {
 
  private:
   enum { ENT_NOTIFY }; // ACTIONS
-  enum { ON_CHANGE, CONN_MAX = 16 }; // CONNECTORS
+  enum { ON_CHANGE, CONN_MAX = 18 }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 

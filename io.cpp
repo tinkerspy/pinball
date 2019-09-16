@@ -5,6 +5,10 @@
 // TODO zorgvuldig alle switch events checken op geldigheid
 // Komen ze wel van een actieve matrix-node???
 // Filteren direct bij input van matrix scanner.
+// Input filter bitmap construeren in switchMap()???
+//     soll[row][col] = filter[row][col] & (...
+// default   switchMap( 0, 0, 0, 0, 0 );
+// switch_map kan dan weg 
 
 IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate ) {
   this->pin_clock = pin_clock;
@@ -157,7 +161,6 @@ IO& IO::range( uint8_t node_max, uint8_t col_max ) {
   this->switch_max = switch_max;
   return *this;
 }
-
 
 IO& IO::invert( uint8_t code ) {
   if ( code != 0 ) {

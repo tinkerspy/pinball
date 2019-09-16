@@ -60,6 +60,7 @@ void Atm_led_device::action( int id ) {
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() ) 
+            Serial.println( i ); delay( 100 );
             push( connectors, ON_CHANGE, i, i, 0 );
         }
       }

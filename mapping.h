@@ -141,6 +141,7 @@ enum {
   LED_AGAIN_GRP,
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
+  LED_FLIPPER_GRP,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +199,9 @@ enum {
   MULTILANE,
   DUAL_TARGET,
   OXO,
+  GI,
+  KICKER,
+  FLIPPER,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////
@@ -233,7 +237,7 @@ const int16_t led_group_definition[] = {
 */
   
   LED_KICKER_GRP, 
-    LED_KICKER_L, LED_KICKER_R, -1,
+    COIL_KICKER_L, COIL_KICKER_R, LED_KICKER_L, LED_KICKER_R, -1,
   LED_UP_LANE_GRP, 
     LED_UP_LANE_L, LED_UP_LANE_R, -1,
   LED_TARGET_GRP,
@@ -294,6 +298,8 @@ const int16_t led_group_definition[] = {
     LED_OXO_ANI0, LED_OXO_ANI1, LED_OXO_ANI2, -1,
   LED_HEADBOX_GRP,
     LED_UP_GRP, LED_PLAY_GRP, LED_BALL_GRP, LED_AGAIN_GRP, LED_OXO_ANI_GRP, LED_GAME_OVER, LED_TILT, -1,
+  LED_FLIPPER_GRP,
+    COIL_FLIPPER_L, COIL_FLIPPER_R, -1,
   -1, 
 };
 
@@ -304,6 +310,10 @@ int16_t switch_group_definition[] = {
   CHIME2,
   MULTILANE,
   DUAL_TARGET,
+  OXO,
+  GI,
+  KICKER,
+  FLIPPER,
   -1,
 
   SAVE_GATE, -1,
@@ -314,8 +324,13 @@ int16_t switch_group_definition[] = {
     PORT_1O, PORT_1X, PORT_2O, PORT_2X, PORT_3O, PORT_3X, -1,
   DUAL_TARGET,
     TARGET_A, TARGET_B, -1,
-  OXO, OXO, -1,
-
+  OXO, -1,
+  GI, -1,
+  KICKER, 
+    KICKER_L, KICKER_R, -1,
+  FLIPPER, 
+    FLIPPER_L, FLIPPER_R, -1,
+  
   -1,
 };
 

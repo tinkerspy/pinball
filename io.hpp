@@ -51,6 +51,7 @@ class IO {
     uint16_t switch_cnt = 0;
     int16_t log_last_pixel = -1;        
     uint8_t soll[MATRIX_NODES][MATRIX_SWITCHES];
+    uint8_t input_filter[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t ist[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t nc[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t row_map[NUM_IOPORTS];

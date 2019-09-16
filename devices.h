@@ -428,7 +428,7 @@ int16_t bumper_firmware[] = {
 // Dual target device
 
 enum { IN_TARGET_INIT, IN_TARGET_PRESS_A, IN_TARGET_RELEASE_A, IN_TARGET_PRESS_B, IN_TARGET_RELEASE_B, IN_TARGET_CLEAR };
-enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF };
+enum { OUT_TARGET_LED_A_ON, OUT_TARGET_LED_B_ON, OUT_TARGET_LED_A_OFF, OUT_TARGET_LED_B_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF, OUT_TARGET_SCORE };
 enum { ARG_TARGET_LED_A, ARG_TARGET_LED_B };
 
 int16_t dual_target_firmware[] = {
@@ -446,6 +446,7 @@ int16_t dual_target_firmware[] = {
   -1,
   
   IN_TARGET_PRESS_A,
+  'T', -1, -1, OUT_TARGET_SCORE,
   'J', ARG_TARGET_LED_A, -1, 0,
   'H', -1, -1, ARG_TARGET_LED_A,
   'T', -1, -1, OUT_TARGET_LED_A_ON,
@@ -454,6 +455,7 @@ int16_t dual_target_firmware[] = {
   -1,
    
   IN_TARGET_PRESS_B,
+  'T', -1, -1, OUT_TARGET_SCORE,
   'J', ARG_TARGET_LED_B, -1, 0,
   'H', -1, -1, ARG_TARGET_LED_B,
   'T', -1, -1, OUT_TARGET_LED_B_ON,

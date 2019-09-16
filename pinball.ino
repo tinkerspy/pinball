@@ -57,6 +57,14 @@ void setup() {
 
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
+  automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
+   
+  // Turn on the General Illumination
+  leds.profile( COIL_GI, PROFILE_GI );  
+  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON0 );    
+
+  // Playfield element instantiation
+
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
     .onChange( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
@@ -71,52 +79,35 @@ void setup() {
     .onChange( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
     .onChange( OUT_SBANK_SCORE, score, score.EVT_1000 );
 
-  automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
-   
-  // Turn on the General Illumination
-  leds.profile( COIL_GI, PROFILE_GI );  
-  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON0 );    
-
-  // Playfield element instantiation
-
-  playfield
-    .element( TARGET_A, -1, LED_TARGET_A )
-      .autoLight( true )
-      .onLight( true, playfield.element( BUMPER_A ), Atm_element::EVT_ON )
-      .onScore( score, score.EVT_100 ); 
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
+    .onChange( OUT_TARGET_LED_A_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
+    .onChange( OUT_TARGET_LED_A_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
+    .onChange( OUT_TARGET_LED_B_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
+    .onChange( OUT_TARGET_LED_B_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
+    .onChange( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
+    .onChange( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
+    .onChange( OUT_TARGET_SCORE, score, score.EVT_100 );
   
-  playfield
-    .element( TARGET_B, -1, LED_TARGET_B )
-      .autoLight( true )
-      .onLight( true, playfield.element( BUMPER_B ), Atm_element::EVT_ON ) 
-      .onScore( score, score.EVT_100 ); 
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
+    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
+    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
+  
+    playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
+    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
+    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
+    
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
+    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_1000 )
+    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_100 )  
+    .onChange( OUT_BUMPER_LIGHT_ON, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
+    .onChange( OUT_BUMPER_LIGHT_OFF, playfield.element( SAVE_GATE ), Atm_element::EVT_RELEASE );
 
-  playfield
-    .element( BUMPER_A, COIL_BUMPER_A, LED_BUMPER_A, PROFILE_BUMPER )
-      .onScore( score, score.EVT_10, score.EVT_100 ); 
-
-  playfield
-    .element( BUMPER_B, COIL_BUMPER_B, LED_BUMPER_B, PROFILE_BUMPER )
-      .onScore( score, score.EVT_10, score.EVT_100 ); 
-
-  playfield
-    .element( BUMPER_C, COIL_BUMPER_C, LED_BUMPER_C, PROFILE_BUMPER )
-      .onLight( true, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
-      .onScore( score, score.EVT_100, score.EVT_1000 ); 
-
-  playfield
-    .watch( LED_TARGET_GRP )
-      .onLight( true, playfield.element( BUMPER_C ), Atm_element::EVT_ON ); 
-
-  ///////////////////
-  // The game crashes as soon as the ball enters the kicker hole...
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onChange( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
     .onChange( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
     .onChange( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
-  ///////////////////
   
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )

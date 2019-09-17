@@ -49,10 +49,12 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_INIT,
+  'I' -1, -1, -1,
   'S', -1, -1, IN_LBANK_ALL_OFF,  
   -1,
 
   IN_LBANK_ALL_ON,
+  'I', -1, -1, 1,
   'H', -1, -1, ARG_LBANK_LED0,
   'H', -1, -1, ARG_LBANK_LED1,
   'H', -1, -1, ARG_LBANK_LED2,
@@ -64,6 +66,7 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_ALL_OFF,
+  'I', -1, -1, -1,
   'L', -1, -1, ARG_LBANK_LED0,
   'L', -1, -1, ARG_LBANK_LED1,
   'L', -1, -1, ARG_LBANK_LED2,
@@ -75,11 +78,13 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_ON0,
+  'I', -1, -1, 1,
   'H', -1, -1, ARG_LBANK_LED0,
   'T', -1, -1, OUT_LBANK_ON0,
   -1,
   
   IN_LBANK_OFF0,
+  'I', -1, -1, -1,
   'L', -1, -1, ARG_LBANK_LED0,
   'T', -1, -1, OUT_LBANK_OFF0,
   -1,

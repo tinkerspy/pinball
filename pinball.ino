@@ -88,14 +88,17 @@ void setup() {
     .onChange( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
     .onChange( OUT_TARGET_SCORE, score, score.EVT_100 );
   
+  leds.profile( LED_BUMPER_A, PROFILE_LED );
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
     .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
     .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
   
-    playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
+  leds.profile( LED_BUMPER_B, PROFILE_LED );
+  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
     .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
     .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
     
+  leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
     .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_1000 )
     .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_100 )  

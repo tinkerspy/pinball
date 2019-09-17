@@ -386,7 +386,7 @@ int16_t dual_combo_firmware[] = {
 // Single bumper device with led & coil
 
 enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
-enum { OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
+enum { OUT_BUMPER_SCORE, OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
 enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
 
 int16_t bumper_firmware[] = {
@@ -405,6 +405,7 @@ int16_t bumper_firmware[] = {
 
   IN_BUMPER_PRESS,
   'H', -1, -1, ARG_BUMPER_COIL,         // Pulse the bumper coil
+  'T', -1, -1, OUT_BUMPER_SCORE,        // Emit score event
   'J', ARG_BUMPER_LED, 0, 2,            // Check bumper light
   'T', -1, -1, OUT_BUMPER_SCORE_LIT,    // Emit lit score event
   'J', -1, -1, -1,                      // Exit

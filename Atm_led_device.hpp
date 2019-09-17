@@ -4,6 +4,9 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
+#define MAX_OUTPUTS 20
+#define DYNAMIC_ELEMENTS
+
 class Atm_playfield;
 
 class Atm_led_device: public Machine {
@@ -28,7 +31,7 @@ class Atm_led_device: public Machine {
 
  private:
   enum { ENT_NOTIFY }; // ACTIONS
-  enum { ON_CHANGE, CONN_MAX = 18 }; // CONNECTORS
+  enum { ON_CHANGE, CONN_MAX = MAX_OUTPUTS }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 

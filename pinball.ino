@@ -62,7 +62,7 @@ void setup() {
    
   // Turn on the General Illumination
   leds.profile( COIL_GI, PROFILE_GI );
-  playfield.device( GI, LED_GI_GRP, ledbank_firmware ).trigger( IN_LBANK_ON0 );  
+  playfield.device( GI, LED_GI_GRP, ledbank_firmware ).trigger( IN_LBANK_ON );  
 
   // Playfield element instantiation
 

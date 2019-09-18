@@ -145,6 +145,8 @@ enum {
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
   LED_FLIPPER_GRP,
+  LED_UPLANE_GRP,
+  LED_SLINGSHOT_GRP,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +207,8 @@ enum {
   GI,
   KICKER,
   FLIPPER,
+  UP_LANE,
+  SLINGSHOT,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////
@@ -236,6 +240,7 @@ const int16_t led_group_definition[] = {
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
   LED_OXO_XXX,
+  LED_SLINGSHOT_GRP,
   -1,
 */
   
@@ -309,6 +314,8 @@ const int16_t led_group_definition[] = {
     COIL_BUMPER_B, LED_BUMPER_B, -1,
   LED_BUMPER_C_GRP,
     COIL_BUMPER_C, LED_BUMPER_C, -1,
+  LED_SLINGSHOT_GRP,
+    SLING_L, SLING_R, -1,
     
   -1, 
 };
@@ -340,7 +347,10 @@ int16_t switch_group_definition[] = {
     KICKER_L, KICKER_R, -1,
   FLIPPER, 
     FLIPPER_L, FLIPPER_R, -1,
-  
+  UP_LANE,
+    UP_LANE_L, UP_LANE_R, -1,
+  SLINGSHOT,
+    SLING_L, SLING_R, -1,
   -1,
 };
 

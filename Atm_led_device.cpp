@@ -20,8 +20,10 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   input_persistence = 0; 
   output_persistence = 0;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
-  if ( led_group != -1 ) set_led( led_group );
-  if ( device_script ) set_script( device_script );
+  if ( device_script ) {
+    set_led( led_group );
+    set_script( device_script );
+  }
   return *this;          
 }
 
@@ -61,7 +63,7 @@ void Atm_led_device::action( int id ) {
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() ) 
-            push( connectors, ON_CHANGE, i, i, 0 );
+            push( connectors, ON_EVENT, i, i, 0 );
         }
       }
       trigger_flags = 0;
@@ -213,26 +215,26 @@ Atm_led_device& Atm_led_device::release( void ) {
  */
 
 /*
- * onChange() push connector variants ( slots 8, autostore 0, broadcast 0 )
+ * onEvent() push connector variants ( slots 8, autostore 0, broadcast 0 )
  */
 
-Atm_led_device& Atm_led_device::onChange( Machine& machine, int event ) {
-  onPush( connectors, ON_CHANGE, 0, 8, 1, machine, event );
+Atm_led_device& Atm_led_device::onEvent( Machine& machine, int event ) {
+  onPush( connectors, ON_EVENT, 0, 8, 1, machine, event );
   return *this;
 }
 
-Atm_led_device& Atm_led_device::onChange( atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_CHANGE, 0, 8, 1, callback, idx );
+Atm_led_device& Atm_led_device::onEvent( atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_EVENT, 0, 8, 1, callback, idx );
   return *this;
 }
 
-Atm_led_device& Atm_led_device::onChange( int sub, Machine& machine, int event ) {
-  onPush( connectors, ON_CHANGE, sub, 8, 0, machine, event );
+Atm_led_device& Atm_led_device::onEvent( int sub, Machine& machine, int event ) {
+  onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
   return *this;
 }
 
-Atm_led_device& Atm_led_device::onChange( int sub, atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_CHANGE, sub, 8, 0, callback, idx );
+Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
+  onPush( connectors, ON_EVENT, sub, 8, 0, callback, idx );
   return *this;
 }
 

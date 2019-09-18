@@ -1,8 +1,6 @@
-
 #include "Neon.h"
 #include "mapping.h"
 #include "devices.h"
-#include "Atm_oxo_field.hpp"
 #include "freeram.hpp"
 
 #define NUMBER_OF_BALLS 5
@@ -67,54 +65,54 @@ void setup() {
   // Playfield element instantiation
 
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
-    .onChange( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
-    .onChange( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
-    .onChange( OUT_OXO_WIN_ALL, playfield.element( UP_LANE_L ), Atm_element::EVT_ON );
+    .onEvent( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
+    .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
+    .onEvent( OUT_OXO_WIN_ALL, playfield.device( UP_LANE ), IN_COMBO_ON );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
-    .onChange( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
-    .onChange( OUT_SBANK1, playfield.device( OXO ), IN_OXO_1X )
-    .onChange( OUT_SBANK2, playfield.device( OXO ), IN_OXO_2O )
-    .onChange( OUT_SBANK3, playfield.device( OXO ), IN_OXO_2X )
-    .onChange( OUT_SBANK4, playfield.device( OXO ), IN_OXO_3O )
-    .onChange( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
-    .onChange( OUT_SBANK_SCORE, score, score.EVT_1000 );
+    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
+    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_1X )
+    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_2O )
+    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_2X )
+    .onEvent( OUT_SBANK4, playfield.device( OXO ), IN_OXO_3O )
+    .onEvent( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
+    .onEvent( OUT_SBANK_SCORE, score, score.EVT_1000 );
 
   leds.profile( LED_TARGET_A, PROFILE_LED );
   leds.profile( LED_TARGET_B, PROFILE_LED );
   playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
-    .onChange( OUT_TARGET_LED_A_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
-    .onChange( OUT_TARGET_LED_A_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
-    .onChange( OUT_TARGET_LED_B_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
-    .onChange( OUT_TARGET_LED_B_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
-    .onChange( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
-    .onChange( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
-    .onChange( OUT_TARGET_SCORE, score, score.EVT_100 );
+    .onEvent( OUT_TARGET_LED_A_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED_A_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_LED_B_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED_B_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
+    .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_SCORE, score, score.EVT_100 );
   
   leds.profile( LED_BUMPER_A, PROFILE_LED );
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
-    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
-    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
+    .onEvent( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
   
   leds.profile( LED_BUMPER_B, PROFILE_LED );
   playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
-    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
-    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
+    .onEvent( OUT_BUMPER_SCORE_LIT, score, score.EVT_100 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_10 );  
     
   leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
-    .onChange( OUT_BUMPER_SCORE_LIT, score, score.EVT_1000 )
-    .onChange( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_100 )  
-    .onChange( OUT_BUMPER_LIGHT_ON, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
-    .onChange( OUT_BUMPER_LIGHT_OFF, playfield.element( SAVE_GATE ), Atm_element::EVT_RELEASE );
+    .onEvent( OUT_BUMPER_SCORE_LIT, score, score.EVT_1000 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_100 )  
+    .onEvent( OUT_BUMPER_LIGHT_ON, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
+    .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.element( SAVE_GATE ), Atm_element::EVT_RELEASE );
 
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
-    .onChange( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
-    .onChange( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
-    .onChange( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
-  
+    .onEvent( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
+    .onEvent( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
+    .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
+ /* 
   playfield
     .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
       .onPress( false, playfield.device( OXO ), IN_OXO_4 ) 
@@ -126,6 +124,34 @@ void setup() {
       .onPress( false, playfield.device( OXO ), IN_OXO_6 )
       .onPress(  true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
       .onScore( score, score.EVT_1000, score.EVT_5000 );
+*/
+  
+  leds.profile( LED_UP_LANE_L, PROFILE_LED );
+  leds.profile( LED_UP_LANE_R, PROFILE_LED );
+  playfield.device( UP_LANE, LED_UP_LANE_GRP, dual_combo_firmware )
+    .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
+    .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+    .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
+    .onEvent( OUT_COMBO_PRESS1_UNLIT, playfield.device( OXO ), IN_OXO_6 );
+/*    
+  playfield
+    .element( SLING_L, COIL_SLING_L, -1 )
+      .debounce( 20, 200, 0 )
+      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
+      .onScore( score, score.EVT_10 );
+
+  playfield
+    .element( SLING_R, COIL_SLING_R, -1 )
+      .debounce( 20, 200, 0 )
+      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
+      .onScore( score, score.EVT_10 );
+*/
+
+  playfield.debounce( SLING_L, 20, 200, 0 );
+  playfield.debounce( SLING_R, 20, 200, 0 );
+  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
+    .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
+    .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
     
   playfield
     .element(  TARGET_C )
@@ -141,19 +167,6 @@ void setup() {
     .element( IN_LANE_R )
       .onPress( playfield.device( OXO ), IN_OXO_9 )
       .onScore( score, score.EVT_1000 );
-    
-  playfield
-    .element( SLING_L, COIL_SLING_L, -1 )
-      .debounce( 20, 200, 0 )
-      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
-      .onScore( score, score.EVT_10 );
-
-  playfield
-    .element( SLING_R, COIL_SLING_R, -1 )
-      .debounce( 20, 200, 0 )
-      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
-      .onScore( score, score.EVT_10 );
-
   playfield
     .element( ROLLOVER )
       .onPress( playfield.device( OXO ), IN_OXO_8 )

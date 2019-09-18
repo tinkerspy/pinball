@@ -160,8 +160,9 @@ void Atm_led_device::run_code( int16_t e ) {
           break;
         default:
           if ( callback_trace ) 
-              stream_trace->printf( "run_code %03d: illegal opcode '%c', script out of sync? (missing comma?)\n", e, opcode );
-          
+              stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", e, opcode );
+          return;
+          break;
       }
     }
     if ( callback_trace ) 

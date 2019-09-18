@@ -13,6 +13,8 @@
  *  dual flipper
  *  tictactoe
  *  
+ *  PAS OP: als je een komma vergeet, bijv. 'X' -1 i.p.v. 'X', -1 raakt de boel uit sync!!!
+ *  
  */
 
 namespace std_firmware {
@@ -29,28 +31,28 @@ enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4
 int16_t ledbank_firmware[] {
   IN_LBANK_INIT, 
   IN_LBANK_ON0, 
-  IN_LBANK_ON1,
-  IN_LBANK_ON2,
-  IN_LBANK_ON3,
+  IN_LBANK_ON1, 
+  IN_LBANK_ON2, 
+  IN_LBANK_ON3, 
   IN_LBANK_ON4, 
-  IN_LBANK_ON5,
-  IN_LBANK_ON6,
-  IN_LBANK_ON7,
+  IN_LBANK_ON5, 
+  IN_LBANK_ON6, 
+  IN_LBANK_ON7, 
   IN_LBANK_OFF0, 
-  IN_LBANK_OFF1,
-  IN_LBANK_OFF2,
-  IN_LBANK_OFF3,
+  IN_LBANK_OFF1, 
+  IN_LBANK_OFF2, 
+  IN_LBANK_OFF3, 
   IN_LBANK_OFF4, 
-  IN_LBANK_OFF5,
-  IN_LBANK_OFF6,
-  IN_LBANK_OFF7,
+  IN_LBANK_OFF5, 
+  IN_LBANK_OFF6, 
+  IN_LBANK_OFF7,          
   IN_LBANK_ALL_ON, 
   IN_LBANK_ALL_OFF,
   -1,
 
   IN_LBANK_INIT,
-  'P' -1, -1, 0,
-  'I' -1, -1, -1,
+  'P', -1, -1, 0,
+  'I', -1, -1, -1,
   'S', -1, -1, IN_LBANK_ALL_OFF,  
   -1,
 

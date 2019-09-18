@@ -97,7 +97,7 @@ void Atm_led_device::run_code( int16_t e ) {
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) {
     int16_t p = script[e];
     if ( callback_trace ) 
-      stream_trace->printf( "run_code %03d called\n", e );
+      stream_trace->printf( "run_code %03d called -> %d\n", e, p );
     while ( script[p] != -1 ) {
       int16_t opcode = script[p++];
       int16_t selector = script[p++];
@@ -158,6 +158,10 @@ void Atm_led_device::run_code( int16_t e ) {
           input_persistence = selected_action;
           output_persistence = selected_action;
           break;
+        default:
+          if ( callback_trace ) 
+              stream_trace->printf( "run_code %03d: illegal opcode '%c', script out of sync? (missing comma?)\n", e, opcode );
+          
       }
     }
     if ( callback_trace ) 

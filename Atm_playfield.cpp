@@ -194,6 +194,7 @@ Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
 Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */ ) {
+  //Serial.printf( "Device switch=%d, led=%d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_led_device* device = new Atm_led_device();
     device->begin( *this, led_group, device_script );
@@ -204,7 +205,7 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     device->begin( *this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
-    //Serial.printf( "Attach %d, index %d\n", n, 0 ); 
+    //Serial.printf( "Attach root %d, index %d\n", n, 0 ); 
     if ( n >= numberOfSwitches ) {
       if ( group_def && n <= numberOfSwitches + numberOfGroups ) {
         int p = group_def[n - numberOfSwitches - 1];

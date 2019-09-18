@@ -61,8 +61,9 @@ void setup() {
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
    
   // Turn on the General Illumination
-  leds.profile( COIL_GI, PROFILE_GI );  
-  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON0 );    
+  leds.profile( COIL_GI, PROFILE_GI );
+  playfield.device( GI, LED_GI_GRP, ledbank_firmware ).trace( Serial ).trigger( IN_LBANK_ON0 );  // <<<<<<<<<<<<<<<<<<<<<< BUG: Doesn't work!!!  
+  leds.on( COIL_GI );
 
   // Playfield element instantiation
 
@@ -80,6 +81,8 @@ void setup() {
     .onChange( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
     .onChange( OUT_SBANK_SCORE, score, score.EVT_1000 );
 
+  leds.profile( LED_TARGET_A, PROFILE_LED );
+  leds.profile( LED_TARGET_B, PROFILE_LED );
   playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
     .onChange( OUT_TARGET_LED_A_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
     .onChange( OUT_TARGET_LED_A_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
@@ -208,7 +211,8 @@ void setup() {
 
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
-  playfield.disable();     
+  //playfield.disable();     
+
 }
 
 

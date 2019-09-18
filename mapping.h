@@ -145,6 +145,7 @@ enum {
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
   LED_FLIPPER_GRP,
+  LED_GI_GRP,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -309,6 +310,8 @@ const int16_t led_group_definition[] = {
     COIL_BUMPER_B, LED_BUMPER_B, -1,
   LED_BUMPER_C_GRP,
     COIL_BUMPER_C, LED_BUMPER_C, -1,
+  LED_GI_GRP,
+    COIL_GI, -1,
     
   -1, 
 };

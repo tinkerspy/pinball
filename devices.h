@@ -49,6 +49,7 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_INIT,
+  'P' -1, -1, 0,
   'I' -1, -1, -1,
   'S', -1, -1, IN_LBANK_ALL_OFF,  
   -1,

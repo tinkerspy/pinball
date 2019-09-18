@@ -2,9 +2,7 @@
 
 /* Standard firmware for the Atm_led_device programmable pinball device class
  *  
- *  single_led  ???
- *  quad_led -> ledbank
- *  dual_slingshot ???
+ *  ledbank
  *  dual_kicker
  *  switchbank
  *  dual_combo_leds
@@ -13,13 +11,14 @@
  *  dual flipper
  *  tictactoe
  *  
- *  PAS OP: als je een komma vergeet, bijv. 'X' -1 i.p.v. 'X', -1 raakt de boel uit sync!!!
+ *  playfield.device( <switch-id> ); // Instantiates object
+ *  playfield.device( <switch-id>, <led-id>, <firmware> ); // Initializes object
  *  
  */
 
 namespace std_firmware {
 
-// Ledbank: 8 leds (or coils) that can be turned on (pulsed)
+// Ledbank: 8 leds (or coils) that can be turned on/off (or pulsed)
 
 enum { IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_ON1, IN_LBANK_ON2, IN_LBANK_ON3, IN_LBANK_ON4, IN_LBANK_ON5, IN_LBANK_ON6, IN_LBANK_ON7, 
           IN_LBANK_OFF0, IN_LBANK_OFF1, IN_LBANK_OFF2, IN_LBANK_OFF3, IN_LBANK_OFF4, IN_LBANK_OFF5, IN_LBANK_OFF6, IN_LBANK_OFF7,
@@ -162,40 +161,6 @@ int16_t ledbank_firmware[] {
   'T', -1, -1, OUT_LBANK_OFF7,
   -1,
 
-  -1,
-};
-
-
-// Two independent slingshots (share score & kick)
-
-enum { IN_SLING_INIT, IN_SLING_PRESS_L, IN_SLING_RELEASE_L, IN_SLING_PRESS_R, IN_SLING_RELEASE_R };
-enum { OUT_SLING_SCORE, OUT_SLING_KICK };
-enum { ARG_SLING_COIL_L, ARG_SLING_COIL_R };
-
-int16_t dual_slingshot_firmware[] {
-  IN_SLING_INIT, 
-  IN_SLING_PRESS_L, 
-  IN_SLING_RELEASE_L,
-  IN_SLING_PRESS_R, 
-  IN_SLING_RELEASE_R,
-  -1,
-
-  IN_SLING_INIT,
-  'P', -1, -1, 0,  // Not persistent 
-  -1,
-
-  IN_SLING_PRESS_L,
-  'H', -1, -1, ARG_SLING_COIL_L,
-  'T', -1, -1, OUT_SLING_SCORE,
-  'T', -1, -1, OUT_SLING_KICK,
-  -1,
-  
-  IN_SLING_PRESS_R,
-  'H', -1, -1, ARG_SLING_COIL_R,
-  'T', -1, -1, OUT_SLING_SCORE,
-  'T', -1, -1, OUT_SLING_KICK,
-  -1,
-  
   -1,
 };
 

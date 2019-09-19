@@ -1,6 +1,6 @@
 #include "Singularity.h"
+#include "firmware_custom.h"
 #include "mapping.h"
-#include "devices.h"
 #include "freeram.hpp"
 
 #define NUMBER_OF_BALLS 5
@@ -14,7 +14,8 @@ Atm_score score;
 Atm_scalar players, bonus;
 Atm_timer animation[3];
 
-using namespace std_firmware; 
+using namespace standard_firmware;
+using namespace custom_firmware; 
 
 void setup() {
   delay( 1000 );

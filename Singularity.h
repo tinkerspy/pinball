@@ -9,3 +9,5 @@
 #include "Atm_score.hpp"
 #include "Atm_scalar.hpp"
 #include "Atm_led_device.hpp"
+#include "firmware_standard.hpp"
+

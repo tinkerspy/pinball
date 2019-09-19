@@ -1,4 +1,4 @@
-#include "Neon.h"
+#include "Singularity.h"
 #include "mapping.h"
 #include "devices.h"
 #include "freeram.hpp"
@@ -112,45 +112,17 @@ void setup() {
     .onEvent( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
     .onEvent( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
     .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
- /* 
-  playfield
-    .element( UP_LANE_L, -1, LED_UP_LANE_GRP )
-      .onPress( false, playfield.device( OXO ), IN_OXO_4 ) 
-      .onPress(  true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_1000, score.EVT_5000 );
-
-  playfield
-    .element( UP_LANE_R, -1, LED_UP_LANE_GRP )
-      .onPress( false, playfield.device( OXO ), IN_OXO_6 )
-      .onPress(  true, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) // Extra ball
-      .onScore( score, score.EVT_1000, score.EVT_5000 );
-*/
   
   leds.profile( LED_UP_LANE_L, PROFILE_LED );
   leds.profile( LED_UP_LANE_R, PROFILE_LED );
-  //playfield.device( UP_LANE ).trace( Serial );
   playfield.device( UP_LANE, LED_UP_LANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
     .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
     .onEvent( OUT_COMBO_PRESS1_UNLIT, playfield.device( OXO ), IN_OXO_6 );
-/*    
-  playfield
-    .element( SLING_L, COIL_SLING_L, -1 )
-      .debounce( 20, 200, 0 )
-      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
-      .onScore( score, score.EVT_10 );
-
-  playfield
-    .element( SLING_R, COIL_SLING_R, -1 )
-      .debounce( 20, 200, 0 )
-      .onPress( playfield.device( OXO ), IN_OXO_TOGGLE )
-      .onScore( score, score.EVT_10 );
-*/
 
   playfield.debounce( SLING_L, 20, 200, 0 );
   playfield.debounce( SLING_R, 20, 200, 0 );
-  //playfield.device( SLINGSHOT ).trace( Serial );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
     .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    

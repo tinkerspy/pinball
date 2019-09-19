@@ -209,6 +209,7 @@ enum {
   FLIPPER,
   UP_LANE,
   SLINGSHOT,
+/* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////

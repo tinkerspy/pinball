@@ -65,6 +65,22 @@ void Atm_playfield::action( int id ) {
   }
 }
 
+void Atm_playfield::checkGroups( int16_t* group_definition, int16_t nos )  {
+  int16_t* p = group_definition;
+  while ( p[0] != -1 ) *p++ = 0;
+  int16_t numberOfGroups = p - group_definition;
+  p++;
+  while ( p[0] != -1 ) {
+    int gid = p[0] - nos - 1;
+    group_definition[gid] = p - group_definition + 1;
+    p++;
+    while ( p[0] != -1 ) {
+      p++;
+    }
+    p++;
+  }
+}
+
 int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
   int16_t* p = group_def;
   while ( p[0] != -1 ) *p++ = 0;

@@ -64,6 +64,8 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
 
   switch_record prof[MAX_SWITCHES + 1 ];
 
+  static void checkGroups( int16_t* group_definition, int16_t nos );
+ 
  protected:
   enum { ENT_SCAN, ENT_DISABLED, ENT_READY }; // ACTIONS
   enum { ON_PRESS, ON_RELEASE = MAX_SWITCHES, CONN_MAX = MAX_SWITCHES * 2 }; // CONNECTORS

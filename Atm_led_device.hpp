@@ -4,6 +4,8 @@
 #include "Atm_led_scheduler.hpp"
 #include "Atm_playfield.hpp"
 
+// Number of outputs is also limited by the 32 bits in trigger_flags 
+
 #define MAX_OUTPUTS 20
 #define DYNAMIC_ELEMENTS
 
@@ -32,7 +34,7 @@ class Atm_led_device: public Machine {
  private:
   enum { ENT_NOTIFY }; // ACTIONS
   enum { ON_EVENT, CONN_MAX = MAX_OUTPUTS }; // CONNECTORS
-  atm_connector connectors[CONN_MAX];
+  atm_connector connectors[CONN_MAX+1];
   int event( int id ); 
   void action( int id ); 
   void run_code( int16_t e );
@@ -41,7 +43,7 @@ class Atm_led_device: public Machine {
   void led_on( int16_t led_group, int16_t selector );
   void led_off( int16_t led_group, int16_t selector );
 
-  uint16_t trigger_flags; 
+  uint32_t trigger_flags; 
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;
   int16_t global_counter;

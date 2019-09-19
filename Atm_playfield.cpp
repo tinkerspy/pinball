@@ -205,9 +205,9 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     device->begin( *this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
-    //Serial.printf( "Attach root %d, index %d\n", n, 0 ); 
+    //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numberOfSwitches ); 
     if ( n >= numberOfSwitches ) {
-      if ( group_def && n <= numberOfSwitches + numberOfGroups ) {
+      if ( group_def && n <= numberOfSwitches + numberOfGroups ) { 
         int p = group_def[n - numberOfSwitches - 1];
         int cnt = 0;
         while ( group_def[p] != -1 ) {
@@ -221,6 +221,7 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
         }
       }
     }
+    //Serial.printf( "Switches attached\n" ); 
   } else { 
     if ( device_script ) prof[n].device->set_script( device_script );
     if ( led_group > -1 ) prof[n].device->set_led( led_group );

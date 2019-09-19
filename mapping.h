@@ -321,7 +321,7 @@ const int16_t led_group_definition[] = {
 };
 
 int16_t switch_group_definition[] = {
-  SAVE_GATE,    
+  SAVE_GATE,
   CHIME0,
   CHIME1,
   CHIME2,
@@ -331,6 +331,8 @@ int16_t switch_group_definition[] = {
   GI,
   KICKER,
   FLIPPER,
+  UP_LANE,
+  SLINGSHOT,
   -1,
 
   SAVE_GATE, -1,

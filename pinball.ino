@@ -128,7 +128,7 @@ void setup() {
   
   leds.profile( LED_UP_LANE_L, PROFILE_LED );
   leds.profile( LED_UP_LANE_R, PROFILE_LED );
-  playfield.device( UP_LANE ).trace( Serial );
+  //playfield.device( UP_LANE ).trace( Serial );
   playfield.device( UP_LANE, LED_UP_LANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
@@ -148,17 +148,12 @@ void setup() {
       .onScore( score, score.EVT_10 );
 */
 
-  Serial.printf( "LED_SLINGSHOT_GRP: %d\n", LED_SLINGSHOT_GRP );
   playfield.debounce( SLING_L, 20, 200, 0 );
   playfield.debounce( SLING_R, 20, 200, 0 );
   //playfield.device( SLINGSHOT ).trace( Serial );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
     .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
-
-  automaton.delay( 500 );
-  playfield.device( UP_LANE ).press();
-  automaton.delay( 500000 );
     
   playfield
     .element(  TARGET_C )

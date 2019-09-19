@@ -315,7 +315,7 @@ const int16_t led_group_definition[] = {
   LED_BUMPER_C_GRP,
     COIL_BUMPER_C, LED_BUMPER_C, -1,
   LED_SLINGSHOT_GRP,
-    SLING_L, SLING_R, -1,
+    COIL_SLING_L, COIL_SLING_R, -1,
     
   -1, 
 };

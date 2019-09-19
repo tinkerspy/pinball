@@ -37,6 +37,10 @@ class Atm_led_device: public Machine {
   void action( int id ); 
   void run_code( int16_t e );
   int16_t* parse_code( int16_t* device_script );
+  bool led_active( int16_t led_group, int16_t selector );
+  void led_on( int16_t led_group, int16_t selector );
+  void led_off( int16_t led_group, int16_t selector );
+
   uint16_t trigger_flags; 
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;

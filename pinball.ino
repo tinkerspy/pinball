@@ -81,10 +81,10 @@ void setup() {
   leds.profile( LED_TARGET_A, PROFILE_LED );
   leds.profile( LED_TARGET_B, PROFILE_LED );
   playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
-    .onEvent( OUT_TARGET_LED_A_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
-    .onEvent( OUT_TARGET_LED_A_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
-    .onEvent( OUT_TARGET_LED_B_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
-    .onEvent( OUT_TARGET_LED_B_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_LED0_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED0_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_LED1_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED1_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
     .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_SCORE, score, score.EVT_100 );
@@ -239,3 +239,5 @@ void loop() {
     leds.on( LED_GAME_OVER );
   }
 }
+
+

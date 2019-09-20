@@ -85,13 +85,13 @@ enum {
   /* o */  LED_BUMPER_A,
   /* p */  LED_BUMPER_B,
   /* q */  LED_TARGET_B,
-  /* r */  LED_UP_LANE_R,
+  /* r */  LED_UPLANE_R,
   /* s */  LED_KICKER_R,
   /* t */  LED_AGAIN0,
   /* u */  LED_TRIPLE_BONUS,
   /* v */  LED_EXTRA, 
   /* w */  LED_KICKER_L,
-  /* x */  LED_UP_LANE_L,  
+  /* x */  LED_UPLANE_L,  
   
 /* OXO leds: 27 + 2 */
   LED_OXO_3A, LED_OXO_3B, LED_OXO_3C, // OXO leds in physical order
@@ -125,7 +125,7 @@ enum {
   
   /* Virtual LED groups are declared after physical leds */
   LED_KICKER_GRP,
-  LED_UP_LANE_GRP,  
+  LED_UPLANE_GRP,  
   LED_OXO_GRP,
   LED_OXO_CELLS,
   LED_BUMPER_GRP,
@@ -145,7 +145,6 @@ enum {
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
   LED_FLIPPER_GRP,
-  LED_UPLANE_GRP,
   LED_SLINGSHOT_GRP,
 };
 
@@ -164,19 +163,19 @@ enum {
   PORT_1O,
   TARGET_A,
   KICKER_L, // MX11
-  UP_LANE_L,
+  UPLANE_L,
   BUMPER_A,
   BUMPER_C,
   KICKER_R,
   BUMPER_B,
-  UP_LANE_R,
+  UPLANE_R,
   TARGET_C,
-  OUT_LANE, // MX12
-  IN_LANE_L,
+  OUTLANE, // MX12
+  INLANE_L,
   SLING_L,
   SLING_R,
   ROLLOVER,
-  IN_LANE_R,
+  INLANE_R,
   BALL_ENTER,
   BALL_EXIT,
   TILT_PEND, // MX21
@@ -207,8 +206,9 @@ enum {
   GI,
   KICKER,
   FLIPPER,
-  UP_LANE,
+  UPLANE,
   SLINGSHOT,
+  LOWER,
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
 
@@ -224,7 +224,7 @@ enum {
 const int16_t led_group_definition[] = {
 /*  
   LED_KICKER_GRP, // jumptable
-  LED_UP_LANE_GRP,  
+  LED_UPLANE_GRP,  
   LED_OXO_GRP,
   LED_OXO_CELLS,
   LED_BUMPER_GRP,
@@ -247,8 +247,8 @@ const int16_t led_group_definition[] = {
   
   LED_KICKER_GRP, 
     COIL_KICKER_L, COIL_KICKER_R, LED_KICKER_L, LED_KICKER_R, -1,
-  LED_UP_LANE_GRP, 
-    LED_UP_LANE_L, LED_UP_LANE_R, -1,
+  LED_UPLANE_GRP, 
+    LED_UPLANE_L, LED_UPLANE_R, -1,
   LED_TARGET_GRP,
     LED_TARGET_A, LED_TARGET_B, -1,
   LED_OXO_GRP,
@@ -265,7 +265,7 @@ const int16_t led_group_definition[] = {
   LED_BUMPER_GRP,
     LED_BUMPER_A, LED_BUMPER_B, LED_BUMPER_C, LED_TARGET_A, LED_TARGET_B, COIL_SAVE_GATE, -1,  
   LED_FLASHER_GRP,
-    LED_BUMPER_GRP, LED_UP_LANE_GRP, LED_KICKER_GRP, LED_AGAIN0, LED_AGAIN1, LED_AGAIN2, LED_GAME_OVER, LED_TRIPLE_BONUS, 
+    LED_BUMPER_GRP, LED_UPLANE_GRP, LED_KICKER_GRP, LED_AGAIN0, LED_AGAIN1, LED_AGAIN2, LED_GAME_OVER, LED_TRIPLE_BONUS, 
     LED_OXO_1A, LED_OXO_1B, LED_OXO_1C, 
     LED_OXO_2A, LED_OXO_2B, LED_OXO_2C,
     LED_OXO_3A, LED_OXO_3B, LED_OXO_3C,
@@ -332,8 +332,9 @@ int16_t switch_group_definition[] = {
   GI,
   KICKER,
   FLIPPER,
-  UP_LANE,
+  UPLANE,
   SLINGSHOT,
+  LOWER,
   -1,
 
   SAVE_GATE, -1,
@@ -350,10 +351,12 @@ int16_t switch_group_definition[] = {
     KICKER_L, KICKER_R, -1,
   FLIPPER, 
     FLIPPER_L, FLIPPER_R, -1,
-  UP_LANE,
-    UP_LANE_L, UP_LANE_R, -1,
+  UPLANE,
+    UPLANE_L, UPLANE_R, -1,
   SLINGSHOT,
     SLING_L, SLING_R, -1,
+  LOWER,
+    TARGET_C, INLANE_L, INLANE_R, ROLLOVER, OUTLANE, -1,
   -1,
 };
 
@@ -388,12 +391,12 @@ char switch_names[] =
   "PORT_1O   \0"
   "TARGET_A  \0"
   "KICKER_L  \0"
-  "UP_LANE_L \0"
+  "UPLANE_L  \0"
   "BUMPER_A  \0"
   "BUMPER_C  \0"
   "KICKER_R  \0"
   "BUMPER_B  \0"
-  "UP_LANE_R \0"
+  "UPLANE_R  \0"
   "TARGET_C  \0"
   "OUT_LANE  \0"
   "IN_LANE_L \0"

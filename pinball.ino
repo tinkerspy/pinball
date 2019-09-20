@@ -70,7 +70,7 @@ void setup() {
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
-    .onEvent( OUT_OXO_WIN_ALL, playfield.device( UP_LANE ), IN_COMBO_ON );
+    .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
@@ -117,10 +117,9 @@ void setup() {
     .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 )
     .trigger( IN_KICKER_PERSIST ); 
   
-  leds.profile( LED_UP_LANE_L, PROFILE_LED );
-  leds.profile( LED_UP_LANE_R, PROFILE_LED );
-  playfield.device( UP_LANE ).trace( Serial );
-  playfield.device( UP_LANE, LED_UP_LANE_GRP, dual_combo_firmware )
+  leds.profile( LED_UPLANE_L, PROFILE_LED );
+  leds.profile( LED_UPLANE_R, PROFILE_LED );
+  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
     .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
@@ -132,28 +131,16 @@ void setup() {
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
     .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
 
-  playfield
-    .element(  TARGET_C )
-      .onPress( playfield.device( OXO ), IN_OXO_5 )
-      .onScore( score, score.EVT_500 );
-
-  playfield
-    .element( IN_LANE_L )
-      .onPress( playfield.device( OXO ), IN_OXO_7 )
-      .onScore( score, score.EVT_1000 );
-    
-  playfield
-    .element( IN_LANE_R )
-      .onPress( playfield.device( OXO ), IN_OXO_9 )
-      .onScore( score, score.EVT_1000 );
-  playfield
-    .element( ROLLOVER )
-      .onPress( playfield.device( OXO ), IN_OXO_8 )
-      .onScore( score, score.EVT_500 );
-
-  playfield
-    .element( OUT_LANE )
-      .onScore( score, score.EVT_1000 );
+  playfield.device( LOWER, -1, switchbank_firmware ) 
+    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_5 )  // TARGET_C
+    .onEvent( OUT_SBANK_SCORE0, score, score.EVT_500 )
+    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_7 )  // INLANE_L
+    .onEvent( OUT_SBANK_SCORE1, score, score.EVT_1000 )
+    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_9 )  // INLANE_R
+    .onEvent( OUT_SBANK_SCORE2, score, score.EVT_1000 )
+    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_8 )  // ROLLLOVER
+    .onEvent( OUT_SBANK_SCORE3, score, score.EVT_500 )
+    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 );        // OUTLANE
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    

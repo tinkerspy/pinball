@@ -556,13 +556,13 @@ int16_t dual_flipper_firmware[] = {
  *   or until IN_SCALAR_BLOCK is called
  */
 
-enum { IN_SCALAR_INIT, IN_SCALAR_ADVANCE, IN_SCALAR_BLOCK, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
+enum { IN_SCALAR_INIT, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
 enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
-enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK };
+enum { REG_SCALAR_STATE, REG_SCALAR_FREEZE };
 
 int16_t scalar_firmware[] = {
   IN_SCALAR_INIT,
-  IN_SCALAR_BLOCK,
+  IN_SCALAR_FREEZE,
   IN_SCALAR_SEL0,
   IN_SCALAR_SEL1,
   IN_SCALAR_SEL2,
@@ -573,17 +573,14 @@ int16_t scalar_firmware[] = {
 
   IN_SCALAR_INIT,
   'P', -1, -1, 1,  // Persistent
+  'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED0,
-  'L', -1, -1, ARG_LED1,
-  'L', -1, -1, ARG_LED2,
-  'L', -1, -1, ARG_LED3,
-  'L', -1, -1, ARG_LED4,
-  'R', -1, -1, REG_SCALAR_BLOCK,
+  'R', -1, -1, REG_SCALAR_FREEZE, // Clear FREEZE register
   'I', -1, -1, -1,
   -1,
 
   IN_SCALAR_ADVANCE, 
-  'R', -1, -1, REG_SCALAR_BLOCK,
+  'R', -1, -1, REG_SCALAR_FREEZE,
   'C', 1, -1, 0,
   'J', ARG_BACKSTOP, -1, 0,
   'R', -1, -1, REG_SCALAR_STATE,
@@ -600,8 +597,8 @@ int16_t scalar_firmware[] = {
   'S', -1, -1, IN_SCALAR_SEL4,
   -1,
 
-  IN_SCALAR_BLOCK,
-  'R', -1, -1, REG_SCALAR_BLOCK,
+  IN_SCALAR_FREEZE,
+  'R', -1, -1, REG_SCALAR_FREEZE,
   'I', -1, -1, -1,
   'I', -1, -1, 1,
   -1,   

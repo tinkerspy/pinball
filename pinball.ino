@@ -25,7 +25,7 @@ void setup() {
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
-    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet DUMMY for now!!!
+    .addStrip( new IO_Adafruit_NeoPixel(  4, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet
     .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
     .invert( BALL_ENTER )
     .retrigger()
@@ -145,7 +145,7 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 )                          // 4 OUTLANE
     .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? )
+    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? needed? )
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    
@@ -154,6 +154,9 @@ void setup() {
 
   leds.profile( LED_AGAIN_GRP, PROFILE_LED );
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
+
+  leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
+  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).trigger( IN_LBANK_ON );
 
   Serial.println( FreeRam() );
 
@@ -166,7 +169,9 @@ void setup() {
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
 
-  playfield.device( PLAYERS ).trigger( IN_SCALAR_BLOCK );
+  playfield.device( PLAYERS ).trigger( IN_SCALAR_FREEZE );
+  playfield.device( PLAYERUP, IN_SCALAR_SEL0 + player );
+  playfield.device( BALLUP, IN_SCALAR_SEL0 + ball );
   */
   
 /*

@@ -160,6 +160,15 @@ void setup() {
   leds.scalar( LED_BALL_GRP, 0 );
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
+
+  /*
+  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
+  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
+  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
+
+  playfield.device( PLAYERS ).trigger( IN_SCALAR_BLOCK );
+  */
+  
 /*
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
   animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();

@@ -15,11 +15,11 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   Machine::begin( state_table, ELSE );
   this->playfield = &playfield;
   this->leds = &playfield.leds();
-  global_counter = 0;
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
+  memset( registers, 0, sizeof( registers ) ); 
   if ( device_script ) {
     set_led( led_group );
     set_script( device_script );
@@ -125,7 +125,7 @@ void Atm_led_device::led_off( int16_t led_group, int16_t selector ) {
   } 
 }
 
-void Atm_led_device::run_code( int16_t e ) {
+void Atm_led_device::run_code( int16_t e, uint8_t r /* = 0 */ ) {
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) {
     int16_t p = script[e];
     if ( callback_trace ) 
@@ -139,9 +139,18 @@ void Atm_led_device::run_code( int16_t e ) {
       if ( callback_trace ) 
         stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
       switch ( opcode ) {
-        // Add: JC jump on counter, RP repeat event with delay
         case 'J': // Jump on LED state
           selected_action = led_active( led_group, selector ) ? action_t : action_f;
+          if ( selected_action  > -1 ) {
+            p += selected_action * 4;          
+          } else {
+            if ( callback_trace ) 
+              stream_trace->printf( "run_code %03d: jump exit\n", e );
+            return;
+          }            
+          break;
+        case 'C': // Jump on selected register
+          selected_action = ( registers[r] == selector ) ? action_t : action_f;
           if ( selected_action  > -1 ) {
             p += selected_action * 4;          
           } else {
@@ -160,26 +169,26 @@ void Atm_led_device::run_code( int16_t e ) {
           break;
         case 'S': // SB - SUB: subroutine call
           selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          run_code( selected_action );
+          run_code( selected_action, r );
           break;
         case 'I': // IC - INC: increment counter
           selected_action = led_active( led_group, selector ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
-            global_counter += selected_action;
+            registers[r] += selected_action;
           } else {
-            global_counter = 0;
+            registers[r] = 0;
           }
           break;
         case 'D': // DC - DEC: decrement counter
           selected_action = led_active( led_group, selector ) ? action_t : action_f;
           if ( selected_action > - 1 ) {
-            global_counter -= selected_action;
+            registers[r] -= selected_action;
           } else {
-            global_counter = 0;
+            registers[r] = 0;
           }
           break;
         case 'T': // TC - TRIG: trigger external event on counter
-          selected_action = ( global_counter == selector ) ? action_t : action_f;
+          selected_action = ( registers[r] == selector ) ? action_t : action_f;
           if ( selected_action > -1 ) {
               trigger_flags |= ( 1 << selected_action );
           } 
@@ -190,6 +199,9 @@ void Atm_led_device::run_code( int16_t e ) {
           input_persistence = selected_action;
           output_persistence = selected_action;
           break;
+        case 'R':
+          r = led_active( led_group, selector ) ? action_t : action_f;
+          break;            
         default:
           if ( callback_trace ) 
               stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", e, opcode );
@@ -217,7 +229,7 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
  */
 
 int Atm_led_device::state( void ) {
-  return global_counter;
+  return registers[0];
 }
 
 

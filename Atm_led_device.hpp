@@ -7,6 +7,7 @@
 // Number of outputs is also limited by the 32 bits in trigger_flags 
 
 #define MAX_OUTPUTS 20
+#define MAX_REGISTERS 16
 #define DYNAMIC_ELEMENTS
 
 class Atm_playfield;
@@ -37,7 +38,7 @@ class Atm_led_device: public Machine {
   atm_connector connectors[CONN_MAX+1];
   int event( int id ); 
   void action( int id ); 
-  void run_code( int16_t e );
+  void run_code( int16_t e, uint8_t r = 0 );
   int16_t* parse_code( int16_t* device_script );
   int16_t led_index( int16_t led_group, int16_t selector );
   bool led_active( int16_t led_group, int16_t selector );
@@ -47,7 +48,7 @@ class Atm_led_device: public Machine {
   uint32_t trigger_flags; 
   Atm_led_scheduler *leds;
   Atm_playfield *playfield;
-  int16_t global_counter;
+  int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
   int16_t* script;
   uint8_t input_persistence, output_persistence;

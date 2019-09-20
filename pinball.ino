@@ -39,14 +39,12 @@ void setup() {
 //  playfield.trace( Serial );
   playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
 
-  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
-
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
-    .onDigit( 0, playfield.device( CHIMES ), IN_LBANK_ON0 ) // Link digits to chimes
+    .onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 ) // Link digits to chimes
     .onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
     .onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 ); 
 
@@ -147,7 +145,7 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 )                          // 4 OUTLANE
     .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN
+    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? )
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    

@@ -198,6 +198,9 @@ enum {
   
 /* Virtual switch groups are declared after physical switches */
   SAVE_GATE,
+  CHIME0,
+  CHIME1,
+  CHIME2,
   MULTILANE,
   DUAL_TARGET,
   OXO,
@@ -210,7 +213,6 @@ enum {
   FEEDER,
   AGAIN,
   CHIMES,
-  GAME_OVER,
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
 
@@ -326,6 +328,9 @@ const int16_t led_group_definition[] = {
 
 int16_t switch_group_definition[] = {
   SAVE_GATE,
+  CHIME0,
+  CHIME1,
+  CHIME2,
   MULTILANE,
   DUAL_TARGET,
   OXO,
@@ -338,10 +343,12 @@ int16_t switch_group_definition[] = {
   FEEDER,
   AGAIN,
   CHIMES,
-  GAME_OVER,
   -1,
 
   SAVE_GATE, -1,
+  CHIME0, -1,
+  CHIME1, -1,
+  CHIME2, -1,
   MULTILANE,
     PORT_1O, PORT_1X, PORT_2O, PORT_2X, PORT_3O, PORT_3X, -1,
   DUAL_TARGET,
@@ -361,7 +368,6 @@ int16_t switch_group_definition[] = {
   FEEDER, -1,
   AGAIN, -1,
   CHIMES, -1, 
-  GAME_OVER, -1,
   -1,
 };
 

@@ -67,7 +67,7 @@ enum {
 /* coil node 1 */
   /* a */  COIL_SAVE_GATE, 
   /* b */  COIL_FLIPPER_R,
-  /* c */  COIL_BALL_FEEDER,
+  /* c */  COIL_FEEDER,
   /* d */  COIL_SLING_R,
 /* coil node 2 */
   /* e */  COIL_SLING_L,  
@@ -146,6 +146,7 @@ enum {
   LED_HEADBOX_GRP,
   LED_FLIPPER_GRP,
   LED_SLINGSHOT_GRP,
+  LED_CHIME_GRP,
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +210,9 @@ enum {
   UPLANE,
   SLINGSHOT,
   LOWER,
+  FEEDER,
+  AGAIN,
+  CHIMES,
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
 
@@ -317,7 +321,8 @@ const int16_t led_group_definition[] = {
     COIL_BUMPER_C, LED_BUMPER_C, -1,
   LED_SLINGSHOT_GRP,
     COIL_SLING_L, COIL_SLING_R, -1,
-    
+  LED_CHIME_GRP,
+    COIL_CHIME0, COIL_CHIME1, COIL_CHIME2, -1,
   -1, 
 };
 
@@ -335,6 +340,9 @@ int16_t switch_group_definition[] = {
   UPLANE,
   SLINGSHOT,
   LOWER,
+  FEEDER,
+  AGAIN,
+  CHIMES,
   -1,
 
   SAVE_GATE, -1,
@@ -356,7 +364,10 @@ int16_t switch_group_definition[] = {
   SLINGSHOT,
     SLING_L, SLING_R, -1,
   LOWER,
-    TARGET_C, INLANE_L, INLANE_R, ROLLOVER, OUTLANE, -1,
+    TARGET_C, INLANE_L, INLANE_R, ROLLOVER, OUTLANE, BALL_EXIT, BALL_ENTER, FRONTBTN, -1,
+  FEEDER, -1,
+  AGAIN, -1,
+  CHIMES, -1, 
   -1,
 };
 

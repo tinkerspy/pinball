@@ -39,14 +39,16 @@ void setup() {
 //  playfield.trace( Serial );
   playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
 
+  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
+
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
-    .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
-    .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
-    .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK ); 
+    .onDigit( 0, playfield.device( CHIMES ), IN_LBANK_ON0 ) // Link digits to chimes
+    .onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
+    .onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 ); 
 
   playfield
     .leds()
@@ -65,7 +67,7 @@ void setup() {
   leds.profile( COIL_GI, PROFILE_GI );
   playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON );  
 
-  // Playfield element instantiation
+  // Playfield device instantiation
 
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
@@ -106,13 +108,13 @@ void setup() {
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, score, score.EVT_1000 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, score, score.EVT_100 )  
-    .onEvent( OUT_BUMPER_LIGHT_ON, playfield.element( SAVE_GATE ), Atm_element::EVT_KICK )
-    .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.element( SAVE_GATE ), Atm_element::EVT_RELEASE );
+    .onEvent( OUT_BUMPER_LIGHT_ON, playfield.device( SAVE_GATE ), IN_LBANK_ON )
+    .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.device( SAVE_GATE ), IN_LBANK_OFF );
 
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
-    .onEvent( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
+    .onEvent( OUT_KICKER_KICK_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
     .onEvent( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
     .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 )
     .trigger( IN_KICKER_PERSIST ); 
@@ -121,7 +123,7 @@ void setup() {
   leds.profile( LED_UPLANE_R, PROFILE_LED );
   playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
-    .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
+    .onEvent( OUT_COMBO_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )
     .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
     .onEvent( OUT_COMBO_PRESS1_UNLIT, playfield.device( OXO ), IN_OXO_6 );
 
@@ -131,51 +133,29 @@ void setup() {
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
     .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
 
+  // Simple switches and things they trigger
+  
   playfield.device( LOWER, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_5 )  // TARGET_C
-    .onEvent( OUT_SBANK_SCORE0, score, score.EVT_500 )
-    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_7 )  // INLANE_L
+    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
+    .onEvent( OUT_SBANK_SCORE0, score, score.EVT_500 )  
+    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
     .onEvent( OUT_SBANK_SCORE1, score, score.EVT_1000 )
-    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_9 )  // INLANE_R
+    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
     .onEvent( OUT_SBANK_SCORE2, score, score.EVT_1000 )
-    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_8 )  // ROLLLOVER
+    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
     .onEvent( OUT_SBANK_SCORE3, score, score.EVT_500 )
-    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 );        // OUTLANE
+    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 )                          // 4 OUTLANE
+    .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
+    .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
+    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    
   leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
-  
-  playfield
-    .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
 
-  playfield
-    .element( BALL_ENTER )
-      .debounce( 5, 0, 2000 )
-      .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
-
-  playfield
-    .element( BALL_EXIT, COIL_BALL_FEEDER, LED_AGAIN_GRP, PROFILE_FEEDER )
-      .autoKick( false )
-      .onPress( playfield, playfield.EVT_READY );
-
-  playfield
-    .element( TILT_PEND, LED_TILT, -1, PROFILE_BRIGHT )
-      .onPress( playfield, playfield.EVT_DISABLE );
-
-  playfield
-    .element( TILT_RAMP, LED_TILT, -1, PROFILE_BRIGHT )
-      .onPress( playfield, playfield.EVT_DISABLE );
-
-  playfield 
-    .watch( LED_TILT )
-      .onLight( true, bonus, Atm_scalar::EVT_RESET ); 
-
-  playfield
-    .element( FRONTBTN )
-      .persistent( true )
-      .onPress( players, players.EVT_ADVANCE );
+  leds.profile( LED_AGAIN_GRP, PROFILE_LED );
+  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
 
   Serial.println( FreeRam() );
 
@@ -216,7 +196,7 @@ void loop() {
             Serial.printf( "%d Triple bonus!\n", millis() );
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
-          leds.on( COIL_BALL_FEEDER );
+          leds.on( COIL_FEEDER );
           playfield.enable();
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(),  bonus.state() );     

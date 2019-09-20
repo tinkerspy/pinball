@@ -173,7 +173,6 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
         prof[n].device->trigger( e );         
       } else {
       }
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
       prof[n].last_change = millis();
       prof[n].make_wait = 0;
       return;
@@ -187,24 +186,12 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
         //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
         prof[n].device->trigger( e );         
       }
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE ); 
       prof[n].last_change = millis();
       prof[n].make_wait = 0;
       return;
     }
   }
   io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
-}
-
-Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, int8_t coil_profile /* -1 */, int8_t led_profile /* -1 */ ) {
-  if ( !prof[n].initialized ) {
-    prof[n].element = new Atm_element();  
-    prof[n].element->begin( *this, n, coil_led, light_led, coil_profile, led_profile );
-    prof[n].initialized = true;
-  } else {
-    if ( coil_led >= 0 || light_led >= 0 ) prof[n].element->initialize( coil_led, light_led, coil_profile, led_profile );
-  }
-  return *prof[n].element;
 }
 
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
@@ -243,21 +230,6 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     if ( led_group > -1 ) prof[n].device->set_led( led_group );
   }
   return *prof[n].device;
-}
-
-// The led/watch objects should perhaps be stored in a separate pointer table so that they can be accessed later
-
-Atm_element& Atm_playfield::watch( int16_t light_led, int16_t cnt ) {
-    Atm_element* element = new Atm_element();
-    element->begin( *this, -1, -1, light_led, -1, -1, cnt );
-    pleds->onWatch( light_led, element, Atm_element::EVT_WATCH );
-    return *element;    
-}
-
-Atm_element& Atm_playfield::led( int16_t light_led, int8_t led_profile ) {
-    Atm_element* element = new Atm_element();
-    element->begin( *this, -1, -1, light_led, -1, led_profile );
-    return *element;    
 }
 
 Atm_led_scheduler& Atm_playfield::leds() {

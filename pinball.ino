@@ -114,10 +114,12 @@ void setup() {
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_KICK_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON ) 
     .onEvent( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
-    .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 ); 
+    .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 )
+    .trigger( IN_KICKER_PERSIST ); 
   
   leds.profile( LED_UP_LANE_L, PROFILE_LED );
   leds.profile( LED_UP_LANE_R, PROFILE_LED );
+  playfield.device( UP_LANE ).trace( Serial );
   playfield.device( UP_LANE, LED_UP_LANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, score, score.EVT_1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.element( BALL_EXIT ), Atm_element::EVT_ON )
@@ -129,7 +131,7 @@ void setup() {
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
     .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
-    
+
   playfield
     .element(  TARGET_C )
       .onPress( playfield.device( OXO ), IN_OXO_5 )
@@ -193,11 +195,11 @@ void setup() {
   leds.scalar( LED_BALL_GRP, 0 );
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
-
+/*
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
   animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();
   animation[2].begin( 600 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI2 ); }).repeat().start();
-
+*/
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
   //playfield.disable();     

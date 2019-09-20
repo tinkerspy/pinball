@@ -12,12 +12,17 @@
  *  
  *  playfield.device( <switch-id> ); // Instantiates object
  *  playfield.device( <switch-id>, <led-id>, <firmware> ); // Initializes object
- *  
  */
 
 namespace standard_firmware {
 
-// Ledbank: 8 leds (or coils) that can be turned on/off (or pulsed)
+/*
+ * Firmware: ledbank_firmware
+ * Maximum switches: 0
+ * Led arguments: LED0, LED1, LED2, LED3, LED4, LED5, LED6, LED7
+ * Description: 
+ *   8 leds (or coils) that can be turned on/off (or pulsed) 
+ */
 
 enum { IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_ON1, IN_LBANK_ON2, IN_LBANK_ON3, IN_LBANK_ON4, IN_LBANK_ON5, IN_LBANK_ON6, IN_LBANK_ON7, 
           IN_LBANK_OFF0, IN_LBANK_OFF1, IN_LBANK_OFF2, IN_LBANK_OFF3, IN_LBANK_OFF4, IN_LBANK_OFF5, IN_LBANK_OFF6, IN_LBANK_OFF7,
@@ -163,10 +168,16 @@ int16_t ledbank_firmware[] {
   -1,
 };
 
+/*
+ * Firmware: dual_kicker_firmware
+ * Maximum switches: 2
+ * Led arguments: COIL_L, COIL_R, LED_L, LED_R
+ * Description: 
+ *   Dual kickers, same score & same kick, can be made persistent 
+ *   could work for slingshots as well
+ */
 
-// Dual kickers, same score & same kick, persistent (could work for slingshots, except non-persistent)
-
-enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R, IN_KICKER_ON, IN_KICKER_OFF };
+enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R, IN_KICKER_ON, IN_KICKER_OFF, IN_KICKER_PERSIST };
 enum { OUT_KICKER_SCORE_LIT, OUT_KICKER_SCORE_UNLIT, OUT_KICKER_SCORE, OUT_KICKER_KICK_LIT, OUT_KICKER_KICK_UNLIT, OUT_KICKER_KICK };
 enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R, ARG_KICKER_LED_L, ARG_KICKER_LED_R };
 
@@ -181,9 +192,13 @@ int16_t dual_kicker_firmware[] {
   -1,
 
   IN_KICKER_INIT,
-  'P', -1, -1, 1,  // Persistent 
+  'P', -1, -1, 0,  // Default not persistent 
   'L', -1, -1, ARG_KICKER_LED_L,
   'L', -1, -1, ARG_KICKER_LED_R,
+  -1,
+
+  IN_KICKER_PERSIST,
+  'P', -1, -1, 1,  // Persistent 
   -1,
 
   IN_KICKER_PRESS_L,
@@ -223,8 +238,13 @@ int16_t dual_kicker_firmware[] {
   -1,
 };
 
-
-// Basic 8-way switchbank device without leds
+/*
+ * Firmware: switchbank_firmware
+ * Maximum switches: 8
+ * Led arguments: <none>
+ * Description: 
+ *   Basic 8-way switchbank device without leds
+ */
 
 enum { IN_SBANK_INIT, IN_SBANK_PRESS0, IN_SBANK_RELEASE0, IN_SBANK_PRESS1, IN_SBANK_RELEASE1, IN_SBANK_PRESS2, IN_SBANK_RELEASE2, // Inputs
         IN_SBANK_PRESS3, IN_SBANK_RELEASE3, IN_SBANK_PRESS4, IN_SBANK_RELEASE4, IN_SBANK_PRESS5, IN_SBANK_RELEASE5, 
@@ -307,8 +327,13 @@ int16_t switchbank_firmware[] = {
   -1,
 };
 
-
-// Dual lane device with leds (both lanes share the same function)
+/*
+ * Firmware: dual_combo_firmware
+ * Maximum switches: 2
+ * Led arguments: LED0, LED1
+ * Description: 
+ *   Dual lane device with leds (both lanes share the same function)
+ */
 
 enum { IN_COMBO_INIT, IN_COMBO_PRESS0, IN_COMBO_RELEASE0, IN_COMBO_PRESS1, IN_COMBO_RELEASE1, IN_COMBO_ON, IN_COMBO_OFF };
 enum { OUT_COMBO_SCORE, OUT_COMBO_SCORE_LIT, OUT_COMBO_SCORE_UNLIT, OUT_COMBO_PRESS_LIT, OUT_COMBO_PRESS_UNLIT, OUT_COMBO_PRESS0_LIT, OUT_COMBO_PRESS0_UNLIT, OUT_COMBO_PRESS1_LIT, OUT_COMBO_PRESS1_UNLIT };
@@ -330,7 +355,7 @@ int16_t dual_combo_firmware[] = {
 
   IN_COMBO_PRESS0,
   'T', -1, -1, OUT_COMBO_SCORE, 
-  'J', ARG_COMBO_LED0, 0, 3, 
+  'J', ARG_COMBO_LED0, 0, 4, 
   'T', -1, -1, OUT_COMBO_PRESS_LIT,
   'T', -1, -1, OUT_COMBO_PRESS0_LIT,
   'T', -1, -1, OUT_COMBO_SCORE_LIT,
@@ -342,7 +367,7 @@ int16_t dual_combo_firmware[] = {
 
   IN_COMBO_PRESS1,
   'T', -1, -1, OUT_COMBO_SCORE, 
-  'J', ARG_COMBO_LED0, 0, 3, 
+  'J', ARG_COMBO_LED0, 0, 4, 
   'T', -1, -1, OUT_COMBO_PRESS_LIT,
   'T', -1, -1, OUT_COMBO_PRESS1_LIT,
   'T', -1, -1, OUT_COMBO_SCORE_LIT,
@@ -366,7 +391,13 @@ int16_t dual_combo_firmware[] = {
 };
 
 
-// Single bumper device with led & coil
+/*
+ * Firmware: bumper_firmware
+ * Maximum switches: 1
+ * Led arguments: COIL, LED
+ * Description: 
+ *   Single bumper device with led & coil
+ */
 
 enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
 enum { OUT_BUMPER_SCORE, OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
@@ -409,7 +440,13 @@ int16_t bumper_firmware[] = {
 };
 
 
-// Dual target device
+/*
+ * Firmware: dual_target_firmware
+ * Maximum switches: 2
+ * Led arguments: LED0, LED1
+ * Description: 
+ *   Dual target device
+ */
 
 enum { IN_TARGET_INIT, IN_TARGET_PRESS0, IN_TARGET_RELEASE0, IN_TARGET_PRESS1, IN_TARGET_RELEASE1, IN_TARGET_CLEAR };
 enum { OUT_TARGET_LED0_ON, OUT_TARGET_LED1_ON, OUT_TARGET_LED0_OFF, OUT_TARGET_LED1_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF, OUT_TARGET_SCORE };
@@ -459,7 +496,13 @@ int16_t dual_target_firmware[] = {
 };
 
 
-// Dual flipper device (2 independent flippers + two optional slaves)
+/*
+ * Firmware: dual_flipper_firmware
+ * Maximum switches: 2
+ * Led arguments: COIL_L, COIL_R, COIL_L1, COIL_R1
+ * Description: 
+ *   Dual flipper device (2 independent flippers + two optional slaves)
+ */
 
 enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
 enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R, ARG_FLIPPER_COIL_L1, ARG_FLIPPER_COIL_R1 }; 

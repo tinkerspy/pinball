@@ -95,22 +95,33 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   return device_script;
 }
 
+int16_t Atm_led_device::led_index( int16_t led_group, int16_t selector ) {
+  int16_t n = leds->index( led_group, selector );
+  if ( callback_trace ) 
+    if ( n != -1 ) { 
+      stream_trace->printf( "Atm_led_device led arg #%d maps to physical led %d\n", selector, n );
+    } else { 
+      stream_trace->printf( "Atm_led_device led arg #%d not used\n", selector );    
+    }
+  return n;  
+}
+
 bool Atm_led_device::led_active( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 &&  selector != -1 ) {
-    return leds->active( leds->index( led_group, selector ) );
+    return leds->active( led_index( led_group, selector ) );
   } 
   return false;
 }
 
 void Atm_led_device::led_on( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 && selector != -1 ) {
-    leds->on( leds->index( led_group, selector ) );
+    leds->on( led_index( led_group, selector ) );
   } 
 }
 
 void Atm_led_device::led_off( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 &&  selector != -1 ) {
-    leds->on( leds->index( led_group, selector ) );
+    leds->off( led_index( led_group, selector ) );
   } 
 }
 

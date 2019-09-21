@@ -219,6 +219,7 @@ enum {
   PLAYERS_DEV,
   PLAYERUP,
   BALLUP,
+  ANIMATION,
 
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
@@ -359,6 +360,7 @@ int16_t switch_group_definition[] = {
   PLAYERS_DEV,
   PLAYERUP,
   BALLUP,
+  ANIMATION,
   -1,
 
   SAVE_GATE, -1,
@@ -387,6 +389,7 @@ int16_t switch_group_definition[] = {
   PLAYERS_DEV, -1,
   PLAYERUP, -1,
   BALLUP, -1,
+  ANIMATION, -1, 
   -1,
 };
 

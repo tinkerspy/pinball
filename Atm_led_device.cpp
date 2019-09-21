@@ -7,9 +7,11 @@
 Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  ELSE */
-    /*   IDLE */         -1, ATM_SLEEP,      -1,     NOTIFY,   -1,
-    /* NOTIFY */ ENT_NOTIFY,        -1,      -1,         -1, IDLE,
+    /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  EVT_TIMER  EVT_YIELD  ELSE */
+    /*   IDLE */         -1, ATM_SLEEP,      -1,     NOTIFY,        -1,     YIELD,   -1,
+    /* NOTIFY */ ENT_NOTIFY,        -1,      -1,         -1,        -1,        -1, IDLE,
+    /*  YIELD */         -1,        -1,      -1,     NOTIFY,    RESUME,        -1,   -1,
+    /* RESUME */ ENT_RESUME,        -1,      -1,         -1,        -1,        -1, IDLE,
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
@@ -20,6 +22,7 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   output_persistence = 0;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
+  timer.set( ATM_TIMER_OFF );
   ptr = 0;
   if ( device_script ) {
     set_led( led_group );
@@ -30,7 +33,7 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
 
 Atm_led_device& Atm_led_device::set_script( int16_t* script ) {
   this->script = parse_code( script );
-  run_code( 0 );
+  start_code( 0 );
   return *this;
 }
 
@@ -47,6 +50,10 @@ int Atm_led_device::event( int id ) {
   switch ( id ) {
     case EVT_NOTIFY:
       return trigger_flags > 0;
+    case EVT_TIMER:
+      return timer.expired( this );
+    case EVT_YIELD:
+      return timer.value != ATM_TIMER_OFF;
   }
   return 0;
 }
@@ -68,6 +75,10 @@ void Atm_led_device::action( int id ) {
         }
       }
       trigger_flags = 0;
+      return;
+    case ENT_RESUME:
+      timer.set( ATM_TIMER_OFF );
+      run_code();
       return;
   }
 }
@@ -126,92 +137,120 @@ void Atm_led_device::led_off( int16_t led_group, int16_t selector ) {
   } 
 }
 
-void Atm_led_device::run_code( int16_t e, uint8_t r /* = 0 */ ) {
-  if ( e > -1 && e < numberOfInputs && script[e] > 0 ) {
-    int16_t p = script[e];
+void Atm_led_device::start_code( int16_t e ) {
+  if ( ptr == 0 && e > -1 && e < numberOfInputs && script[e] > 0 ) {  
+    reg_ptr = 0;
+    ptr = script[e];
+    stackptr = 0;
     if ( callback_trace ) 
-      stream_trace->printf( "run_code %03d called -> %d\n", e, p );
-    while ( script[p] != -1 ) {
-      int16_t opcode = script[p++];
-      int16_t selector = script[p++];
-      int16_t action_t = script[p++];
-      int16_t action_f = script[p++];
+      stream_trace->printf( "run_code %03d called -> %d\n", e, ptr );
+    run_code();
+  }
+}
+
+void Atm_led_device::run_code() {
+  if ( ptr > 0 ) {
+    while ( true ) {
+      int16_t opcode = script[ptr++];
+      int16_t selector = script[ptr++];
+      int16_t action_t = script[ptr++];
+      int16_t action_f = script[ptr++];
       int16_t selected_action = 0;
-      if ( callback_trace ) 
-        stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", e, opcode, selector, action_t, action_f );
-      switch ( opcode ) {
-        case 'J': // Jump on LED state
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          if ( selected_action  > -1 ) {
-            p += selected_action * 4;          
-          } else {
+      if ( opcode > -1 ) {
+        if ( callback_trace ) 
+          stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
+        switch ( opcode ) {
+          case 'J': // Jump on LED state
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            if ( selected_action  > -1 ) {
+              ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %03d: jump exit\n", ptr - 4 );
+              ptr = 0;
+            }            
+            break;
+          case 'C': // Jump on selected register
+            selected_action = ( registers[reg_ptr] == selector ) ? action_t : action_f;
+            if ( selected_action  > -1 ) {
+              ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %03d: jump exit\n", ptr - 4 );
+              ptr = 0;
+            }            
+            break;
+          case 'H': // ON - HIGH: led on
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            led_on( led_group, selected_action );
+            break;
+          case 'L': // OF - LOW: led off
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            led_off( led_group, selected_action );
+            break;
+          case 'S': // SB - SUB: subroutine call
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            callstack[stackptr++] = ptr;          
+            ptr = script[selected_action];
+            break;
+          case 'I': // IC - INC: increment counter
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            if ( selected_action > - 1 ) {
+              registers[reg_ptr] += selected_action;
+            } else {
+              registers[reg_ptr] = 0;
+            }
+            break;
+          case 'D': // DC - DEC: decrement counter
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            if ( selected_action > - 1 ) {
+              registers[reg_ptr] -= selected_action;
+            } else {
+              registers[reg_ptr] = 0;
+            }
+            break;
+          case 'T': // TC - TRIG: trigger external event on counter
+            selected_action = ( registers[reg_ptr] == selector ) ? action_t : action_f;
+            if ( selected_action > -1 ) {
+                trigger_flags |= ( 1 << selected_action );
+            } 
+            sleep( 0 );
+            break;
+          case 'P': // IP/OP - Input persistence / Output persistence (default off)
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            input_persistence = selected_action;
+            output_persistence = selected_action;
+            break;
+          case 'R':
+            reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
+            break;           
+          case 'Y':
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            timer.set( selected_action );
+            sleep( 0 );
             if ( callback_trace ) 
-              stream_trace->printf( "run_code %03d: jump exit\n", e );
-            return;
-          }            
-          break;
-        case 'C': // Jump on selected register
-          selected_action = ( registers[r] == selector ) ? action_t : action_f;
-          if ( selected_action  > -1 ) {
-            p += selected_action * 4;          
-          } else {
+              stream_trace->printf( "run_code %03d: yield %d ms\n", ptr - 4, selected_action );
+            return;           
+          default:
             if ( callback_trace ) 
-              stream_trace->printf( "run_code %03d: jump exit\n", e );
+                stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", ptr - 4, opcode );
             return;
-          }            
-          break;
-        case 'H': // ON - HIGH: led on
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          led_on( led_group, selected_action );
-          break;
-        case 'L': // OF - LOW: led off
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          led_off( led_group, selected_action );
-          break;
-        case 'S': // SB - SUB: subroutine call
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          run_code( selected_action, r );
-          break;
-        case 'I': // IC - INC: increment counter
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          if ( selected_action > - 1 ) {
-            registers[r] += selected_action;
-          } else {
-            registers[r] = 0;
-          }
-          break;
-        case 'D': // DC - DEC: decrement counter
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          if ( selected_action > - 1 ) {
-            registers[r] -= selected_action;
-          } else {
-            registers[r] = 0;
-          }
-          break;
-        case 'T': // TC - TRIG: trigger external event on counter
-          selected_action = ( registers[r] == selector ) ? action_t : action_f;
-          if ( selected_action > -1 ) {
-              trigger_flags |= ( 1 << selected_action );
-          } 
-          sleep( 0 );
-          break;
-        case 'P': // IP/OP - Input persistence / Output persistence (default off)
-          selected_action = led_active( led_group, selector ) ? action_t : action_f;
-          input_persistence = selected_action;
-          output_persistence = selected_action;
-          break;
-        case 'R':
-          r = led_active( led_group, selector ) ? action_t : action_f;
-          break;            
-        default:
+        }
+      } else {
+        ptr = 0;
+      }        
+      if ( ptr == 0 ) {
+        if ( stackptr > 0 ) {
           if ( callback_trace ) 
-              stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", e, opcode );
+            stream_trace->printf( "run_code %03d: Return to %d\n", ptr, callstack[stackptr-1] );
+          ptr = callstack[--stackptr];
+        } else {
+          if ( callback_trace ) 
+            stream_trace->printf( "run_code %03d: regular exit\n", ptr );
           return;
-          break;
+        }
       }
     }
-    if ( callback_trace ) 
-      stream_trace->printf( "run_code %03d: regular exit\n", e );
   }
 }
 
@@ -221,7 +260,7 @@ void Atm_led_device::run_code( int16_t e, uint8_t r /* = 0 */ ) {
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
   if ( playfield->enabled() || input_persistence )
-    run_code( event );
+    start_code( event );
   return *this;
 }
 
@@ -235,17 +274,17 @@ int Atm_led_device::state( void ) {
 
 
 Atm_led_device& Atm_led_device::init( void ) {
-  run_code( 0 );
+  start_code( 0 );
   return *this;  
 }
 
 Atm_led_device& Atm_led_device::press( void ) {
-  run_code( 1 );
+  start_code( 1 );
   return *this;  
 }
 
 Atm_led_device& Atm_led_device::release( void ) {
-  run_code( 2 );
+  start_code( 2 );
   return *this;  
 }
 
@@ -287,6 +326,6 @@ Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int id
 
 Atm_led_device& Atm_led_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "LED_DEVICE\0EVT_NOTIFY\0ELSE\0IDLE\0NOTIFY" );
+    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0\0YIELD\0NOTIFY\0RESUME" );
   return *this;
 }

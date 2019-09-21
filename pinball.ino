@@ -173,10 +173,20 @@ void setup() {
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
   playfield.disable();     
-
+  
+//  playfield.device( PLAYERS_DEV ). trace( Serial );
   playfield.device( PLAYERS_DEV, LED_PLAYERSDEV_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
+
+//  playfield.device( ANIMATION ).trace( Serial );
+  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware );
+  automaton.delay( 1000 );
+  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
+  automaton.delay( 5000 );
+  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
+ automaton.delay( 5000 );
+  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
 
 }
 

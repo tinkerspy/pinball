@@ -11,6 +11,64 @@
 
 namespace custom_firmware {
 
+enum { IN_ANI_INIT, IN_ANI_CYCLE };
+enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 
+
+int16_t animation_firmware[] = {
+  IN_ANI_INIT, 
+  IN_ANI_CYCLE,
+  -1,
+
+  IN_ANI_INIT,
+  'P', -1, -1, 1,  // Persistent
+  'H', -1, -1, ARG_LED0,
+  'L', -1, -1, ARG_LED1,
+  'L', -1, -1, ARG_LED2,
+  -1,
+
+  IN_ANI_CYCLE,
+  'L', -1, -1, ARG_LED0, 
+  'H', -1, -1, ARG_LED1, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED1, 
+  'H', -1, -1, ARG_LED2, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED2, 
+  'H', -1, -1, ARG_LED0, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED0, 
+  'H', -1, -1, ARG_LED1, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED1, 
+  'H', -1, -1, ARG_LED2, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED2, 
+  'H', -1, -1, ARG_LED0, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED0, 
+  'H', -1, -1, ARG_LED1, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED1, 
+  'H', -1, -1, ARG_LED2, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED2, 
+  'H', -1, -1, ARG_LED0, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED0, 
+  'H', -1, -1, ARG_LED1, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED1, 
+  'H', -1, -1, ARG_LED2, 
+  'Y', -1, -1, 100,
+  'L', -1, -1, ARG_LED2, 
+  'H', -1, -1, ARG_LED0, 
+  'Y', -1, -1, 100,
+  -1,
+
+  -1,
+};
+
+
 // Williams OXO tic-tac-toe game
 
 enum { // Inputs & Subs

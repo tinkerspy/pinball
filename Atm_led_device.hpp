@@ -15,8 +15,8 @@ class Atm_playfield;
 class Atm_led_device: public Machine {
 
  public:
-  enum { IDLE, NOTIFY }; // STATES
-  enum { EVT_NOTIFY, ELSE }; // EVENTS
+  enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
+  enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
   Atm_led_device( void ) : Machine() {};
   Atm_led_device& begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script );
   Atm_led_device& set_script( int16_t* script );
@@ -33,12 +33,13 @@ class Atm_led_device: public Machine {
   Atm_led_device& release( void );
 
  private:
-  enum { ENT_NOTIFY }; // ACTIONS
+  enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS
   enum { ON_EVENT, CONN_MAX = MAX_OUTPUTS }; // CONNECTORS
   atm_connector connectors[CONN_MAX+1];
   int event( int id ); 
   void action( int id ); 
-  void run_code( int16_t e, uint8_t r = 0 );
+  void start_code( int16_t e );
+  void run_code( void );
   int16_t* parse_code( int16_t* device_script );
   int16_t led_index( int16_t led_group, int16_t selector );
   bool led_active( int16_t led_group, int16_t selector );
@@ -51,7 +52,10 @@ class Atm_led_device: public Machine {
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
   int16_t* script;
-  int16_t ptr;
+  int16_t ptr, reg_ptr;
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
+  int16_t callstack[16];
+  int16_t stackptr;
+  atm_timer_millis timer;
 };

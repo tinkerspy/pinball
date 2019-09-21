@@ -196,16 +196,33 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
 
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
-Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */ ) {
+Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
+    int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   //Serial.printf( "Device switch=%d, led=%d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_led_device* device = new Atm_led_device();
     device->begin( *this, led_group, device_script );
+    device->reg( 0, r0 );
+    device->reg( 1, r1 );
+    device->reg( 2, r2 );
+    device->reg( 3, r3 );
+    device->reg( 4, r4 );
+    device->reg( 5, r5 );
+    device->reg( 6, r6 );
+    device->reg( 7, r7 );
     return *device;
   }
   if ( prof[n].device_index == 0 ) { 
     Atm_led_device* device = new Atm_led_device(); // Create device
     device->begin( *this, led_group, device_script );
+    device->reg( 0, r0 );
+    device->reg( 1, r1 );
+    device->reg( 2, r2 );
+    device->reg( 3, r3 );
+    device->reg( 4, r4 );
+    device->reg( 5, r5 );
+    device->reg( 6, r6 );
+    device->reg( 7, r7 );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
     //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numberOfSwitches ); 
@@ -226,8 +243,18 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     }
     //Serial.printf( "Switches attached\n" ); 
   } else { 
-    if ( led_group > -1 ) prof[n].device->set_led( led_group );
-    if ( device_script ) prof[n].device->set_script( device_script );
+    if ( device_script ) {
+      prof[n].device->reg( 0, r0 );
+      prof[n].device->reg( 1, r1 );
+      prof[n].device->reg( 2, r2 );
+      prof[n].device->reg( 3, r3 );
+      prof[n].device->reg( 4, r4 );
+      prof[n].device->reg( 5, r5 );
+      prof[n].device->reg( 6, r6 );
+      prof[n].device->reg( 7, r7 );
+      prof[n].device->set_led( led_group );
+      prof[n].device->set_script( device_script );
+    }
   }
   return *prof[n].device;
 }

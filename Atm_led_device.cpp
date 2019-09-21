@@ -42,6 +42,11 @@ Atm_led_device& Atm_led_device::set_led( int16_t led_group ) {
   return *this;
 }
 
+Atm_led_device& Atm_led_device::reg( uint8_t r, int16_t v ) {
+  registers[r] = v;
+  return *this;
+}
+
 /* Add C++ code for each internally handled event (input) 
  * The code must return 1 to trigger the event
  */
@@ -109,12 +114,13 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
 
 int16_t Atm_led_device::led_index( int16_t led_group, int16_t selector ) {
   int16_t n = leds->index( led_group, selector );
-  if ( callback_trace ) 
+  if ( callback_trace ) { 
     if ( n != -1 ) { 
       stream_trace->printf( "Atm_led_device led arg #%d maps to physical led %d\n", selector, n );
     } else { 
       stream_trace->printf( "Atm_led_device led arg #%d not used\n", selector );    
     }
+  }
   return n;  
 }
 
@@ -169,6 +175,12 @@ void Atm_led_device::run_code() {
                 stream_trace->printf( "run_code %03d: jump exit\n", ptr - 4 );
               ptr = 0;
             }            
+            break;
+          case 'A': // Jump absolute on LED state
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            if ( selected_action  > -1 ) {
+              ptr = script[selected_action];          
+            }
             break;
           case 'C': // Jump on selected register
             selected_action = ( registers[reg_ptr] == selector ) ? action_t : action_f;
@@ -226,6 +238,7 @@ void Atm_led_device::run_code() {
             break;           
           case 'Y':
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
             timer.set( selected_action );
             sleep( 0 );
             if ( callback_trace ) 

@@ -180,13 +180,10 @@ void setup() {
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
 
 //  playfield.device( ANIMATION ).trace( Serial );
-  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware );
+  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware, 5000 ).trace( Serial );
   automaton.delay( 1000 );
   playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
   automaton.delay( 5000 );
-  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
- automaton.delay( 5000 );
-  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
 
 }
 

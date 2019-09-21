@@ -233,7 +233,7 @@ int16_t tictactoe_firmware[] = {
   'J', ARG_OXO_2A, 0,  2,
   'J', ARG_OXO_5A, 0, -1,
   'J', ARG_OXO_8A, 3, -1,
-  'J', ARG_OXO_1B, 0, -1,
+  'J', ARG_OXO_2B, 0, -1,
   'J', ARG_OXO_5B, 0, -1,
   'J', ARG_OXO_8B, 0, -1,
   'T', -1, -1, OUT_OXO_WIN_ROW,

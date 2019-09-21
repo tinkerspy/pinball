@@ -41,12 +41,13 @@ void setup() {
 
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
-    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
-    .onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 ) // Link digits to chimes
-    .onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
-    .onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 ); 
+    //.addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
+    //.addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
+    //.addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
+    //.onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 ) // Link digits to chimes
+    //.onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
+    //.onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 )
+    ; 
 
   playfield
     .leds()
@@ -155,12 +156,16 @@ void setup() {
   leds.profile( LED_AGAIN_GRP, PROFILE_LED );
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
 
+  leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
+
   Serial.println( FreeRam() );
 
   leds.scalar( LED_BALL_GRP, 0 );
   leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
 
+  leds.profile( COIL_FEEDER, PROFILE_FEEDER );
   /*
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
@@ -176,7 +181,8 @@ void setup() {
 */
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
-  //playfield.disable();     
+  playfield.disable();     
+  bonus.trace( Serial );
 
 }
 
@@ -189,6 +195,7 @@ void loop() {
     leds.off( LED_FLASHER_GRP );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
+    automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < players.state() + 1; player++ ) {
         do {
@@ -205,12 +212,14 @@ void loop() {
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           leds.on( COIL_FEEDER );
           playfield.enable();
+          automaton.delay( 500 ); // was not needed before device conversion...
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(),  bonus.state() );     
           bonus.collect(); 
           while ( bonus.state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
           Serial.printf( "%d Bonus collect done\n", millis() );
-          automaton.delay( 500 );
+          automaton.delay( 1000 );
+          Serial.printf( "%d Delay done\n", millis() );
           players.lock();
         } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
       } 

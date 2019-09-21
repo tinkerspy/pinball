@@ -51,6 +51,7 @@ class Atm_led_device: public Machine {
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
   int16_t* script;
+  int16_t ptr;
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
 };

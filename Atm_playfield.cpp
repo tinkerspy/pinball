@@ -226,8 +226,8 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
     }
     //Serial.printf( "Switches attached\n" ); 
   } else { 
-    if ( device_script ) prof[n].device->set_script( device_script );
     if ( led_group > -1 ) prof[n].device->set_led( led_group );
+    if ( device_script ) prof[n].device->set_script( device_script );
   }
   return *prof[n].device;
 }

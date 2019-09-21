@@ -154,6 +154,6 @@ Atm_scalar& Atm_scalar::onCollect( atm_cb_push_t callback, int idx ) {
 Atm_scalar& Atm_scalar::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "SCALAR\0EVT_ZERO\0EVT_COUNTER\0EVT_TIMER\0EVT_ADVANCE\0EVT_RESET\0EVT_COLLECT\0ELSE\0"
-    "IDLE\0NEXT\0RESET\0COLLECT\0COLLOOP\0WAIT" );
+    "IDLE\0NEXT\0RESET\0COLLECT\0COLLOOP\0WAIT\0COLRPT" );
   return *this;
 }

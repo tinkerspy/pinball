@@ -41,9 +41,9 @@ void setup() {
 
   score.begin()
     .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
-    //.addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
-    //.addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-    //.addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
+    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
+    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
     //.onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 ) // Link digits to chimes
     //.onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
     //.onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 )
@@ -56,7 +56,6 @@ void setup() {
 
   bonus.begin( leds, -1, 0, 9 ) 
     .onCollect( score, score.EVT_1000 );
-  players.begin( leds, LED_PLAY_GRP, 0, 3 );
 
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
@@ -143,10 +142,10 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE2, score, score.EVT_1000 )
     .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
     .onEvent( OUT_SBANK_SCORE3, score, score.EVT_500 )
-    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_500 )                          // 4 OUTLANE
+    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_1000 )                         // 4 OUTLANE
     .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK7, players, players.EVT_ADVANCE );                       // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? )
+    .onEvent( OUT_SBANK7, playfield.device( PLAYERS_DEV ), IN_SCALAR_ADVANCE );                       // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? )
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    
@@ -161,18 +160,10 @@ void setup() {
 
   Serial.println( FreeRam() );
 
-  leds.scalar( LED_BALL_GRP, 0 );
-  leds.scalar( LED_UP_GRP, 0 );
   leds.on( LED_GAME_OVER );
 
   leds.profile( COIL_FEEDER, PROFILE_FEEDER );
-  /*
-  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
-  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
-  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
 
-  playfield.device( PLAYERS ).trigger( IN_SCALAR_BLOCK );
-  */
   
 /*
   animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
@@ -182,7 +173,10 @@ void setup() {
   // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
 
   playfield.disable();     
-  bonus.trace( Serial );
+
+  playfield.device( PLAYERS_DEV, LED_PLAYERSDEV_GRP, scalar_firmware );
+  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
+  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
 
 }
 
@@ -191,19 +185,19 @@ void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
-    players.reset();
+    playfield.device( PLAYERS_DEV ).trigger( IN_SCALAR_INIT );
     leds.off( LED_FLASHER_GRP );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
-      for ( int player = 0; player < players.state() + 1; player++ ) {
+      for ( int player = 0; player < playfield.device( PLAYERS_DEV ).state() + 1; player++ ) {
         do {
           bonus.reset();
           score.select( player );
           leds.off( LED_FLASHER_GRP );
-          leds.scalar( LED_UP_GRP, player );
-          leds.scalar( LED_BALL_GRP, ball );
+          playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
+          playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           if ( ball == 4 ) {
             bonus.multiplier( 3 );
             leds.on( LED_TRIPLE_BONUS );
@@ -220,7 +214,7 @@ void loop() {
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
           Serial.printf( "%d Delay done\n", millis() );
-          players.lock();
+          playfield.device( PLAYERS_DEV ).trigger( IN_SCALAR_BLOCK );
         } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
       } 
     } 

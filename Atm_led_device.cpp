@@ -20,6 +20,7 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   output_persistence = 0;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
+  ptr = 0;
   if ( device_script ) {
     set_led( led_group );
     set_script( device_script );
@@ -219,7 +220,7 @@ void Atm_led_device::run_code( int16_t e, uint8_t r /* = 0 */ ) {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  if ( playfield->enabled() )
+  if ( playfield->enabled() || input_persistence )
     run_code( event );
   return *this;
 }

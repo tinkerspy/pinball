@@ -147,6 +147,9 @@ enum {
   LED_FLIPPER_GRP,
   LED_SLINGSHOT_GRP,
   LED_CHIME_GRP,
+  LED_PLAYERSDEV_GRP,
+  LED_PLAYERUP_GRP, 
+  LED_BALLUP_GRP, 
 };
 
 // Switches (inputs) ///////////////////////////////////////////////////////////////////////////////////
@@ -213,6 +216,10 @@ enum {
   FEEDER,
   AGAIN,
   CHIMES,
+  PLAYERS_DEV,
+  PLAYERUP,
+  BALLUP,
+
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
 
@@ -323,6 +330,12 @@ const int16_t led_group_definition[] = {
     COIL_SLING_L, COIL_SLING_R, -1,
   LED_CHIME_GRP,
     COIL_CHIME0, COIL_CHIME1, COIL_CHIME2, -1,
+  LED_PLAYERSDEV_GRP,
+    LED_PLAY1, LED_PLAY2, LED_PLAY3, LED_PLAY4, LED_PLAY4, LED_PLAY4, -1,
+  LED_PLAYERUP_GRP, 
+    LED_UP0, LED_UP1, LED_UP2, LED_UP3, LED_UP3, LED_UP3, -1,
+  LED_BALLUP_GRP,
+    LED_BALL1, LED_BALL2, LED_BALL3, LED_BALL4, LED_BALL5, LED_BALL5, -1,  
   -1, 
 };
 
@@ -343,6 +356,9 @@ int16_t switch_group_definition[] = {
   FEEDER,
   AGAIN,
   CHIMES,
+  PLAYERS_DEV,
+  PLAYERUP,
+  BALLUP,
   -1,
 
   SAVE_GATE, -1,
@@ -368,6 +384,9 @@ int16_t switch_group_definition[] = {
   FEEDER, -1,
   AGAIN, -1,
   CHIMES, -1, 
+  PLAYERS_DEV, -1,
+  PLAYERUP, -1,
+  BALLUP, -1,
   -1,
 };
 

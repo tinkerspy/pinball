@@ -553,17 +553,17 @@ int16_t dual_flipper_firmware[] = {
  * Description: 
  *   Led position indicator with 5 places (0..4), used for # of players, # of ball, # of player up
  *   Advances until ARG_BACKTOP led is lit
- *   or until IN_SCALAR_BLOCK is called
+ *   or until IN_SCALAR_FREEZE is called
  */
 
-enum { IN_SCALAR_INIT, IN_SCALAR_ADVANCE, IN_SCALAR_BLOCK, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
+enum { IN_SCALAR_INIT, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
 enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
 enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK };
 
 int16_t scalar_firmware[] = {
   IN_SCALAR_INIT, 
   IN_SCALAR_ADVANCE, 
-  IN_SCALAR_BLOCK, 
+  IN_SCALAR_FREEZE, 
   IN_SCALAR_SEL0, 
   IN_SCALAR_SEL1, 
   IN_SCALAR_SEL2, 
@@ -601,7 +601,7 @@ int16_t scalar_firmware[] = {
   'S', -1, -1, IN_SCALAR_SEL4,
   -1,
 
-  IN_SCALAR_BLOCK,
+  IN_SCALAR_FREEZE,
   'R', -1, -1, REG_SCALAR_BLOCK,
   'I', -1, -1, -1,
   'I', -1, -1, 1,

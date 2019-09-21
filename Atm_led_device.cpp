@@ -301,10 +301,12 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
  */
 
 int Atm_led_device::state( void ) {
+  int16_t s = 0;
+  if ( enabled ) s = registers[0];
   if ( next ) {
-    return registers[0] + next->state();
+    return s + next->state();
   } else {
-    return registers[0];
+    return s;
   }
 }
 
@@ -336,18 +338,14 @@ Atm_led_device& Atm_led_device::release( void ) {
  */
 
 Atm_led_device& Atm_led_device::onEvent( int sub, Machine& machine, int event ) {
-  if ( next ) {
-    next->onEvent( sub, machine, event );    
-  }
-  onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
+  if ( next ) next->onEvent( sub, machine, event );    
+  if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
   return *this;
 }
 
 Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
-  if ( next ) {
-    next->onEvent( sub, callback, idx );    
-  }
-  onPush( connectors, ON_EVENT, sub, 8, 0, callback, idx );
+  if ( next ) next->onEvent( sub, callback, idx );    
+  if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, callback, idx );
   return *this;
 }
 

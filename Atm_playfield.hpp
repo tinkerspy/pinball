@@ -57,8 +57,6 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
 
   switch_record prof[MAX_SWITCHES + 1 ];
-
-  static void checkGroups( int16_t* group_definition, int16_t nos );
  
  protected:
   enum { ENT_SCAN, ENT_DISABLED, ENT_READY }; // ACTIONS

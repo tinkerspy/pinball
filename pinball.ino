@@ -33,7 +33,6 @@ void setup() {
 
   leds.begin( io, led_group_definition, profile_definition );
 
-  Atm_playfield::checkGroups( switch_group_definition, io.numSwitches() );
   
   Serial.println( "init playfield" ); delay( 1000 );
 //  playfield.trace( Serial );
@@ -185,6 +184,8 @@ void setup() {
   playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
   automaton.delay( 5000 );
 
+  playfield.device( ANIMATION )
+    .select( Atm_led_device::DEV_SELECT_ALL );
 }
 
 

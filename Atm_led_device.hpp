@@ -24,14 +24,15 @@ class Atm_led_device: public Machine {
   Atm_led_device& trace( Stream & stream );
   Atm_led_device& trigger( int event );
   int state( void );
-  Atm_led_device& onEvent( Machine& machine, int event = 0 );
-  Atm_led_device& onEvent( atm_cb_push_t callback, int idx = 0 );
   Atm_led_device& onEvent( int sub, Machine& machine, int event = 0 );
   Atm_led_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_led_device& init( void );
   Atm_led_device& press( void );
   Atm_led_device& release( void );
   Atm_led_device& reg( uint8_t r, int16_t v );
+  Atm_led_device& chain( Atm_led_device& next );
+  Atm_led_device& select( uint32_t mask );
+  static const uint32_t DEV_SELECT_ALL = 0xFFFFFFFF;
 
  private:
   enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS
@@ -59,4 +60,7 @@ class Atm_led_device: public Machine {
   int16_t callstack[16];
   int16_t stackptr;
   atm_timer_millis timer;
+  Atm_led_device* next;
+  bool enabled;
+  
 };

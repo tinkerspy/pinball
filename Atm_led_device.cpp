@@ -20,6 +20,8 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
+  next = NULL;
+  enabled = true;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
   timer.set( ATM_TIMER_OFF );
@@ -44,6 +46,19 @@ Atm_led_device& Atm_led_device::set_led( int16_t led_group ) {
 
 Atm_led_device& Atm_led_device::reg( uint8_t r, int16_t v ) {
   registers[r] = v;
+  return *this;
+}
+
+Atm_led_device& Atm_led_device::chain( Atm_led_device& next ) {
+  this->next = &next;  
+  return *this;
+}
+
+Atm_led_device& Atm_led_device::select( uint32_t mask ) {
+  this->enabled = mask & 1;
+  if ( next ) {
+    next->select( mask >> 1 );
+  }
   return *this;
 }
 
@@ -272,8 +287,12 @@ void Atm_led_device::run_code() {
  */
 
 Atm_led_device& Atm_led_device::trigger( int event ) {
-  if ( playfield->enabled() || input_persistence )
-    start_code( event );
+  if ( next ) {
+    next->trigger( event );
+  }
+  if ( playfield->enabled() || input_persistence ) {
+    if ( this->enabled ) start_code( event );
+  }
   return *this;
 }
 
@@ -282,22 +301,25 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
  */
 
 int Atm_led_device::state( void ) {
-  return registers[0];
+  if ( next ) {
+    return registers[0] + next->state();
+  } else {
+    return registers[0];
+  }
 }
 
-
 Atm_led_device& Atm_led_device::init( void ) {
-  start_code( 0 );
+  trigger( 0 );
   return *this;  
 }
 
 Atm_led_device& Atm_led_device::press( void ) {
-  start_code( 1 );
+  trigger( 1 );
   return *this;  
 }
 
 Atm_led_device& Atm_led_device::release( void ) {
-  start_code( 2 );
+  trigger( 2 );
   return *this;  
 }
 
@@ -313,22 +335,18 @@ Atm_led_device& Atm_led_device::release( void ) {
  * onEvent() push connector variants ( slots 8, autostore 0, broadcast 0 )
  */
 
-Atm_led_device& Atm_led_device::onEvent( Machine& machine, int event ) {
-  onPush( connectors, ON_EVENT, 0, 8, 1, machine, event );
-  return *this;
-}
-
-Atm_led_device& Atm_led_device::onEvent( atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_EVENT, 0, 8, 1, callback, idx );
-  return *this;
-}
-
 Atm_led_device& Atm_led_device::onEvent( int sub, Machine& machine, int event ) {
+  if ( next ) {
+    next->onEvent( sub, machine, event );    
+  }
   onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
   return *this;
 }
 
 Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
+  if ( next ) {
+    next->onEvent( sub, callback, idx );    
+  }
   onPush( connectors, ON_EVENT, sub, 8, 0, callback, idx );
   return *this;
 }
@@ -339,6 +357,6 @@ Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int id
 
 Atm_led_device& Atm_led_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0\0YIELD\0NOTIFY\0RESUME" );
+    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0YIELD\0NOTIFY\0YIELD\0RESUME" );
   return *this;
 }

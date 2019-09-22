@@ -174,13 +174,15 @@ void setup() {
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
 
 //  playfield.device( ANIMATION ).trace( Serial );
-  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware, 5000 ).trace( Serial );
-  automaton.delay( 1000 );
-  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
-  automaton.delay( 5000 );
+//  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware, 50 );
+ // automaton.delay( 1000 );
+  //playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
 
-  playfield.device( ANIMATION )
-    .select( Atm_led_device::DEV_SELECT_ALL );
+  //playfield.device( ANIMATION )
+   // .select( Atm_led_device::DEV_SELECT_ALL );
+
+  automaton.delay( 500 );
+  
 }
 
 
@@ -198,19 +200,20 @@ void loop() {
         do {
           score.select( player );
           leds.off( LED_FLASHER_GRP );
-          playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
+          playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
           if ( ball == 4 ) {
-            leds.on( LED_TRIPLE_BONUS ); // TODO: Integrate in OXO device -> OXO_TRIPLE_BONUS
             Serial.printf( "%d Triple bonus!\n", millis() );
+            playfield.device( OXO ).trigger( IN_OXO_TRIPLE );
+            automaton.delay( 100 ); // WEG!!!
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           leds.on( COIL_FEEDER );
           playfield.enable();
           automaton.delay( 500 ); // was not needed before device conversion...
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
-          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );     
-          playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_COLLECT3 : IN_OXO_COLLECT );
+          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  
+          playfield.device( OXO ).trigger( IN_OXO_COLLECT );
           while ( playfield.device( OXO ).state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );

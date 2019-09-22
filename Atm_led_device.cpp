@@ -90,8 +90,9 @@ void Atm_led_device::action( int id ) {
     case ENT_NOTIFY:
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
-          if ( playfield->enabled() ) 
+          if ( playfield->enabled() || output_persistence ) {
             push( connectors, ON_EVENT, i, i, 0 );
+          }
         }
       }
       trigger_flags = 0;
@@ -355,6 +356,6 @@ Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int id
 
 Atm_led_device& Atm_led_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0YIELD\0NOTIFY\0YIELD\0RESUME" );
+    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
   return *this;
 }

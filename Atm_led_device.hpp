@@ -8,7 +8,16 @@
 
 #define MAX_OUTPUTS 20
 #define MAX_REGISTERS 8
+#define STACK_SIZE 16
 #define DYNAMIC_ELEMENTS
+
+struct core_state {
+  int16_t ptr;
+  uint8_t reg_ptr;
+  uint8_t stack_ptr;
+  int16_t stack[STACK_SIZE];  
+  bool yield_enabled;
+};
 
 class Atm_playfield;
 
@@ -41,7 +50,7 @@ class Atm_led_device: public Machine {
   int event( int id ); 
   void action( int id ); 
   void start_code( int16_t e );
-  void run_code( void );
+  void run_code( uint8_t active_core );
   int16_t* parse_code( int16_t* device_script );
   int16_t led_index( int16_t led_group, int16_t selector );
   bool led_active( int16_t led_group, int16_t selector );
@@ -54,13 +63,11 @@ class Atm_led_device: public Machine {
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
   int16_t* script;
-  int16_t ptr, reg_ptr;
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
-  int16_t callstack[16];
-  int16_t stackptr;
   atm_timer_millis timer;
   Atm_led_device* next;
   bool enabled;
+  core_state core[2];
   
 };

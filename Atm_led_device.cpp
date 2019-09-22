@@ -25,7 +25,8 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
   timer.set( ATM_TIMER_OFF );
-  ptr = 0;
+  core[0].ptr = 0;
+  core[1].ptr = 0;
   if ( device_script ) {
     set_led( led_group );
     set_script( device_script );
@@ -99,7 +100,7 @@ void Atm_led_device::action( int id ) {
       return;
     case ENT_RESUME:
       timer.set( ATM_TIMER_OFF );
-      run_code();
+      run_code( 0 );
       return;
   }
 }
@@ -160,52 +161,54 @@ void Atm_led_device::led_off( int16_t led_group, int16_t selector ) {
 }
 
 void Atm_led_device::start_code( int16_t e ) {
-  if ( ptr == 0 && e > -1 && e < numberOfInputs && script[e] > 0 ) {  
-    reg_ptr = 0;
-    ptr = script[e];
-    stackptr = 0;
+  if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
+    uint8_t active_core = core[0].ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
+    core[active_core].reg_ptr = 0;
+    core[active_core].stack_ptr = 0;
+    core[active_core].ptr = script[e];
+    core[active_core].yield_enabled = ( active_core == 0 );
     if ( callback_trace ) 
-      stream_trace->printf( "run_code %03d called -> %d\n", e, ptr );
-    run_code();
+      stream_trace->printf( "run_code %03d called -> %d (core %d)\n", e, core[active_core].ptr, active_core );
+    run_code( active_core );      
   }
 }
 
-void Atm_led_device::run_code() {
-  if ( ptr > 0 ) {
+void Atm_led_device::run_code( uint8_t active_core ) {
+  if ( core[active_core].ptr > 0 ) {
     while ( true ) {
-      int16_t opcode = script[ptr++];
-      int16_t selector = script[ptr++];
-      int16_t action_t = script[ptr++];
-      int16_t action_f = script[ptr++];
+      int16_t opcode = script[core[active_core].ptr++];
+      int16_t selector = script[core[active_core].ptr++];
+      int16_t action_t = script[core[active_core].ptr++];
+      int16_t action_f = script[core[active_core].ptr++];
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
         if ( callback_trace ) 
-          stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
+          stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
         switch ( opcode ) {
           case 'J': // Jump on LED state
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
-              ptr += selected_action * 4;          
+              core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: jump exit\n", ptr - 4 );
-              ptr = 0;
+                stream_trace->printf( "run_code %03d: jump exit\n", core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
             }            
             break;
           case 'A': // Jump absolute on LED state
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
-              ptr = script[selected_action];          
+              core[active_core].ptr = script[selected_action];          
             }
             break;
           case 'C': // Jump on selected register
-            selected_action = ( registers[reg_ptr] == selector ) ? action_t : action_f;
+            selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
-              ptr += selected_action * 4;          
+              core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: jump exit\n", ptr - 4 );
-              ptr = 0;
+                stream_trace->printf( "run_code %03d: jump exit\n", core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
             }            
             break;
           case 'H': // ON - HIGH: led on
@@ -218,27 +221,27 @@ void Atm_led_device::run_code() {
             break;
           case 'S': // SB - SUB: subroutine call
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            callstack[stackptr++] = ptr;          
-            ptr = script[selected_action];
+            core[active_core].stack[core[active_core].stack_ptr++] = core[active_core].ptr;          
+            core[active_core].ptr = script[selected_action];
             break;
           case 'I': // IC - INC: increment counter
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action > - 1 ) {
-              registers[reg_ptr] += selected_action;
+              registers[core[active_core].reg_ptr] += selected_action;
             } else {
-              registers[reg_ptr] = 0;
+              registers[core[active_core].reg_ptr] = 0;
             }
             break;
           case 'D': // DC - DEC: decrement counter
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action > - 1 ) {
-              registers[reg_ptr] -= selected_action;
+              registers[core[active_core].reg_ptr] -= selected_action;
             } else {
-              registers[reg_ptr] = 0;
+              registers[core[active_core].reg_ptr] = 0;
             }
             break;
           case 'T': // TC - TRIG: trigger external event on counter
-            selected_action = ( registers[reg_ptr] == selector ) ? action_t : action_f;
+            selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action > -1 ) {
                 trigger_flags |= ( 1 << selected_action );
             } 
@@ -250,32 +253,38 @@ void Atm_led_device::run_code() {
             output_persistence = selected_action;
             break;
           case 'R':
-            reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
+            core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
             break;           
           case 'Y':
-            selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
-            timer.set( selected_action );
-            sleep( 0 );
-            if ( callback_trace ) 
-              stream_trace->printf( "run_code %03d: yield %d ms\n", ptr - 4, selected_action );
+            if ( core[active_core].yield_enabled ) {
+              selected_action = led_active( led_group, selector ) ? action_t : action_f;
+              selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
+              timer.set( selected_action );
+              sleep( 0 );
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %03d: yield %d ms\n", core[active_core].ptr - 4, selected_action );
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %03d: FATAL error: secondary core cannot yield at %d\n", core[active_core].ptr - 4 );
+              return;
+            }
             return;           
           default:
             if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", ptr - 4, opcode );
+                stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", core[active_core].ptr - 4, opcode );
             return;
         }
       } else {
-        ptr = 0;
+        core[active_core].ptr = 0;
       }        
-      if ( ptr == 0 ) {
-        if ( stackptr > 0 ) {
+      if ( core[active_core].ptr == 0 ) {
+        if ( core[active_core].stack_ptr > 0 ) {
           if ( callback_trace ) 
-            stream_trace->printf( "run_code %03d: Return to %d\n", ptr, callstack[stackptr-1] );
-          ptr = callstack[--stackptr];
+            stream_trace->printf( "run_code %03d: Return to %d\n", core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
+          core[active_core].ptr = core[active_core].stack[--core[active_core].stack_ptr];
         } else {
           if ( callback_trace ) 
-            stream_trace->printf( "run_code %03d: regular exit\n", ptr );
+            stream_trace->printf( "run_code %03d: regular exit\n", core[active_core].ptr );
           return;
         }
       }

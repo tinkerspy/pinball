@@ -188,8 +188,8 @@ void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
-    playfield.device( PLAYERS ).trigger( IN_SCALAR_INIT );
     leds.off( LED_FLASHER_GRP );
+    playfield.device( PLAYERS ).init();
     Serial.printf( "%d Counter reset\n", millis() );
     while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
     automaton.delay( 1000 );
@@ -203,7 +203,6 @@ void loop() {
           if ( ball == 4 ) {
             Serial.printf( "%d Triple bonus!\n", millis() );
             playfield.device( OXO ).trigger( IN_OXO_TRIPLE );
-            automaton.delay( 100 ); // WEG!!!
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           leds.on( COIL_FEEDER );

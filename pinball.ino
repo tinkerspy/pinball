@@ -11,7 +11,6 @@ Atm_playfield playfield; // IO_MATRIX
 
 Atm_em_counter counter[4]; 
 Atm_score score;
-Atm_scalar players, bonus;
 Atm_timer animation[3];
 
 using namespace standard_firmware;
@@ -53,9 +52,6 @@ void setup() {
       .profile( LED_FLASHER_GRP, PROFILE_LED )
       .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
 
-  bonus.begin( leds, -1, 0, 9 ) 
-    .onCollect( score, score.EVT_1000 );
-
   leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
@@ -67,9 +63,9 @@ void setup() {
   // Playfield device instantiation
 
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
-    .onEvent( OUT_OXO_SCORE, bonus, bonus.EVT_ADVANCE )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
-    .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON );
+    .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
+    .onEvent( OUT_OXO_COLLECT, score, score.EVT_1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
@@ -200,14 +196,12 @@ void loop() {
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state() + 1; player++ ) {
         do {
-          bonus.reset();
           score.select( player );
           leds.off( LED_FLASHER_GRP );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           if ( ball == 4 ) {
-            bonus.multiplier( 3 );
-            leds.on( LED_TRIPLE_BONUS );
+            leds.on( LED_TRIPLE_BONUS ); // TODO: Integrate in OXO device -> OXO_TRIPLE_BONUS
             Serial.printf( "%d Triple bonus!\n", millis() );
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
@@ -215,9 +209,9 @@ void loop() {
           playfield.enable();
           automaton.delay( 500 ); // was not needed before device conversion...
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
-          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(),  bonus.state() );     
-          bonus.collect(); 
-          while ( bonus.state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
+          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );     
+          playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_COLLECT3 : IN_OXO_COLLECT );
+          while ( playfield.device( OXO ).state() ) automaton.run(); // <<<<<<<<< COLLECTING BONUS
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
           Serial.printf( "%d Delay done\n", millis() );

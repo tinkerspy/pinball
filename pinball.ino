@@ -136,7 +136,7 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE4, score, score.EVT_1000 )                         // 4 OUTLANE
     .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN ( .trigger( IN_PERSIST7 )? )
+    .onEvent( OUT_SBANK7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    
@@ -149,11 +149,12 @@ void setup() {
   leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
   playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
 
+  leds.profile( COIL_FEEDER, PROFILE_FEEDER );
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
+
   Serial.println( FreeRam() );
 
   leds.on( LED_GAME_OVER );
-
-  leds.profile( COIL_FEEDER, PROFILE_FEEDER );
 
   
 /*
@@ -189,7 +190,7 @@ void loop() {
   if ( io.isPressed( FRONTBTN ) ) {
     score.reset();
     leds.off( LED_FLASHER_GRP );
-    playfield.device( PLAYERS ).init();
+    playfield.device( PLAYERS ).select( 1 ).init();
     Serial.printf( "%d Counter reset\n", millis() );
     while ( score.state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
     automaton.delay( 1000 );
@@ -205,7 +206,7 @@ void loop() {
             playfield.device( OXO ).trigger( IN_OXO_TRIPLE );
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
-          leds.on( COIL_FEEDER );
+          playfield.device( COIL_FEEDER ).trigger( IN_LBANK_ON );
           playfield.enable();
           automaton.delay( 500 ); // was not needed before device conversion...
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
@@ -215,8 +216,9 @@ void loop() {
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
           Serial.printf( "%d Delay done\n", millis() );
-          playfield.device( PLAYERS ).trigger( IN_SCALAR_FREEZE );
+          playfield.device( PLAYERS ).select( 0 );
         } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
+        //} while ( playfield.device( AGAIN ).state() ); // Extra ball
       } 
     } 
     leds.on( LED_GAME_OVER );

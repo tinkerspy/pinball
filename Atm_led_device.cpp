@@ -303,7 +303,7 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
 
 int Atm_led_device::state( void ) {
   int16_t s = 0;
-  if ( enabled ) s = registers[0];
+  s = registers[0];
   if ( next ) {
     return s + next->state();
   } else {

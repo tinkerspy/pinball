@@ -30,7 +30,6 @@ void setup() {
     .show();
 
   leds.begin( io, led_group_definition, profile_definition );
-
   
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
@@ -64,12 +63,12 @@ void setup() {
     .onEvent( OUT_OXO_COLLECT, score, score.EVT_1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_1O )
-    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_1X )
-    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_2O )
-    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_2X )
-    .onEvent( OUT_SBANK4, playfield.device( OXO ), IN_OXO_3O )
-    .onEvent( OUT_SBANK5, playfield.device( OXO ), IN_OXO_3X )
+    .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
+    .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_1X )
+    .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_2O )
+    .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_2X )
+    .onEvent( OUT_SBANK_PRESS4, playfield.device( OXO ), IN_OXO_3O )
+    .onEvent( OUT_SBANK_PRESS5, playfield.device( OXO ), IN_OXO_3X )
     .onEvent( OUT_SBANK_SCORE, score, score.EVT_1000 );
 
   leds.profile( LED_TARGET_A, PROFILE_LED );
@@ -103,7 +102,7 @@ void setup() {
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
-    .onEvent( OUT_KICKER_KICK_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
+    .onEvent( OUT_KICKER_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
     .onEvent( OUT_KICKER_SCORE_LIT, score, score.EVT_5000 )
     .onEvent( OUT_KICKER_SCORE_UNLIT, score, score.EVT_500 )
     .trigger( IN_KICKER_PERSIST ); 
@@ -120,23 +119,23 @@ void setup() {
   playfield.debounce( SLING_R, 20, 200, 0 );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_SCORE, score, score.EVT_10 )
-    .onEvent( OUT_KICKER_KICK, playfield.device( OXO ), IN_OXO_TOGGLE );    
+    .onEvent( OUT_KICKER_PRESS, playfield.device( OXO ), IN_OXO_TOGGLE );    
 
   // Simple switches and things they trigger
   
   playfield.device( LOWER, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
+    .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
     .onEvent( OUT_SBANK_SCORE0, score, score.EVT_500 )  
-    .onEvent( OUT_SBANK1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
+    .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
     .onEvent( OUT_SBANK_SCORE1, score, score.EVT_1000 )
-    .onEvent( OUT_SBANK2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
+    .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
     .onEvent( OUT_SBANK_SCORE2, score, score.EVT_1000 )
-    .onEvent( OUT_SBANK3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
+    .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
     .onEvent( OUT_SBANK_SCORE3, score, score.EVT_500 )
     .onEvent( OUT_SBANK_SCORE4, score, score.EVT_1000 )                         // 4 OUTLANE
-    .onEvent( OUT_SBANK5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
-    .onEvent( OUT_SBANK6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
+    .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
+    .onEvent( OUT_SBANK_PRESS6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
+    .onEvent( OUT_SBANK_PRESS7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 
   playfield.debounce( FLIPPER_L, 5, 0, 0 );    
   playfield.debounce( FLIPPER_R, 5, 0, 0 );    
@@ -182,13 +181,20 @@ void setup() {
   
 }
 
-// STATEFUL: OXO, DUAL_TARGET, UPLANE, KICKER, AGAIN
+/*  
+ *  playfield.device( DUAL_TARGET ).init();
+ *  playfield.device( UPLANE ).init();
+ *  playfield.device( KICKER ).init();
+ *  playfield.device( OXO ).init();
+ *  playfield.device( AGAIN ).init();
+ */
+
 
 
 void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
-    score.reset();
+    score.select( B1111 ).reset();
     leds.off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).select( 1 ).init();
     Serial.printf( "%d Counter reset\n", millis() );

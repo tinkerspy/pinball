@@ -9,8 +9,7 @@ IO io;
 Atm_led_scheduler leds; // IO_LED
 Atm_playfield playfield; // IO_MATRIX
 
-Atm_em_counter counter[4]; 
-Atm_score score;
+Atm_em_counter score, score1, score2, score3; 
 Atm_timer animation[3];
 
 using namespace standard_firmware;
@@ -34,19 +33,16 @@ void setup() {
 
   
   Serial.println( "init playfield" ); delay( 1000 );
-//  playfield.trace( Serial );
   playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
 
-  score.begin()
-    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
-    .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
-    .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
-    //.onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 ) // Link digits to chimes
-    //.onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ) 
-    //.onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 )
-    ; 
-
+  score .begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ).chain( score1 );
+  score1.begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ).chain( score2 );
+  score2.begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ).chain( score3 );
+  score3.begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER );
+  //score.onDigit( 0, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 );
+  //score.onDigit( 1, playfield.device( CHIMES ), IN_LBANK_ON1 ); 
+  //score.onDigit( 2, playfield.device( CHIMES ), IN_LBANK_ON2 );       
+  
   playfield
     .leds()
       .profile( LED_FLASHER_GRP, PROFILE_LED )
@@ -200,7 +196,7 @@ void loop() {
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state() + 1; player++ ) {
         do {
-          score.select( player );
+          score.select( 1 << player );
           leds.off( LED_FLASHER_GRP );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );

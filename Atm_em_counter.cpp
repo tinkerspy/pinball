@@ -288,7 +288,7 @@ Atm_em_counter& Atm_em_counter::zero() {
  */
 
 Atm_em_counter& Atm_em_counter::onDigit( int sub, Machine& machine, int event ) {
-   if ( next ) next->onDigit( sub, machine, event );    
+  if ( next ) next->onDigit( sub, machine, event );    
   if ( enabled ) onPush( connectors, ON_DIGIT, sub, 3, 0, machine, event );
   return *this;
 }

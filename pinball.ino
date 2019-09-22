@@ -185,6 +185,8 @@ void setup() {
   
 }
 
+// STATEFUL: OXO, DUAL_TARGET, UPLANE, KICKER, AGAIN
+
 
 void loop() {
   automaton.run(); // <<<<<<<<<< IDLE

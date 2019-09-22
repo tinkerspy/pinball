@@ -70,6 +70,7 @@ Atm_em_counter& Atm_em_counter::begin( Atm_playfield& playfield, int16_t sensor_
   timer.set( DIGIT_DELAY_MS );
   resetting = false;
   touched = true;
+  enabled = true;
   return *this;          
 }
 
@@ -174,29 +175,47 @@ void Atm_em_counter::action( int id ) {
   }
 }
 
+Atm_em_counter& Atm_em_counter::chain( Atm_em_counter& next ) {
+  this->next = &next;  
+  return *this;
+}
+
+Atm_em_counter& Atm_em_counter::select( uint32_t mask ) {
+  this->enabled = mask & 1;
+  if ( next ) {
+    next->select( mask >> 1 );
+  }
+  return *this;
+}
+
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
  */
 
 Atm_em_counter& Atm_em_counter::trigger( int event ) {
-  switch ( event ) {
-    case EVT_10:
-      set( current_value + 1 );
-      return *this;
-    case EVT_100:
-      set( current_value + 10 );
-      return *this;
-    case EVT_500:
-      set( current_value + 50 );
-      return *this;
-    case EVT_1000:
-      set( current_value + 100 );
-      return *this;
-    case EVT_5000:
-      set( current_value + 500 );
-      return *this;
+  if ( next ) {
+    next->trigger( event );
   }
-  Machine::trigger( event );
+  if ( this->enabled ) {
+    switch ( event ) {
+      case EVT_10:
+        set( current_value + 1 );
+        return *this;
+      case EVT_100:
+        set( current_value + 10 );
+        return *this;
+      case EVT_500:
+        set( current_value + 50 );
+        return *this;
+      case EVT_1000:
+        set( current_value + 100 );
+        return *this;
+      case EVT_5000:
+        set( current_value + 500 );
+        return *this;
+    }
+    Machine::trigger( event );
+  }
   return *this;
 }
 
@@ -269,12 +288,14 @@ Atm_em_counter& Atm_em_counter::zero() {
  */
 
 Atm_em_counter& Atm_em_counter::onDigit( int sub, Machine& machine, int event ) {
-  onPush( connectors, ON_DIGIT, sub, 3, 0, machine, event );
+   if ( next ) next->onDigit( sub, machine, event );    
+  if ( enabled ) onPush( connectors, ON_DIGIT, sub, 3, 0, machine, event );
   return *this;
 }
 
 Atm_em_counter& Atm_em_counter::onDigit( int sub, atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_DIGIT, sub, 3, 0, callback, idx );
+  if ( next ) next->onDigit( sub, callback, idx );    
+  if ( enabled ) onPush( connectors, ON_DIGIT, sub, 3, 0, callback, idx );
   return *this;
 }
 

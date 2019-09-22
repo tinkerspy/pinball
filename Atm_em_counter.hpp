@@ -47,6 +47,8 @@ class Atm_em_counter: public Machine {
   uint16_t value( void );
   Atm_em_counter& set( uint16_t v );
   Atm_em_counter& add( int16_t v );  
+  Atm_em_counter& chain( Atm_em_counter& next );  
+  Atm_em_counter& select( uint32_t mask );
 
  private:
   enum { ENT_DIG0, ENT_DIG1, ENT_DIG2, ENT_DIG3, ENT_ZERO, ENT_RESET, ENT_PULS0, ENT_PULS1, ENT_PULS2, ENT_PULS3, ENT_FRST, ENT_SCND, ENT_THRD, ENT_FRTH, ENT_FFTH }; // ACTIONS
@@ -67,5 +69,7 @@ class Atm_em_counter: public Machine {
   bool resetting, touched;
 
   atm_timer_millis timer;
+  Atm_em_counter* next;
+  bool enabled;
     
 };

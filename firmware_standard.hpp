@@ -688,6 +688,7 @@ int16_t counter_emd4w1_firmware[] = {
   'S', -1, -1, SUB_COUNTER_3_WHILE_LOW,
   'S', -1, -1, SUB_COUNTER_0_WHILE_HIGH,
   'H', -1, -1, ARG_COUNTER_10K,
+  'Y', -1, -1, 300,
   'R', -1, -1, REG_COUNTER_STATE,
   'I', -1, -1, -1,
   -1,

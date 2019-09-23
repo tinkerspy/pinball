@@ -29,10 +29,10 @@ void setup() {
     .retrigger()
     .show();
 
-  leds.begin( io, led_group_definition, profile_definition );
+  leds.begin( io, led_groups, profile_definition );
   
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, switch_group_definition ).debounce( 20, 20, 0 );
+  playfield.begin( io, leds, switch_groups ).debounce( 20, 20, 0 );
 
   score .begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ).chain( score1 );
   score1.begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ).chain( score2 );
@@ -132,7 +132,7 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE2, score, score.EVT_1000 )
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
     .onEvent( OUT_SBANK_SCORE3, score, score.EVT_500 )
-    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_1000 )                         // 4 OUTLANE
+    .onEvent( OUT_SBANK_SCORE4, score, score.EVT_1000 )                               // 4 OUTLANE
     .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK_PRESS6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
     .onEvent( OUT_SBANK_PRESS7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN

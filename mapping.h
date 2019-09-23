@@ -220,6 +220,7 @@ enum {
   PLAYERUP,
   BALLUP,
   ANIMATION,
+  SWITCHES,
 
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */
 };
@@ -233,7 +234,7 @@ enum {
  * are performed on the group.
  */
 
-const int16_t led_group_definition[] = {
+const int16_t led_groups[] = {
 /*  
   LED_KICKER_GRP, // jumptable
   LED_UPLANE_GRP,  
@@ -340,7 +341,7 @@ const int16_t led_group_definition[] = {
   -1, 
 };
 
-int16_t switch_group_definition[] = {
+int16_t switch_groups[] = {
   SAVE_GATE,
   CHIME0,
   CHIME1,
@@ -361,8 +362,14 @@ int16_t switch_group_definition[] = {
   PLAYERUP,
   BALLUP,
   ANIMATION,
+  SWITCHES,
   -1,
 
+  SWITCHES,
+    TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L, BUMPER_A, BUMPER_C, KICKER_R,  
+    BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP,  
+    SWITCH213, FLIPPER_L, FLIPPER_R, SWITCH216, SWITCH217,FRONTBTN, COUNTER2, COUNTER0, SWITCH313, SWITCH314, SWITCH315, SWITCH316, COUNTER1, COUNTER3,
+    -1,      
   SAVE_GATE, -1,
   CHIME0, -1,
   CHIME1, -1,
@@ -398,16 +405,27 @@ int16_t switch_group_definition[] = {
 
 const int16_t profiles[] = {
 
-/*                   L/S        T0   L1  T1   L2      ITEMS/GROUPS */ 
-/* DEFAULT LED    */ 'L',        0, 255, 30,   0,     -1,
-/* OXO WIDGET     */ 'L',        0, 255, 30,   0,     LED_OXO_GRP, LED_OXO_X, LED_OXO_O, -1,
-/* FLASHERS       */ 'L',        0,   0,  0, 127,     LED_FLASHER_GRP, -1,
+/*                     L/S     T0   L1  T1   L2      LED ITEMS/GROUPS */ 
+/* DEFAULT LED    */   'L',     0,   0,  0, 127,     LED_KICKER_L, LED_KICKER_R, LED_TARGET_GRP, LED_UPLANE_GRP, LED_BUMPER_A, LED_BUMPER_B, 
+                                                       LED_BUMPER_C, LED_AGAIN0, LED_TRIPLE_BONUS, LED_EXTRA, -1,
+/* HEADBOX        */   'L',     0,   0,  0, 255,     LED_HEADBOX_GRP, -1,
+/* OXO            */   'L',     0,   0,  0, 127,     LED_OXO_GRP, -1,
+/* GI             */   'L',     0,   0,  0, 255,     COIL_GI, -1,
+/* SLING          */   'L',     0, 255, 30,   0,     COIL_SLING_R, COIL_SLING_L, -1,
+/* FLIPPER        */   'L',     0,   0,  0, 255,     COIL_FLIPPER_L, COIL_FLIPPER_R, -1,
+/* KICKER         */   'L',  1000,  95, 30,   0,     COIL_KICKER_L, COIL_KICKER_R, -1,
+/* GATE           */   'L',     0,   0,  0, 255,     COIL_SAVE_GATE, -1,
+/* BUMPER         */   'L',     0, 255, 30,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
+/* FEEDER         */   'L',  1000, 127, 30,   0,     COIL_FEEDER, -1,
+/* COUNTER        */   'L',     0, 255, 30,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,
 
-/*                              MK,  BR, DT */ 
-/* DEFAULT SWITCH */ 'S',       20,  20,  0,          -1, 
-/* LANE SWITCH */    'S',       20,  20,  0,          MULTILANE, -1, 
+/*                     L/S     MK,  BR, DT           SWITCHES */ 
+/* DEFAULT SWITCH */   'S',    20,  20,  0,          SWITCHES, -1,
+/* MULTILANE      */   'S',    20,  20,  0,          MULTILANE, -1, 
+/* SLINGSHOTS     */   'S',    20, 200,  0,          SLINGSHOT, -1, 
+/* FLIPPERS       */   'S',     5,   0,  0,          FLIPPER, -1,
 
-  -1,  
+-1,  
 };
 
 

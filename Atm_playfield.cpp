@@ -80,6 +80,14 @@ int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
     }
     p++;
   }
+  // 0 entries vervangen door pointer naar -1 aan einde lijst? (numberOfGroups)
+  // Dan kunnen 'lege group' placeholders gewoon worden weggelaten in de lijst!
+  
+  // Make unused entries point to -1 at end of index 
+  //p = group_def;
+  //while ( p[0] != -1 ) {
+  //  if ( p[0] == 0 ) *p++ = numberOfGroups;
+  //}
   return group_def;
 }
 

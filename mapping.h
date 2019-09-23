@@ -360,6 +360,8 @@ int16_t switch_groups[] = {
   SWITCHES,
   -1,
 
+  // TODO compress table by leaving out 'placeholder' empty groups
+  
   SWITCHES,
     TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L, BUMPER_A, BUMPER_C, KICKER_R,  
     BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP,  

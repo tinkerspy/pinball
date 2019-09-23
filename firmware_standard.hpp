@@ -653,4 +653,104 @@ int16_t scalar_firmware[] = {
   -1,
 };
 
+
+enum { IN_COUNTER_INIT, IN_COUNTER_PRESS, IN_COUNTER_RELEASE, IN_COUNTER_RESET,
+          SUB_COUNTER_123_WHILE_HIGH, SUB_COUNTER_12_WHILE_LOW, SUB_COUNTER_2_WHILE_LOW, 
+          SUB_COUNTER_3_WHILE_LOW, SUB_COUNTER_0_WHILE_HIGH };
+enum { ARG_COUNTER_10K, ARG_COUNTER_1K, ARG_COUNTER_100, ARG_COUNTER_10 }; 
+enum { REG_COUNTER_STATE, REG_COUNTER_SENSOR };
+
+int16_t counter_emd4w1_firmware[] = {
+  IN_COUNTER_INIT, 
+  IN_COUNTER_PRESS,
+  IN_COUNTER_RELEASE,
+  IN_COUNTER_RESET, 
+  -1,
+
+  IN_COUNTER_INIT,
+  'P', -1, -1, 1,  // Persistent
+  'I', -1, -1, -1,
+  -1,
+
+  IN_COUNTER_RESET, 
+  'I', -1, -1, -1,
+  'I', -1, -1, 1,
+  'R', -1, -1, REG_COUNTER_SENSOR,
+  'S', -1, -1, SUB_COUNTER_123_WHILE_HIGH,
+  'H', -1, -1, ARG_COUNTER_10K,
+  'Y', -1, -1, 300,
+  'S', -1, -1, SUB_COUNTER_123_WHILE_HIGH,
+  'H', -1, -1, ARG_COUNTER_1K,
+  'Y', -1, -1, 300,
+  'S', -1, -1, SUB_COUNTER_2_WHILE_LOW,
+  'H', -1, -1, ARG_COUNTER_100,
+  'Y', -1, -1, 300,
+  'S', -1, -1, SUB_COUNTER_3_WHILE_LOW,
+  'S', -1, -1, SUB_COUNTER_0_WHILE_HIGH,
+  'H', -1, -1, ARG_COUNTER_10K,
+  'R', -1, -1, REG_COUNTER_STATE,
+  'I', -1, -1, -1,
+  -1,
+
+  SUB_COUNTER_123_WHILE_HIGH,
+  'H', -1, -1, ARG_COUNTER_1K,
+  'Y', -1, -1, 300,
+  'C',  1,  0, -1,
+  'H', -1, -1, ARG_COUNTER_100,
+  'Y', -1, -1, 300,
+  'C',  1,  0, -1,
+  'H', -1, -1, ARG_COUNTER_10,
+  'Y', -1, -1, 300,
+  'C',  1,  0, -1,
+  'A',  1,  0, SUB_COUNTER_123_WHILE_HIGH,
+  -1,  
+
+  SUB_COUNTER_12_WHILE_LOW,
+  'H', -1, -1, ARG_COUNTER_10K,
+  'Y', -1, -1, 300,
+  'C',  0,  0, -1,
+  'H', -1, -1, ARG_COUNTER_1K,
+  'Y', -1, -1, 300,
+  'C',  0,  0, -1,
+  'A', -1, -1, SUB_COUNTER_12_WHILE_LOW,
+  -1,
+
+  SUB_COUNTER_2_WHILE_LOW,
+  'H', -1, -1, ARG_COUNTER_100,
+  'Y', -1, -1, 300,
+  'C',  0,  0, -1,
+  'A', -1, -1, SUB_COUNTER_2_WHILE_LOW,
+  -1,
+  
+  SUB_COUNTER_3_WHILE_LOW,
+  'H', -1, -1, ARG_COUNTER_10,
+  'Y', -1, -1, 300,
+  'C',  0,  0, -1,
+  'A', -1, -1, SUB_COUNTER_3_WHILE_LOW,
+  -1,
+
+  SUB_COUNTER_0_WHILE_HIGH,
+  'H', -1, -1, ARG_COUNTER_10K,
+  'Y', -1, -1, 300,
+  'C',  1,  0, -1,
+  'A', -1, -1, SUB_COUNTER_0_WHILE_HIGH,
+  -1,
+
+  IN_COUNTER_PRESS,
+  'R', -1, -1, REG_COUNTER_SENSOR,
+  'I', -1, -1, -1,
+  'I', -1, -1, 1,
+  -1,
+  
+  IN_COUNTER_RELEASE,
+  'R', -1, -1, REG_COUNTER_SENSOR,
+  'I', -1, -1, -1,
+  -1,
+
+
+  -1,
+};
+
+
+
 };

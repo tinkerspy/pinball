@@ -171,11 +171,11 @@ void setup() {
 
 //  playfield.device( ANIMATION ).trace( Serial );
 //  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware, 50 );
- // automaton.delay( 1000 );
-  //playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
+//  automaton.delay( 1000 );
+//  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
 
-  //playfield.device( ANIMATION )
-   // .select( Atm_led_device::DEV_SELECT_ALL );
+//  playfield.device( ANIMATION )
+//   .select( Atm_led_device::DEV_SELECT_ALL );
 
   automaton.delay( 500 );
   
@@ -212,8 +212,8 @@ void loop() {
             playfield.device( OXO ).trigger( IN_OXO_TRIPLE );
           }
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
-          playfield.device( COIL_FEEDER ).trigger( IN_LBANK_ON );
           playfield.enable();
+          playfield.device( FEEDER ).trigger( IN_LBANK_ON );
           automaton.delay( 500 ); // was not needed before device conversion...
           while ( playfield.enabled() ) automaton.run(); // <<<<<<<<<< PLAYING
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  

@@ -50,6 +50,10 @@ Atm_led_device& Atm_led_device::reg( uint8_t r, int16_t v ) {
   return *this;
 }
 
+int16_t Atm_led_device::reg( uint8_t r ) {
+  return registers[r];
+}
+
 Atm_led_device& Atm_led_device::chain( Atm_led_device& next ) {
   this->next = &next;  
   return *this;

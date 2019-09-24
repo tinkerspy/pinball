@@ -664,7 +664,7 @@ enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10 };
 enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
 enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10 };
 
-int16_t counter_emd4w1_firmware[] = {
+int16_t counter_em4d1w_firmware[] = {
   IN_CTR_INIT, 
   IN_CTR_PRESS, 
   IN_CTR_RELEASE, 

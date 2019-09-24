@@ -655,21 +655,34 @@ int16_t scalar_firmware[] = {
 
 
 enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
+          IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
           SUB_CTR_123_WHILE_HIGH, SUB_CTR_01_WHILE_LOW, SUB_CTR_2_WHILE_LOW, 
-          SUB_CTR_3_WHILE_LOW, SUB_CTR_0_WHILE_HIGH };
+          SUB_CTR_3_WHILE_LOW, SUB_CTR_0_WHILE_HIGH,
+          SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
+};
 enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10 }; 
-enum { REG_CTR_STATE, REG_CTR_SENSOR };
+enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
+enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10 };
 
 int16_t counter_emd4w1_firmware[] = {
   IN_CTR_INIT, 
   IN_CTR_PRESS, 
   IN_CTR_RELEASE, 
   IN_CTR_RESET,
+  IN_CTR_PT10, 
+  IN_CTR_PT100, 
+  IN_CTR_PT1000, 
+  IN_CTR_PT500, 
+  IN_CTR_PT5000,
   SUB_CTR_123_WHILE_HIGH, 
   SUB_CTR_01_WHILE_LOW, 
   SUB_CTR_2_WHILE_LOW, 
   SUB_CTR_3_WHILE_LOW, 
   SUB_CTR_0_WHILE_HIGH,  
+  SUB_CTR_PULSE_10,
+  SUB_CTR_PULSE_100,
+  SUB_CTR_PULSE_1K,
+  SUB_CTR_PULSE_10K,
   -1,
 
   IN_CTR_INIT,
@@ -698,6 +711,105 @@ int16_t counter_emd4w1_firmware[] = {
   'Y', -1, -1, 300,
   'R', -1, -1, REG_CTR_STATE,          // We're done
   'I', -1, -1, -1,                     // Clear 'dirty' flag
+  'R', -1, -1, REG_CTR_10,             // Reset digit counter registers to 0
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_100,
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_1K,
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_10K,
+  'I', -1, -1, -1,
+  -1,
+
+  IN_CTR_PT10, 
+  '0', -1,  0, -1,                      // Force primary core
+  'I', -1, -1,  1,                      
+  'T', -1, -1, OUT_CTR_DIGIT3,
+  'S', -1, -1, SUB_CTR_PULSE_10,
+  -1,
+  
+  IN_CTR_PT100, 
+  '0', -1,  0, -1,                      // Force primary core
+  'I', -1, -1,  1,                      
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  -1,
+  
+  IN_CTR_PT1000,
+  '0', -1,  0, -1,                      // Force primary core
+  'I', -1, -1,  1,                      
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  -1,
+   
+  IN_CTR_PT500, 
+  '0', -1,  0, -1,                      // Force primary core
+  'I', -1, -1,  1,                      
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  'T', -1, -1, OUT_CTR_DIGIT2,
+  'S', -1, -1, SUB_CTR_PULSE_100,
+  -1,
+  
+  IN_CTR_PT5000,
+  '0', -1,  0, -1,                      // Force primary core
+  'I', -1, -1,  1,                      
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  'T', -1, -1, OUT_CTR_DIGIT1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,
+  -1,
+
+  SUB_CTR_PULSE_10,
+  'R', -1, -1, REG_CTR_10,
+  'H', -1, -1, ARG_CTR_10,
+  'C',  9,  3, 0,                      // Check rollover
+  'I', -1, -1, 1,                      // If not just increment & yield
+  'Y', -1, -1, 300,
+  'J', -1, -1, -1,
+  'I', -1, -1, -1,                     // Else reset digit counter register
+  'S', -1, -1, SUB_CTR_PULSE_100,      // And rollover
+  -1,
+
+  SUB_CTR_PULSE_100,
+  'R', -1, -1, REG_CTR_100,
+  'H', -1, -1, ARG_CTR_100,
+  'C',  9,  3, 0,
+  'I', -1, -1, 1,
+  'Y', -1, -1, 300,
+  'J', -1, -1, -1,
+  'I', -1, -1, -1,
+  'S', -1, -1, SUB_CTR_PULSE_1K,  
+  -1,
+
+  SUB_CTR_PULSE_1K,
+  'R', -1, -1, REG_CTR_1K,
+  'H', -1, -1, ARG_CTR_1K,
+  'C',  9,  3, 0,
+  'I', -1, -1, 1,
+  'Y', -1, -1, 300,
+  'J', -1, -1, -1,
+  'I', -1, -1, -1,
+  'S', -1, -1, SUB_CTR_PULSE_10K,  
+  -1,
+
+  SUB_CTR_PULSE_10K,
+  'R', -1, -1, REG_CTR_10K,
+  'H', -1, -1, ARG_CTR_10K,
+  'I', -1, -1, 1,
+  'Y', -1, -1, 300,
   -1,
 
   SUB_CTR_123_WHILE_HIGH,

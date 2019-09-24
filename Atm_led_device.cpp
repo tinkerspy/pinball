@@ -211,6 +211,16 @@ void Atm_led_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
+          case '0':  // Jump on primary core
+            selected_action = ( active_core == 0 ? action_t : action_f );
+            if ( selected_action  > -1 ) {
+              core[active_core].ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %03d: core exit\n", core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }            
+            break;            
           case 'H': // ON - HIGH: led on
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             led_on( led_group, selected_action );

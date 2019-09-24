@@ -654,103 +654,110 @@ int16_t scalar_firmware[] = {
 };
 
 
-enum { IN_COUNTER_INIT, IN_COUNTER_PRESS, IN_COUNTER_RELEASE, IN_COUNTER_RESET,
-          SUB_COUNTER_123_WHILE_HIGH, SUB_COUNTER_12_WHILE_LOW, SUB_COUNTER_2_WHILE_LOW, 
-          SUB_COUNTER_3_WHILE_LOW, SUB_COUNTER_0_WHILE_HIGH };
-enum { ARG_COUNTER_10K, ARG_COUNTER_1K, ARG_COUNTER_100, ARG_COUNTER_10 }; 
-enum { REG_COUNTER_STATE, REG_COUNTER_SENSOR };
+enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
+          SUB_CTR_123_WHILE_HIGH, SUB_CTR_01_WHILE_LOW, SUB_CTR_2_WHILE_LOW, 
+          SUB_CTR_3_WHILE_LOW, SUB_CTR_0_WHILE_HIGH };
+enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10 }; 
+enum { REG_CTR_STATE, REG_CTR_SENSOR };
 
 int16_t counter_emd4w1_firmware[] = {
-  IN_COUNTER_INIT, 
-  IN_COUNTER_PRESS, 
-  IN_COUNTER_RELEASE, 
-  IN_COUNTER_RESET,
-  SUB_COUNTER_123_WHILE_HIGH, 
-  SUB_COUNTER_12_WHILE_LOW, 
-  SUB_COUNTER_2_WHILE_LOW, 
-  SUB_COUNTER_3_WHILE_LOW, 
-  SUB_COUNTER_0_WHILE_HIGH,  
+  IN_CTR_INIT, 
+  IN_CTR_PRESS, 
+  IN_CTR_RELEASE, 
+  IN_CTR_RESET,
+  SUB_CTR_123_WHILE_HIGH, 
+  SUB_CTR_01_WHILE_LOW, 
+  SUB_CTR_2_WHILE_LOW, 
+  SUB_CTR_3_WHILE_LOW, 
+  SUB_CTR_0_WHILE_HIGH,  
   -1,
 
-  IN_COUNTER_INIT,
-  'P', -1, -1, 1,  // Persistent
+  IN_CTR_INIT,
+  'P', -1, -1,  1,                      // Persistent
   'I', -1, -1, -1,
+  'I', -1, -1,  1,                      // Dirty: reset before use
   -1,
 
-  IN_COUNTER_RESET, 
-  'I', -1, -1, -1,
-  'I', -1, -1, 1,
-  'R', -1, -1, REG_COUNTER_SENSOR,
-  'S', -1, -1, SUB_COUNTER_123_WHILE_HIGH,
-  'H', -1, -1, ARG_COUNTER_10K,
+  IN_CTR_RESET, 
+  '0', -1,  0, -1,                      // Force primary core
+  'C',  0, -1,  0,                      // Only when dirty
+  'R', -1, -1, REG_CTR_SENSOR,          // Select sensor register   
+  'S', -1, -1, SUB_CTR_123_WHILE_HIGH,
+  'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, 300,
-  'S', -1, -1, SUB_COUNTER_123_WHILE_HIGH,
-  'H', -1, -1, ARG_COUNTER_1K,
+  'S', -1, -1, SUB_CTR_123_WHILE_HIGH,
+  'S', -1, -1, SUB_CTR_01_WHILE_LOW,
+  'H', -1, -1, ARG_CTR_1K,             // Solved 1
   'Y', -1, -1, 300,
-  'S', -1, -1, SUB_COUNTER_2_WHILE_LOW,
-  'H', -1, -1, ARG_COUNTER_100,
+  'S', -1, -1, SUB_CTR_2_WHILE_LOW,   
+  'H', -1, -1, ARG_CTR_100,            // Solved 2
   'Y', -1, -1, 300,
-  'S', -1, -1, SUB_COUNTER_3_WHILE_LOW,
-  'S', -1, -1, SUB_COUNTER_0_WHILE_HIGH,
-  'H', -1, -1, ARG_COUNTER_10K,
+  'S', -1, -1, SUB_CTR_3_WHILE_LOW,    
+  'S', -1, -1, SUB_CTR_0_WHILE_HIGH,   // Solved 3 (pending)
+  'H', -1, -1, ARG_CTR_10,             // Solved 0 & 3
   'Y', -1, -1, 300,
-  'R', -1, -1, REG_COUNTER_STATE,
-  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_STATE,          // We're done
+  'I', -1, -1, -1,                     // Clear 'dirty' flag
   -1,
 
-  SUB_COUNTER_123_WHILE_HIGH,
-  'H', -1, -1, ARG_COUNTER_1K,
+  SUB_CTR_123_WHILE_HIGH,
+  'C',  1,  0, -1,
+  'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, 300,
   'C',  1,  0, -1,
-  'H', -1, -1, ARG_COUNTER_100,
+  'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, 300,
   'C',  1,  0, -1,
-  'H', -1, -1, ARG_COUNTER_10,
+  'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 300,
   'C',  1,  0, -1,
-  'A',  1,  0, SUB_COUNTER_123_WHILE_HIGH,
+  'A', -1, -1, SUB_CTR_123_WHILE_HIGH,
   -1,  
 
-  SUB_COUNTER_12_WHILE_LOW,
-  'H', -1, -1, ARG_COUNTER_10K,
+  SUB_CTR_01_WHILE_LOW,
+  'C',  0,  0, -1,
+  'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, 300,
   'C',  0,  0, -1,
-  'H', -1, -1, ARG_COUNTER_1K,
+  'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, 300,
   'C',  0,  0, -1,
-  'A', -1, -1, SUB_COUNTER_12_WHILE_LOW,
+  'A', -1, -1, SUB_CTR_01_WHILE_LOW,
   -1,
 
-  SUB_COUNTER_2_WHILE_LOW,
-  'H', -1, -1, ARG_COUNTER_100,
+  SUB_CTR_2_WHILE_LOW,
+  'C',  0,  0, -1,
+  'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, 300,
   'C',  0,  0, -1,
-  'A', -1, -1, SUB_COUNTER_2_WHILE_LOW,
+  'A', -1, -1, SUB_CTR_2_WHILE_LOW,
   -1,
   
-  SUB_COUNTER_3_WHILE_LOW,
-  'H', -1, -1, ARG_COUNTER_10,
+  SUB_CTR_3_WHILE_LOW,
+  'C',  0,  0, -1,
+  'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 300,
   'C',  0,  0, -1,
-  'A', -1, -1, SUB_COUNTER_3_WHILE_LOW,
+  'A', -1, -1, SUB_CTR_3_WHILE_LOW,
   -1,
 
-  SUB_COUNTER_0_WHILE_HIGH,
-  'H', -1, -1, ARG_COUNTER_10K,
+  SUB_CTR_0_WHILE_HIGH,
+  'C',  1,  0, -1,
+  'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, 300,
   'C',  1,  0, -1,
-  'A', -1, -1, SUB_COUNTER_0_WHILE_HIGH,
+  'A', -1, -1, SUB_CTR_0_WHILE_HIGH,
   -1,
 
-  IN_COUNTER_PRESS,
-  'R', -1, -1, REG_COUNTER_SENSOR,
+  IN_CTR_PRESS,
+  'R', -1, -1, REG_CTR_SENSOR,
   'I', -1, -1, -1,
-  'I', -1, -1, 1,
+  'I', -1, -1, 1,                      // Set sensor flag
   -1,
   
-  IN_COUNTER_RELEASE,
-  'R', -1, -1, REG_COUNTER_SENSOR,
-  'I', -1, -1, -1,
+  IN_CTR_RELEASE,
+  'R', -1, -1, REG_CTR_SENSOR,
+  'I', -1, -1, -1,                     // Clear sensor flag
   -1,
 
 

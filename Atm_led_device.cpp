@@ -172,7 +172,7 @@ void Atm_led_device::start_code( int16_t e ) {
     core[active_core].ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( callback_trace ) 
-      stream_trace->printf( "run_code %03d called -> %d (core %d)\n", e, core[active_core].ptr, active_core );
+      stream_trace->printf( "run_code event %03d called -> %d%03d\n", e, active_core, core[active_core].ptr );
     run_code( active_core );      
   }
 }
@@ -187,7 +187,7 @@ void Atm_led_device::run_code( uint8_t active_core ) {
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
         if ( callback_trace ) 
-          stream_trace->printf( "run_code %03d: %c %d ? %d : %d\n", core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
+          stream_trace->printf( "run_code %d:%03d: %c %d ? %d : %d\n", active_core, core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
         switch ( opcode ) {
           case 'J': // Jump on LED state
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
@@ -195,7 +195,7 @@ void Atm_led_device::run_code( uint8_t active_core ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: jump exit\n", core[active_core].ptr - 4 );
+                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -211,7 +211,7 @@ void Atm_led_device::run_code( uint8_t active_core ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: jump exit\n", core[active_core].ptr - 4 );
+                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -221,7 +221,7 @@ void Atm_led_device::run_code( uint8_t active_core ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: core exit\n", core[active_core].ptr - 4 );
+                stream_trace->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;            
@@ -276,16 +276,16 @@ void Atm_led_device::run_code( uint8_t active_core ) {
               timer.set( selected_action );
               sleep( 0 );
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: yield %d ms\n", core[active_core].ptr - 4, selected_action );
+                stream_trace->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: FATAL error: secondary core cannot yield at %d\n", core[active_core].ptr - 4 );
+                stream_trace->printf( "run_code %d:%03d: FATAL error: secondary core cannot yield at %d\n", active_core, core[active_core].ptr - 4 );
               return;
             }
             return;           
           default:
             if ( callback_trace ) 
-                stream_trace->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", core[active_core].ptr - 4, opcode );
+                stream_trace->printf( "run_code %d:%03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", active_core, core[active_core].ptr - 4, opcode );
             return;
         }
       } else {
@@ -294,11 +294,11 @@ void Atm_led_device::run_code( uint8_t active_core ) {
       if ( core[active_core].ptr == 0 ) {
         if ( core[active_core].stack_ptr > 0 ) {
           if ( callback_trace ) 
-            stream_trace->printf( "run_code %03d: Return to %d\n", core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
+            stream_trace->printf( "run_code %d:%03d: Return to %d\n", active_core, core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
           core[active_core].ptr = core[active_core].stack[--core[active_core].stack_ptr];
         } else {
           if ( callback_trace ) 
-            stream_trace->printf( "run_code %03d: regular exit\n", core[active_core].ptr );
+            stream_trace->printf( "run_code %d:%03d: regular exit\n", active_core, core[active_core].ptr );
           return;
         }
       }

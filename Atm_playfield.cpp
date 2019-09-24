@@ -195,27 +195,21 @@ Atm_led_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_led_device* device = new Atm_led_device();
     device->begin( *this, led_group, device_script );
-    device->reg( 0, r0 );
-    device->reg( 1, r1 );
-    device->reg( 2, r2 );
-    device->reg( 3, r3 );
-    device->reg( 4, r4 );
-    device->reg( 5, r5 );
-    device->reg( 6, r6 );
-    device->reg( 7, r7 );
     return *device;
   }
   if ( prof[n].device_index == 0 ) { 
     Atm_led_device* device = new Atm_led_device(); // Create device
+    if ( device_script ) {
+      device->reg( 0, r0 );
+      device->reg( 1, r1 );
+      device->reg( 2, r2 );
+      device->reg( 3, r3 );
+      device->reg( 4, r4 );
+      device->reg( 5, r5 );
+      device->reg( 6, r6 );
+      device->reg( 7, r7 );
+    }
     device->begin( *this, led_group, device_script );
-    device->reg( 0, r0 );
-    device->reg( 1, r1 );
-    device->reg( 2, r2 );
-    device->reg( 3, r3 );
-    device->reg( 4, r4 );
-    device->reg( 5, r5 );
-    device->reg( 6, r6 );
-    device->reg( 7, r7 );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
     //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numberOfSwitches ); 

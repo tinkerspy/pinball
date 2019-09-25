@@ -320,6 +320,16 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
   return *this;
 }
 
+Atm_led_device& Atm_led_device::trigger( int event, uint32_t sel ) {
+  if ( next ) {
+    next->trigger( event, sel >> 1 );
+  }
+  if ( playfield->enabled() || input_persistence ) {
+    if ( sel & 1 ) start_code( event );
+  }
+  return *this;
+}
+
 /* Optionally override the default state() method
  * Control what the machine returns when another process requests its state
  */
@@ -338,7 +348,7 @@ int Atm_led_device::state( uint32_t sel ) {
   int16_t s = 0;
   s = registers[0];
   if ( next ) {
-    return next->state( sel >> 1 ) + ( sel & 1 > 0 ? s : 0 );
+    return next->state( sel >> 1 ) + ( sel & 1 ? s : 0 );
   } else {
     return s;
   }

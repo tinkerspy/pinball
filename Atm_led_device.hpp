@@ -32,6 +32,7 @@ class Atm_led_device: public Machine {
   Atm_led_device& set_led( int16_t led_group );
   Atm_led_device& trace( Stream & stream );
   Atm_led_device& trigger( int event );
+  Atm_led_device& trigger( int event, uint32_t sel );
   int state( void );
   int state( uint32_t sel );
   Atm_led_device& onEvent( int sub, Machine& machine, int event = 0 );

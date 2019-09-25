@@ -27,7 +27,7 @@ Atm_device& Atm_device::begin( Atm_playfield &playfield, int16_t led_group, int1
   timer.set( ATM_TIMER_OFF );
   core[0].ptr = 0;
   core[1].ptr = 0;
-  if ( device_script ) {
+  if ( device_script != NULL ) {
     set_led( led_group );
     set_script( device_script );
   }

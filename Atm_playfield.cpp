@@ -199,7 +199,7 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
   }
   if ( prof[n].device_index == 0 ) { 
     Atm_device* device = new Atm_device(); // Create device
-    if ( device_script ) {
+    if ( device_script != NULL ) {
       device->reg( 0, r0 );
       device->reg( 1, r1 );
       device->reg( 2, r2 );
@@ -230,7 +230,7 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
     }
     //Serial.printf( "Switches attached\n" ); 
   } else { 
-    if ( device_script ) {
+    if ( device_script != NULL ) {
       prof[n].device->reg( 0, r0 );
       prof[n].device->reg( 1, r1 );
       prof[n].device->reg( 2, r2 );

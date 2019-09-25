@@ -9,11 +9,6 @@ IO io;
 Atm_led_scheduler leds; // IO_LED
 Atm_playfield playfield; // IO_MATRIX
 
-Atm_device multilane, targets, bumper_a, bumper_b, bumper_c,
-            uplanes, kickers, oxo, slingshots, lower_bank, 
-            flippers, save_gate, again, game_over,
-            players, playerup, ballup, counter;
-
 using namespace standard_firmware;
 using namespace custom_firmware; 
 
@@ -46,7 +41,7 @@ void setup() {
     .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
 */
 
-  playfield.device( COUNTER0 ).trace( Serial );
+  auto& counter = playfield.device( COUNTER0 ).trace( Serial );
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
   playfield
@@ -64,14 +59,14 @@ void setup() {
 
   // Playfield device instantiation
 
-  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
+  auto oxo = playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
     .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
-    .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_1X )
+    .onEvent( OUT_SBANK_PRESS0, oxo, IN_OXO_1O )
+    .onEvent( OUT_SBANK_PRESS1, oxo, IN_OXO_1X )
     .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_2O )
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_2X )
     .onEvent( OUT_SBANK_PRESS4, playfield.device( OXO ), IN_OXO_3O )

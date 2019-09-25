@@ -21,30 +21,30 @@ struct core_state {
 
 class Atm_playfield;
 
-class Atm_led_device: public Machine {
+class Atm_device: public Machine {
 
  public:
   enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
   enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
-  Atm_led_device( void ) : Machine() {};
-  Atm_led_device& begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script );
-  Atm_led_device& set_script( int16_t* script );
-  Atm_led_device& set_led( int16_t led_group );
-  Atm_led_device& trace( Stream & stream );
-  Atm_led_device& trigger( int event );
-  Atm_led_device& trigger( int event, uint32_t sel );
+  Atm_device( void ) : Machine() {};
+  Atm_device& begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script );
+  Atm_device& set_script( int16_t* script );
+  Atm_device& set_led( int16_t led_group );
+  Atm_device& trace( Stream & stream );
+  Atm_device& trigger( int event );
+  Atm_device& trigger( int event, uint32_t sel );
   int state( void );
   int state( uint32_t sel );
-  Atm_led_device& onEvent( int sub, Machine& machine, int event = 0 );
-  Atm_led_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_led_device& init( void );
-  Atm_led_device& init( uint32_t sel );
-  Atm_led_device& press( void );
-  Atm_led_device& release( void );
-  Atm_led_device& reg( uint8_t r, int16_t v );
+  Atm_device& onEvent( int sub, Machine& machine, int event = 0 );
+  Atm_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_device& init( void );
+  Atm_device& init( uint32_t sel );
+  Atm_device& press( void );
+  Atm_device& release( void );
+  Atm_device& reg( uint8_t r, int16_t v );
   int16_t reg( uint8_t r );
-  Atm_led_device& chain( Atm_led_device& next );
-  Atm_led_device& select( uint32_t mask );
+  Atm_device& chain( Atm_device& next );
+  Atm_device& select( uint32_t mask );
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
 
  private:
@@ -70,7 +70,7 @@ class Atm_led_device: public Machine {
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
   atm_timer_millis timer;
-  Atm_led_device* next;
+  Atm_device* next;
   bool enabled;
   core_state core[2];
   

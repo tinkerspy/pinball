@@ -178,7 +178,7 @@ void setup() {
 //  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
 
 //  playfield.device( ANIMATION )
-//   .select( Atm_led_device::DEV_SELECT_ALL );
+//   .select( Atm_device::DEV_SELECT_ALL );
 
   automaton.delay( 500 );
   
@@ -197,7 +197,7 @@ void setup() {
 void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_led_device::SELECT_ALL );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
     leds.off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );

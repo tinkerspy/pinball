@@ -3,14 +3,14 @@
 // EVT_START toevoegen om in stijl te blijven met Atm_timer e.d.???
 
 #include <Automaton.h>
-#include "Atm_led_device.hpp"
+#include "Atm_device.hpp"
 #include "Atm_led_scheduler.hpp"
 
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
 #define STARTUP_DELAY_MS 500
 
-class Atm_led_device;
+class Atm_device;
 
 struct switch_record { 
     uint8_t switch_state : 1;
@@ -24,9 +24,9 @@ struct switch_record {
     bool initialized; 
     int8_t device_index; 
 #ifdef DYNAMIC_ELEMENTS    
-    Atm_led_device *device;
+    Atm_device *device;
 #else
-    Atm_led_device device;
+    Atm_device device;
 #endif    
 };
 
@@ -51,7 +51,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   Atm_playfield& enable();
   bool enabled();
   bool ready();
-  Atm_led_device& device( int16_t n, int16_t led_group = -1, int16_t* device_script = NULL,
+  Atm_device& device( int16_t n, int16_t led_group = -1, int16_t* device_script = NULL,
         int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_led_scheduler& leds();
   Atm_playfield& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );

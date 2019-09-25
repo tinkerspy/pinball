@@ -1,6 +1,6 @@
 #pragma once
 
-/* Standard firmware for the Atm_led_device programmable pinball device class
+/* Standard firmware for the Atm_device programmable pinball device class
  *  
  *  ledbank
  *  dual_kicker

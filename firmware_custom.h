@@ -1,6 +1,6 @@
 #pragma once
 
-/* Custom firmware for the Atm_led_device programmable pinball device class
+/* Custom firmware for the Atm_device programmable pinball device class
  *  
  *  tictactoe
  *  

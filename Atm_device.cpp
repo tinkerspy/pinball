@@ -1,10 +1,10 @@
-#include "Atm_led_device.hpp"
+#include "Atm_device.hpp"
 
 /* Add optional parameters for the state machine to begin()
  * Add extra initialization code
  */
 
-Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script ) {
+Atm_device& Atm_device::begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  EVT_TIMER  EVT_YIELD  ELSE */
@@ -34,32 +34,32 @@ Atm_led_device& Atm_led_device::begin( Atm_playfield &playfield, int16_t led_gro
   return *this;          
 }
 
-Atm_led_device& Atm_led_device::set_script( int16_t* script ) {
+Atm_device& Atm_device::set_script( int16_t* script ) {
   this->script = parse_code( script );
   start_code( 0 );
   return *this;
 }
 
-Atm_led_device& Atm_led_device::set_led( int16_t led_group ) {
+Atm_device& Atm_device::set_led( int16_t led_group ) {
   this->led_group = led_group;
   return *this;
 }
 
-Atm_led_device& Atm_led_device::reg( uint8_t r, int16_t v ) {
+Atm_device& Atm_device::reg( uint8_t r, int16_t v ) {
   registers[r] = v;
   return *this;
 }
 
-int16_t Atm_led_device::reg( uint8_t r ) {
+int16_t Atm_device::reg( uint8_t r ) {
   return registers[r];
 }
 
-Atm_led_device& Atm_led_device::chain( Atm_led_device& next ) {
+Atm_device& Atm_device::chain( Atm_device& next ) {
   this->next = &next;  
   return *this;
 }
 
-Atm_led_device& Atm_led_device::select( uint32_t mask ) {
+Atm_device& Atm_device::select( uint32_t mask ) {
   this->enabled = mask & 1;
   if ( next ) {
     next->select( mask >> 1 );
@@ -71,7 +71,7 @@ Atm_led_device& Atm_led_device::select( uint32_t mask ) {
  * The code must return 1 to trigger the event
  */
 
-int Atm_led_device::event( int id ) {
+int Atm_device::event( int id ) {
   switch ( id ) {
     case EVT_NOTIFY:
       return trigger_flags > 0;
@@ -90,7 +90,7 @@ int Atm_led_device::event( int id ) {
  *   push( connectors, ON_CHANGE, <sub>, <v>, <up> );
  */
 
-void Atm_led_device::action( int id ) {
+void Atm_device::action( int id ) {
   switch ( id ) {
     case ENT_NOTIFY:
       for ( uint8_t i = 0; i < 16; i++ ) {
@@ -109,7 +109,7 @@ void Atm_led_device::action( int id ) {
   }
 }
 
-int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
+int16_t* Atm_device::parse_code( int16_t* device_script ) {
   int16_t* p = device_script;
   while ( p[0] != -1 ) *p++ = 0;
   numberOfInputs = p - device_script;
@@ -125,7 +125,7 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
     p++;
     while ( p[0] != -1 ) {
       //if ( callback_trace ) 
-      //  stream_trace->printf( "Atm_led_device parse %03d: %c %d ? %d : %d\n", iid, p[0], p[1], p[2], p[3] );
+      //  stream_trace->printf( "Atm_device parse %03d: %c %d ? %d : %d\n", iid, p[0], p[1], p[2], p[3] );
       p += 4;
     }
     p++;
@@ -133,38 +133,38 @@ int16_t* Atm_led_device::parse_code( int16_t* device_script ) {
   return device_script;
 }
 
-int16_t Atm_led_device::led_index( int16_t led_group, int16_t selector ) {
+int16_t Atm_device::led_index( int16_t led_group, int16_t selector ) {
   int16_t n = leds->index( led_group, selector );
   if ( callback_trace ) { 
     if ( n != -1 ) { 
-      stream_trace->printf( "Atm_led_device led arg #%d maps to physical led %d\n", selector, n );
+      stream_trace->printf( "Atm_device led arg #%d maps to physical led %d\n", selector, n );
     } else { 
-      stream_trace->printf( "Atm_led_device led arg #%d not used\n", selector );    
+      stream_trace->printf( "Atm_device led arg #%d not used\n", selector );    
     }
   }
   return n;  
 }
 
-bool Atm_led_device::led_active( int16_t led_group, int16_t selector ) {
+bool Atm_device::led_active( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 &&  selector != -1 ) {
     return leds->active( led_index( led_group, selector ) );
   } 
   return false;
 }
 
-void Atm_led_device::led_on( int16_t led_group, int16_t selector ) {
+void Atm_device::led_on( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 && selector != -1 ) {
     leds->on( led_index( led_group, selector ) );
   } 
 }
 
-void Atm_led_device::led_off( int16_t led_group, int16_t selector ) {
+void Atm_device::led_off( int16_t led_group, int16_t selector ) {
   if ( led_group != -1 &&  selector != -1 ) {
     leds->off( led_index( led_group, selector ) );
   } 
 }
 
-void Atm_led_device::start_code( int16_t e ) {
+void Atm_device::start_code( int16_t e ) {
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
     uint8_t active_core = core[0].ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
     core[active_core].reg_ptr = 0;
@@ -177,7 +177,7 @@ void Atm_led_device::start_code( int16_t e ) {
   }
 }
 
-void Atm_led_device::run_code( uint8_t active_core ) {
+void Atm_device::run_code( uint8_t active_core ) {
   if ( core[active_core].ptr > 0 ) {
     while ( true ) {
       int16_t opcode = script[core[active_core].ptr++];
@@ -310,7 +310,7 @@ void Atm_led_device::run_code( uint8_t active_core ) {
  * Control how your machine processes triggers
  */
 
-Atm_led_device& Atm_led_device::trigger( int event ) {
+Atm_device& Atm_device::trigger( int event ) {
   if ( next ) {
     next->trigger( event );
   }
@@ -320,7 +320,7 @@ Atm_led_device& Atm_led_device::trigger( int event ) {
   return *this;
 }
 
-Atm_led_device& Atm_led_device::trigger( int event, uint32_t sel ) {
+Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   if ( next ) {
     next->trigger( event, sel >> 1 );
   }
@@ -334,7 +334,7 @@ Atm_led_device& Atm_led_device::trigger( int event, uint32_t sel ) {
  * Control what the machine returns when another process requests its state
  */
 
-int Atm_led_device::state( void ) {
+int Atm_device::state( void ) {
   int16_t s = 0;
   s = registers[0];
   if ( next ) {
@@ -344,7 +344,7 @@ int Atm_led_device::state( void ) {
   }
 }
 
-int Atm_led_device::state( uint32_t sel ) {
+int Atm_device::state( uint32_t sel ) {
   int16_t s = 0;
   s = registers[0];
   if ( next ) {
@@ -354,22 +354,22 @@ int Atm_led_device::state( uint32_t sel ) {
   }
 }
 
-Atm_led_device& Atm_led_device::init( void ) {
+Atm_device& Atm_device::init( void ) {
   trigger( 0 );
   return *this;  
 }
 
-Atm_led_device& Atm_led_device::init( uint32_t sel ) {
+Atm_device& Atm_device::init( uint32_t sel ) {
   trigger( 0, sel );
   return *this;  
 }
 
-Atm_led_device& Atm_led_device::press( void ) {
+Atm_device& Atm_device::press( void ) {
   trigger( 1 );
   return *this;  
 }
 
-Atm_led_device& Atm_led_device::release( void ) {
+Atm_device& Atm_device::release( void ) {
   trigger( 2 );
   return *this;  
 }
@@ -386,13 +386,13 @@ Atm_led_device& Atm_led_device::release( void ) {
  * onEvent() push connector variants ( slots 8, autostore 0, broadcast 0 )
  */
 
-Atm_led_device& Atm_led_device::onEvent( int sub, Machine& machine, int event ) {
+Atm_device& Atm_device::onEvent( int sub, Machine& machine, int event ) {
   if ( next ) next->onEvent( sub, machine, event );    
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
   return *this;
 }
 
-Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
+Atm_device& Atm_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
   if ( next ) next->onEvent( sub, callback, idx );    
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, callback, idx );
   return *this;
@@ -402,7 +402,7 @@ Atm_led_device& Atm_led_device::onEvent( int sub, atm_cb_push_t callback, int id
  * Sets the symbol table and the default logging method for serial monitoring
  */
 
-Atm_led_device& Atm_led_device::trace( Stream & stream ) {
+Atm_device& Atm_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
   return *this;

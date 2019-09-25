@@ -38,13 +38,14 @@ class Atm_led_device: public Machine {
   Atm_led_device& onEvent( int sub, Machine& machine, int event = 0 );
   Atm_led_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_led_device& init( void );
+  Atm_led_device& init( uint32_t sel );
   Atm_led_device& press( void );
   Atm_led_device& release( void );
   Atm_led_device& reg( uint8_t r, int16_t v );
   int16_t reg( uint8_t r );
   Atm_led_device& chain( Atm_led_device& next );
   Atm_led_device& select( uint32_t mask );
-  static const uint32_t DEV_SELECT_ALL = 0xFFFFFFFF;
+  static const uint32_t SELECT_ALL = 0xFFFFFFFF;
 
  private:
   enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS

@@ -359,6 +359,11 @@ Atm_led_device& Atm_led_device::init( void ) {
   return *this;  
 }
 
+Atm_led_device& Atm_led_device::init( uint32_t sel ) {
+  trigger( 0, sel );
+  return *this;  
+}
+
 Atm_led_device& Atm_led_device::press( void ) {
   trigger( 1 );
   return *this;  

@@ -197,9 +197,9 @@ void setup() {
 void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).select( B1111 ).trigger( IN_CTR_RESET );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_led_device::SELECT_ALL );
     leds.off( LED_FLASHER_GRP );
-    playfield.device( PLAYERS ).select( 1 ).init();
+    playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( playfield.device( COUNTER0 ).state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
     automaton.delay( 1000 );

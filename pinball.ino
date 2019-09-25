@@ -59,10 +59,10 @@ void setup() {
 
   // Playfield device instantiation
 
-  auto oxo = playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
+  auto& oxo = playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
-    .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
+    .onEvent( OUT_OXO_COLLECT, counter, IN_CTR_PT1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, oxo, IN_OXO_1O )
@@ -129,7 +129,7 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
     .onEvent( OUT_SBANK_SCORE0, playfield.device( COUNTER0 ), IN_CTR_PT500 )  
     .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
-    .onEvent( OUT_SBANK_SCORE1, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
+    .onEvent( OUT_SBANK_SCORE1, counter, IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
     .onEvent( OUT_SBANK_SCORE2, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER

@@ -666,9 +666,8 @@ enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
           SUB_CTR_SOLVE_POS2_2, 
           SUB_CTR_SOLVE_POS2_3, 
           SUB_CTR_SOLVE_POS3,
-          SUB_CTR_SOLVE_POS3_12,
-          SUB_CTR_SOLVE_POS3_13,
-          SUB_CTR_SOLVE_POS3_23,
+          SUB_CTR_SOLVE_POS3_2,
+          SUB_CTR_SOLVE_POS3_3,
           SUB_CTR_SOLVE_REEL0,
 };
 enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10 }; 
@@ -676,37 +675,22 @@ enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
 enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_POS1, REG_CTR_POS2, REG_CTR_POS3 };
 
 int16_t counter_em4d1w_firmware[] = {
-  IN_CTR_INIT, 
-  IN_CTR_PRESS, 
-  IN_CTR_RELEASE, 
-  IN_CTR_RESET,
-  IN_CTR_RESET2,
-  IN_CTR_PT10, 
-  IN_CTR_PT100, 
-  IN_CTR_PT1000, 
-  IN_CTR_PT500, 
-  IN_CTR_PT5000,
-  SUB_CTR_123_WHILE_HIGH, 
-  SUB_CTR_01_WHILE_LOW, 
-  SUB_CTR_2_WHILE_LOW, 
-  SUB_CTR_3_WHILE_LOW, 
-  SUB_CTR_0_WHILE_HIGH,  
-  SUB_CTR_PULSE_10,
-  SUB_CTR_PULSE_100,
-  SUB_CTR_PULSE_1K,
-  SUB_CTR_PULSE_10K,
-  SUB_CTR_MOVE_START,
-  SUB_CTR_SOLVE_POS1, 
-  SUB_CTR_SOLVE_POS2, 
-  SUB_CTR_SOLVE_POS2_1, // Solve POS2 for POS1=1
-  SUB_CTR_SOLVE_POS2_2, // Solve POS2 for POS1=2
-  SUB_CTR_SOLVE_POS2_3, // Solve POS2 for POS1=3
-  SUB_CTR_SOLVE_POS3,
-  SUB_CTR_SOLVE_POS3_12, // Solve POS3 for ( POS1, POS2 ) are 1,2 or 2,1
-  SUB_CTR_SOLVE_POS3_13, // Solve POS3 for ( POS1, POS2 ) are 1,3 or 3,1
-  SUB_CTR_SOLVE_POS3_23, // Solve POS3 for ( POS1, POS2 ) are 2,3 or 3,2
-  SUB_CTR_SOLVE_REEL0,
-  -1,
+IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
+          IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
+          SUB_CTR_123_WHILE_HIGH, SUB_CTR_01_WHILE_LOW, SUB_CTR_2_WHILE_LOW, 
+          SUB_CTR_3_WHILE_LOW, SUB_CTR_0_WHILE_HIGH,
+          SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
+          SUB_CTR_MOVE_START,
+          SUB_CTR_SOLVE_POS1, 
+          SUB_CTR_SOLVE_POS2, 
+          SUB_CTR_SOLVE_POS2_1, 
+          SUB_CTR_SOLVE_POS2_2, 
+          SUB_CTR_SOLVE_POS2_3, 
+          SUB_CTR_SOLVE_POS3,
+          SUB_CTR_SOLVE_POS3_2,
+          SUB_CTR_SOLVE_POS3_3,
+          SUB_CTR_SOLVE_REEL0,
+          -1,
 
   IN_CTR_INIT,
   'P', -1, -1,  1,                      // Persistent
@@ -724,12 +708,12 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_POS3,            
   'I', -1, -1, -1,
   'S', -1, -1, SUB_CTR_MOVE_START,
-  'S', -1, -1, SUB_CTR_SOLVE_POS1,
+  'S', -1, -1, SUB_CTR_SOLVE_POS1,  
   'S', -1, -1, SUB_CTR_SOLVE_POS2,      // 3 versions: _3:12, _1:23, _2:13 (pulse while low)
-  // Pulse POS2 once
   'S', -1, -1, SUB_CTR_SOLVE_POS3,      // 3 versions: _12:3, _13:2, _23:3 (pulse while low)
   'S', -1, -1, SUB_CTR_SOLVE_REEL0,     // Pulse while high 
   // Pulse POS3 once
+  'R', -1, -1, REG_CTR_STATE,
   'I', -1, -1, -1,                      // Clean!
   -1,
 
@@ -737,10 +721,10 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_SENSOR,          // Select sensor register   
   'C',  0,  0, -1,
   'H', -1, -1, ARG_CTR_10K,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, 120,
   'C',  0,  0, -1,
   'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, 120,
   'C',  0,  0, -1,
   'A', -1, -1, SUB_CTR_MOVE_START,
   -1,
@@ -748,13 +732,13 @@ int16_t counter_em4d1w_firmware[] = {
   SUB_CTR_SOLVE_POS1,                    // Pulse 1 & 2 & 3 while sensor is high (store pos of 1ST)
   'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
   'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, 120,
   'C',  1,  0, 7,
   'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, 120,
   'C',  1,  0, 7,
   'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, 120,
   'C',  1,  0, 7,
   'A', -1, -1, SUB_CTR_SOLVE_POS1,
   'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register   
@@ -768,16 +752,61 @@ int16_t counter_em4d1w_firmware[] = {
   'J', -1, -1, -1,                      // Exit
   -1,  
 
-  SUB_CTR_SOLVE_POS2,                    // Pulse 1 & 2 & 3 while sensor is low (but do not pulse POS1)
-  'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
-  -1,
+  SUB_CTR_SOLVE_POS2,
+  'R', -1, -1, REG_CTR_SENSOR,
+  'H', -1, -1, ARG_CTR_100,
+  'Y', -1, -1, 120,
+  'C',  0,  0, 4,
+  'H', -1, -1, ARG_CTR_10,
+  'Y', -1, -1, 120,
+  'C',  0,  0, 6,  
+  'A', -1, -1, SUB_CTR_SOLVE_POS2,
+  'R', -1, -1, REG_CTR_POS2,
+  'I', -1, -1, 2,
+  'H', -1, -1, ARG_CTR_100,
+  'Y', -1, -1, 120,
+  'J', -1, -1, -1,
+  'R', -1, -1, REG_CTR_POS2,
+  'I', -1, -1, 3,
+  'H', -1, -1, ARG_CTR_10,
+  'Y', -1, -1, 120,
+  -1, 
 
   SUB_CTR_SOLVE_POS3,
-  'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
+  'R', -1, -1, REG_CTR_POS2,
+  'C',  2,  1, 0,
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,
+  -1,
+  
+  SUB_CTR_SOLVE_POS3_2,
+  'R', -1, -1, REG_CTR_SENSOR,
+  'C',  0,  0, 3,
+  'H', -1, -1, ARG_CTR_100,
+  'Y', -1, -1, 120,
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  
+  'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
+  'H', -1, -1, ARG_CTR_100,
+  'Y', -1, -1, 120,
+  -1,
+  
+  SUB_CTR_SOLVE_POS3_3,
+  'R', -1, -1, REG_CTR_SENSOR,
+  'C',  0,  0, 3,
+  'H', -1, -1, ARG_CTR_10,
+  'Y', -1, -1, 120,
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  
+  'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
+  'H', -1, -1, ARG_CTR_10,
+  'Y', -1, -1, 120,
   -1,
   
   SUB_CTR_SOLVE_REEL0,
-  'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
+  'R', -1, -1, REG_CTR_SENSOR,          
+  'C',  1,  0, -1,
+  'H', -1, -1, ARG_CTR_10K,
+  'Y', -1, -1, 120,
+  'A', -1, -1, SUB_CTR_SOLVE_REEL0,  
   -1,
 
 /////////////////////////////////// old stuff

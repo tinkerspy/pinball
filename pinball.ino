@@ -67,25 +67,16 @@ void setup() {
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, oxo, IN_OXO_1O )
     .onEvent( OUT_SBANK_PRESS1, oxo, IN_OXO_1X )
-    .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_2O )
-    .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_2X )
-    .onEvent( OUT_SBANK_PRESS4, playfield.device( OXO ), IN_OXO_3O )
-    .onEvent( OUT_SBANK_PRESS5, playfield.device( OXO ), IN_OXO_3X )
+    .onEvent( OUT_SBANK_PRESS2, oxo, IN_OXO_2O )
+    .onEvent( OUT_SBANK_PRESS3, oxo, IN_OXO_2X )
+    .onEvent( OUT_SBANK_PRESS4, oxo, IN_OXO_3O )
+    .onEvent( OUT_SBANK_PRESS5, oxo, IN_OXO_3X )
     .onEvent( OUT_SBANK_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
 
   leds.profile( LED_TARGET_A, PROFILE_LED );
   leds.profile( LED_TARGET_B, PROFILE_LED );
-  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
-    .onEvent( OUT_TARGET_LED0_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
-    .onEvent( OUT_TARGET_LED0_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
-    .onEvent( OUT_TARGET_LED1_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
-    .onEvent( OUT_TARGET_LED1_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
-    .onEvent( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
-    .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
-    .onEvent( OUT_TARGET_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
-  
-  leds.profile( LED_BUMPER_A, PROFILE_LED );
-  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
+  leds.profile( LED_BUMPER_C, PROFILE_LED );
+  auto& bumper_a = playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
   
@@ -101,6 +92,15 @@ void setup() {
     .onEvent( OUT_BUMPER_LIGHT_ON, playfield.device( SAVE_GATE ), IN_LBANK_ON )
     .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.device( SAVE_GATE ), IN_LBANK_OFF );
 
+  auto& targets = playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
+    .onEvent( OUT_TARGET_LED0_ON, bumper_a, IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED0_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_LED1_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED1_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
+    .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
+    .onEvent( OUT_TARGET_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
+  
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
@@ -195,11 +195,13 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( io.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET2, Atm_device::SELECT_ALL );
     leds.off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
-    while ( playfield.device( COUNTER0 ).state() ) automaton.run(); 
+    while ( playfield.device( COUNTER0 ).state() ) automaton.run();
+    Serial.printf( "Solved POS1: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS1 ) ); 
+    Serial.printf( "Solved POS2: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS2 ) ); 
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
@@ -228,5 +230,3 @@ void loop() {
     leds.on( LED_GAME_OVER );
   }
 }
-
-

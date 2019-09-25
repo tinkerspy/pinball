@@ -31,7 +31,6 @@ void setup() {
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups ).debounce( 20, 20, 0 );
 
-  playfield.device( COUNTER0 ).trace( Serial );
 
 /*
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
@@ -43,6 +42,7 @@ void setup() {
     .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
 */
 
+  playfield.device( COUNTER0 ).trace( Serial );
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
   playfield
@@ -204,7 +204,7 @@ void loop() {
     while ( playfield.device( COUNTER0 ).state() ) automaton.run(); // <<<<<<<<<<< RESETTING COUNTERS
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
-      for ( int player = 0; player < playfield.device( PLAYERS ).state() + 1; player++ ) {
+      for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
           playfield.device( COUNTER0 ).select( 1 << player );
           leds.off( LED_FLASHER_GRP );

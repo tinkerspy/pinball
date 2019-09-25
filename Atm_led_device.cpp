@@ -328,7 +328,17 @@ int Atm_led_device::state( void ) {
   int16_t s = 0;
   s = registers[0];
   if ( next ) {
-    return s + next->state();
+    return next->state() + ( enabled ? s : 0 );
+  } else {
+    return s;
+  }
+}
+
+int Atm_led_device::state( uint32_t sel ) {
+  int16_t s = 0;
+  s = registers[0];
+  if ( next ) {
+    return next->state( sel >> 1 ) + ( sel & 1 > 0 ? s : 0 );
   } else {
     return s;
   }

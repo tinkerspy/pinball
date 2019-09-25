@@ -8,6 +8,7 @@
 IO io;
 Atm_led_scheduler leds; // IO_LED
 Atm_playfield playfield; // IO_MATRIX
+Atm_device counter, oxo, gi, upperbank, targets, uplanes, bummper_a, bumper_b, bumper_c, kickers, slingshots, lowerbank;
 
 using namespace standard_firmware;
 using namespace custom_firmware; 
@@ -42,7 +43,7 @@ void setup() {
     .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
 */
 
-  playfield.device( COUNTER0 ).trace( Serial );
+  counter = playfield.device( COUNTER0 ).trace( Serial );
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
   playfield
@@ -56,7 +57,7 @@ void setup() {
    
   // Turn on the General Illumination
   leds.profile( COIL_GI, PROFILE_GI );
-  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON );  
+  gi = playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON );  
 
   // Playfield device instantiation
 
@@ -193,7 +194,7 @@ void setup() {
  */
 
 
-
+/*
 void loop() {
   automaton.run(); // <<<<<<<<<< IDLE
   if ( io.isPressed( FRONTBTN ) ) {
@@ -210,10 +211,7 @@ void loop() {
           leds.off( LED_FLASHER_GRP );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
-          if ( ball == 4 ) {
-            Serial.printf( "%d Triple bonus!\n", millis() );
-            playfield.device( OXO ).trigger( IN_OXO_TRIPLE );
-          }
+          playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
           playfield.enable();
           playfield.device( FEEDER ).trigger( IN_LBANK_ON );
@@ -233,3 +231,34 @@ void loop() {
     leds.on( LED_GAME_OVER );
   }
 }
+*/
+
+void loop() {
+  automaton.run(); 
+  if ( io.isPressed( FRONTBTN ) ) {
+    playfield.device( PLAYERS ).init( 1 );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
+    while ( playfield.device( COUNTER0 ).state( Atm_device::SELECT_ALL ) ) automaton.run(); 
+    automaton.delay( 1000 );
+    for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
+      for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
+        do {
+          playfield.init();
+          playfield.device( COUNTER0 ).select( 1 << player );
+          playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
+          playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
+          playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
+          playfield.enable();
+          playfield.device( FEEDER ).trigger( IN_LBANK_ON );
+          while ( playfield.enabled() ) automaton.run(); 
+          playfield.device( OXO ).trigger( IN_OXO_COLLECT );
+          while ( playfield.device( OXO ).state() ) automaton.run();
+          automaton.delay( 1000 );
+          playfield.device( PLAYERS ).select( 0 );
+        } while ( playfield.device( AGAIN ).state() );
+      } 
+    } 
+    leds.on( LED_GAME_OVER );
+  }
+}
+

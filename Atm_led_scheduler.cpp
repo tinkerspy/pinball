@@ -1,12 +1,6 @@
 #include "Atm_led_scheduler.hpp"
 #include "io.hpp"
 
-// Atm_Led_scheduler????
-
-//  enum { IDLE, WAITING, RUNNING, UPDATING }; // STATES
-//  enum { EVT_DONE, EVT_RUN, EVT_UPDATE, EVT_MILLI, ELSE }; // EVENTS
-
-
 Atm_led_scheduler& Atm_led_scheduler::begin( IO &io, const int16_t* group_definition, const int16_t* profile_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {

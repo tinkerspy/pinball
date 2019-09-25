@@ -7,7 +7,7 @@
 // Number of outputs is also limited by the 32 bits in trigger_flags 
 
 #define MAX_OUTPUTS 20
-#define MAX_REGISTERS 8
+#define MAX_REGISTERS 16
 #define STACK_SIZE 16
 #define DYNAMIC_ELEMENTS
 

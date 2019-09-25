@@ -711,11 +711,22 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'S', -1, -1, SUB_CTR_SOLVE_POS1,  
   'S', -1, -1, SUB_CTR_SOLVE_POS2,      // 3 versions: _3:12, _1:23, _2:13 (pulse while low)
   'S', -1, -1, SUB_CTR_SOLVE_POS3,      // 3 versions: _12:3, _13:2, _23:3 (pulse while low)
-  'S', -1, -1, SUB_CTR_SOLVE_REEL0,     // Pulse while high 
-  // Pulse POS3 once
   'R', -1, -1, REG_CTR_STATE,
   'I', -1, -1, -1,                      // Clean!
+  'R', -1, -1, REG_CTR_10,              // Reset digit counter registers to 0
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_100,
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_1K,
+  'I', -1, -1, -1,
+  'R', -1, -1, REG_CTR_10K,
+  'I', -1, -1, -1,
   -1,
+
+
+  // Goeie kans dat we nu een Happy Flow hebben opgelost!
+  // Toch het originele algoritme volgen!!!
+  // Of dit nabouwen in Perl en simuleren...
 
   SUB_CTR_MOVE_START,                   // Pulse 0 & 1 while sensor is low
   'R', -1, -1, REG_CTR_SENSOR,          // Select sensor register   
@@ -726,7 +737,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, 120,
   'C',  0,  0, -1,
-  'A', -1, -1, SUB_CTR_MOVE_START,
+  'A', -1, -1, SUB_CTR_MOVE_START,       // >> LOOP 
   -1,
 
   SUB_CTR_SOLVE_POS1,                    // Pulse 1 & 2 & 3 while sensor is high (store pos of 1ST)
@@ -740,7 +751,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 120,
   'C',  1,  0, 7,
-  'A', -1, -1, SUB_CTR_SOLVE_POS1,
+  'A', -1, -1, SUB_CTR_SOLVE_POS1,      // >> LOOP
   'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register   
   'I', -1, -1, ARG_CTR_1K,              // Store 
   'J', -1, -1, -1,                      // Exit  
@@ -752,6 +763,8 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'J', -1, -1, -1,                      // Exit
   -1,  
 
+// Misschien moet SUB_CTR_SOLVE_POS2 toch in 3 gesplitst: 12, 23, 13
+
   SUB_CTR_SOLVE_POS2,
   'R', -1, -1, REG_CTR_SENSOR,
   'H', -1, -1, ARG_CTR_100,
@@ -760,23 +773,23 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 120,
   'C',  0,  0, 6,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2,
+  'A', -1, -1, SUB_CTR_SOLVE_POS2,      // >> LOOP
   'R', -1, -1, REG_CTR_POS2,
-  'I', -1, -1, 2,
+  'I', -1, -1, ARG_CTR_100,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, 120,
   'J', -1, -1, -1,
   'R', -1, -1, REG_CTR_POS2,
-  'I', -1, -1, 3,
+  'I', -1, -1, ARG_CTR_10,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 120,
   -1, 
 
   SUB_CTR_SOLVE_POS3,
   'R', -1, -1, REG_CTR_POS2,
-  'C',  2,  1, 0,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,
+  'C',  2,  1, 0,                     // IF POS2 != 2
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  // THEN 2
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  // ELSE 3
   -1,
   
   SUB_CTR_SOLVE_POS3_2,
@@ -784,7 +797,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'C',  0,  0, 3,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  // >> LOOP
   'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, 120,
@@ -795,7 +808,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'C',  0,  0, 3,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  
+  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  // >> LOOP
   'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, 120,

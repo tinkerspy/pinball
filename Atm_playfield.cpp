@@ -163,7 +163,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       if ( prof[n].device_index ) {
         uint16_t e = 1 + ( (prof[n].device_index - 1) * 2 );
         //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", n, prof[n].device_index, e );
-        prof[n].device->trigger( e );         
+        prof[n].device->trigger( e, 1 );         
       } else {
       }
       prof[n].last_change = millis();
@@ -177,7 +177,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       if ( prof[n].device_index ) {
         uint16_t e = 2 + ( (prof[n].device_index - 1) * 2 );
         //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
-        prof[n].device->trigger( e );         
+        prof[n].device->trigger( e, 1 );         
       }
       prof[n].last_change = millis();
       prof[n].make_wait = 0;
@@ -227,7 +227,7 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
           p++; 
         }
       }
-    }
+    } 
     //Serial.printf( "Switches attached\n" ); 
   } else { 
     if ( device_script != NULL ) {
@@ -242,6 +242,9 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
       prof[n].device->set_led( led_group );
       prof[n].device->set_script( device_script );
     }
+  }
+  if ( n < numberOfSwitches && io->isPressed( n ) ) {      // We're linked to a single physical switch
+    prof[n].device->trigger( 1, 1 );                       // Make sure the device knows if it's pressed
   }
   return *prof[n].device;
 }

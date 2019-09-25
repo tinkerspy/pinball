@@ -321,7 +321,7 @@ Atm_device& Atm_device::trigger( int event ) {
 }
 
 Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
-  if ( next ) {
+  if ( next && sel > 1 ) {
     next->trigger( event, sel >> 1 );
   }
   if ( playfield->enabled() || input_persistence ) {
@@ -335,22 +335,18 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
  */
 
 int Atm_device::state( void ) {
-  int16_t s = 0;
-  s = registers[0];
   if ( next ) {
-    return next->state() + ( enabled ? s : 0 );
+    return next->state() + ( enabled ? registers[0] : 0 );
   } else {
-    return s;
+    return registers[0];
   }
 }
 
 int Atm_device::state( uint32_t sel ) {
-  int16_t s = 0;
-  s = registers[0];
-  if ( next ) {
-    return next->state( sel >> 1 ) + ( sel & 1 ? s : 0 );
+  if ( next && sel > 1 ) {
+    return next->state( sel >> 1 ) + ( sel & 1 ? registers[0] : 0 );
   } else {
-    return s;
+    return registers[0];
   }
 }
 

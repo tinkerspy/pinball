@@ -92,7 +92,7 @@ void setup() {
     .onEvent( OUT_BUMPER_LIGHT_ON, playfield.device( SAVE_GATE ), IN_LBANK_ON )
     .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.device( SAVE_GATE ), IN_LBANK_OFF );
 
-  auto& targets = playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
     .onEvent( OUT_TARGET_LED0_ON, bumper_a, IN_BUMPER_LIGHT_ON )
     .onEvent( OUT_TARGET_LED0_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_LED1_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )

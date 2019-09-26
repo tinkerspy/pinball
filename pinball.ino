@@ -42,6 +42,7 @@ void setup() {
     .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
 */
 
+  //playfield.debounce( COUNTER0, 0, 0, 0 );
   playfield.device( COUNTER0 ).trace( Serial ); // PROBLEM auto variables have local scope!!!
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
@@ -164,8 +165,8 @@ void setup() {
   Serial.println( FreeRam() );
 
 //  playfield.disable();     
-  playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, 1 );
-  
+ playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, 1 );
+ automaton.delay( 100000 );  
 }
 
 

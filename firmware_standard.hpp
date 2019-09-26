@@ -848,7 +848,6 @@ int16_t counter_em4d1w_firmware[] = {
   -1,
   
   SUB_CTR_SOLVE_REEL0,
-  'Y', -1, -1, 10000,
   'R', -1, -1, REG_CTR_SENSOR,          
   'C', VAR_CTR_HIGH, 0, -1,
   'H', -1, -1, ARG_CTR_10K,

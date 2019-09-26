@@ -659,7 +659,6 @@ enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
           SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
           SUB_CTR_MOVE_START,
           SUB_CTR_SOLVE_POS1, 
-          SUB_CTR_SOLVE_POS2, 
           SUB_CTR_SOLVE_POS2_1, 
           SUB_CTR_SOLVE_POS2_2, 
           SUB_CTR_SOLVE_POS2_3, 
@@ -679,7 +678,6 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
           SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
           SUB_CTR_MOVE_START,
           SUB_CTR_SOLVE_POS1, 
-          SUB_CTR_SOLVE_POS2, 
           SUB_CTR_SOLVE_POS2_1, 
           SUB_CTR_SOLVE_POS2_2, 
           SUB_CTR_SOLVE_POS2_3, 
@@ -695,6 +693,8 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'I', -1, -1,  1,                      // Dirty: reset before use
   -1,
 
+// IF THIS WORKS WE DON'T NEED THE POS REGISTERS AT ALL
+
   IN_CTR_RESET2, 
   '0', -1,  0, -1,                      // Force primary core
   'C',  0, -1,  0,                      // Only when dirty
@@ -706,7 +706,6 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'I', -1, -1, -1,
   'S', -1, -1, SUB_CTR_MOVE_START,
   'S', -1, -1, SUB_CTR_SOLVE_POS1,  
-  'S', -1, -1, SUB_CTR_SOLVE_POS2,      // Solves POS2, 3 & 0
   'R', -1, -1, REG_CTR_STATE,
   'I', -1, -1, -1,                      // Clean!
   'R', -1, -1, REG_CTR_10,              // Reset digit counter registers to 0
@@ -743,26 +742,17 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'Y', -1, -1, VAR_CTR_DELAY,
   'C', VAR_CTR_HIGH,  0, 7,
   'A', -1, -1, SUB_CTR_SOLVE_POS1,      // >> LOOP
-  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register   
+  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register  POS1 = 1 
   'I', -1, -1, ARG_CTR_1K,              // Store 
-  'J', -1, -1, -1,                      // Exit  
-  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register   
+  'A', -1, -1, SUB_CTR_SOLVE_POS2_1,  
+  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register  POS1 = 2
   'I', -1, -1, ARG_CTR_100,             // Store 
-  'J', -1, -1, -1,                      // Exit  
-  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register   
+  'A', -1, -1, SUB_CTR_SOLVE_POS2_2,  
+  'R', -1, -1, REG_CTR_POS1,            // Store in POS1 register  POS1 = 3 
   'I', -1, -1, ARG_CTR_10,              // Store 
-  'J', -1, -1, -1,                      // Exit
+  'A', -1, -1, SUB_CTR_SOLVE_POS2_3,  
   -1,  
 
-  SUB_CTR_SOLVE_POS2,
-  'R', -1, -1, REG_CTR_POS1,
-  'C',  2,  2, 0,                     
-  'C',  3,  2, 0,                     
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_1,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_2,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_3,  
-  -1,
-  
   SUB_CTR_SOLVE_POS2_1,
   'R', -1, -1, REG_CTR_SENSOR,
   'H', -1, -1, ARG_CTR_100,
@@ -923,7 +913,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_10,
   'C',  9,  3, 0,                      // Check rollover
   'I', -1, -1, 1,                      // If not just increment & yield
-  'Y', -1, -1, 300,
+  'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
   'I', -1, -1, -1,                     // Else reset digit counter register
   'S', -1, -1, SUB_CTR_PULSE_100,      // And rollover
@@ -934,7 +924,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_100,
   'C',  9,  3, 0,
   'I', -1, -1, 1,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
   'I', -1, -1, -1,
   'S', -1, -1, SUB_CTR_PULSE_1K,  
@@ -945,7 +935,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'H', -1, -1, ARG_CTR_1K,
   'C',  9,  3, 0,
   'I', -1, -1, 1,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
   'I', -1, -1, -1,
   'S', -1, -1, SUB_CTR_PULSE_10K,  
@@ -955,7 +945,7 @@ IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET, IN_CTR_RESET2,
   'R', -1, -1, REG_CTR_10K,
   'H', -1, -1, ARG_CTR_10K,
   'I', -1, -1, 1,
-  'Y', -1, -1, 300,
+  'Y', -1, -1, VAR_CTR_DELAY,
   -1,
 
   IN_CTR_PRESS,

@@ -41,7 +41,7 @@ void setup() {
     .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
 */
 
-  auto& counter = playfield.device( COUNTER0 ).trace( Serial );
+  playfield.device( COUNTER0 ).trace( Serial ); // PROBLEM auto variables have local scope!!!
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
   playfield
@@ -59,18 +59,18 @@ void setup() {
 
   // Playfield device instantiation
 
-  auto& oxo = playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
+  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
-    .onEvent( OUT_OXO_COLLECT, counter, IN_CTR_PT1000 );
+    .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK_PRESS0, oxo, IN_OXO_1O )
-    .onEvent( OUT_SBANK_PRESS1, oxo, IN_OXO_1X )
-    .onEvent( OUT_SBANK_PRESS2, oxo, IN_OXO_2O )
-    .onEvent( OUT_SBANK_PRESS3, oxo, IN_OXO_2X )
-    .onEvent( OUT_SBANK_PRESS4, oxo, IN_OXO_3O )
-    .onEvent( OUT_SBANK_PRESS5, oxo, IN_OXO_3X )
+    .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
+    .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_1X )
+    .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_2O )
+    .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_2X )
+    .onEvent( OUT_SBANK_PRESS4, playfield.device( OXO ), IN_OXO_3O )
+    .onEvent( OUT_SBANK_PRESS5, playfield.device( OXO ), IN_OXO_3X )
     .onEvent( OUT_SBANK_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
 
   leds.profile( LED_TARGET_A, PROFILE_LED );
@@ -129,7 +129,7 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
     .onEvent( OUT_SBANK_SCORE0, playfield.device( COUNTER0 ), IN_CTR_PT500 )  
     .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
-    .onEvent( OUT_SBANK_SCORE1, counter, IN_CTR_PT1000 )
+    .onEvent( OUT_SBANK_SCORE1, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
     .onEvent( OUT_SBANK_SCORE2, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
@@ -156,28 +156,12 @@ void setup() {
   Serial.println( FreeRam() );
 
   leds.on( LED_GAME_OVER );
-
   
-/*
-  animation[0].begin( 500 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI0 ); }).repeat().start(); // leds.blink( LED_OXO_ANI0, 500 );???
-  animation[1].begin( 350 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI1 ); }).repeat().start();
-  animation[2].begin( 600 ).onTimer( [] ( int idx, int v, int up ) { leds.toggle( LED_OXO_ANI2 ); }).repeat().start();
-*/
-  // leds.profile( LED_GAME_OVER, PROFILE_BLINK ).on( LED_GAME_OVER );
-
   playfield.disable();     
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
-
-//  playfield.device( ANIMATION ).trace( Serial );
-//  playfield.device( ANIMATION, LED_OXO_ANI_GRP, animation_firmware, 50 );
-//  automaton.delay( 1000 );
-//  playfield.device( ANIMATION ).trigger( IN_ANI_CYCLE );
-
-//  playfield.device( ANIMATION )
-//   .select( Atm_device::SELECT_ALL );
 
   automaton.delay( 500 );
   
@@ -187,7 +171,7 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( io.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET2, Atm_device::SELECT_ALL );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
     leds.off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );

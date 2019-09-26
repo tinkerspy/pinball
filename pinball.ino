@@ -183,14 +183,6 @@ void setup() {
   
 }
 
-/*  
- *  playfield.device( DUAL_TARGET ).init();
- *  playfield.device( UPLANE ).init();
- *  playfield.device( KICKER ).init();
- *  playfield.device( OXO ).init();
- *  playfield.device( AGAIN ).init();
- */
-
 
 void loop() {
   automaton.run(); 
@@ -202,6 +194,7 @@ void loop() {
     while ( playfield.device( COUNTER0 ).state() ) automaton.run();
     Serial.printf( "Solved POS1: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS1 ) ); 
     Serial.printf( "Solved POS2: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS2 ) ); 
+    Serial.printf( "Solved POS3: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS3 ) ); 
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {

@@ -243,9 +243,10 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
       prof[n].device->set_script( device_script );
     }
   }
-  if ( n < numberOfSwitches && io->isPressed( n ) ) {      // We're linked to a single physical switch
-    prof[n].device->trigger( 1, 1 );                       // Make sure the device knows if it's pressed
-  }
+  // This seems to be unnecessary
+  //if ( n < numberOfSwitches && io->isPressed( n ) ) {      // We're linked to a single physical switch
+  //  prof[n].device->trigger( 1, 1 );                       // Make sure the device knows if it's pressed
+  //}
   return *prof[n].device;
 }
 

@@ -184,6 +184,7 @@ void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
       return;
     }
   }
+  //Serial.println( "unscan" );
   io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
 }
 

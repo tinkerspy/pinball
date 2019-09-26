@@ -138,7 +138,7 @@ int16_t Atm_device::parse_code( int16_t* device_script ) {
     p++;
     while ( p[0] != -1 ) {
       //if ( callback_trace ) 
-      //  stream_trace->printf( "Atm_device parse %03d: %c %d ? %d : %d\n", iid, p[0], p[1], p[2], p[3] );
+      //  stream_trace->printf( "Atm_device parse %03d -> %d: %c %d ? %d : %d\n", iid, p - device_script, p[0], p[1], p[2], p[3] );
       p += 4;
     }
     p++;

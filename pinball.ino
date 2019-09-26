@@ -26,6 +26,7 @@ void setup() {
     .retrigger()
     .show();
 
+
   leds.begin( io, led_groups, profile_definition );
   
   Serial.println( "init playfield" ); delay( 1000 );
@@ -44,6 +45,7 @@ void setup() {
   playfield.device( COUNTER0 ).trace( Serial ); // PROBLEM auto variables have local scope!!!
   playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
   
+
   playfield
     .leds()
       .profile( LED_FLASHER_GRP, PROFILE_LED )
@@ -143,18 +145,17 @@ void setup() {
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
 
   leds.profile( LED_AGAIN_GRP, PROFILE_LED );
-  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
+  //playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
 
   leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
-  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
+  //playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
 
   leds.profile( COIL_FEEDER, PROFILE_FEEDER );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
+  //playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
 
   leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
   playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).trigger( IN_LBANK_ON );
   
-  playfield.disable();     
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
@@ -162,6 +163,9 @@ void setup() {
   
   Serial.println( FreeRam() );
 
+//  playfield.disable();     
+  playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, 1 );
+  
 }
 
 

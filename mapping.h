@@ -358,6 +358,7 @@ int16_t switch_groups[] = {
   PLAYERUP,
   BALLUP,
   ANIMATION,
+  GAME_OVER,
   SWITCHES,
   -1,
 

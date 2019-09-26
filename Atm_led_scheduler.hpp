@@ -3,7 +3,7 @@
 #include <Automaton.h>
 #include "IO.hpp"
 
-#define MAX_LEDS 1280 // Physical + Logical
+#define MAX_LEDS 320 // Physical + Logical
 #define MAX_PROFILES 32
 #define MAX_GROUPS 32 // Logical groups
 #define MAX_WATCHERS 16 

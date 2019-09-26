@@ -217,6 +217,7 @@ enum {
   PLAYERUP,
   BALLUP,
   ANIMATION,
+  GAME_OVER,
   SWITCHES,
 
 /* Don't forget to add new entries to the switch_group_definition jumptable and array! */

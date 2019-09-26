@@ -76,7 +76,7 @@ void setup() {
   leds.profile( LED_TARGET_A, PROFILE_LED );
   leds.profile( LED_TARGET_B, PROFILE_LED );
   leds.profile( LED_BUMPER_C, PROFILE_LED );
-  auto& bumper_a = playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
   
@@ -93,7 +93,7 @@ void setup() {
     .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.device( SAVE_GATE ), IN_LBANK_OFF );
 
   playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware )
-    .onEvent( OUT_TARGET_LED0_ON, bumper_a, IN_BUMPER_LIGHT_ON )
+    .onEvent( OUT_TARGET_LED0_ON, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_ON )
     .onEvent( OUT_TARGET_LED0_OFF, playfield.device( BUMPER_A ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_LED1_ON, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_ON )
     .onEvent( OUT_TARGET_LED1_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
@@ -123,8 +123,6 @@ void setup() {
     .onEvent( OUT_KICKER_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT10 )
     .onEvent( OUT_KICKER_PRESS, playfield.device( OXO ), IN_OXO_TOGGLE );    
 
-  // Simple switches and things they trigger
-  
   playfield.device( LOWER, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
     .onEvent( OUT_SBANK_SCORE0, playfield.device( COUNTER0 ), IN_CTR_PT500 )  
@@ -153,18 +151,17 @@ void setup() {
   leds.profile( COIL_FEEDER, PROFILE_FEEDER );
   playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
 
-  Serial.println( FreeRam() );
-
-  leds.on( LED_GAME_OVER );
+  leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
+  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).trigger( IN_LBANK_ON );
   
   playfield.disable();     
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
-
-  automaton.delay( 500 );
   
+  Serial.println( FreeRam() );
+
 }
 
 
@@ -204,6 +201,6 @@ void loop() {
         //} while ( playfield.device( AGAIN ).state() ); 
       } 
     } 
-    leds.on( LED_GAME_OVER );
+    playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
   }
 }

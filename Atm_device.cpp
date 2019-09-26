@@ -35,7 +35,8 @@ Atm_device& Atm_device::begin( Atm_playfield &playfield, int16_t led_group, int1
 }
 
 Atm_device& Atm_device::set_script( int16_t* script ) {
-  this->script = parse_code( script );
+  this->script = script;
+  parse_code( this->script );
   start_code( 0 );
   return *this;
 }
@@ -64,6 +65,18 @@ Atm_device& Atm_device::select( uint32_t mask ) {
   if ( next ) {
     next->select( mask >> 1 );
   }
+  return *this;
+}
+
+Atm_device& Atm_device::dump( Stream & stream ) {
+  int16_t l = parse_code( this->script );
+  for ( int16_t i = 0; i < l; i++ ) {
+    stream.printf( "%d, " );
+    if ( i % 60 == 0 ) {
+      stream.println();
+    }
+  }
+  stream.println();
   return *this;
 }
 
@@ -109,7 +122,7 @@ void Atm_device::action( int id ) {
   }
 }
 
-int16_t* Atm_device::parse_code( int16_t* device_script ) {
+int16_t Atm_device::parse_code( int16_t* device_script ) {
   int16_t* p = device_script;
   while ( p[0] != -1 ) *p++ = 0;
   numberOfInputs = p - device_script;
@@ -130,7 +143,7 @@ int16_t* Atm_device::parse_code( int16_t* device_script ) {
     }
     p++;
   }
-  return device_script;
+  return p - device_script;
 }
 
 int16_t Atm_device::led_index( int16_t led_group, int16_t selector ) {

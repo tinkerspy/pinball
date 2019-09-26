@@ -31,6 +31,7 @@ class Atm_device: public Machine {
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
   Atm_device& trace( Stream & stream );
+  Atm_device& dump( Stream & stream );
   Atm_device& trigger( int event );
   Atm_device& trigger( int event, uint32_t sel );
   int state( void );
@@ -45,6 +46,7 @@ class Atm_device: public Machine {
   int16_t reg( uint8_t r );
   Atm_device& chain( Atm_device& next );
   Atm_device& select( uint32_t mask );
+  
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
 
  private:
@@ -55,7 +57,7 @@ class Atm_device: public Machine {
   void action( int id ); 
   void start_code( int16_t e );
   void run_code( uint8_t active_core );
-  int16_t* parse_code( int16_t* device_script );
+  int16_t parse_code( int16_t* device_script );
   int16_t led_index( int16_t led_group, int16_t selector );
   bool led_active( int16_t led_group, int16_t selector );
   void led_on( int16_t led_group, int16_t selector );

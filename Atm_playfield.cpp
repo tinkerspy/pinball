@@ -2,7 +2,7 @@
 
 // TODO: Add catchall on onPress()/onRelease()
 
-Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
+Atm_playfield& Atm_playfield::begin( IO& io, t_scan_callback scan, Atm_led_scheduler& led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY,     ELSE */
@@ -14,11 +14,11 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led ) {
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
+  io_scan = scan;
   this->io = &io;
   this->pleds = &led;
   memset( connectors, 0, sizeof( connectors ) );
   memset( prof, 0, sizeof( prof ) );
-  debounce( 5, 0, 0 );
   timer.set( STARTUP_DELAY_MS );  
   return *this;          
 }
@@ -59,22 +59,6 @@ void Atm_playfield::action( int id ) {
   }
 }
 
-Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint16_t m ) {
-  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
-    prof[i].break_delay = b; 
-    prof[i].make_delay = m; 
-    prof[i].retrigger_delay = r; 
-  }
-  return *this;   
-}
-
-Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t r, uint16_t m ) {
-  prof[n].break_delay = b; 
-  prof[n].make_delay = m; 
-  prof[n].retrigger_delay = r; 
-  return *this;   
-}
-
 Atm_playfield& Atm_playfield::disable() {
   trigger( EVT_DISABLE );
   return *this;   
@@ -94,56 +78,21 @@ bool Atm_playfield::isPressed( int16_t n ) {
 }
 
 void Atm_playfield::scan_matrix( void ) {
-  int16_t sw = io->scan();
+  int16_t sw = io_scan();
   if ( sw != 0 ) {
-    switch_changed( abs( sw ), sw > 0 );
+    if ( sw > 0 ) {
+      push( connectors, ON_PRESS, sw, sw, 1 ); 
+      if ( prof[sw].initialized ) prof[sw].element->trigger( Atm_element::EVT_KICK ); 
+    } else {
+      sw = abs( sw );
+      push( connectors, ON_RELEASE, sw, sw, 0 ); 
+      if ( prof[sw].initialized ) prof[sw].element->trigger( Atm_element::EVT_RELEASE );
+    }
   }
 }
 
 void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
-  uint16_t millis_passed;
-  millis_passed = (uint16_t) millis() - prof[n].last_change;
-/*
-  Serial.print( n );
-  Serial.print( " make_delay: " );
-  Serial.print( prof[n].make_delay );
-  Serial.print( " break_delay: " );
-  Serial.println( prof[n].break_delay );
-  */
-  if ( v ) {
-    if ( prof[n].make_delay > 0 ) {
-  //    Serial.print( "make_delay: " );
-      if ( !prof[n].make_wait ) prof[n].last_change = millis();
-      millis_passed = (uint16_t) millis() - prof[n].last_change;
-  //    Serial.print( millis_passed );
-  //    Serial.print( " < " );
-  //    Serial.println( prof[n].make_delay );
-      if ( millis_passed < prof[n].make_delay ) {
-        prof[n].make_wait = 1;
-        io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
-        return;
-      }
-      prof[n].make_wait = 0;
-    } 
-    if ( millis_passed > prof[n].retrigger_delay ) {
-      prof[n].switch_state = 1;
-      push( connectors, ON_PRESS, n, n, 1 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_KICK ); 
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
-    }
-  } else {
-    if ( ( millis_passed >= prof[n].break_delay ) ) {
-      prof[n].switch_state = 0;      
-      push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].initialized ) prof[n].element->trigger( Atm_element::EVT_RELEASE );
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
-    }
-  }
-  io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
+
 }
 
 Atm_element& Atm_playfield::element( int16_t n, int16_t coil_led /* -1 */, int16_t light_led /* -1 */, int8_t coil_profile /* -1 */, int8_t led_profile /* -1 */ ) {

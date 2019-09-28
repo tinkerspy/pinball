@@ -13,6 +13,11 @@ Atm_em_counter counter[4];
 Atm_score score;
 Atm_scalar players, bonus;
 Atm_timer animation[3];
+Debounce debounce;
+
+int16_t io_scan( void ) { return io.scan(); }
+void io_unscan( void ) { io.unscan(); }
+int16_t debounce_scan( void ) { return debounce.scan(); }
 
 void setup() {
   delay( 1000 );
@@ -30,20 +35,19 @@ void setup() {
 
   leds.begin( io, group_definition, profile_definition );
   
-  playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
+  playfield.begin( io, debounce_scan, leds ).disable();
 
-//  debounce.begin( io.scan, io.unscan, io.numSwitches(), profiles );
-
-//  playfield.begin( debounce.scan, io.numSwitches() ).disable();
+  debounce.begin( io ).debounce( 20, 20, 0 ); // profiles );
 
   score.begin()
 //    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[2].begin( playfield, COUNTER2, COIL_COUNTER2_GRP, PROFILE_COUNTER ) )
     .addCounter( counter[3].begin( playfield, COUNTER3, COIL_COUNTER3_GRP, PROFILE_COUNTER ) ) 
-    .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
-    .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
-    .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK ); 
+//    .onDigit( 0, playfield.element( CHIME0, COIL_CHIME0, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) // Link digits to chimes
+//    .onDigit( 1, playfield.element( CHIME1, COIL_CHIME1, -1, PROFILE_COIL ), Atm_element::EVT_KICK ) 
+//    .onDigit( 2, playfield.element( CHIME2, COIL_CHIME2, -1, PROFILE_COIL ), Atm_element::EVT_KICK )
+    ; 
 
   playfield
     .leds()
@@ -167,16 +171,16 @@ void setup() {
     .element( IN_LANE_R )
       .onPress( oxo, oxo.EVT_9 )
       .onScore( score, score.EVT_1000 );
-    
+
+  debounce.debounce( SLING_L, 20, 200, 0 );
   playfield
     .element( SLING_L, COIL_SLING_L, -1 )
-      .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
       .onScore( score, score.EVT_10 );
 
+  debounce.debounce( SLING_R, 20, 200, 0 );
   playfield
     .element( SLING_R, COIL_SLING_R, -1 )
-      .debounce( 20, 200, 0 )
       .onPress( oxo, oxo.EVT_TOGGLE )
       .onScore( score, score.EVT_10 );
 
@@ -189,20 +193,20 @@ void setup() {
     .element( OUT_LANE )
       .onScore( score, score.EVT_1000 );
 
+  debounce.debounce( FLIPPER_L, 5, 0, 0 );
   playfield
-    .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0, 0 );
+    .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
 
+  debounce.debounce( FLIPPER_R, 5, 0, 0 );
   playfield  
-    .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER )
-      .debounce( 5, 0, 0 );
+    .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
   
   playfield
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
 
+  debounce.debounce( BALL_ENTER, 5, 0, 2000 ); 
   playfield
     .element( BALL_ENTER )
-      .debounce( 5, 0, 2000 )
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!
 
   playfield

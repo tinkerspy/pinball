@@ -144,11 +144,6 @@ Atm_element& Atm_element::persistent( bool v /* = true */ ) {
   return *this;
 }
 
-Atm_element& Atm_element::debounce( uint8_t b, uint16_t r, uint16_t m ) {
-  playfield->debounce( switchno, b, r, m );
-  return *this;
-}
-
 /* Optionally override the default trigger() method
  * Control how your machine processes triggers
  */

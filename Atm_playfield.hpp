@@ -12,15 +12,11 @@
 
 class Atm_element;
 
+typedef int16_t ( *t_scan_callback )( void );
+
 struct switch_record { 
-    uint8_t switch_state : 1;
     uint8_t persistent : 1;
     uint8_t disabled : 1;
-    uint8_t make_wait : 1;
-    uint8_t break_delay;
-    uint16_t make_delay; 
-    uint16_t retrigger_delay;
-    uint16_t last_change;
     bool initialized; 
 #ifdef DYNAMIC_ELEMENTS    
     Atm_element *element;
@@ -35,17 +31,15 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   enum { IDLE, WAIT, SCAN, DISABLED, READY }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, ELSE }; // EVENTS
   Atm_playfield( void ) : Machine() {};
-  Atm_playfield& begin( IO& io, Atm_led_scheduler& led );
+  Atm_playfield& begin( IO& io, t_scan_callback scan, Atm_led_scheduler& led );
   Atm_playfield& trace( Stream & stream );
   Atm_playfield& trigger( int event );
-  int state( void );
   bool isPressed( int16_t n );
+  int state( void );
   Atm_playfield& onPress( int sub, Machine& machine, int event = 0 );
   Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );
   Atm_playfield& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_playfield& debounce( uint8_t b, uint16_t r, uint16_t m );
-  Atm_playfield& debounce( int16_t n, uint8_t b, uint16_t r, uint16_t m );  
   Atm_playfield& disable();
   Atm_playfield& enable();
   bool enabled();
@@ -76,5 +70,6 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   uint16_t global_last_kick;
   atm_timer_millis timer;
   bool pf_enabled = false;
-  IO *io;
+  t_scan_callback io_scan;
+  IO* io;
 };

@@ -15,10 +15,6 @@ Atm_scalar players, bonus;
 Atm_timer animation[3];
 Debounce debounce;
 
-int16_t io_scan( void ) { return io.scan(); }
-void io_unscan( void ) { io.unscan(); }
-int16_t debounce_scan( void ) { return debounce.scan(); }
-
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
@@ -35,7 +31,7 @@ void setup() {
 
   leds.begin( io, group_definition, profile_definition );
   
-  playfield.begin( io, debounce_scan, leds ).disable();
+  playfield.begin( io, [] ( void ) { return debounce.scan(); }, leds ).disable();
 
   debounce.begin( io ).debounce( 20, 20, 0 ); // profiles );
 

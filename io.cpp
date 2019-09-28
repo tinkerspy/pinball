@@ -2,6 +2,14 @@
 
 #undef DEBUG
 
+// TODO zorgvuldig alle switch events checken op geldigheid
+// Komen ze wel van een actieve matrix-node???
+// Filteren direct bij input van matrix scanner.
+// Input filter bitmap construeren in switchMap()???
+//     soll[row][col] = filter[row][col] & (...
+// default   switchMap( 0, 0, 0, 0, 0 );
+// switch_map kan dan weg 
+
 IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate ) {
   this->pin_clock = pin_clock;
   this->pin_latch = pin_latch;
@@ -90,6 +98,10 @@ uint16_t IO::numPixels( void ) {
   return led_cnt;
 }
 
+uint16_t IO::numSwitches( void ) {
+  return switch_cnt * 8;
+}
+
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
    return (uint32_t) r << 24 | (uint32_t) g << 16 | (uint32_t) b << 8 | (uint32_t) w;
 }
@@ -124,7 +136,14 @@ IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) 
   row_map[2] = row_map[1] + r2;
   row_map[3] = row_map[2] + r3;
   row_map[4] = row_map[3] + r4;
+  switch_map = 0;
+  if ( r1 ) switch_map |= 0B00000001;
+  if ( r2 ) switch_map |= 0B00000010;
+  if ( r3 ) switch_map |= 0B00000100;
+  if ( r4 ) switch_map |= 0B00001000;
+  if ( r5 ) switch_map |= 0B00010000;
   node_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
+  switch_cnt = r1 + r2 + r3 + r4 + r5;
   return *this;
 }
 
@@ -142,7 +161,6 @@ IO& IO::range( uint8_t node_max, uint8_t col_max ) {
   this->switch_max = switch_max;
   return *this;
 }
-
 
 IO& IO::invert( uint8_t code ) {
   if ( code != 0 ) {
@@ -209,8 +227,9 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
 
 // Return 1-based mapped index
 
-uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) { 
-  return col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
+uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) {
+  uint16_t code = col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
+  return ( code <= switch_cnt * 8 ) ? code : 0; // Zou niet nodig moeten zijn...
 }
 
 uint16_t IO::isPressed( int16_t code ) {
@@ -232,7 +251,8 @@ int16_t IO::scan() {
     uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
     if ( uint8_t changes = ist[node_ptr][switch_ptr] ^ soll_normalized ) {
       while ( io_ptr < NUM_IOPORTS ) {
-        if ( changes & ( 1 << io_ptr ) ) { // something changed
+        if ( changes & ( 1 << io_ptr ) & switch_map ) {
+        //if ( changes & ( 1 << io_ptr ) ) { // something changed
           if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
             ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
             io_ptr++; // Skip next scan() call         

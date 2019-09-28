@@ -32,6 +32,10 @@ void setup() {
   
   playfield.begin( io, leds ).debounce( 20, 20, 0 ).disable();
 
+//  debounce.begin( io.scan, io.unscan, io.numSwitches(), profiles );
+
+//  playfield.begin( debounce.scan, io.numSwitches() ).disable();
+
   score.begin()
 //    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
     .addCounter( counter[1].begin( playfield, COUNTER1, COIL_COUNTER1_GRP, PROFILE_COUNTER ) )

@@ -128,64 +128,23 @@ bool Atm_playfield::isPressed( int16_t n ) {
 void Atm_playfield::scan_matrix( void ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
-    switch_changed( abs( sw ), sw > 0 );
-  }
-}
-
-void Atm_playfield::switch_changed( int16_t n, uint8_t v ) {
-  uint16_t millis_passed;
-  millis_passed = (uint16_t) millis() - prof[n].last_change;
-/*
-  Serial.print( n );
-  Serial.print( " make_delay: " );
-  Serial.print( prof[n].make_delay );
-  Serial.print( " break_delay: " );
-  Serial.println( prof[n].break_delay );
-  */
-  if ( v ) {
-    if ( prof[n].make_delay > 0 ) {
-  //    Serial.print( "make_delay: " );
-      if ( !prof[n].make_wait ) prof[n].last_change = millis();
-      millis_passed = (uint16_t) millis() - prof[n].last_change;
-  //    Serial.print( millis_passed );
-  //    Serial.print( " < " );
-  //    Serial.println( prof[n].make_delay );
-      if ( millis_passed < prof[n].make_delay ) {
-        prof[n].make_wait = 1;
-        io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
-        return;
+    if ( sw > 0 ) {
+      push( connectors, ON_PRESS, sw, sw, 1 ); 
+      if ( prof[sw].device_index ) {
+        uint16_t e = 1 + ( (prof[sw].device_index - 1) * 2 );
+        //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", sw, prof[sw].device_index, e );
+        prof[sw].device->trigger( e, 1 );         
       }
-      prof[n].make_wait = 0;
-    } 
-    if ( millis_passed > prof[n].retrigger_delay ) {
-      prof[n].switch_state = 1;
-      push( connectors, ON_PRESS, n, n, 1 ); 
-      if ( prof[n].device_index ) {
-        uint16_t e = 1 + ( (prof[n].device_index - 1) * 2 );
-        //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", n, prof[n].device_index, e );
-        prof[n].device->trigger( e, 1 );         
-      } else {
-      }
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
-    }
-  } else {
-    if ( ( millis_passed >= prof[n].break_delay ) ) {
-      prof[n].switch_state = 0;      
-      push( connectors, ON_RELEASE, n, n, 0 ); 
-      if ( prof[n].device_index ) {
-        uint16_t e = 2 + ( (prof[n].device_index - 1) * 2 );
-        //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[n].device_index, e ); delay( 100 );
-        prof[n].device->trigger( e, 1 );         
-      }
-      prof[n].last_change = millis();
-      prof[n].make_wait = 0;
-      return;
+    } else {
+      sw = abs( sw );
+      push( connectors, ON_RELEASE, sw, sw, 0 ); 
+      if ( prof[sw].device_index ) {
+        uint16_t e = 2 + ( (prof[sw].device_index - 1) * 2 );
+        //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[sw].device_index, e ); delay( 100 );
+        prof[sw].device->trigger( e, 1 );         
+      }    
     }
   }
-  //Serial.println( "unscan" );
-  io->unscan(); // Cancels the last scan() event (makes event sticky in case of debounce)
 }
 
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!

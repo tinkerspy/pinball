@@ -28,6 +28,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
+  db = new Debounce( this );
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;
@@ -245,7 +246,7 @@ uint16_t IO::isPressed( int16_t code ) {
 
 // TODO: remember last scan bitpos and continue from there...
 
-int16_t IO::scan() {
+int16_t IO::scan_matrix() {
   for (;;) {      
     // Check one normalized (=corrected for normally closed switches) byte (5 bits) for changes
     uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
@@ -280,6 +281,20 @@ int16_t IO::scan() {
     }
   }
 }  
+
+IO& IO::debounce( int16_t n, uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros ) {
+  db->debounce( n, press_micros, release_micros, throttle_micros );
+  return *this;
+}
+
+IO& IO::debounce( uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros ) {
+  db->debounce( press_micros, release_micros, throttle_micros );
+  return *this;
+}
+
+int16_t IO::scan() {
+  return db->scan();
+}
 
 int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event
   ist[node_ptr][switch_ptr] ^= ( 1 << io_ptr );

@@ -19,7 +19,6 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* gr
   this->pleds = &led;
   memset( connectors, 0, sizeof( connectors ) ); 
   memset( prof, 0, sizeof( prof ) ); 
-  debounce( 5, 0, 0 );
   timer.set( STARTUP_DELAY_MS );
   numberOfSwitches = io.numSwitches();  
   numberOfGroups = 0;  
@@ -89,22 +88,6 @@ int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
   //  if ( p[0] == 0 ) *p++ = numberOfGroups;
   //}
   return group_def;
-}
-
-Atm_playfield& Atm_playfield::debounce( uint8_t b, uint16_t r, uint16_t m ) {
-  for ( int16_t i = 0; i < MAX_SWITCHES; i++ ) {
-    prof[i].break_delay = b; 
-    prof[i].make_delay = m; 
-    prof[i].retrigger_delay = r;
-  }
-  return *this;   
-}
-
-Atm_playfield& Atm_playfield::debounce( int16_t n, uint8_t b, uint16_t r, uint16_t m ) {
-  prof[n].break_delay = b; 
-  prof[n].make_delay = m; 
-  prof[n].retrigger_delay = r; 
-  return *this;   
 }
 
 Atm_playfield& Atm_playfield::disable() {

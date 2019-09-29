@@ -12,6 +12,8 @@
 // The led T1/L1 interval is also relevant here! (flippers!)
 // Allocate profile memory dynamically according to io->numSwitches()
 
+class IO;
+
 class Debounce {
 
 // The use of 16 bit unsigned integers & millis gives a maximum switch delay of 65 seconds
@@ -30,7 +32,7 @@ struct switch_record {
 };
  
   public:
-    Debounce& begin( IO& io );
+    Debounce( IO* io ) { memset( profile, 0, sizeof( profile ) ); this->io = io; };
     Debounce& debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
     Debounce& debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
     int16_t scan_event( void );

@@ -1,11 +1,5 @@
 #include "debounce.hpp"
 
-Debounce& Debounce::begin( IO& io ) {
-  memset( profile, 0, sizeof( profile ) );
-  this->io = &io;
-  return *this;  
-}
-
 Debounce& Debounce::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
   profile[n].press_micros = press_100us * 100UL;
   profile[n].release_micros = release_100us * 100UL;
@@ -23,7 +17,7 @@ Debounce& Debounce::debounce( uint16_t press_100us, uint16_t release_100us, uint
 // First layer of debouncing (leading and trailing edges)
 
 int16_t Debounce::scan_event( void ) { 
-  int16_t code = io->scan();
+  int16_t code = io->scan_matrix();
   int16_t addr = abs( code );
   if ( code != 0 ) {
     uint32_t millis_passed = micros() - profile[addr].last_change;

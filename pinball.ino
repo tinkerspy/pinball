@@ -30,21 +30,16 @@ void setup() {
   leds.begin( io, led_groups, profile_definition );
   
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, switch_groups ).debounce( 20, 20, 0 );
+  playfield.begin( io, leds, switch_groups );
+  io.debounce( 0, 200, 0 );
 
-/*
-  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
-  playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER2 ) );
-  playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER1 ) )
-    .onEvent( OUT_CTR_DIGIT1, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 )
-    .onEvent( OUT_CTR_DIGIT2, playfield.device( CHIMES ), IN_LBANK_ON1 )
-    .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
-*/
-
-  //playfield.debounce( COUNTER0, 0, 0, 0 );
-  playfield.device( COUNTER0 ).trace( Serial ); // PROBLEM auto variables have local scope!!!
-  playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware );
+//  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
+//  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
+  playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ); //.chain( playfield.device( COUNTER2 ) );
+ // playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER1 ) )
+ //   .onEvent( OUT_CTR_DIGIT1, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 )
+ //   .onEvent( OUT_CTR_DIGIT2, playfield.device( CHIMES ), IN_LBANK_ON1 )
+ //   .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
   
 
   playfield
@@ -65,7 +60,7 @@ void setup() {
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
-    .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
+    .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER1 ), IN_CTR_PT1000 );
 
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
@@ -74,24 +69,24 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_2X )
     .onEvent( OUT_SBANK_PRESS4, playfield.device( OXO ), IN_OXO_3O )
     .onEvent( OUT_SBANK_PRESS5, playfield.device( OXO ), IN_OXO_3X )
-    .onEvent( OUT_SBANK_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
+    .onEvent( OUT_SBANK_SCORE, playfield.device( COUNTER1 ), IN_CTR_PT1000 );
 
   leds.profile( LED_TARGET_A, PROFILE_LED );
   leds.profile( LED_TARGET_B, PROFILE_LED );
   leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
-    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
-    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
+    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER1 ), IN_CTR_PT100 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT10 );  
   
   leds.profile( LED_BUMPER_B, PROFILE_LED );
   playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
-    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
-    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
+    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER1 ), IN_CTR_PT100 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT10 );  
     
   leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
-    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
-    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )  
+    .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER1 ), IN_CTR_PT1000 )
+    .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT100 )  
     .onEvent( OUT_BUMPER_LIGHT_ON, playfield.device( SAVE_GATE ), IN_LBANK_ON )
     .onEvent( OUT_BUMPER_LIGHT_OFF, playfield.device( SAVE_GATE ), IN_LBANK_OFF );
 
@@ -102,46 +97,46 @@ void setup() {
     .onEvent( OUT_TARGET_LED1_OFF, playfield.device( BUMPER_B ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_ALL_ON, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_ON )  
     .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
-    .onEvent( OUT_TARGET_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
+    .onEvent( OUT_TARGET_SCORE, playfield.device( COUNTER1 ), IN_CTR_PT1000 );
   
   leds.profile( COIL_KICKER_L, PROFILE_KICKER );
   leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
-    .onEvent( OUT_KICKER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT5000 )
-    .onEvent( OUT_KICKER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT500 )
+    .onEvent( OUT_KICKER_SCORE_LIT, playfield.device( COUNTER1 ), IN_CTR_PT5000 )
+    .onEvent( OUT_KICKER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT500 )
     .trigger( IN_KICKER_PERSIST ); 
   
   leds.profile( LED_UPLANE_L, PROFILE_LED );
   leds.profile( LED_UPLANE_R, PROFILE_LED );
   playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware )
-    .onEvent( OUT_COMBO_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
+    .onEvent( OUT_COMBO_SCORE, playfield.device( COUNTER1 ), IN_CTR_PT1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )
     .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
     .onEvent( OUT_COMBO_PRESS1_UNLIT, playfield.device( OXO ), IN_OXO_6 );
 
-  playfield.debounce( SLING_L, 20, 200, 0 );
-  playfield.debounce( SLING_R, 20, 200, 0 );
+  io.debounce( SLING_L, 0, 200, 2000 );
+  io.debounce( SLING_R, 0, 200, 2000 );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
-    .onEvent( OUT_KICKER_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT10 )
+    .onEvent( OUT_KICKER_SCORE, playfield.device( COUNTER1 ), IN_CTR_PT10 )
     .onEvent( OUT_KICKER_PRESS, playfield.device( OXO ), IN_OXO_TOGGLE );    
 
   playfield.device( LOWER, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_5 )                   // 0 TARGET_C
-    .onEvent( OUT_SBANK_SCORE0, playfield.device( COUNTER0 ), IN_CTR_PT500 )  
+    .onEvent( OUT_SBANK_SCORE0, playfield.device( COUNTER1 ), IN_CTR_PT500 )  
     .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_7 )                   // 1 INLANE_L
-    .onEvent( OUT_SBANK_SCORE1, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
+    .onEvent( OUT_SBANK_SCORE1, playfield.device( COUNTER1 ), IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS2, playfield.device( OXO ), IN_OXO_9 )                   // 2 INLANE_R
-    .onEvent( OUT_SBANK_SCORE2, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
+    .onEvent( OUT_SBANK_SCORE2, playfield.device( COUNTER1 ), IN_CTR_PT1000 )
     .onEvent( OUT_SBANK_PRESS3, playfield.device( OXO ), IN_OXO_8 )                   // 3 ROLLOVER
-    .onEvent( OUT_SBANK_SCORE3, playfield.device( COUNTER0 ), IN_CTR_PT500 )
-    .onEvent( OUT_SBANK_SCORE4, playfield.device( COUNTER0 ), IN_CTR_PT1000 )         // 4 OUTLANE
+    .onEvent( OUT_SBANK_SCORE3, playfield.device( COUNTER1 ), IN_CTR_PT500 )
+    .onEvent( OUT_SBANK_SCORE4, playfield.device( COUNTER1 ), IN_CTR_PT1000 )         // 4 OUTLANE
     .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
     .onEvent( OUT_SBANK_PRESS6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
     .onEvent( OUT_SBANK_PRESS7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 
-  playfield.debounce( FLIPPER_L, 5, 0, 0 );    
-  playfield.debounce( FLIPPER_R, 5, 0, 0 );    
+  io.debounce( FLIPPER_L, 0, 50, 0 );    
+  io.debounce( FLIPPER_R, 0, 50, 0 );    
   leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
 
@@ -165,27 +160,27 @@ void setup() {
   Serial.println( FreeRam() );
 
 //  playfield.disable();     
- playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, 1 );
- automaton.delay( 100000 );  
+  io.debounce( FRONTBTN, 200, 200, 10000 );
+  io.debounce( BALL_EXIT, 200, 200, 10000 );
 }
 
 
 void loop() {
   automaton.run(); 
   if ( io.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
+    playfield.device( COUNTER1 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
     leds.off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
-    while ( playfield.device( COUNTER0 ).state() ) automaton.run();
-    Serial.printf( "Solved POS1: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS1 ) ); 
-    Serial.printf( "Solved POS2: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS2 ) ); 
-    Serial.printf( "Solved POS3: %d\n", playfield.device( COUNTER0 ).reg( REG_CTR_POS3 ) ); 
+    while ( playfield.device( COUNTER1 ).state() ) automaton.run();
+    Serial.printf( "Solved POS1: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS1 ) ); 
+    Serial.printf( "Solved POS2: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS2 ) ); 
+    Serial.printf( "Solved POS3: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS3 ) ); 
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
-          playfield.device( COUNTER0 ).select( 1 << player );
+          playfield.device( COUNTER1 ).select( 1 << player );
           leds.off( LED_FLASHER_GRP );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );

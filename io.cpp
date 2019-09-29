@@ -281,7 +281,7 @@ int16_t IO::scan() {
   }
 }  
 
-IO& IO::unscan() { // Mark the last keypress as unprocessed so that will generate another scan() event
+int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event
   ist[node_ptr][switch_ptr] ^= ( 1 << io_ptr );
-  return *this;
+  return 0;
 }

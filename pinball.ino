@@ -31,9 +31,12 @@ void setup() {
 
   leds.begin( io, group_definition, profile_definition );
   
-  playfield.begin( io, [] ( void ) { return debounce.scan(); }, leds ).disable();
+  debounce.begin( io ).debounce( 0, 200, 0 ); // profiles );
 
-  debounce.begin( io ).debounce( 20, 20, 0 ); // profiles );
+  playfield.begin( io, [] ( void ) { return debounce.scan(); }, leds ).disable();
+  Serial.println( "here" );delay( 100 );
+
+
 
   score.begin()
 //    .addCounter( counter[0].begin( playfield, COUNTER0, COIL_COUNTER0_GRP, PROFILE_COUNTER ) ) // Initialize individual score counters and link them to the score object
@@ -168,13 +171,13 @@ void setup() {
       .onPress( oxo, oxo.EVT_9 )
       .onScore( score, score.EVT_1000 );
 
-  debounce.debounce( SLING_L, 20, 200, 0 );
+  debounce.debounce( SLING_L, 0, 200, 2000 );
   playfield
     .element( SLING_L, COIL_SLING_L, -1 )
       .onPress( oxo, oxo.EVT_TOGGLE )
       .onScore( score, score.EVT_10 );
 
-  debounce.debounce( SLING_R, 20, 200, 0 );
+  debounce.debounce( SLING_R, 0, 200, 2000 );
   playfield
     .element( SLING_R, COIL_SLING_R, -1 )
       .onPress( oxo, oxo.EVT_TOGGLE )
@@ -189,18 +192,18 @@ void setup() {
     .element( OUT_LANE )
       .onScore( score, score.EVT_1000 );
 
-  debounce.debounce( FLIPPER_L, 5, 0, 0 );
+  debounce.debounce( FLIPPER_L, 0, 50, 0 );
   playfield
     .element( FLIPPER_L, COIL_FLIPPER_L, -1, PROFILE_FLIPPER );
 
-  debounce.debounce( FLIPPER_R, 5, 0, 0 );
+  debounce.debounce( FLIPPER_R, 0, 50, 0 );
   playfield  
     .element( FLIPPER_R, COIL_FLIPPER_R, -1, PROFILE_FLIPPER );
   
   playfield
     .element( SAVE_GATE, COIL_SAVE_GATE, -1, PROFILE_GATE );
 
-  debounce.debounce( BALL_ENTER, 5, 0, 2000 ); 
+  debounce.debounce( BALL_ENTER, 50, 0, 20000 ); 
   playfield
     .element( BALL_ENTER )
       .onPress( playfield.led( LED_BUMPER_GRP ), Atm_element::EVT_OFF ); // Mind the faulty switch hardware!

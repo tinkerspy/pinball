@@ -160,8 +160,8 @@ void setup() {
   Serial.println( FreeRam() );
 
 //  playfield.disable();     
-  io.debounce( FRONTBTN, 200, 200, 10000 );
-  io.debounce( BALL_EXIT, 200, 200, 10000 );
+  io.debounce( FRONTBTN, 200, 200, 10000 ); 
+  io.debounce( BALL_EXIT, 200, 200, 10000 ); // Does not seem to work
 }
 
 

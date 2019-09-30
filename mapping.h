@@ -423,11 +423,13 @@ const int16_t profiles[] = {
 /* FEEDER         */   'L',  1000, 127, 30,   0,     COIL_FEEDER, -1,
 /* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,  // pwm 127?
 
-/*                     L/S     PR,    RL, TH           SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
-/* DEFAULT SWITCH */   'S',    200,  200,  0,          SWITCHES, -1,
-/* MULTILANE      */   'S',    200,  200,  0,          MULTILANE, -1, 
-/* SLINGSHOTS     */   'S',    200, 2000,  0,          SLINGSHOT, -1, 
-/* FLIPPERS       */   'S',     50,    0,  0,          FLIPPER, -1,
+/*                     L/S     PR,    RL,    TH      SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
+/* DEFAULT SWITCH */   'S',    200,  200,     0,     SWITCHES, -1,
+/* MULTILANE      */   'S',    200,  200,     0,     MULTILANE, -1, 
+/* SLINGSHOTS     */   'S',    200, 2000,     0,     SLINGSHOT, -1, 
+/* FLIPPERS       */   'S',     50,    0,     0,     FLIPPER, -1,
+/* ROLLOVERS      */   'S',    500,    0, 20000,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
+                                                     UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, -1,
 
 -1,  
 };

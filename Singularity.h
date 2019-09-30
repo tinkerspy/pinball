@@ -7,5 +7,3 @@
 #include "IO_Adafruit_NeoPixel.hpp"
 #include "Atm_device.hpp"
 #include "firmware_standard.hpp"
-#include "debounce.hpp"
-

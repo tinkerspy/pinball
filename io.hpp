@@ -2,7 +2,6 @@
 
 #include <arduino.h>
 #include "IO_Adafruit_NeoPixel.hpp"
-#include "debounce.hpp"
 
 #define PULSE_WIDTH_USEC 0
 #define NUM_IOPORTS 5
@@ -20,19 +19,28 @@
   #define INPUT_MODE INPUT
 #endif
 
-struct logical_led {
-    uint8_t strip;
-    uint8_t led;
-};
-
-class Debounce;
-
-
 // Converts multiple physical strips into one logical strip
 // Keeps track of the highest changed pixel in every strip
 // Show is limited up to the highest touched pixel
 
 class IO {
+
+  struct logical_led {
+    uint8_t strip;
+    uint8_t led;
+  };
+
+
+  struct switch_record { 
+    uint8_t throttling : 1;
+    uint32_t last_change;
+    uint32_t last_press;
+    uint32_t press_micros; // press must be stable for this period to register (if not: unscan event)
+    uint32_t release_micros; // minimum wait period after registered press for a break (if not: unscan event)
+    uint32_t throttle_micros; // after a registered press/release wait this long before allowing a new press/release
+  };
+ 
+
   protected:
     uint8_t pin_clock; 
     uint8_t pin_latch; 
@@ -63,7 +71,7 @@ class IO {
     IO& readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init = false );
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
     IO& select( int row, bool latch = false );
-    Debounce* db;
+    switch_record profile[NUM_IOPORTS * MATRIX_NODES * MATRIX_SWITCHES + 1];
    
   public:
     IO& begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate );
@@ -78,14 +86,16 @@ class IO {
     int16_t lastPixel( void ); // Last pixel set
     bool show();
     uint16_t isPressed( int16_t code );
-    int16_t scan_matrix(); 
-    int16_t scan(); 
+    int16_t scan_raw(); 
+    int16_t scan_filtered( void );
+    int16_t scan_throttled(); 
+    int16_t scan( void );
     int16_t reject();
     uint32_t timer(); // Last time in usec needed for matrix read
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );
     IO& invert( uint8_t c1, uint8_t c2, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0 );
-    IO& debounce( int16_t n, uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros );
-    IO& debounce( uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros );
+    IO& debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
+    IO& debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
 
 };

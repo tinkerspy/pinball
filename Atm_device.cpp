@@ -246,7 +246,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             led_off( led_group, selected_action );
             break;
-          case 'S': // Sub
+          case 'S': // GoSub
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             core[active_core].stack[core[active_core].stack_ptr++] = core[active_core].ptr;          
             core[active_core].ptr = script[selected_action];

@@ -28,7 +28,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
-  db = new Debounce( this );
+  memset( profile, 0, sizeof( profile ) ); 
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;
@@ -246,7 +246,7 @@ uint16_t IO::isPressed( int16_t code ) {
 
 // TODO: remember last scan bitpos and continue from there...
 
-int16_t IO::scan_matrix() {
+int16_t IO::scan_raw() {
   for (;;) {      
     // Check one normalized (=corrected for normally closed switches) byte (5 bits) for changes
     uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
@@ -282,21 +282,77 @@ int16_t IO::scan_matrix() {
   }
 }  
 
-IO& IO::debounce( int16_t n, uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros ) {
-  db->debounce( n, press_micros, release_micros, throttle_micros );
-  return *this;
+// First layer of debouncing (leading and trailing edges)
+
+int16_t IO::scan_filtered( void ) { 
+  int16_t code = scan_raw();
+  int16_t addr = abs( code );
+  if ( code != 0 ) {
+    uint32_t millis_passed = micros() - profile[addr].last_change;
+    if ( code > 0 ) {
+      if ( millis_passed >= profile[addr].press_micros ) {
+        return code; // And process 'press'
+      } else {
+        profile[addr].last_change = micros(); // Update stamp when 'press' state is still unstable    
+        return reject();
+      }    
+    } else {
+      if ( millis_passed >= profile[addr].release_micros ) {      
+        return code;
+      } else {
+        return reject();
+      }
+    }
+  }
+  return 0;
 }
 
-IO& IO::debounce( uint16_t press_micros, uint16_t release_micros, uint16_t throttle_micros ) {
-  db->debounce( press_micros, release_micros, throttle_micros );
-  return *this;
+// Second layer of debouncing (throttling)
+
+int16_t IO::scan_throttled( void ) { // Handles switch throttling
+  int16_t code = scan_filtered();
+  int16_t addr = abs( code );
+  if ( code != 0 ) {
+    if ( code > 0 ) {
+      uint32_t millis_passed = micros() - profile[addr].last_press;
+      if ( millis_passed < profile[addr].throttle_micros ) {
+        profile[addr].throttling = 1;
+        return 0;
+      } else {
+        profile[addr].last_press = micros();
+        return code;
+      }
+    } else {
+      if ( profile[addr].throttling ) {
+        profile[addr].throttling = 0;
+        return 0;
+      } else {
+        return code;
+      }
+    }
+  }
+  return 0;
 }
 
 int16_t IO::scan() {
-  return db->scan();
+  return scan_throttled();
 }
 
 int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event
   ist[node_ptr][switch_ptr] ^= ( 1 << io_ptr );
   return 0;
+}
+
+IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
+  profile[n].press_micros = press_100us * 100UL;
+  profile[n].release_micros = release_100us * 100UL;
+  profile[n].throttle_micros = throttle_100us * 100UL;
+  return *this;  
+}
+
+IO& IO::debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
+  for ( int16_t i = 0; i < this->numSwitches(); i++ ) {
+    debounce( i + 1, press_100us, release_100us, throttle_100us );
+  }
+  return *this;  
 }

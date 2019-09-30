@@ -19,6 +19,12 @@ struct core_state {
   bool yield_enabled;
 };
 
+namespace instruction_set {
+
+  enum { JmpL = 'J', JmpLA = 'A', JmpRE = 'C', Prim = '0', LedOn = 'H', LedOff = 'L', GoSub = 'S', Inc = 'I', Dec = 'D', Trig = 'T', Pers = 'P', Reg = 'R', Yield = 'Y' };
+
+};
+
 class Atm_playfield;
 
 class Atm_device: public Machine {

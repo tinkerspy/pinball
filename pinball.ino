@@ -33,6 +33,10 @@ void setup() {
   playfield.begin( io, leds, switch_groups );
   io.debounce( 0, 200, 0 );
 
+  leds.profile( COIL_COUNTER0_GRP, PROFILE_COUNTER );
+  leds.profile( COIL_COUNTER1_GRP, PROFILE_COUNTER );
+  leds.profile( COIL_COUNTER2_GRP, PROFILE_COUNTER );
+  leds.profile( COIL_COUNTER3_GRP, PROFILE_COUNTER );
 //  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
 //  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
   playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ); //.chain( playfield.device( COUNTER2 ) );
@@ -141,17 +145,16 @@ void setup() {
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
 
   leds.profile( LED_AGAIN_GRP, PROFILE_LED );
-  //playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
+  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
 
   leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
-  //playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
 
   leds.profile( COIL_FEEDER, PROFILE_FEEDER );
-  //playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
-
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
+  
   leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
   playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).trigger( IN_LBANK_ON );
-  
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
@@ -159,9 +162,9 @@ void setup() {
   
   Serial.println( FreeRam() );
 
-//  playfield.disable();     
+  playfield.disable();     
   io.debounce( FRONTBTN, 200, 200, 10000 ); 
-  io.debounce( BALL_EXIT, 200, 200, 10000 ); // Does not seem to work
+  io.debounce( BALL_EXIT, 200, 200, 50000 ); 
 }
 
 
@@ -189,7 +192,7 @@ void loop() {
           playfield.enable();
           playfield.device( FEEDER ).trigger( IN_LBANK_ON );
           automaton.delay( 500 ); // was not needed before device conversion...
-          while ( playfield.enabled() ) automaton.run(); 
+          while ( playfield.enabled() ) automaton.run();             
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  
           playfield.device( OXO ).trigger( IN_OXO_COLLECT );
           while ( playfield.device( OXO ).state() ) automaton.run(); 

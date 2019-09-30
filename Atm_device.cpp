@@ -202,7 +202,7 @@ void Atm_device::run_code( uint8_t active_core ) {
         if ( callback_trace ) 
           stream_trace->printf( "run_code %d:%03d: %c %d ? %d : %d\n", active_core, core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
         switch ( opcode ) {
-          case 'J': // Jump on LED state
+          case 'J': // JmpL
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
               core[active_core].ptr += selected_action * 4;          
@@ -212,13 +212,13 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
-          case 'A': // Jump absolute on LED state
+          case 'A': // JmpLA
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
               core[active_core].ptr = script[selected_action];          
             }
             break;
-          case 'C': // Jump on selected register
+          case 'C': // JmpRE
             selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
               core[active_core].ptr += selected_action * 4;          
@@ -228,7 +228,7 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
-          case '0':  // Jump on primary core
+          case '0':  // Prim
             selected_action = ( active_core == 0 ? action_t : action_f );
             if ( selected_action  > -1 ) {
               core[active_core].ptr += selected_action * 4;          
@@ -238,20 +238,20 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;            
-          case 'H': // ON - HIGH: led on
+          case 'H': // LedOn
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             led_on( led_group, selected_action );
             break;
-          case 'L': // OF - LOW: led off
+          case 'L': // LedOff
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             led_off( led_group, selected_action );
             break;
-          case 'S': // SB - SUB: subroutine call
+          case 'S': // Sub
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             core[active_core].stack[core[active_core].stack_ptr++] = core[active_core].ptr;          
             core[active_core].ptr = script[selected_action];
             break;
-          case 'I': // IC - INC: increment counter
+          case 'I': // Inc
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action > - 1 ) {
               registers[core[active_core].reg_ptr] += selected_action;
@@ -259,7 +259,7 @@ void Atm_device::run_code( uint8_t active_core ) {
               registers[core[active_core].reg_ptr] = 0;
             }
             break;
-          case 'D': // DC - DEC: decrement counter
+          case 'D': // Dec
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action > - 1 ) {
               registers[core[active_core].reg_ptr] -= selected_action;
@@ -267,22 +267,22 @@ void Atm_device::run_code( uint8_t active_core ) {
               registers[core[active_core].reg_ptr] = 0;
             }
             break;
-          case 'T': // TC - TRIG: trigger external event on counter
+          case 'T': // Trig
             selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action > -1 ) {
                 trigger_flags |= ( 1 << selected_action );
             } 
             sleep( 0 );
             break;
-          case 'P': // IP/OP - Input persistence / Output persistence (default off)
+          case 'P': // PersI/PersO - Input persistence / Output persistence (default off)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             input_persistence = selected_action;
             output_persistence = selected_action;
             break;
-          case 'R':
+          case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
             break;           
-          case 'Y':
+          case 'Y': // Yield
             if ( core[active_core].yield_enabled ) {
               selected_action = led_active( led_group, selector ) ? action_t : action_f;
               selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];

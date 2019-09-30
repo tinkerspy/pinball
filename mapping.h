@@ -51,7 +51,7 @@ const int16_t profile_definition[] = {
   PROFILE_FEEDER,   1000, 127, 30,   0, -1,
   PROFILE_GI,          0,   0,  0, 255, -1,
   PROFILE_OXO,         0,   0,  0, 127, -1,
-  PROFILE_COUNTER,     0, 255, 30,   0, -1,
+  PROFILE_COUNTER,     0, 127, 20,   0, -1,
   PROFILE_BRIGHT,      0,   0,  0, 255, -1,
 
 //SPROFILE_DEFAULT    20,  20,  0,  -1, 
@@ -395,9 +395,11 @@ int16_t switch_groups[] = {
   PLAYERS, -1,
   PLAYERUP, -1,
   BALLUP, -1,
-  ANIMATION, -1, 
+  ANIMATION, -1,
+  GAME_OVER, -1, // For now each switch group *MUST* have a group mapping!
   -1,
 };
+
 
 
 // New style profiles table for leds and switches (debounce):
@@ -414,15 +416,15 @@ const int16_t profiles[] = {
 /* FLIPPER        */   'L',     0,   0,  0, 255,     COIL_FLIPPER_L, COIL_FLIPPER_R, -1,
 /* KICKER         */   'L',  1000,  95, 30,   0,     COIL_KICKER_L, COIL_KICKER_R, -1,
 /* GATE           */   'L',     0,   0,  0, 255,     COIL_SAVE_GATE, -1,
-/* BUMPER         */   'L',     0, 255, 30,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
+/* BUMPER         */   'L',     0, 255, 40,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
 /* FEEDER         */   'L',  1000, 127, 30,   0,     COIL_FEEDER, -1,
-/* COUNTER        */   'L',     0, 255, 30,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,
+/* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,  // pwm 127?
 
-/*                     L/S     MK,  BR, DT           SWITCHES */ 
-/* DEFAULT SWITCH */   'S',    20,  20,  0,          SWITCHES, -1,
-/* MULTILANE      */   'S',    20,  20,  0,          MULTILANE, -1, 
-/* SLINGSHOTS     */   'S',    20, 200,  0,          SLINGSHOT, -1, 
-/* FLIPPERS       */   'S',     5,   0,  0,          FLIPPER, -1,
+/*                     L/S     PR,    RL, TH           SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
+/* DEFAULT SWITCH */   'S',    200,  200,  0,          SWITCHES, -1,
+/* MULTILANE      */   'S',    200,  200,  0,          MULTILANE, -1, 
+/* SLINGSHOTS     */   'S',    200, 2000,  0,          SLINGSHOT, -1, 
+/* FLIPPERS       */   'S',     50,    0,  0,          FLIPPER, -1,
 
 -1,  
 };

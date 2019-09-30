@@ -9,10 +9,13 @@
  *  bumper
  *  dual_target
  *  dual flipper
+ *  counter_em4d1w
  *  
  *  playfield.device( <switch-id> ); // Instantiates object
  *  playfield.device( <switch-id>, <led-id>, <firmware> ); // Initializes object
  */
+
+using namespace instruction_set;
 
 namespace standard_firmware {
 
@@ -54,7 +57,7 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_INIT,
-  'P', -1, -1, 0,
+  'P', -1, -1, 1,
   'I', -1, -1, -1,
   'S', -1, -1, IN_LBANK_OFF,  
   -1,

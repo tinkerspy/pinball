@@ -1,8 +1,8 @@
-#include "Atm_playfield.hpp"
+#include "Atm_switch_matrix.hpp"
 
 // TODO: Add catchall on onPress()/onRelease()
 
-Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* group_definition ) {
+Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY,     ELSE */
@@ -16,7 +16,7 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* gr
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->io = &io;
-  this->pleds = &led;
+  this->pleds = &leds;
   memset( connectors, 0, sizeof( connectors ) ); 
   memset( prof, 0, sizeof( prof ) ); 
   timer.set( STARTUP_DELAY_MS );
@@ -32,7 +32,7 @@ Atm_playfield& Atm_playfield::begin( IO& io, Atm_led_scheduler& led, int16_t* gr
  * The code must return 1 to trigger the event
  */
 
-int Atm_playfield::event( int id ) {
+int Atm_switch_matrix::event( int id ) {
   switch ( id ) {
     case EVT_TIMER:
       return timer.expired( this );
@@ -47,7 +47,7 @@ int Atm_playfield::event( int id ) {
  *   push( connectors, ON_CHANGE, <sub>, <v>, <up> );
  */
 
-void Atm_playfield::action( int id ) {
+void Atm_switch_matrix::action( int id ) {
   switch ( id ) {
     case ENT_SCAN:
       pf_enabled = true;
@@ -65,7 +65,7 @@ void Atm_playfield::action( int id ) {
 }
 
 
-int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
+int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   int16_t* p = group_def;
   while ( p[0] != -1 ) *p++ = 0;
   numberOfGroups = p - group_def;
@@ -90,25 +90,29 @@ int16_t* Atm_playfield::parseGroups( int16_t* group_def ) {
   return group_def;
 }
 
-Atm_playfield& Atm_playfield::disable() {
+Atm_switch_matrix& Atm_switch_matrix::disable() {
   trigger( EVT_DISABLE );
   return *this;   
 }
 
-Atm_playfield& Atm_playfield::enable() {
+Atm_switch_matrix& Atm_switch_matrix::enable() {
   trigger( EVT_ENABLE );
   return *this;   
 }
 
-bool Atm_playfield::enabled() {
+bool Atm_switch_matrix::enabled() {
   return pf_enabled;   
 }
 
-bool Atm_playfield::isPressed( int16_t n ) {
+Atm_led_matrix* Atm_switch_matrix::leds( void ) {
+  return this->pleds;
+}
+
+bool Atm_switch_matrix::isPressed( int16_t n ) {
   return io->isPressed( n );
 }
 
-void Atm_playfield::scan_matrix( void ) {
+void Atm_switch_matrix::scan_matrix( void ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
     if ( sw > 0 ) {
@@ -132,12 +136,12 @@ void Atm_playfield::scan_matrix( void ) {
 
 // TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
-Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
+Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   //Serial.printf( "Device switch=%d, led=%d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_device* device = new Atm_device();
-    device->begin( *this, led_group, device_script );
+    device->begin( this, led_group, device_script );
     return *device;
   }
   if ( prof[n].device_index == 0 ) { 
@@ -152,7 +156,7 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
       device->reg( 6, r6 );
       device->reg( 7, r7 );
     }
-    device->begin( *this, led_group, device_script );
+    device->begin( this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
     //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numberOfSwitches ); 
@@ -193,16 +197,7 @@ Atm_device& Atm_playfield::device( int16_t n, int16_t led_group /* = -1 */, int1
   return *prof[n].device;
 }
 
-Atm_led_scheduler& Atm_playfield::leds() {
-  return *pleds;
-}
-
-Atm_playfield& Atm_playfield::defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 ) {
-  pleds->defineProfile( prof, T0, L1, T1, L2 );
-  return *this;
-}
-
-bool Atm_playfield::ready() {
+bool Atm_switch_matrix::ready() {
   return state() == READY;
 }
 
@@ -210,7 +205,7 @@ bool Atm_playfield::ready() {
  * Control how your machine processes triggers
  */
 
-Atm_playfield& Atm_playfield::trigger( int event ) {
+Atm_switch_matrix& Atm_switch_matrix::trigger( int event ) {
   Machine::trigger( event );
   return *this;
 }
@@ -219,7 +214,7 @@ Atm_playfield& Atm_playfield::trigger( int event ) {
  * Control what the machine returns when another process requests its state
  */
 
-int Atm_playfield::state( void ) {
+int Atm_switch_matrix::state( void ) {
   return Machine::state();
 }
 
@@ -232,22 +227,22 @@ int Atm_playfield::state( void ) {
  */
 
 
-Atm_playfield& Atm_playfield::onPress( int sub, Machine& machine, int event ) {
+Atm_switch_matrix& Atm_switch_matrix::onPress( int sub, Machine& machine, int event ) {
   onPush( connectors, ON_PRESS, sub, 32, 0, machine, event );
   return *this;
 }
 
-Atm_playfield& Atm_playfield::onPress( int sub, atm_cb_push_t callback, int idx ) {
+Atm_switch_matrix& Atm_switch_matrix::onPress( int sub, atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_PRESS, sub, 32, 0, callback, idx );
   return *this;
 }
 
-Atm_playfield& Atm_playfield::onRelease( int sub, Machine& machine, int event ) {
+Atm_switch_matrix& Atm_switch_matrix::onRelease( int sub, Machine& machine, int event ) {
   onPush( connectors, ON_RELEASE, sub, 32, 0, machine, event );
   return *this;
 }
 
-Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int idx ) {
+Atm_switch_matrix& Atm_switch_matrix::onRelease( int sub, atm_cb_push_t callback, int idx ) {
   onPush( connectors, ON_RELEASE, sub, 32, 0, callback, idx );
   return *this;
 }
@@ -256,7 +251,7 @@ Atm_playfield& Atm_playfield::onRelease( int sub, atm_cb_push_t callback, int id
  * Sets the symbol table and the default logging method for serial monitoring
  */
 
-Atm_playfield& Atm_playfield::trace( Stream & stream ) {
+Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
   return *this;

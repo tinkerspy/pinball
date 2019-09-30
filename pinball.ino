@@ -6,8 +6,8 @@
 #define NUMBER_OF_BALLS 5
 
 IO io;
-Atm_led_scheduler leds; // IO_LED
-Atm_playfield playfield; // IO_MATRIX
+Atm_led_matrix leds; 
+Atm_switch_matrix playfield;
 
 using namespace standard_firmware;
 using namespace custom_firmware; 
@@ -26,35 +26,29 @@ void setup() {
     .retrigger()
     .show();
 
-
   leds.begin( io, led_groups, profile_definition );
   
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups );
   io.debounce( 0, 200, 0 );
 
-  leds.profile( COIL_COUNTER0_GRP, PROFILE_COUNTER );
-  leds.profile( COIL_COUNTER1_GRP, PROFILE_COUNTER );
-  leds.profile( COIL_COUNTER2_GRP, PROFILE_COUNTER );
-  leds.profile( COIL_COUNTER3_GRP, PROFILE_COUNTER );
-//  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
-//  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
-  playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ); //.chain( playfield.device( COUNTER2 ) );
+  leds.profile( COIL_COUNTER_GRP, PROFILE_COUNTER );
+  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
+  playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER2 ) );
  // playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER1 ) )
  //   .onEvent( OUT_CTR_DIGIT1, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 )
  //   .onEvent( OUT_CTR_DIGIT2, playfield.device( CHIMES ), IN_LBANK_ON1 )
  //   .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 );
   
 
-  playfield
-    .leds()
-      .profile( LED_FLASHER_GRP, PROFILE_LED )
-      .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT );
-
-  leds.profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
+  leds
+    .profile( LED_FLASHER_GRP, PROFILE_LED )
+    .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT )
+    .profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
-   
+  
   // Turn on the General Illumination
   leds.profile( COIL_GI, PROFILE_GI );
   playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON );  
@@ -66,6 +60,12 @@ void setup() {
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
     .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER1 ), IN_CTR_PT1000 );
 
+  io.debounce( PORT_1O, 500, 0, 20000 );
+  io.debounce( PORT_1X, 500, 0, 20000 );
+  io.debounce( PORT_2O, 500, 0, 20000 );
+  io.debounce( PORT_2X, 500, 0, 20000 );
+  io.debounce( PORT_3O, 500, 0, 20000 );
+  io.debounce( PORT_3X, 500, 0, 20000 );
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
     .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_1X )
@@ -165,6 +165,7 @@ void setup() {
   playfield.disable();     
   io.debounce( FRONTBTN, 200, 200, 10000 ); 
   io.debounce( BALL_EXIT, 200, 200, 50000 ); 
+//  playfield.device( COUNTER1 )
 }
 
 

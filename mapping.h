@@ -138,6 +138,7 @@ enum {
   COIL_COUNTER1_GRP,
   COIL_COUNTER2_GRP,
   COIL_COUNTER3_GRP,
+  COIL_COUNTER_GRP,
   LED_AGAIN_GRP,
   LED_OXO_ANI_GRP,
   LED_HEADBOX_GRP,
@@ -228,7 +229,7 @@ enum {
  * Record starts with the group ID followed by the elements, ended by a -1 entry.
  * The last record in the list is followed by a second -1 entry to signal end of list 
  * 
- * Leds and switches can be mixed as long as you make sure no Atm_led_scheduler actions
+ * Leds and switches can be mixed as long as you make sure no Atm_led_matrix actions
  * are performed on the group.
  */
 
@@ -310,6 +311,8 @@ const int16_t led_groups[] = {
     COIL_COUNTER2_10K, COIL_COUNTER2_1K, COIL_COUNTER2_100, COIL_COUNTER2_10, -1,
   COIL_COUNTER3_GRP,
     COIL_COUNTER3_10K, COIL_COUNTER3_1K, COIL_COUNTER3_100, COIL_COUNTER3_10, -1,
+  COIL_COUNTER_GRP,
+      COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,
   LED_AGAIN_GRP,
     LED_AGAIN0, LED_AGAIN1, LED_AGAIN2, -1,
   LED_OXO_ANI_GRP,
@@ -364,11 +367,6 @@ int16_t switch_groups[] = {
 
   // TODO compress table by leaving out 'placeholder' empty groups
   
-  SWITCHES,
-    TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L, BUMPER_A, BUMPER_C, KICKER_R,  
-    BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP,  
-    SWITCH213, FLIPPER_L, FLIPPER_R, SWITCH216, SWITCH217,FRONTBTN, COUNTER2, COUNTER0, SWITCH313, SWITCH314, SWITCH315, SWITCH316, COUNTER1, COUNTER3,
-    -1,      
   SAVE_GATE, -1,
   CHIME0, -1,
   CHIME1, -1,
@@ -397,6 +395,11 @@ int16_t switch_groups[] = {
   BALLUP, -1,
   ANIMATION, -1,
   GAME_OVER, -1, // For now each switch group *MUST* have a group mapping!
+  SWITCHES,
+    TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L, BUMPER_A, BUMPER_C, KICKER_R,  
+    BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP,  
+    SWITCH213, FLIPPER_L, FLIPPER_R, SWITCH216, SWITCH217,FRONTBTN, COUNTER2, COUNTER0, SWITCH313, SWITCH314, SWITCH315, SWITCH316, COUNTER1, COUNTER3,
+    -1,      
   -1,
 };
 

@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_device& Atm_device::begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script ) {
+Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  EVT_TIMER  EVT_YIELD  ELSE */
@@ -15,8 +15,8 @@ Atm_device& Atm_device::begin( Atm_playfield &playfield, int16_t led_group, int1
   };
   // clang-format on
   Machine::begin( state_table, ELSE );
-  this->playfield = &playfield;
-  this->leds = &playfield.leds();
+  this->playfield = playfield;
+  this->leds = playfield->leds();
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;

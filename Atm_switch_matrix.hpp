@@ -4,7 +4,7 @@
 
 #include <Automaton.h>
 #include "Atm_device.hpp"
-#include "Atm_led_scheduler.hpp"
+#include "Atm_led_matrix.hpp"
 
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
@@ -13,15 +13,6 @@
 class Atm_device;
 
 struct switch_record { 
-    uint8_t switch_state : 1;
-    uint8_t persistent : 1;
-    uint8_t disabled : 1;
-    uint8_t make_wait : 1;
-    uint8_t break_delay;
-    uint16_t make_delay; 
-    uint16_t retrigger_delay;
-    uint16_t last_change;
-    bool initialized; 
     int8_t device_index; 
 #ifdef DYNAMIC_ELEMENTS    
     Atm_device *device;
@@ -30,29 +21,29 @@ struct switch_record {
 #endif    
 };
 
-class Atm_playfield: public Machine { // Beter: Atm_switch_zone
+class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
 
  public:
   enum { IDLE, WAIT, SCAN, DISABLED, READY }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, ELSE }; // EVENTS
-  Atm_playfield( void ) : Machine() {};
-  Atm_playfield& begin( IO& io, Atm_led_scheduler& led, int16_t* group_definition = NULL );
-  Atm_playfield& trace( Stream & stream );
-  Atm_playfield& trigger( int event );
+  Atm_switch_matrix( void ) : Machine() {};
+  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL );
+  Atm_switch_matrix& trace( Stream & stream );
+  Atm_switch_matrix& trigger( int event );
   int state( void );
   bool isPressed( int16_t n );
-  Atm_playfield& onPress( int sub, Machine& machine, int event = 0 );
-  Atm_playfield& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_playfield& onRelease( int sub, Machine& machine, int event = 0 );
-  Atm_playfield& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_playfield& disable();
-  Atm_playfield& enable();
+  Atm_switch_matrix& onPress( int sub, Machine& machine, int event = 0 );
+  Atm_switch_matrix& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_switch_matrix& onRelease( int sub, Machine& machine, int event = 0 );
+  Atm_switch_matrix& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_switch_matrix& disable();
+  Atm_switch_matrix& enable();
   bool enabled();
   bool ready();
   Atm_device& device( int16_t n, int16_t led_group = -1, int16_t* device_script = NULL,
         int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
-  Atm_led_scheduler& leds();
-  Atm_playfield& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
+  Atm_switch_matrix& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
+  Atm_led_matrix* leds( void );
 
   switch_record prof[MAX_SWITCHES + 1 ];
  
@@ -69,7 +60,7 @@ class Atm_playfield: public Machine { // Beter: Atm_switch_zone
   int16_t* group_def;
   bool active;
   int8_t scan_col = 0;
-  Atm_led_scheduler *pleds;
+  Atm_led_matrix *pleds;
   uint16_t global_last_kick;
   atm_timer_millis timer;
   bool pf_enabled = false;

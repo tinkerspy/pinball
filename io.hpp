@@ -30,7 +30,6 @@ class IO {
     uint8_t led;
   };
 
-
   struct switch_record { 
     uint8_t throttling : 1;
     uint32_t last_change;
@@ -88,7 +87,6 @@ class IO {
     uint16_t isPressed( int16_t code );
     int16_t scan_raw(); 
     int16_t scan_filtered( void );
-    int16_t scan_throttled(); 
     int16_t scan( void );
     int16_t reject();
     uint32_t timer(); // Last time in usec needed for matrix read

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Automaton.h>
-#include "Atm_led_scheduler.hpp"
-#include "Atm_playfield.hpp"
+#include "Atm_led_matrix.hpp"
+#include "Atm_switch_matrix.hpp"
 
 // Number of outputs is also limited by the 32 bits in trigger_flags 
 
@@ -25,7 +25,7 @@ namespace instruction_set {
 
 };
 
-class Atm_playfield;
+class Atm_switch_matrix;
 
 class Atm_device: public Machine {
 
@@ -33,7 +33,7 @@ class Atm_device: public Machine {
   enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
   enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
   Atm_device( void ) : Machine() {};
-  Atm_device& begin( Atm_playfield &playfield, int16_t led_group, int16_t* device_script );
+  Atm_device& begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script );
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
   Atm_device& trace( Stream & stream );
@@ -70,8 +70,8 @@ class Atm_device: public Machine {
   void led_off( int16_t led_group, int16_t selector );
 
   uint32_t trigger_flags; 
-  Atm_led_scheduler *leds;
-  Atm_playfield *playfield;
+  Atm_led_matrix *leds;
+  Atm_switch_matrix *playfield;
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
   int16_t* script;

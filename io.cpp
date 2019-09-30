@@ -16,6 +16,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   this->gate = gate;
   this->address = address;
   this->inputs = inputs;
+  memset( profile, 0, sizeof( profile ) ); 
   for ( int i = 0; i < NUM_IOPORTS; i++ ) {
     pinMode( inputs[i], INPUT_MODE ); 
     pinMode( gate[i], OUTPUT ); 
@@ -28,7 +29,6 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
-  memset( profile, 0, sizeof( profile ) ); 
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;
@@ -309,7 +309,7 @@ int16_t IO::scan_filtered( void ) {
 
 // Second layer of debouncing (throttling)
 
-int16_t IO::scan_throttled( void ) { // Handles switch throttling
+int16_t IO::scan( void ) { // Handles switch throttling
   int16_t code = scan_filtered();
   int16_t addr = abs( code );
   if ( code != 0 ) {
@@ -332,10 +332,6 @@ int16_t IO::scan_throttled( void ) { // Handles switch throttling
     }
   }
   return 0;
-}
-
-int16_t IO::scan() {
-  return scan_throttled();
 }
 
 int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event

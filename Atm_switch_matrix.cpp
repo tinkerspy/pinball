@@ -64,7 +64,6 @@ void Atm_switch_matrix::action( int id ) {
   }
 }
 
-
 int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   int16_t* p = group_def;
   while ( p[0] != -1 ) *p++ = 0;
@@ -81,6 +80,7 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   }
   // 0 entries vervangen door pointer naar -1 aan einde lijst? (numberOfGroups)
   // Dan kunnen 'lege group' placeholders gewoon worden weggelaten in de lijst!
+  // TESTEN & ACTIVEREN!!!!!!!!!!
   
   // Make unused entries point to -1 at end of index 
   //p = group_def;
@@ -88,6 +88,37 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   //  if ( p[0] == 0 ) *p++ = numberOfGroups;
   //}
   return group_def;
+}
+
+Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us ) {
+  Serial.println( n );
+  int16_t p = group_def[n - numberOfSwitches - 1];
+  while ( group_def[p] != -1 ) {
+    if ( callback_trace ) 
+      stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", group_def[p], press_100us, release_100us, throttle_100us );
+    io->debounce( group_def[p], press_100us, release_100us, throttle_100us );  
+    p++;
+  }
+  return *this;
+}
+
+Atm_switch_matrix& Atm_switch_matrix::readProfiles( const int16_t* profile_def ) {
+  const int16_t* p = profile_def;
+  while ( p[0] != -1 ) {
+    int16_t ptype = *p++;
+    if ( ptype == 'S' ) {
+      int16_t press_100us = *p++;
+      int16_t release_100us = *p++;
+      int16_t throttle_100us = *p++;
+      while ( p[0] != -1 ) {
+        profile( *p++, press_100us, release_100us, throttle_100us );  
+      }
+    } else {
+      while ( *p != -1 ) p++;
+    }
+    p++;
+  }
+  return *this;
 }
 
 Atm_switch_matrix& Atm_switch_matrix::disable() {

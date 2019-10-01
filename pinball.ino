@@ -32,11 +32,9 @@ void setup() {
   playfield.begin( io, leds, switch_groups )
     .readProfiles( profiles );
     
-  io.debounce( 0, 200, 0 );
-
   leds.profile( COIL_COUNTER_GRP, PROFILE_COUNTER );
-  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
+  //playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware );//.chain( playfield.device( COUNTER3 ) );
   playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER2 ) );
  // playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER1 ) )
  //   .onEvent( OUT_CTR_DIGIT1, playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ), IN_LBANK_ON0 )

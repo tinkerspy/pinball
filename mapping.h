@@ -421,16 +421,18 @@ const int16_t profiles[] = {
 /* KICKER         */   'L',  1000,  95, 30,   0,     COIL_KICKER_L, COIL_KICKER_R, -1,
 /* GATE           */   'L',     0,   0,  0, 255,     COIL_SAVE_GATE, -1,
 /* BUMPER         */   'L',     0, 255, 40,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
-/* FEEDER         */   'L',  1000, 127, 30,   0,     COIL_FEEDER, -1,
+/* FEEDER         */   'L',     0, 127, 30,   0,     COIL_FEEDER, -1,
 /* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,  // pwm 127?
 
 /*                     L/S     PR,    RL,    TH      SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
 /* DEFAULT SWITCH */   'S',    200,  200,     0,     SWITCHES, -1,
 /* MULTILANE      */   'S',    200,  200,     0,     MULTILANE, -1, 
-/* SLINGSHOTS     */   'S',    200, 2000,     0,     SLINGSHOT, -1, 
+/* SLINGSHOTS     */   'S',    200,    0, 20000,     SLING_L, SLING_R, -1, 
 /* FLIPPERS       */   'S',     50,    0,     0,     FLIPPER, -1,
+/* COUNTERS       */   'S',      0,  200,     0,     COUNTER0, COUNTER1, COUNTER2, COUNTER3, -1,
 /* ROLLOVERS      */   'S',    500,    0, 20000,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
-                                                     UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, -1,
+                                                     UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, -1, 
+/* FLIPPERS       */   'S',      0,   50,     0,     BALL_EXIT, -1,
 
 -1,  
 };

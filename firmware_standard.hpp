@@ -504,13 +504,13 @@ int16_t dual_target_firmware[] = {
 /*
  * Firmware: dual_flipper_firmware
  * Maximum switches: 2
- * Led arguments: COIL_L, COIL_R, COIL_L1, COIL_R1
+ * Led arguments: COIL_L, COIL_R
  * Description: 
- *   Dual flipper device (2 independent flippers + two optional slaves)
+ *   Dual flipper device)
  */
 
 enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
-enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R, ARG_FLIPPER_COIL_L1, ARG_FLIPPER_COIL_R1 }; 
+enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
 
 int16_t dual_flipper_firmware[] = {
   IN_FLIPPER_INIT,
@@ -524,28 +524,22 @@ int16_t dual_flipper_firmware[] = {
   'P', -1, -1, 0,  // Not persistent
   'L', -1, -1, ARG_FLIPPER_COIL_L,
   'L', -1, -1, ARG_FLIPPER_COIL_R,
-  'L', -1, -1, ARG_FLIPPER_COIL_L1,
-  'L', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   IN_FLIPPER_PRESS_L,
   'H', -1, -1, ARG_FLIPPER_COIL_L,
-  'H', -1, -1, ARG_FLIPPER_COIL_L1,
   -1,
 
   IN_FLIPPER_RELEASE_L,
   'L', -1, -1, ARG_FLIPPER_COIL_L,
-  'L', -1, -1, ARG_FLIPPER_COIL_L1,
   -1,
 
   IN_FLIPPER_PRESS_R,
   'H', -1, -1, ARG_FLIPPER_COIL_R,
-  'H', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   IN_FLIPPER_RELEASE_R,
   'L', -1, -1, ARG_FLIPPER_COIL_R,
-  'L', -1, -1, ARG_FLIPPER_COIL_R1,
   -1,
 
   -1,

@@ -62,12 +62,6 @@ void setup() {
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
     .onEvent( OUT_OXO_COLLECT, playfield.device( COUNTER1 ), IN_CTR_PT1000 );
 
-  io.debounce( PORT_1O, 500, 0, 20000 );
-  io.debounce( PORT_1X, 500, 0, 20000 );
-  io.debounce( PORT_2O, 500, 0, 20000 );
-  io.debounce( PORT_2X, 500, 0, 20000 );
-  io.debounce( PORT_3O, 500, 0, 20000 );
-  io.debounce( PORT_3X, 500, 0, 20000 );
   playfield.device( MULTILANE, -1, switchbank_firmware ) 
     .onEvent( OUT_SBANK_PRESS0, playfield.device( OXO ), IN_OXO_1O )
     .onEvent( OUT_SBANK_PRESS1, playfield.device( OXO ), IN_OXO_1X )
@@ -120,8 +114,6 @@ void setup() {
     .onEvent( OUT_COMBO_PRESS0_UNLIT, playfield.device( OXO ), IN_OXO_4 )
     .onEvent( OUT_COMBO_PRESS1_UNLIT, playfield.device( OXO ), IN_OXO_6 );
 
-  io.debounce( SLING_L, 0, 200, 2000 );
-  io.debounce( SLING_R, 0, 200, 2000 );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_SCORE, playfield.device( COUNTER1 ), IN_CTR_PT10 )
     .onEvent( OUT_KICKER_PRESS, playfield.device( OXO ), IN_OXO_TOGGLE );    
@@ -140,8 +132,6 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
     .onEvent( OUT_SBANK_PRESS7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 
-  io.debounce( FLIPPER_L, 0, 50, 0 );    
-  io.debounce( FLIPPER_R, 0, 50, 0 );    
   leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
 
@@ -168,8 +158,6 @@ void setup() {
   playfield.device( GI ).trigger( IN_LBANK_ON );
   
   playfield.disable();     
-  io.debounce( FRONTBTN, 200, 200, 10000 ); 
-  io.debounce( BALL_EXIT, 200, 200, 50000 ); 
   
 //  playfield.device( COUNTER1 )
 }

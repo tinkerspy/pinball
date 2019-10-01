@@ -9,6 +9,7 @@
  *  bumper
  *  dual_target
  *  dual flipper
+ *  scalar
  *  counter_em4d1w
  *  
  *  playfield.device( <switch-id> ); // Instantiates object
@@ -657,6 +658,14 @@ int16_t scalar_firmware[] = {
   -1,
 };
 
+
+/*
+ * Firmware: counter_em4d1w_firmware
+ * Maximum switches: 1 (sensor wire)
+ * Led arguments: COIL0, COIL1, COIL2, COIL3
+ * Description: 
+ *   4 digit electromechanical counter device with 1 sensor wire
+ */
 
 enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
   IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,

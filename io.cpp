@@ -339,10 +339,13 @@ int16_t IO::reject() { // Mark the last keypress as unprocessed so that will gen
   return 0;
 }
 
+// Test edge case: laatste switch!
 IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
-  profile[n].press_micros = press_100us * 100UL;
-  profile[n].release_micros = release_100us * 100UL;
-  profile[n].throttle_micros = throttle_100us * 100UL;
+  if ( n > 0 && n <= numSwitches() ) {
+    profile[n].press_micros = press_100us * 100UL;
+    profile[n].release_micros = release_100us * 100UL;
+    profile[n].throttle_micros = throttle_100us * 100UL;
+  }
   return *this;  
 }
 

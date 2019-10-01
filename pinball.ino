@@ -49,9 +49,9 @@ void setup() {
   
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
-  // Turn on the General Illumination
+  // General Illumination
   leds.profile( COIL_GI, PROFILE_GI );
-  playfield.device( GI, COIL_GI, ledbank_firmware ).trigger( IN_LBANK_ON );  
+  playfield.device( GI, COIL_GI, ledbank_firmware );  
 
   // Playfield device instantiation
 
@@ -108,8 +108,7 @@ void setup() {
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
     .onEvent( OUT_KICKER_SCORE_LIT, playfield.device( COUNTER1 ), IN_CTR_PT5000 )
-    .onEvent( OUT_KICKER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT500 )
-    .trigger( IN_KICKER_PERSIST ); 
+    .onEvent( OUT_KICKER_SCORE_UNLIT, playfield.device( COUNTER1 ), IN_CTR_PT500 );
   
   leds.profile( LED_UPLANE_L, PROFILE_LED );
   leds.profile( LED_UPLANE_R, PROFILE_LED );
@@ -154,7 +153,7 @@ void setup() {
   playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
   
   leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
-  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).trigger( IN_LBANK_ON );
+  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
@@ -162,9 +161,14 @@ void setup() {
   
   Serial.println( FreeRam() );
 
+  playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
+  playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
+  playfield.device( GI ).trigger( IN_LBANK_ON );
+  
   playfield.disable();     
   io.debounce( FRONTBTN, 200, 200, 10000 ); 
   io.debounce( BALL_EXIT, 200, 200, 50000 ); 
+  
 //  playfield.device( COUNTER1 )
 }
 
@@ -177,9 +181,6 @@ void loop() {
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( playfield.device( COUNTER1 ).state() ) automaton.run();
-    Serial.printf( "Solved POS1: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS1 ) ); 
-    Serial.printf( "Solved POS2: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS2 ) ); 
-    Serial.printf( "Solved POS3: %d\n", playfield.device( COUNTER1 ).reg( REG_CTR_POS3 ) ); 
     automaton.delay( 1000 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {

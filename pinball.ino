@@ -29,11 +29,10 @@ void setup() {
   leds.begin( io, led_groups, profile_definition );
   
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, switch_groups );
+  playfield.begin( io, leds, switch_groups )
+    .readProfiles( profiles );
+    
   io.debounce( 0, 200, 0 );
-
-  playfield.trace( Serial );
-  playfield.readProfiles( profiles );
 
   leds.profile( COIL_COUNTER_GRP, PROFILE_COUNTER );
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );

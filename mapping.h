@@ -365,19 +365,11 @@ int16_t switch_groups[] = {
   GAME_OVER,
   SWITCHES,
   -1,
-
-  // TODO compress table by leaving out 'placeholder' empty groups
   
-  SAVE_GATE, -1,
-  CHIME0, -1,
-  CHIME1, -1,
-  CHIME2, -1,
   MULTILANE,
     PORT_1O, PORT_1X, PORT_2O, PORT_2X, PORT_3O, PORT_3X, -1,
   DUAL_TARGET,
     TARGET_A, TARGET_B, -1,
-  OXO, -1,
-  GI, -1,
   KICKER, 
     KICKER_L, KICKER_R, -1,
   FLIPPER, 
@@ -388,14 +380,6 @@ int16_t switch_groups[] = {
     SLING_L, SLING_R, -1,
   LOWER,
     TARGET_C, INLANE_L, INLANE_R, ROLLOVER, OUTLANE, BALL_EXIT, BALL_ENTER, FRONTBTN, -1,
-  FEEDER, -1,
-  AGAIN, -1,
-  CHIMES, -1, 
-  PLAYERS, -1,
-  PLAYERUP, -1,
-  BALLUP, -1,
-  ANIMATION, -1,
-  GAME_OVER, -1, // For now each switch group *MUST* have a group mapping!
   SWITCHES,
     TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L, BUMPER_A, BUMPER_C, KICKER_R,  
     BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R, ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP,  
@@ -403,8 +387,6 @@ int16_t switch_groups[] = {
     -1,      
   -1,
 };
-
-
 
 // New style profiles table for leds and switches (debounce):
 

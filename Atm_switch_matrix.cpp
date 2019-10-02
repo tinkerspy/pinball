@@ -83,10 +83,11 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   // TESTEN & ACTIVEREN!!!!!!!!!!
   
   // Make unused entries point to -1 at end of index 
-  //p = group_def;
-  //while ( p[0] != -1 ) {
-  //  if ( p[0] == 0 ) *p++ = numberOfGroups;
-  //}
+  p = group_def;
+  while ( p[0] != -1 ) {
+    if ( p[0] == 0 ) *p = numberOfGroups;
+      p++;
+  }
   return group_def;
 }
 

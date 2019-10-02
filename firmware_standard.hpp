@@ -955,6 +955,24 @@ int16_t counter_em4d1w_firmware[] = {
   -1,
 };
 
+char bumper_basic[] = " \
+100 led_off arg(1)\n\
+110 led_off arg(2)\n\
+120 exit\n\
+\n\
+200 led_on arg(1)\n\
+210 output 0\n\
+220 if led(arg(2)) then output 1 else output 2\n\
+230 exit\n\
+\n\
+400 led_on arg(2)\n\
+410 output 3\n\
+420 exit\n\
+\n\
+500 led_off arg(2)\n\
+510 output 4\n\
+520 exit\n\
+";
 
 
 };

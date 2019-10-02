@@ -1,6 +1,9 @@
 #include "Singularity.h"
 #include "firmware_custom.h"
 #include "mapping.h"
+#include "switchgroups.h"
+#include "ledgroups.h"
+#include "profiles.h"
 #include "freeram.hpp"
 
 #define NUMBER_OF_BALLS 5
@@ -156,8 +159,7 @@ void setup() {
   playfield.device( GI ).trigger( IN_LBANK_ON );
   
   playfield.disable();     
-  
-//  playfield.device( COUNTER1 )
+
 }
 
 

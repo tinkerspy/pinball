@@ -71,10 +71,10 @@ Atm_device& Atm_device::select( uint32_t mask ) {
 Atm_device& Atm_device::dump( Stream & stream ) {
   int16_t l = parse_code( this->script );
   for ( int16_t i = 0; i < l; i++ ) {
-    stream.printf( "%d, " );
-    if ( i % 60 == 0 ) {
+    if ( i && i % 16 == 0 ) {
       stream.println();
     }
+    stream.printf( "%4d, ", script[i] );
   }
   stream.println();
   return *this;

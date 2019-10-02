@@ -91,7 +91,6 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
 }
 
 Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us ) {
-  Serial.println( n );
   if ( n > numberOfSwitches ) {
     int16_t p = group_def[n - numberOfSwitches - 1];
     while ( group_def[p] != -1 ) {

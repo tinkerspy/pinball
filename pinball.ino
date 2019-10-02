@@ -179,16 +179,15 @@ void loop() {
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
           playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
           Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
-          playfield.enable();
           playfield.device( FEEDER ).trigger( IN_LBANK_ON );
-          automaton.delay( 500 ); // was not needed before device conversion...
+          automaton.delay( 500 ); 
+          playfield.enable();
           while ( playfield.enabled() ) automaton.run();             
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  
           playfield.device( OXO ).trigger( IN_OXO_COLLECT );
           while ( playfield.device( OXO ).state() ) automaton.run(); 
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
-          Serial.printf( "%d Delay done\n", millis() );
           playfield.device( PLAYERS ).select( 0 );
         } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
         //} while ( playfield.device( AGAIN ).state() ); 

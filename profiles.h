@@ -26,6 +26,7 @@ const int16_t profiles[] = {
 /* ROLLOVERS      */   'S',    500,    0, 10000,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
                                                      UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, -1, 
 /* FLIPPERS       */   'S',      0,   50,     0,     BALL_EXIT, -1,
+/* FLIPPERS       */   'S',    200,    0,  5000,     FRONTBTN, -1,
 
 -1,  
 };

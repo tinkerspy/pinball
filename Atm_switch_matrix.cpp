@@ -28,10 +28,6 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   return *this;          
 }
 
-/* Add C++ code for each internally handled event (input) 
- * The code must return 1 to trigger the event
- */
-
 int Atm_switch_matrix::event( int id ) {
   switch ( id ) {
     case EVT_TIMER:
@@ -39,13 +35,6 @@ int Atm_switch_matrix::event( int id ) {
   }
   return 0;
 }
-
-/* Add C++ code for each action
- * This generates the 'output' for the state machine
- *
- * Available connectors:
- *   push( connectors, ON_CHANGE, <sub>, <v>, <up> );
- */
 
 void Atm_switch_matrix::action( int id ) {
   switch ( id ) {
@@ -78,10 +67,6 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
     }
     p++;
   }
-  // 0 entries vervangen door pointer naar -1 aan einde lijst? (numberOfGroups)
-  // Dan kunnen 'lege group' placeholders gewoon worden weggelaten in de lijst!
-  // TESTEN & ACTIVEREN!!!!!!!!!!
-  
   // Make unused entries point to -1 at end of index 
   p = group_def;
   while ( p[0] != -1 ) {
@@ -227,10 +212,6 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
       prof[n].device->set_script( device_script );
     }
   }
-  // This seems to be unnecessary
-  //if ( n < numberOfSwitches && io->isPressed( n ) ) {      // We're linked to a single physical switch
-  //  prof[n].device->trigger( 1, 1 );                       // Make sure the device knows if it's pressed
-  //}
   return *prof[n].device;
 }
 

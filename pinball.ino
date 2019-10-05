@@ -6,20 +6,20 @@
 #include "profiles.h"
 #include "freeram.hpp"
 
+using namespace standard_firmware;
+using namespace custom_firmware; 
+
 #define NUMBER_OF_BALLS 5
 
 IO io;
 Atm_led_matrix leds; 
 Atm_switch_matrix playfield;
 
-using namespace standard_firmware;
-using namespace custom_firmware; 
-
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
   delay( 100 );
-    
+
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
@@ -29,12 +29,17 @@ void setup() {
     .retrigger()
     .show();
 
-  leds.begin( io, led_groups )
-    .readProfiles( 'L', profiles );
+  Serial.println( "init leds" ); delay( 100 );
+  leds.begin( io, led_groups );
+  Serial.println( "init led profiles" ); delay( 100 );
   
-  Serial.println( "init playfield" ); delay( 1000 );
+  leds.readProfiles( 'L', profiles );
+  
+  Serial.println( "init playfield2" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles );
+    
+  Serial.println( "init playfield devices" ); delay( 100 );
     
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
@@ -47,11 +52,6 @@ void setup() {
     
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
-  // General Illumination
-  playfield.device( GI, COIL_GI, ledbank_firmware );  
-
-  // Playfield device instantiation
-
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, playfield.device( KICKER ), IN_KICKER_ON )
     .onEvent( OUT_OXO_WIN_ALL, playfield.device( UPLANE ), IN_COMBO_ON )
@@ -126,6 +126,8 @@ void setup() {
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
+  playfield.device( GI, COIL_GI, ledbank_firmware );  
+  
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
   playfield.device( GI ).trigger( IN_LBANK_ON );
@@ -139,9 +141,9 @@ void setup() {
 
 void loop() {
   automaton.run(); 
-  if ( io.isPressed( FRONTBTN ) ) {
+  if ( playfield.isPressed( FRONTBTN ) ) {
     playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
-    leds.off( LED_FLASHER_GRP );
+    playfield.leds()->off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( playfield.device( COUNTER0 ).state() ) automaton.run();
@@ -150,7 +152,7 @@ void loop() {
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
           playfield.device( COUNTER0 ).select( 1 << player );
-          leds.off( LED_FLASHER_GRP );
+          playfield.leds()->off( LED_FLASHER_GRP );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
           playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
@@ -165,7 +167,7 @@ void loop() {
           Serial.printf( "%d Bonus collect done\n", millis() );
           automaton.delay( 1000 );
           playfield.device( PLAYERS ).select( 0 );
-        } while ( leds.active( LED_AGAIN0 ) ); // Extra ball
+        } while ( playfield.leds()->active( LED_AGAIN0 ) ); // Extra ball
         //} while ( playfield.device( AGAIN ).state() ); 
       } 
     } 

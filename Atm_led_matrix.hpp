@@ -10,10 +10,10 @@
 
 struct led_meta_data {
   uint32_t rgbw; 
-  uint8_t profile = 0;
   uint32_t last_millis; 
   uint8_t state;
   uint16_t watch = 0;
+  uint32_t T0, L1, T1, L2;
 };
 
 struct led_watcher {
@@ -34,10 +34,6 @@ struct led_watcher {
  * L2 Hold level (when hold level zero, led is in pulse mode: off() is ignored)
  */
 
-struct led_profile_record {
-  uint32_t T0, L1, T1, L2;
-};
-
 class Atm_led_matrix: public Machine {
 
  public:
@@ -47,7 +43,7 @@ class Atm_led_matrix: public Machine {
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_matrix( void ) : Machine() {};
-  Atm_led_matrix& begin( IO &io, const int16_t* group_definition, const int16_t* profile_definition );
+  Atm_led_matrix& begin( IO &io, int16_t* group_definition );
   Atm_led_matrix& trace( Stream & stream );
   Atm_led_matrix& trigger( int event );
   int state( void );
@@ -60,9 +56,9 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix& off( int ledno, bool no_update = false ); 
   Atm_led_matrix& off( void );
   Atm_led_matrix& set( int16_t ledno, uint32_t c ); 
-  Atm_led_matrix& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
-  Atm_led_matrix& profile( int16_t ledno, uint8_t prof );
-  const int16_t* group( int16_t gid );
+  Atm_led_matrix& readProfiles(  char label, const int16_t* profile_def );
+  Atm_led_matrix& profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
+
   int active( int ledno );
   Atm_led_matrix& onWatch( int16_t ledno, Machine& machine, int16_t event );
   Atm_led_matrix& onWatch( int16_t ledno, Machine* machine, int16_t event );
@@ -75,26 +71,24 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix& dump_meta( Stream& stream );
 
 protected:
-  Atm_led_matrix& parseGroups( const int16_t* group_def ); 
-  Atm_led_matrix& parseProfiles( const int16_t* profile_def ); 
+  int16_t* parseGroups( int16_t* group_def );
   Atm_led_matrix& group_set( int16_t ledno, uint32_t c ); 
   Atm_led_matrix& group_on( int ledno );
   Atm_led_matrix& group_off( int ledno ); 
   Atm_led_matrix& group_toggle( int ledno, int v = -1 );
-  Atm_led_matrix& group_profile( int16_t ledno, uint8_t prof );
+  Atm_led_matrix& group_profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
   int group_active( int ledno );
   Atm_led_matrix& led_notify( int16_t ledno );
-  led_profile_record led_profile[MAX_PROFILES];
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 
   void action( int id ); 
   led_meta_data meta[MAX_LEDS];
-  int number_of_leds;
+  int numberOfLeds, numberOfGroups;
   uint8_t refresh, running;
   uint8_t last_milli;
   IO *io;
-  const int16_t* led_group[MAX_GROUPS];
   led_watcher watchers[MAX_WATCHERS];
   uint8_t watcher_cnt = 0;
+  int16_t* group_def;
   
 };

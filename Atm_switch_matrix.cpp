@@ -93,11 +93,11 @@ Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, i
   return *this;
 }
 
-Atm_switch_matrix& Atm_switch_matrix::readProfiles( const int16_t* profile_def ) {
+Atm_switch_matrix& Atm_switch_matrix::readProfiles(  char label, const int16_t* profile_def ) {
   const int16_t* p = profile_def;
   while ( p[0] != -1 ) {
     int16_t ptype = *p++;
-    if ( ptype == 'S' ) {
+    if ( ptype == label ) {
       int16_t press_100us = *p++;
       int16_t release_100us = *p++;
       int16_t throttle_100us = *p++;

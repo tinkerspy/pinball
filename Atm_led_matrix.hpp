@@ -43,7 +43,7 @@ class Atm_led_matrix: public Machine {
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_matrix( void ) : Machine() {};
-  Atm_led_matrix& begin( IO &io, int16_t* group_definition, const int16_t* profile_definition );
+  Atm_led_matrix& begin( IO &io, int16_t* group_definition );
   Atm_led_matrix& trace( Stream & stream );
   Atm_led_matrix& trigger( int event );
   int state( void );
@@ -56,7 +56,7 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix& off( int ledno, bool no_update = false ); 
   Atm_led_matrix& off( void );
   Atm_led_matrix& set( int16_t ledno, uint32_t c ); 
-  Atm_led_matrix& defineProfile( uint8_t prof, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0 );
+  Atm_led_matrix& readProfiles(  char label, const int16_t* profile_def );
   Atm_led_matrix& profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
 
   int active( int ledno );
@@ -72,7 +72,6 @@ class Atm_led_matrix: public Machine {
 
 protected:
   int16_t* parseGroups( int16_t* group_def );
-  Atm_led_matrix& parseProfiles( const int16_t* profile_def ); 
   Atm_led_matrix& group_set( int16_t ledno, uint32_t c ); 
   Atm_led_matrix& group_on( int ledno );
   Atm_led_matrix& group_off( int ledno ); 

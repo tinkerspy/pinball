@@ -1,7 +1,7 @@
 #include "Atm_led_matrix.hpp"
 #include "io.hpp"
 
-Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition, const int16_t* profile_definition ) {
+Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -24,7 +24,6 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition, const 
   if ( group_definition ) {
     group_def = parseGroups( group_definition );
   }
-  //parseProfiles( profile_definition );
   return *this;
 }
 
@@ -122,6 +121,26 @@ int16_t* Atm_led_matrix::parseGroups( int16_t* group_def ) {
       p++;
   }
   return group_def;
+}
+
+Atm_led_matrix& Atm_led_matrix::readProfiles(  char label, const int16_t* profile_def ) {
+  const int16_t* p = profile_def;
+  while ( p[0] != -1 ) {
+    int16_t ptype = *p++;
+    if ( ptype == label ) {
+      int16_t T0 = *p++;
+      int16_t L1 = *p++;
+      int16_t T1 = *p++;
+      int16_t L2 = *p++;
+      while ( p[0] != -1 ) {
+        profile( *p++, T0, L1, T1, L2 );  
+      }
+    } else {
+      while ( *p != -1 ) p++;
+    }
+    p++;
+  }
+  return *this;
 }
 
 Atm_led_matrix& Atm_led_matrix::set( int16_t ledno, uint32_t c ) {

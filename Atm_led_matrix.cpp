@@ -189,45 +189,6 @@ Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1
   return *this;
 }
 
-Atm_led_matrix& Atm_led_matrix::scalar( int16_t ledno, int8_t index, bool fill /* = false */ ) {
-  if ( ledno >= numberOfLeds ) {
-    uint8_t cnt = 0;
-    int16_t p = group_def[ledno - numberOfLeds];
-    while ( p != -1 && group_def[p] != -1 ) {
-      if ( fill ) {
-        if ( cnt <= index ) {
-          on( group_def[p++], true );
-        } else {
-          off( group_def[p++], true );
-        }        
-      } else {
-        if ( cnt == index ) {
-          on( group_def[p++], true );
-        } else {
-          off( group_def[p++], true );
-        }
-      }
-      cnt++;
-    }
-    trigger( EVT_UPDATE );
-  }
-  return *this;
-}
-
-int16_t Atm_led_matrix::scalar( int16_t ledno ) {
-  int16_t r = -1;
-  if ( ledno >= numberOfLeds ) {
-    uint8_t cnt = 0;
-    int16_t p = group_def[ledno - numberOfLeds];
-    while ( p != -1 && group_def[p] != -1 ) {
-      if ( active( group_def[p++] ) ) {
-        r = cnt;
-      }
-      cnt++;
-    }
-  }
-  return r;
-}
 
 
 Atm_led_matrix& Atm_led_matrix::on( int ledno, bool no_update /* = false */  ) {

@@ -50,8 +50,6 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix& update( void );
 
   Atm_led_matrix& on( int ledno, bool no_update = false ); 
-  Atm_led_matrix& scalar( int16_t ledno, int8_t index, bool fill = false ); 
-  int16_t scalar( int16_t ledno ); 
   Atm_led_matrix& toggle( int ledno, int v = -1 ); 
   Atm_led_matrix& off( int ledno, bool no_update = false ); 
   Atm_led_matrix& off( void );

@@ -72,22 +72,37 @@ void set_var( char label[], uint8_t index, int16_t v ) {
   }
 }
 
+void preprocess( char s[] ) {
+  const char alpha[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+  const char alphanum[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+  char buf[80];
+  char vbuf[21];
+  char ibuf[7];
+
+  // Replace any simple variables in the expression by their values  
+  int p = strcspn( s, alpha );
+  while ( s[p] != 0 ) {
+    int q = strspn( s + p, alphanum );
+    strncpy( vbuf, s + p, q );
+    vbuf[q] = 0;
+    strncpy( buf, s, p ); 
+    buf[p] = 0;
+    itoa( get_var( vbuf ), ibuf, 10 );
+    strcat( buf, ibuf );
+    strcat( buf, s + p + q );
+    strcpy( s, buf );
+    p = strcspn( s, alpha );
+  }  
+}
+
 void setup() {
   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
   Serial.setTimeout( 100000 );
   memset( ram, 0, sizeof( ram ) );
-  ram[0] = 123;
+  ram[0] = -2123;
   ram[1] = 256;
   
 }
-
-void preprocess( char s[] ) {
-  Serial.print( "Variable found: " );
-  Serial.println( get_var( s ) );
-  
-  
-}
-
 
 char buffer[81];
 

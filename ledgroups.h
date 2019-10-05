@@ -7,8 +7,7 @@
  * are performed on the group.
  */
 
-const int16_t led_groups[] = {
-/*  
+int16_t led_groups[] = {
   LED_KICKER_GRP,
   LED_UPLANE_GRP,  
   LED_OXO_GRP,
@@ -34,7 +33,6 @@ const int16_t led_groups[] = {
   LED_BALLUP_GRP, 
   LED_PLAYERS_GRP,
   -1,
-*/
   
   LED_KICKER_GRP, 
     COIL_KICKER_L, COIL_KICKER_R, LED_KICKER_L, LED_KICKER_R, -1,

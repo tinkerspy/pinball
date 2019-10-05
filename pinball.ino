@@ -35,7 +35,7 @@ void setup() {
   playfield.begin( io, leds, switch_groups )
     .readProfiles( profiles );
     
-  leds.profile( COIL_COUNTER_GRP, PROFILE_COUNTER );
+  //leds.profile( COIL_COUNTER_GRP, PROFILE_COUNTER );
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
   playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER2 ) );
@@ -46,15 +46,15 @@ void setup() {
  ;
   
 
-  leds
-    .profile( LED_FLASHER_GRP, PROFILE_LED )
-    .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT )
-    .profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
+//  leds
+//    .profile( LED_FLASHER_GRP, PROFILE_LED )
+//    .profile( LED_HEADBOX_GRP, PROFILE_BRIGHT )
+//    .profile( LED_OXO_GRP, PROFILE_OXO ); // Required!
   
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
   // General Illumination
-  leds.profile( COIL_GI, PROFILE_GI );
+  //leds.profile( COIL_GI, PROFILE_GI );
   playfield.device( GI, COIL_GI, ledbank_firmware );  
 
   // Playfield device instantiation
@@ -73,19 +73,19 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS5, playfield.device( OXO ), IN_OXO_3X )
     .onEvent( OUT_SBANK_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
 
-  leds.profile( LED_TARGET_A, PROFILE_LED );
-  leds.profile( LED_TARGET_B, PROFILE_LED );
-  leds.profile( LED_BUMPER_C, PROFILE_LED );
+  //leds.profile( LED_TARGET_A, PROFILE_LED );
+  //leds.profile( LED_TARGET_B, PROFILE_LED );
+  //leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
   
-  leds.profile( LED_BUMPER_B, PROFILE_LED );
+  //leds.profile( LED_BUMPER_B, PROFILE_LED );
   playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT10 );  
     
-  leds.profile( LED_BUMPER_C, PROFILE_LED );
+  //leds.profile( LED_BUMPER_C, PROFILE_LED );
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware )
     .onEvent( OUT_BUMPER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
     .onEvent( OUT_BUMPER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT100 )  
@@ -101,15 +101,15 @@ void setup() {
     .onEvent( OUT_TARGET_ALL_OFF, playfield.device( BUMPER_C ), IN_BUMPER_LIGHT_OFF )
     .onEvent( OUT_TARGET_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 );
   
-  leds.profile( COIL_KICKER_L, PROFILE_KICKER );
-  leds.profile( COIL_KICKER_R, PROFILE_KICKER );
+  //leds.profile( COIL_KICKER_L, PROFILE_KICKER );
+  //leds.profile( COIL_KICKER_R, PROFILE_KICKER );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware )
     .onEvent( OUT_KICKER_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )  
     .onEvent( OUT_KICKER_SCORE_LIT, playfield.device( COUNTER0 ), IN_CTR_PT5000 )
     .onEvent( OUT_KICKER_SCORE_UNLIT, playfield.device( COUNTER0 ), IN_CTR_PT500 );
   
-  leds.profile( LED_UPLANE_L, PROFILE_LED );
-  leds.profile( LED_UPLANE_R, PROFILE_LED );
+  //leds.profile( LED_UPLANE_L, PROFILE_LED );
+  //leds.profile( LED_UPLANE_R, PROFILE_LED );
   playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware )
     .onEvent( OUT_COMBO_SCORE, playfield.device( COUNTER0 ), IN_CTR_PT1000 )
     .onEvent( OUT_COMBO_PRESS_LIT, playfield.device( AGAIN ), IN_LBANK_ON )
@@ -134,19 +134,19 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS6, playfield.device( DUAL_TARGET ), IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
     .onEvent( OUT_SBANK_PRESS7, playfield.device( PLAYERS ), IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 
-  leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
+  //leds.profile( LED_FLIPPER_GRP, PROFILE_FLIPPER );
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
 
-  leds.profile( LED_AGAIN_GRP, PROFILE_LED );
+  //leds.profile( LED_AGAIN_GRP, PROFILE_LED );
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
 
-  leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
+  //leds.profile( COIL_SAVE_GATE, PROFILE_GATE );
   playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
 
-  leds.profile( COIL_FEEDER, PROFILE_FEEDER );
+  //leds.profile( COIL_FEEDER, PROFILE_FEEDER );
   playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
   
-  leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
+  //leds.profile( LED_GAME_OVER, PROFILE_BRIGHT );
   playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );
   
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );

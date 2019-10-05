@@ -3,10 +3,7 @@
 #include <Automaton.h>
 #include "IO.hpp"
 
-#define MAX_LEDS 320 // Physical + Logical
-#define MAX_PROFILES 32
-#define MAX_GROUPS 32 // Logical groups
-#define MAX_WATCHERS 16 
+#define MAX_LEDS 320 // Physical leds
 
 struct led_meta_data {
   uint32_t rgbw; 
@@ -23,10 +20,6 @@ struct led_watcher {
 
 /*
  * Scheduler functions:
- * - led envelope timing (wait duration, pulse level, pulse duration, hold level) per led
- * - led logical groups
- * - led state keeping: active()
- * - analog lamp simulation (fade in/out) TODO
  * 
  * T0 Waiting period before led is switched on (ms)
  * L1 Initial led RGBW level
@@ -58,9 +51,6 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix& profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
 
   int active( int ledno );
-  Atm_led_matrix& onWatch( int16_t ledno, Machine& machine, int16_t event );
-  Atm_led_matrix& onWatch( int16_t ledno, Machine* machine, int16_t event );
-  Atm_led_matrix& led_register( int16_t ledno, uint8_t idx );
   int16_t count( int16_t ledno, int8_t led_active = -1 );
   int16_t index( int16_t led_group, int16_t idx );
   
@@ -70,13 +60,6 @@ class Atm_led_matrix: public Machine {
 
 protected:
   int16_t* parseGroups( int16_t* group_def );
-  Atm_led_matrix& group_set( int16_t ledno, uint32_t c ); 
-  Atm_led_matrix& group_on( int ledno );
-  Atm_led_matrix& group_off( int ledno ); 
-  Atm_led_matrix& group_toggle( int ledno, int v = -1 );
-  Atm_led_matrix& group_profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
-  int group_active( int ledno );
-  Atm_led_matrix& led_notify( int16_t ledno );
   enum { ENT_RUNNING, ENT_UPDATING, ENT_IDLE }; // ACTIONS
   int event( int id ); 
   void action( int id ); 
@@ -85,8 +68,6 @@ protected:
   uint8_t refresh, running;
   uint8_t last_milli;
   IO *io;
-  led_watcher watchers[MAX_WATCHERS];
-  uint8_t watcher_cnt = 0;
   int16_t* group_def;
   
 };

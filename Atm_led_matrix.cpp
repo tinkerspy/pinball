@@ -175,19 +175,17 @@ int Atm_led_matrix::state( void ) {
 
 Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 /* = 0 */  ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) return group_profile( ledno, T0, L1, T1, L2 );
-    meta[ledno].T0 = T0;
-    meta[ledno].L1 = L1;
-    meta[ledno].T1 = T1;
-    meta[ledno].L2 = L2;
+    if ( ledno < numberOfLeds ) { 
+      meta[ledno].T0 = T0;
+      meta[ledno].L1 = L1;
+      meta[ledno].T1 = T1;
+      meta[ledno].L2 = L2;
+    } else {
+      int16_t p = group_def[ledno - numberOfLeds];
+      while ( p != -1 && group_def[p] != -1 )
+        profile( group_def[p++], T0, L1, T1, L2 );
+    }
   }
-  return *this;
-}
-
-Atm_led_matrix& Atm_led_matrix::group_profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 /* = 0 */  ) {
-  int16_t p = group_def[ledno - numberOfLeds];
-  while ( p != -1 && group_def[p] != -1 )
-    profile( group_def[p++], T0, L1, T1, L2 );
   return *this;
 }
 

@@ -15,6 +15,12 @@ IO io;
 Atm_led_matrix leds; 
 Atm_switch_matrix playfield;
 
+/*
+ * NEXT:
+ * - make playfield.init() do the ball initialization
+ * - make every device do it's own ball initialization
+ */
+
 void setup() {
   delay( 1000 );
   Serial.println( "start" );
@@ -137,7 +143,6 @@ void setup() {
   playfield.disable();     
 
 }
-
 
 void loop() {
   automaton.run(); 

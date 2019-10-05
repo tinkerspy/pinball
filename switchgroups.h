@@ -1,4 +1,6 @@
+
 int16_t switch_groups[] = {
+
   SAVE_GATE,
   CHIME0,
   CHIME1,

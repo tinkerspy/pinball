@@ -69,6 +69,10 @@ IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
 #ifdef DEBUG
     Serial.printf( "%d setPixelColor %d: strip=%d, led=%d, value=%d, %d, %d, %d\n", millis(), n, led[n].strip, led[n].led, r, g, b, w );    
 #endif
+#ifdef TRACE_LED
+    if ( n == TRACE_LED ) 
+      Serial.printf( "%d setPixelColor %d: strip=%d, led=%d, value=%d, %d, %d, %d\n", millis(), n, led[n].strip, led[n].led, r, g, b, w );    
+#endif
     uint8_t nled = led[n].led;
     uint8_t strip = led[n].strip;
     if ( led_strip[strip]->bytesPerPixel() == 3 ) { // Convert w value to rgb for 3 byte strips
@@ -273,6 +277,10 @@ int16_t IO::scan_raw() {
 int16_t IO::scan_filtered( void ) { 
   int16_t code = scan_raw();
   int16_t addr = abs( code );
+#ifdef TRACE_SWITCH
+    if ( addr == TRACE_SWITCH ) 
+      Serial.printf( "%d IO::scan_raw: %d\n", millis(), code );    
+#endif
   if ( code != 0 ) {
     uint32_t millis_passed = micros() - profile[addr].last_change;
     if ( code > 0 ) {
@@ -298,6 +306,10 @@ int16_t IO::scan_filtered( void ) {
 int16_t IO::scan( void ) { // Handles switch throttling
   int16_t code = scan_filtered();
   int16_t addr = abs( code );
+#ifdef TRACE_SWITCH
+    if ( addr == TRACE_SWITCH ) 
+      Serial.printf( "%d IO::scan_filtered: %d\n", millis(), code );    
+#endif
   if ( code != 0 ) {
     if ( code > 0 ) {
       uint32_t millis_passed = micros() - profile[addr].last_press;
@@ -306,6 +318,10 @@ int16_t IO::scan( void ) { // Handles switch throttling
         return 0;
       } else {
         profile[addr].last_press = micros();
+#ifdef TRACE_SWITCH
+        if ( addr == TRACE_SWITCH ) 
+          Serial.printf( "%d IO::scan: %d\n", millis(), code );    
+#endif
         return code;
       }
     } else {
@@ -313,6 +329,10 @@ int16_t IO::scan( void ) { // Handles switch throttling
         profile[addr].throttling = 0;
         return 0;
       } else {
+#ifdef TRACE_SWITCH
+        if ( addr == TRACE_SWITCH ) 
+          Serial.printf( "%d IO::scan: %d\n", millis(), code );    
+#endif
         return code;
       }
     }

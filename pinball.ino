@@ -1,9 +1,9 @@
 #include "Singularity.h"
-#include "firmware_custom.h"
-#include "mapping.h"
-#include "switchgroups.h"
-#include "ledgroups.h"
+#include "hardware.h"
+#include "switches.h"
+#include "leds.h"
 #include "profiles.h"
+#include "firmware_custom.h"
 #include "freeram.hpp"
 
 using namespace standard_firmware;
@@ -36,16 +36,14 @@ void setup() {
     .show();
 
   Serial.println( "init leds" ); delay( 100 );
-  leds.begin( io, led_groups );
-  Serial.println( "init led profiles" ); delay( 100 );
+  leds.begin( io, led_groups )
+    .readProfiles( 'L', profiles );  
   
-  leds.readProfiles( 'L', profiles );
-  
-  Serial.println( "init playfield2" ); delay( 1000 );
+  Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles );
     
-  Serial.println( "init playfield devices" ); delay( 100 );
+  Serial.println( "init devices" ); delay( 100 );
     
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );

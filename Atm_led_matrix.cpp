@@ -14,22 +14,15 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   Machine::begin( state_table, ELSE );
   this->io = &io;
   numberOfLeds = io.numPixels();
-  for ( int i = 0; i < io.numPixels(); i++ ) {
+  for ( int i = 0; i < numberOfLeds; i++ )
     profile( i, 0, 127, 50, 0 ); // Select a safe default profile
-  }
   io.show();
   last_milli = millis();
-  numberOfLeds = io.numPixels();  
   numberOfGroups = 0;  
-  if ( group_definition ) {
+  if ( group_definition ) 
     group_def = parseGroups( group_definition );
-  }
   return *this;
 }
-
-/* Add C++ code for each internally handled event (input)
-   The code must return 1 to trigger the event
-*/
 
 int Atm_led_matrix::event( int id ) {
   switch ( id ) {
@@ -49,10 +42,6 @@ int Atm_led_matrix::event( int id ) {
   }
   return 0;
 }
-
-/* Add C++ code for each action
-   This generates the 'output' for the state machine
-*/
 
 void Atm_led_matrix::action( int id ) {
   switch ( id ) {
@@ -154,10 +143,6 @@ Atm_led_matrix& Atm_led_matrix::set( int16_t ledno, uint32_t c ) {
   }
   return *this;
 }
-
-/* Optionally override the default trigger() method
-   Control how your machine processes triggers
-*/
 
 Atm_led_matrix& Atm_led_matrix::trigger( int event ) {
   Machine::trigger( event );
@@ -320,24 +305,10 @@ int16_t Atm_led_matrix::index( int16_t ledno, int16_t n ) {
   return -1;  
 }
 
-
-/* Nothing customizable below this line
- ************************************************************************************************
-*/
-
-/* Public event methods
-
-*/
-
-
 Atm_led_matrix& Atm_led_matrix::update() {
   trigger( EVT_UPDATE );
   return *this;
 }
-
-/* State trace method
-   Sets the symbol table and the default logging method for serial monitoring
-*/
 
 Atm_led_matrix& Atm_led_matrix::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,

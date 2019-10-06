@@ -66,22 +66,8 @@ IO& IO::addStrip( IO_Adafruit_NeoPixel *strip ) {
 
 IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
   if ( n < led_cnt ) {
-#ifdef DEBUG    
-    Serial.print( millis() );
-    Serial.print( " setPixelColor " );
-    Serial.print( n );
-    Serial.print( ": strip=" );
-    Serial.print( led[n].strip );
-    Serial.print( ", led=" );
-    Serial.print( led[n].led );
-    Serial.print( ", value=" );
-    Serial.print( r );
-    Serial.print( "," );
-    Serial.print( g );
-    Serial.print( "," );
-    Serial.print( b );
-    Serial.print( "," );
-    Serial.println( w );
+#ifdef DEBUG
+    Serial.printf( "%d setPixelColor %d: strip=%d, led=%d, value=%d, %d, %d, %d\n", millis(), n, led[n].strip, led[n].led, r, g, b, w );    
 #endif
     uint8_t nled = led[n].led;
     uint8_t strip = led[n].strip;

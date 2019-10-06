@@ -1,16 +1,16 @@
 
-// New style profiles table for leds and switches (debounce):
+// Profiles table for leds and switches (debounce):
 
 const int16_t profiles[] = {
 
 /*                     L/S     T0   L1  T1   L2      LED ITEMS/GROUPS */ 
-/* DEFAULT LED    */   'L',     0,   0,  0, 124,     LED_KICKER_L, LED_KICKER_R, LED_TARGET_GRP, LED_UPLANE_GRP, LED_BUMPER_A, LED_BUMPER_B, 
+/* DEFAULT LED    */   'L',     0,   0,  0, 127,     LED_KICKER_L, LED_KICKER_R, LED_TARGET_GRP, LED_UPLANE_GRP, LED_BUMPER_A, LED_BUMPER_B, 
                                                        LED_BUMPER_C, LED_AGAIN0, LED_TRIPLE_BONUS, LED_EXTRA, -1,
-/* HEADBOX        */   'L',     0,   0,  0, 254,     LED_HEADBOX_GRP, -1,
-/* OXO            */   'L',     0,   0,  0, 125,     LED_OXO_GRP, -1,
-/* GI             */   'L',     0,   0,  0, 253,     COIL_GI, -1,
+/* HEADBOX        */   'L',     0,   0,  0, 255,     LED_HEADBOX_GRP, -1,
+/* OXO            */   'L',     0,   0,  0, 127,     LED_OXO_GRP, -1,
+/* GI             */   'L',     0,   0,  0, 255,     COIL_GI, -1,
 /* SLING          */   'L',     0, 255, 30,   0,     COIL_SLING_R, COIL_SLING_L, -1,
-/* FLIPPER        */   'L',     0,   0,  0, 252,     COIL_FLIPPER_L, COIL_FLIPPER_R, -1,
+/* FLIPPER        */   'L',     0,   0,  0, 255,     COIL_FLIPPER_L, COIL_FLIPPER_R, -1,
 /* KICKER         */   'L',  1000,  95, 30,   0,     COIL_KICKER_L, COIL_KICKER_R, -1,
 /* GATE           */   'L',     0,   0,  0, 255,     COIL_SAVE_GATE, -1,
 /* BUMPER         */   'L',     0, 255, 40,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,

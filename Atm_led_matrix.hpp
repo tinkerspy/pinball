@@ -38,6 +38,7 @@ class Atm_led_matrix: public Machine {
   Atm_led_matrix( void ) : Machine() {};
   Atm_led_matrix& begin( IO &io, int16_t* group_definition );
   Atm_led_matrix& trace( Stream & stream );
+  Atm_led_matrix& trace();
   Atm_led_matrix& trigger( int event );
   int state( void );
   Atm_led_matrix& update( void );

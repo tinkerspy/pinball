@@ -37,6 +37,7 @@ class Atm_device: public Machine {
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
   Atm_device& trace( Stream & stream );
+  Atm_device& trace( void );
   Atm_device& dump( Stream & stream );
   Atm_device& trigger( int event );
   Atm_device& trigger( int event, uint32_t sel );

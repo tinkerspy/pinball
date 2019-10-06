@@ -283,3 +283,8 @@ Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
     "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
   return *this;
 }
+
+Atm_switch_matrix& Atm_switch_matrix::trace( void ) {
+  Machine::setTrace( NULL, NULL, "" );
+  return *this;
+}

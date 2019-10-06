@@ -320,3 +320,8 @@ Atm_led_matrix& Atm_led_matrix::trace( Stream & stream ) {
                      "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   return *this;
 }
+
+Atm_led_matrix& Atm_led_matrix::trace( void ) {
+  Machine::setTrace( NULL, NULL, "" );
+  return *this;
+}

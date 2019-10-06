@@ -29,6 +29,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   Atm_switch_matrix( void ) : Machine() {};
   Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL );
   Atm_switch_matrix& trace( Stream & stream );
+  Atm_switch_matrix& trace( void );
   Atm_switch_matrix& trigger( int event );
   int state( void );
   bool isPressed( int16_t n );

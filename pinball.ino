@@ -48,7 +48,7 @@ void setup() {
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles )
-    //.trace( Serial )
+//    .trace( Serial )
     ;
     
   Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
@@ -66,7 +66,7 @@ void setup() {
  //   .onEvent( OUT_CTR_DIGIT2, playfield.device( CHIMES ), IN_LBANK_ON1 )
  //   .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 )
  ;
- 
+
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )

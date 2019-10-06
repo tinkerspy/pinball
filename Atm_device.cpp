@@ -419,3 +419,8 @@ Atm_device& Atm_device::trace( Stream & stream ) {
     "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
   return *this;
 }
+
+Atm_device& Atm_device::trace( void ) {
+  Machine::setTrace( NULL, NULL, "" );
+  return *this;
+}

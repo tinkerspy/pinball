@@ -279,12 +279,15 @@ Atm_switch_matrix& Atm_switch_matrix::onRelease( int sub, atm_cb_push_t callback
  */
 
 Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
+  
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "PLAYFIELD\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
+    "ATM_SWITCH_MATRIX\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
+  Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
 }
 
 Atm_switch_matrix& Atm_switch_matrix::trace( void ) {
+  Serial.printf( "%d Tracing disabled %s@%X\n", millis(), symbols, (long)(this) );
   Machine::setTrace( NULL, NULL, "" );
   return *this;
 }

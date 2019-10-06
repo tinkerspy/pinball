@@ -48,7 +48,7 @@ void setup() {
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles )
-//    .trace( Serial )
+    //.trace( Serial )
     ;
     
   Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );

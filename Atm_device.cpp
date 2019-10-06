@@ -417,10 +417,12 @@ Atm_device& Atm_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
 Atm_device& Atm_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
+  Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
 }
 
 Atm_device& Atm_device::trace( void ) {
+  Serial.printf( "%d Tracing disabled %s@%X\n", millis(), symbols, (long)(this) );
   Machine::setTrace( NULL, NULL, "" );
   return *this;
 }

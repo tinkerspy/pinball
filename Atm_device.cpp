@@ -56,6 +56,7 @@ int16_t Atm_device::reg( uint8_t r ) {
 }
 
 Atm_device& Atm_device::chain( Atm_device& next ) {
+  //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
   this->next = &next;  
   return *this;
 }
@@ -324,7 +325,9 @@ void Atm_device::run_code( uint8_t active_core ) {
  */
 
 Atm_device& Atm_device::trigger( int event ) {
+  //Serial.printf( "%x trigger %d\n", (long)(this), event );
   if ( next ) {
+    //Serial.printf( "%x next %x\n", (long)(this), (long)next );
     next->trigger( event );
   }
   if ( playfield->enabled() || input_persistence ) {

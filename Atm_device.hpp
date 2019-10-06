@@ -54,6 +54,7 @@ class Atm_device: public Machine {
   Atm_device& select( uint32_t mask );
   
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
+  Atm_device* next;
 
  private:
   enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS
@@ -78,7 +79,6 @@ class Atm_device: public Machine {
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
   atm_timer_millis timer;
-  Atm_device* next;
   bool enabled;
   core_state core[2];
   

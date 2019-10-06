@@ -164,7 +164,7 @@ void Atm_switch_matrix::scan_matrix( void ) {
 
 Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
-  //Serial.printf( "Device switch=%d, led=%d\n", n, led_group ); 
+  //Serial.printf( "Device rquest %d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_device* device = new Atm_device();
     device->begin( this, led_group, device_script );
@@ -186,13 +186,13 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
     //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numOfSwitches ); 
-    if ( n >= numOfSwitches ) {
+    if ( n > numOfSwitches ) {
       if ( group_def && n <= numOfSwitches + numOfGroups ) { 
         int p = group_def[n - numOfSwitches - 1];
         int cnt = 0;
-        while ( group_def[p] != -1 ) {
+        while ( p != -1 && group_def[p] != -1 ) {
           if ( group_def[p] < numOfSwitches ) {
-            //Serial.printf( "Attach %d, index %d\n", group_def[p], cnt ); 
+            //Serial.printf( "Group attach %d, index %d\n", group_def[p], cnt ); 
             prof[group_def[p]].device = device;
             prof[group_def[p]].device_index = cnt + 1;
           }
@@ -216,6 +216,7 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
       prof[n].device->set_script( device_script );
     }
   }
+  //Serial.printf( "Device %d returned %x\n", n, (long)prof[n].device ); 
   return *prof[n].device;
 }
 

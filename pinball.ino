@@ -50,7 +50,7 @@ void setup() {
   Serial.printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
   
   Serial.println( "init devices" ); delay( 100 );
-    
+  
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER3 ) );
   playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( playfield.device( COUNTER2 ) );
@@ -59,7 +59,7 @@ void setup() {
  //   .onEvent( OUT_CTR_DIGIT2, playfield.device( CHIMES ), IN_LBANK_ON1 )
  //   .onEvent( OUT_CTR_DIGIT3, playfield.device( CHIMES ), IN_LBANK_ON2 )
  ;
-    
+ 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )

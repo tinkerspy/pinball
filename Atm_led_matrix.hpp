@@ -53,6 +53,7 @@ class Atm_led_matrix: public Machine {
   int active( int ledno );
   int16_t count( int16_t ledno, int8_t led_active = -1 );
   int16_t index( int16_t led_group, int16_t idx );
+  int16_t numberOfGroups( void );
   
   uint8_t debug;
   Atm_led_matrix& dump( Stream& stream );
@@ -64,7 +65,7 @@ protected:
   int event( int id ); 
   void action( int id ); 
   led_meta_data meta[MAX_LEDS];
-  int numberOfLeds, numberOfGroups;
+  int numOfLeds, numOfGroups;
   uint8_t refresh, running;
   uint8_t last_milli;
   IO *io;

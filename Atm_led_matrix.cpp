@@ -13,12 +13,12 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   // clang-format on
   Machine::begin( state_table, ELSE );
   this->io = &io;
-  numberOfLeds = io.numPixels();
-  for ( int i = 0; i < numberOfLeds; i++ )
+  numOfLeds = io.numberOfLeds();
+  for ( int i = 0; i < numOfLeds; i++ )
     profile( i, 0, 127, 50, 0 ); // Select a safe default profile
   io.show();
   last_milli = millis();
-  numberOfGroups = 0;  
+  numOfGroups = 0;  
   if ( group_definition ) 
     group_def = parseGroups( group_definition );
   return *this;
@@ -47,7 +47,7 @@ void Atm_led_matrix::action( int id ) {
   switch ( id ) {
     case ENT_RUNNING:
       running = 0;
-      for ( int i = 0; i < numberOfLeds; i++ ) {
+      for ( int i = 0; i < numOfLeds; i++ ) {
         // Set running = 1; while there is work to do
         switch ( meta[i].state ) {
           case LED_STATE_DELAY:
@@ -91,10 +91,10 @@ void Atm_led_matrix::action( int id ) {
 int16_t* Atm_led_matrix::parseGroups( int16_t* group_def ) {
   int16_t* p = group_def;
   while ( p[0] != -1 ) *p++ = 0;
-  numberOfGroups = p - group_def;
+  numOfGroups = p - group_def;
   p++;
   while ( p[0] != -1 ) {
-    int gid = p[0] - numberOfLeds; // Leds start at 0 while switches start at 1, does that create a problem here???
+    int gid = p[0] - numOfLeds; // Leds start at 0 while switches start at 1, does that create a problem here???
     group_def[gid] = p - group_def + 1;
     p++;
     while ( p[0] != -1 ) {
@@ -105,7 +105,7 @@ int16_t* Atm_led_matrix::parseGroups( int16_t* group_def ) {
   // Make unused entries point to -1 at end of index 
   p = group_def;
   while ( p[0] != -1 ) {
-    if ( p[0] == 0 ) *p = numberOfGroups;
+    if ( p[0] == 0 ) *p = numOfGroups;
       p++;
   }
   return group_def;
@@ -131,10 +131,15 @@ Atm_led_matrix& Atm_led_matrix::readProfiles(  char label, const int16_t* profil
   return *this;
 }
 
+int16_t Atm_led_matrix::numberOfGroups( void ) {
+  return numOfGroups;
+}
+
+
 Atm_led_matrix& Atm_led_matrix::set( int16_t ledno, uint32_t c ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) {
-      int16_t p = group_def[ledno - numberOfLeds];
+    if ( ledno >= numOfLeds ) {
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 ) 
         set( group_def[p++], c );       
     } else {
@@ -159,13 +164,13 @@ int Atm_led_matrix::state( void ) {
 
 Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 /* = 0 */  ) {
   if ( ledno > -1 ) {
-    if ( ledno < numberOfLeds ) { 
+    if ( ledno < numOfLeds ) { 
       meta[ledno].T0 = T0;
       meta[ledno].L1 = L1;
       meta[ledno].T1 = T1;
       meta[ledno].L2 = L2;
     } else {
-      int16_t p = group_def[ledno - numberOfLeds];
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 )
         profile( group_def[p++], T0, L1, T1, L2 );
     }
@@ -175,8 +180,8 @@ Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1
 
 Atm_led_matrix& Atm_led_matrix::on( int ledno, bool no_update /* = false */  ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) {
-      int16_t p = group_def[ledno - numberOfLeds];
+    if ( ledno >= numOfLeds ) {
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 )
         on( group_def[p++], true );
       if ( !no_update ) trigger( EVT_UPDATE );
@@ -205,8 +210,8 @@ Atm_led_matrix& Atm_led_matrix::on( int ledno, bool no_update /* = false */  ) {
 
 Atm_led_matrix& Atm_led_matrix::off( int ledno, bool no_update /* = false */ ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) {
-      int16_t p = group_def[ledno - numberOfLeds];
+    if ( ledno >= numOfLeds ) {
+      int16_t p = group_def[ledno - numOfLeds];
         while ( p != -1 && group_def[p] != -1 )
           off( group_def[p++], true );
       if ( !no_update ) trigger( EVT_UPDATE );
@@ -223,7 +228,7 @@ Atm_led_matrix& Atm_led_matrix::off( int ledno, bool no_update /* = false */ ) {
 }
 
 Atm_led_matrix& Atm_led_matrix::off() {
-  for ( int ledno = 0; ledno < numberOfLeds; ledno++ )
+  for ( int ledno = 0; ledno < numOfLeds; ledno++ )
     off( ledno, true );
   refresh = 1;
   trigger( EVT_UPDATE );
@@ -232,8 +237,8 @@ Atm_led_matrix& Atm_led_matrix::off() {
 
 Atm_led_matrix& Atm_led_matrix::toggle( int ledno, int v /* = -1 */ ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) {
-      int16_t p = group_def[ledno - numberOfLeds];
+    if ( ledno >= numOfLeds ) {
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 )
         toggle( group_def[p++], v );
       trigger( EVT_UPDATE );
@@ -254,8 +259,8 @@ Atm_led_matrix& Atm_led_matrix::toggle( int ledno, int v /* = -1 */ ) {
 
 int Atm_led_matrix::active( int ledno ) {
   if ( ledno > -1 ) {
-    if ( ledno >= numberOfLeds ) {
-      int16_t p = group_def[ledno - numberOfLeds];
+    if ( ledno >= numOfLeds ) {
+      int16_t p = group_def[ledno - numOfLeds];
       return active( group_def[p] );
     } else {
       return ledno > -1 ? meta[ledno].state : 0;
@@ -267,14 +272,14 @@ int Atm_led_matrix::active( int ledno ) {
 int16_t Atm_led_matrix::count( int16_t ledno, int8_t led_active /* = -1 */ ) {
   int16_t cnt = 0;
   if ( ledno > -1 ) {
-    if ( ledno < numberOfLeds ) { // Physical led
+    if ( ledno < numOfLeds ) { // Physical led
       if ( led_active == -1 ) {
         cnt++;
       } else {
         if ( ( meta[ledno].state > 0 ) == led_active ) cnt++;
       }
     } else {   // Virtual led -> expand & recurse
-      int16_t p = group_def[ledno - numberOfLeds];
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 ) 
         cnt += this->count( group_def[p++], led_active );
     }
@@ -288,10 +293,10 @@ int16_t Atm_led_matrix::count( int16_t ledno, int8_t led_active /* = -1 */ ) {
 int16_t Atm_led_matrix::index( int16_t ledno, int16_t n ) {
   int16_t cnt = 0;
   if ( ledno > -1 ) {
-    if ( ledno < numberOfLeds ) { // Physical led, return ledno 
+    if ( ledno < numOfLeds ) { // Physical led, return ledno 
         return n == 0 ? ledno : -1;  
     } else {   // Virtual led -> expand & recurse
-      int16_t p = group_def[ledno - numberOfLeds];
+      int16_t p = group_def[ledno - numOfLeds];
       while ( p != -1 && group_def[p] != -1 ) {
         if ( cnt++ == n ) {
           //Serial.println( *p );

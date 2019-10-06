@@ -20,8 +20,8 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   memset( connectors, 0, sizeof( connectors ) ); 
   memset( prof, 0, sizeof( prof ) ); 
   timer.set( STARTUP_DELAY_MS );
-  numberOfSwitches = io.numSwitches();  
-  numberOfGroups = 0;  
+  numOfSwitches = io.numberOfSwitches();  
+  numOfGroups = 0;  
   if ( group_definition ) {
     group_def = parseGroups( group_definition );
   }
@@ -56,10 +56,10 @@ void Atm_switch_matrix::action( int id ) {
 int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   int16_t* p = group_def;
   while ( p[0] != -1 ) *p++ = 0;
-  numberOfGroups = p - group_def;
+  numOfGroups = p - group_def;
   p++;
   while ( p[0] != -1 ) {
-    int gid = p[0] - numberOfSwitches - 1;
+    int gid = p[0] - numOfSwitches - 1;
     group_def[gid] = p - group_def + 1;
     p++;
     while ( p[0] != -1 ) {
@@ -70,15 +70,15 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   // Make unused entries point to -1 at end of index 
   p = group_def;
   while ( p[0] != -1 ) {
-    if ( p[0] == 0 ) *p = numberOfGroups;
+    if ( p[0] == 0 ) *p = numOfGroups;
       p++;
   }
   return group_def;
 }
 
 Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us ) {
-  if ( n > numberOfSwitches ) {
-    int16_t p = group_def[n - numberOfSwitches - 1];
+  if ( n > numOfSwitches ) {
+    int16_t p = group_def[n - numOfSwitches - 1];
     while ( group_def[p] != -1 ) {
       if ( callback_trace ) 
         stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", group_def[p], press_100us, release_100us, throttle_100us );
@@ -110,6 +110,10 @@ Atm_switch_matrix& Atm_switch_matrix::readProfiles(  char label, const int16_t* 
     p++;
   }
   return *this;
+}
+
+int16_t Atm_switch_matrix::numberOfGroups( void ) {
+  return numOfGroups;
 }
 
 Atm_switch_matrix& Atm_switch_matrix::disable() {
@@ -181,13 +185,13 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
     device->begin( this, led_group, device_script );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
-    //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numberOfSwitches ); 
-    if ( n >= numberOfSwitches ) {
-      if ( group_def && n <= numberOfSwitches + numberOfGroups ) { 
-        int p = group_def[n - numberOfSwitches - 1];
+    //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numOfSwitches ); 
+    if ( n >= numOfSwitches ) {
+      if ( group_def && n <= numOfSwitches + numOfGroups ) { 
+        int p = group_def[n - numOfSwitches - 1];
         int cnt = 0;
         while ( group_def[p] != -1 ) {
-          if ( group_def[p] < numberOfSwitches ) {
+          if ( group_def[p] < numOfSwitches ) {
             //Serial.printf( "Attach %d, index %d\n", group_def[p], cnt ); 
             prof[group_def[p]].device = device;
             prof[group_def[p]].device_index = cnt + 1;

@@ -80,8 +80,8 @@ class IO {
     IO& setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
     IO& switchMap( uint8_t r1, uint8_t r2 = 0, uint8_t r3 = 0, uint8_t r4 = 0, uint8_t r5 = 0 );
     static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0 ); 
-    uint16_t numPixels( void );
-    uint16_t numSwitches( void );
+    uint16_t numberOfLeds( void );
+    uint16_t numberOfSwitches( void );
     int16_t lastPixel( void ); // Last pixel set
     bool show();
     uint16_t isPressed( int16_t code );

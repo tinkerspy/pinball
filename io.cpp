@@ -81,11 +81,11 @@ IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
   return *this;
 }
 
-uint16_t IO::numPixels( void ) {
+uint16_t IO::numberOfLeds( void ) {
   return led_cnt;
 }
 
-uint16_t IO::numSwitches( void ) {
+uint16_t IO::numberOfSwitches( void ) {
   return switch_cnt * 8;
 }
 
@@ -327,7 +327,7 @@ int16_t IO::reject() { // Mark the last keypress as unprocessed so that will gen
 
 // Test edge case: laatste switch!
 IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
-  if ( n > 0 && n <= numSwitches() ) {
+  if ( n > 0 && n <= numberOfSwitches() ) {
     profile[n].press_micros = press_100us * 100UL;
     profile[n].release_micros = release_100us * 100UL;
     profile[n].throttle_micros = throttle_100us * 100UL;
@@ -336,7 +336,7 @@ IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint1
 }
 
 IO& IO::debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
-  for ( int16_t i = 0; i < this->numSwitches(); i++ ) {
+  for ( int16_t i = 0; i < this->numberOfSwitches(); i++ ) {
     debounce( i + 1, press_100us, release_100us, throttle_100us );
   }
   return *this;  

@@ -120,13 +120,7 @@ enum {
 /* 116 */   LED_PLAYERS_GRP,
 };
 
-/* group_map - Defines virtual LEDs (groups of leds) /////////////////////////////////////////////////////////////////////////
- *  
- * Record starts with the group ID followed by the elements, ended by a -1 entry.
- * The last record in the list is followed by a second -1 entry to signal end of list 
- * 
- * Leds and switches can be mixed as long as you make sure no Atm_led_matrix actions
- * are performed on the group.
+/* group_map - Defines virtual LEDs (groups of leds) 
  */
 
 int16_t led_groups[] = {

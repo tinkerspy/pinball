@@ -23,7 +23,7 @@ Atm_switch_matrix playfield;
 
 void setup() {
   delay( 1000 );
-  Serial.println( "start" );
+  Serial.println( "Singularity framework\ninit IO" );
   delay( 100 );
 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
@@ -35,6 +35,7 @@ void setup() {
     .retrigger()
     .show();
 
+
   Serial.println( "init leds" ); delay( 100 );
   leds.begin( io, led_groups )
     .readProfiles( 'L', profiles );  
@@ -43,6 +44,11 @@ void setup() {
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles );
     
+  Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
+  Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
+  Serial.printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
+  Serial.printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
+  
   Serial.println( "init devices" ); delay( 100 );
     
   playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );

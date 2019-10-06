@@ -45,6 +45,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   Atm_switch_matrix& profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us );
   Atm_switch_matrix& readProfiles( char label, const int16_t* profile_def );
   Atm_led_matrix* leds( void );
+  int16_t numberOfGroups( void );
 
   switch_record prof[MAX_SWITCHES + 1 ];
  
@@ -57,7 +58,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   void scan_matrix( void );
   int16_t* parseGroups( int16_t* group_def );
 
-  uint16_t numberOfSwitches, numberOfGroups;
+  uint16_t numOfSwitches, numOfGroups;
   int16_t* group_def;
   bool active;
   int8_t scan_col = 0;

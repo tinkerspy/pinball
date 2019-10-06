@@ -27,6 +27,7 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   timer.set( ATM_TIMER_OFF );
   core[0].ptr = 0;
   core[1].ptr = 0;
+  switches = 0;
   if ( device_script != NULL ) {
     set_led( led_group );
     set_script( device_script );
@@ -331,7 +332,17 @@ Atm_device& Atm_device::trigger( int event ) {
     next->trigger( event );
   }
   if ( playfield->enabled() || input_persistence ) {
-    if ( this->enabled ) start_code( event );
+    if ( this->enabled ) {
+      if ( event > 0 and event < 65 ) {
+        int16_t sw = event - 1; // sw = 0..63
+        if ( ( sw & 1 ) == 0 ) { // Press if bit 0 is not set
+          switches |= ( 1 << ( sw >> 1 ) );  // Switch press -> set switch bit
+        } else {
+          switches &= ~( 1 << ( sw >> 1 ) ); // Switch release -> clear switch bit
+        }
+      }
+      start_code( event );
+    }
   }
   return *this;
 }
@@ -341,7 +352,17 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
     next->trigger( event, sel >> 1 );
   }
   if ( playfield->enabled() || input_persistence ) {
-    if ( sel & 1 ) start_code( event );
+    if ( sel & 1 ) {
+      if ( event > 0 and event < 65 ) {
+        int16_t sw = event - 1; // sw = 0..63
+        if ( ( sw & 1 ) == 0 ) { // Press if bit 0 is not set
+          switches |= ( 1 << ( sw >> 1 ) );  // Switch press -> set switch bit
+        } else {
+          switches &= ~( 1 << ( sw >> 1 ) ); // Switch release -> clear switch bit
+        }
+      }
+      start_code( event );
+    }
   }
   return *this;
 }

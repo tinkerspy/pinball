@@ -82,5 +82,6 @@ class Atm_device: public Machine {
   atm_timer_millis timer;
   bool enabled;
   core_state core[2];
+  uint32_t switches; 
   
 };

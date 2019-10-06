@@ -86,8 +86,8 @@ Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, i
       p++;
     }
   } else {
-      if ( callback_trace ) 
-        stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", n, press_100us, release_100us, throttle_100us );
+    if ( callback_trace ) 
+      stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", n, press_100us, release_100us, throttle_100us );
     io->debounce( n, press_100us, release_100us, throttle_100us );        
   }
   return *this;
@@ -183,6 +183,9 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
       device->reg( 7, r7 );
     }
     device->begin( this, led_group, device_script );
+    // Check and warn (Serial stream) if switch was already in use!
+    if ( callback_trace && prof[n].device ) 
+      stream_trace->printf( "Atm_switch_matrix::device( %d ): switch already in use!\n", n );
     prof[n].device = device; // Attach device to one switch
     prof[n].device_index = 1;
     //Serial.printf( "Attach root %d, index %d (NOS: %d)\n", n, 0, numOfSwitches ); 
@@ -193,6 +196,8 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
         while ( p != -1 && group_def[p] != -1 ) {
           if ( group_def[p] < numOfSwitches ) {
             //Serial.printf( "Group attach %d, index %d\n", group_def[p], cnt ); 
+            if ( callback_trace && prof[group_def[p]].device ) 
+              stream_trace->printf( "Atm_switch_matrix::device( %d ): switch %d already in use!\n", n, group_def[p] );
             prof[group_def[p]].device = device;
             prof[group_def[p]].device_index = cnt + 1;
           }
@@ -201,7 +206,6 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
         }
       }
     } 
-    //Serial.printf( "Switches attached\n" ); 
   } else { 
     if ( device_script != NULL ) {
       prof[n].device->reg( 0, r0 );

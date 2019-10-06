@@ -19,6 +19,11 @@ Atm_switch_matrix playfield;
  * NEXT:
  * - make playfield.init() do the ball initialization
  * - make every device do it's own ball initialization
+ * 
+ * Known issues:
+ * - second game player selection does not work
+ * - phantom key presses
+ * - 
  */
 
 void setup() {
@@ -42,7 +47,9 @@ void setup() {
   
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
-    .readProfiles( 'S', profiles );
+    .readProfiles( 'S', profiles )
+    //.trace( Serial )
+    ;
     
   Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
   Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
@@ -169,7 +176,7 @@ void loop() {
           playfield.device( FEEDER ).trigger( IN_LBANK_ON );
           automaton.delay( 500 ); 
           playfield.enable();
-          while ( playfield.enabled() ) automaton.run();             
+          while ( playfield.enabled() ) automaton.run();            
           Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  
           playfield.device( OXO ).trigger( IN_OXO_COLLECT );
           while ( playfield.device( OXO ).state() ) automaton.run(); 

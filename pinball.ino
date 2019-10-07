@@ -22,7 +22,7 @@ Atm_switch_matrix playfield;
  * 
  * Known issues:
  * - second game player selection does not work
- * - phantom key presses
+ * - phantom key presses 
  * - 
  */
 
@@ -160,7 +160,7 @@ void loop() {
   if ( playfield.isPressed( FRONTBTN ) ) {
     playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
     playfield.leds()->off( LED_FLASHER_GRP );
-    playfield.device( PLAYERS ).init( 1 );
+    playfield.device( PLAYERS ).select( 1 ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
     while ( playfield.device( COUNTER0 ).state() ) automaton.run();
     automaton.delay( 1000 );

@@ -414,18 +414,6 @@ Atm_device& Atm_device::release( void ) {
   return *this;  
 }
 
-/* Nothing customizable below this line                          
- ************************************************************************************************
-*/
-
-/* Public event methods
- *
- */
-
-/*
- * onEvent() push connector variants ( slots 8, autostore 0, broadcast 0 )
- */
-
 Atm_device& Atm_device::onEvent( int sub, Machine& machine, int event ) {
   if ( next ) next->onEvent( sub, machine, event );    
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );

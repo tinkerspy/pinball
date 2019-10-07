@@ -127,18 +127,18 @@ void setup() {
     .onEvent( OUT_KICKER_PRESS, OXO, IN_OXO_TOGGLE );    
 
   playfield.device( LOWER, -1, switchbank_firmware ) 
-    .onEvent( OUT_SBANK_PRESS0, OXO, IN_OXO_5 )                   // 0 TARGET_C
-    .onEvent( OUT_SBANK_SCORE0, COUNTER0, IN_CTR_PT500 )  
-    .onEvent( OUT_SBANK_PRESS1, OXO, IN_OXO_7 )                   // 1 INLANE_L
-    .onEvent( OUT_SBANK_SCORE1, COUNTER0, IN_CTR_PT1000 )
-    .onEvent( OUT_SBANK_PRESS2, OXO, IN_OXO_9 )                   // 2 INLANE_R
-    .onEvent( OUT_SBANK_SCORE2, COUNTER0, IN_CTR_PT1000 )
-    .onEvent( OUT_SBANK_PRESS3, OXO, IN_OXO_8 )                   // 3 ROLLOVER
-    .onEvent( OUT_SBANK_SCORE3, COUNTER0, IN_CTR_PT500 )
-    .onEvent( OUT_SBANK_SCORE4, COUNTER0, IN_CTR_PT1000 )         // 4 OUTLANE
-    .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )  // 5 BALL_EXIT
-    .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
-    .onEvent( OUT_SBANK_PRESS7, PLAYERS, IN_SCALAR_ADVANCE );     // 7 FRONTBTN
+    .onEvent( OUT_SBANK_PRESS0,         OXO, IN_OXO_5            )    // 0 TARGET_C
+    .onEvent( OUT_SBANK_SCORE0,    COUNTER0, IN_CTR_PT500        )  
+    .onEvent( OUT_SBANK_PRESS1,         OXO, IN_OXO_7            )    // 1 INLANE_L
+    .onEvent( OUT_SBANK_SCORE1,    COUNTER0, IN_CTR_PT1000       )
+    .onEvent( OUT_SBANK_PRESS2,         OXO, IN_OXO_9            )    // 2 INLANE_R
+    .onEvent( OUT_SBANK_SCORE2,    COUNTER0, IN_CTR_PT1000       )
+    .onEvent( OUT_SBANK_PRESS3,         OXO, IN_OXO_8            )    // 3 ROLLOVER
+    .onEvent( OUT_SBANK_SCORE3,    COUNTER0, IN_CTR_PT500        )
+    .onEvent( OUT_SBANK_SCORE4,    COUNTER0, IN_CTR_PT1000       )    // 4 OUTLANE
+    .onEvent( OUT_SBANK_PRESS5,   playfield, playfield.EVT_READY )    // 5 BALL_EXIT
+    .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR     )    // 6 BALL_ENTER (physically disabled for now)
+    .onEvent( OUT_SBANK_PRESS7,     PLAYERS, IN_SCALAR_ADVANCE   );   // 7 FRONTBTN
 
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );

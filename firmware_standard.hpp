@@ -956,63 +956,43 @@ int16_t counter_em4d1w_firmware[] = {
 };
 
 
-//  bumper.onEvent( "SCORE_LIT", counter, counter.input( "PT1000" ) );
+//  playfield.device( BUMPER_A )
+//    .onEvent( "SCORE_LIT", COUNTER0, "PT1000" );
 
-char bumper_basic_symbolic[] = R""""(
+// src => intermediate
+// 120 if ( led( LIGHT ) or led( LIGHT2 ) ) then output SCORE_LIT
+// [120] => "IF (LED(VAR)|LED(3)) THEN OUTPUT 1"
+// "IF", "(LED(VAR)|LED(3))", "THEN", "OUTPUT", "(1)" 
+
+// INFIX expressie > prepared RPN, alleen functies/arrays/variables nog resolven 
+
+char bumper_basic[] = R""""(
 INIT, PRESS, RELEASE, LIGHT_ON, LIGHT_OFF
 SCORE, SCORE_LIT, SCORE_UNLIT, LIGHT_ON, LIGHT_OFF
-COIL, LED
+COIL, LIGHT
   
 000 on PRESS call 100
 001 on LIGHT_ON call 300
 002 on LIGHT_OFF call 400
 003 persist OFF, OFF
 004 led COIL, OFF
-005 led LED, OFF
+005 led LIGHT, OFF
 004 end  
 
 100 led COIL, ON
 110 output SCORE
-120 if (  led( LED ) ) then output SCORE_LIT
-130 if ( !led( LED ) ) then output SCORE_UNLIT
+120 if (  led( LIGHT ) ) then output SCORE_LIT
+130 if ( !led( LIGHT ) ) then output SCORE_UNLIT
 130 end
 
-300 led LED, ON
+300 led LIGHT, ON
 310 output LIGHT_ON
 320 end
 
-400 led LED, OFF
+400 led LIGHT, OFF
 410 output LIGHT_OFF
 420 end
 
 )"""";
-
-
-
-char bumper_basic[] = R""""(
-0 on 1 call 100
-1 on 3 call 300
-2 on 4 call 400
-3 persist 0, 0
-4 led 0, 0
-5 led 1, 0
-4 end  
-
-100 led 0, 1
-110 output 0
-120 if (  led( 1 ) ) then output 1
-130 if ( !led( 1 ) ) then output 2
-130 end
-
-300 led 1, 1
-310 output 3
-320 end
-
-400 led 1, 0
-410 output 4
-420 end
-
-)"""";
-
 
 };

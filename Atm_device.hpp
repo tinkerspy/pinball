@@ -45,6 +45,7 @@ class Atm_device: public Machine {
   int state( uint32_t sel );
   Atm_device& onEvent( int sub, Machine& machine, int event = 0 );
   Atm_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
+  Atm_device& onEvent( int sub, int sw, int event );
   Atm_device& init( void );
   Atm_device& init( uint32_t sel );
   Atm_device& press( void );
@@ -52,6 +53,7 @@ class Atm_device: public Machine {
   Atm_device& reg( uint8_t r, int16_t v );
   int16_t reg( uint8_t r );
   Atm_device& chain( Atm_device& next );
+  Atm_device& chain( int16_t sw );
   Atm_device& select( uint32_t mask );
   
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;

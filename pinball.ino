@@ -77,7 +77,6 @@ void setup() {
     .onEvent( "WIN_ROW", KICKER, "ON" )
     .onEvent( "WIN_ALL", UPLANE, "ON" )
     .onEvent( "COLLECT", COUNTER0, "PT1000" );
-
   */
   
   playfield.device( MULTILANE, -1, switchbank_firmware ) 

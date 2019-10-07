@@ -63,9 +63,8 @@ Atm_device& Atm_device::chain( Atm_device& next ) {
 }
 
 Atm_device& Atm_device::chain( int16_t sw ) {
-  Atm_device next = playfield->device( sw );
   //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
-  this->next = &next;  
+  this->next = &(playfield->device( sw ));  
   return *this;
 }
 
@@ -427,9 +426,8 @@ Atm_device& Atm_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
 }
 
 Atm_device& Atm_device::onEvent( int sub, int sw, int event ) {
-  Atm_device machine = playfield->device( sw );
-  if ( next ) next->onEvent( sub, machine, event );    
-  if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, machine, event );
+  if ( next ) next->onEvent( sub, playfield->device( sw ), event );    
+  if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, playfield->device( sw ), event );
   return *this;
 }
 

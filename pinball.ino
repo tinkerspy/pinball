@@ -137,7 +137,7 @@ void setup() {
     .onEvent( OUT_SBANK_PRESS3, OXO, IN_OXO_8 )                   // 3 ROLLOVER
     .onEvent( OUT_SBANK_SCORE3, COUNTER0, IN_CTR_PT500 )
     .onEvent( OUT_SBANK_SCORE4, COUNTER0, IN_CTR_PT1000 )         // 4 OUTLANE
-    .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )                      // 5 BALL_EXIT
+    .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY )  // 5 BALL_EXIT
     .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR )    // 6 BALL_ENTER (physically disabled for now)
     .onEvent( OUT_SBANK_PRESS7, PLAYERS, IN_SCALAR_ADVANCE );     // 7 FRONTBTN
 

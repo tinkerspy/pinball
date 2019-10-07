@@ -33,10 +33,6 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   Atm_switch_matrix& trigger( int event );
   int state( void );
   bool isPressed( int16_t n );
-  Atm_switch_matrix& onPress( int sub, Machine& machine, int event = 0 );
-  Atm_switch_matrix& onPress( int sub, atm_cb_push_t callback, int idx = 0 );
-  Atm_switch_matrix& onRelease( int sub, Machine& machine, int event = 0 );
-  Atm_switch_matrix& onRelease( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_switch_matrix& disable();
   Atm_switch_matrix& enable();
   bool enabled();
@@ -52,8 +48,6 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
  
  protected:
   enum { ENT_SCAN, ENT_DISABLED, ENT_READY }; // ACTIONS
-  enum { ON_PRESS, ON_RELEASE = MAX_SWITCHES, CONN_MAX = MAX_SWITCHES * 2 }; // CONNECTORS
-  atm_connector connectors[CONN_MAX];
   int event( int id ); 
   void action( int id ); 
   void scan_matrix( void );

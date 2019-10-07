@@ -17,7 +17,6 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   Machine::begin( state_table, ELSE );
   this->io = &io;
   this->pleds = &leds;
-  memset( connectors, 0, sizeof( connectors ) ); 
   memset( prof, 0, sizeof( prof ) ); 
   timer.set( STARTUP_DELAY_MS );
   numOfSwitches = io.numberOfSwitches();  
@@ -142,7 +141,6 @@ void Atm_switch_matrix::scan_matrix( void ) {
   int16_t sw = io->scan();
   if ( sw != 0 ) {
     if ( sw > 0 ) {
-      push( connectors, ON_PRESS, sw, sw, 1 ); 
       if ( prof[sw].device_index ) {
         uint16_t e = 1 + ( (prof[sw].device_index - 1) * 2 );
         //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", sw, prof[sw].device_index, e );
@@ -150,7 +148,6 @@ void Atm_switch_matrix::scan_matrix( void ) {
       }
     } else {
       sw = abs( sw );
-      push( connectors, ON_RELEASE, sw, sw, 0 ); 
       if ( prof[sw].device_index ) {
         uint16_t e = 2 + ( (prof[sw].device_index - 1) * 2 );
         //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[sw].device_index, e ); delay( 100 );
@@ -243,35 +240,6 @@ Atm_switch_matrix& Atm_switch_matrix::trigger( int event ) {
 
 int Atm_switch_matrix::state( void ) {
   return Machine::state();
-}
-
-/* Nothing customizable below this line                          
- ************************************************************************************************
-*/
-
-/* Public event methods
- *
- */
-
-
-Atm_switch_matrix& Atm_switch_matrix::onPress( int sub, Machine& machine, int event ) {
-  onPush( connectors, ON_PRESS, sub, 32, 0, machine, event );
-  return *this;
-}
-
-Atm_switch_matrix& Atm_switch_matrix::onPress( int sub, atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_PRESS, sub, 32, 0, callback, idx );
-  return *this;
-}
-
-Atm_switch_matrix& Atm_switch_matrix::onRelease( int sub, Machine& machine, int event ) {
-  onPush( connectors, ON_RELEASE, sub, 32, 0, machine, event );
-  return *this;
-}
-
-Atm_switch_matrix& Atm_switch_matrix::onRelease( int sub, atm_cb_push_t callback, int idx ) {
-  onPush( connectors, ON_RELEASE, sub, 32, 0, callback, idx );
-  return *this;
 }
 
 /* State trace method

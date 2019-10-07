@@ -1,7 +1,5 @@
 #include "Atm_switch_matrix.hpp"
 
-// TODO: Add catchall on onPress()/onRelease()
-
 Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {

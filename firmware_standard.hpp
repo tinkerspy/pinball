@@ -956,32 +956,32 @@ int16_t counter_em4d1w_firmware[] = {
 };
 
 
-//bumper.onEvent( 'SCORE_LIT', counter, counter.input( 'EVT_1000' ) );
+//  bumper.onEvent( "SCORE_LIT", counter, counter.input( "PT1000" ) );
 
 char bumper_basic_symbolic[] = R""""(
 INIT, PRESS, RELEASE, LIGHT_ON, LIGHT_OFF
 SCORE, SCORE_LIT, SCORE_UNLIT, LIGHT_ON, LIGHT_OFF
 COIL, LED
   
-0 on PRESS call 100
-1 on LIGHT_ON call 300
-2 on LIGHT_OFF call 400
-3 persist 0, 0
-4 led COIL, 0
-5 led LED, 0
-4 end  
+000 on PRESS call 100
+001 on LIGHT_ON call 300
+002 on LIGHT_OFF call 400
+003 persist OFF, OFF
+004 led COIL, OFF
+005 led LED, OFF
+004 end  
 
-100 led COIL, 1
+100 led COIL, ON
 110 output SCORE
 120 if (  led( LED ) ) then output SCORE_LIT
 130 if ( !led( LED ) ) then output SCORE_UNLIT
 130 end
 
-300 led LED, 1
+300 led LED, ON
 310 output LIGHT_ON
 320 end
 
-400 led LED, 0
+400 led LED, OFF
 410 output LIGHT_OFF
 420 end
 

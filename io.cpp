@@ -272,22 +272,7 @@ int16_t IO::scan_raw() {
   }
 }  
 /*
-#ifdef TRACE_SWITCH
-    if ( addr == TRACE_SWITCH ) {
-      uint32_t trace_diff = micros() - trace_micros;
-      if ( code > 0 ) { // Log time on release
-        trace_micros = micros();
-      } else {
-        Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 1000, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
-      }
-    }
-#endif
 
-#ifdef TRACE_SWITCH
-        if ( addr == TRACE_SWITCH ) {
-            Serial.printf( "Passed: %d ms\n", micros_passed );
-        }
-#endif        
 */
 
 // First layer of debouncing (leading and trailing edges)
@@ -295,11 +280,20 @@ int16_t IO::scan_raw() {
 int16_t IO::scan_filtered( void ) { 
   int16_t code = scan_raw();
   int16_t addr = abs( code );
+#ifdef TRACE_SWITCH
+    if ( addr == TRACE_SWITCH ) {
+      uint32_t trace_diff = micros() - trace_micros;
+      if ( code > 0 ) { // Log time on release
+        trace_micros = micros();
+      } else {
+        Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 100, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
+      }
+    }
+#endif
   if ( code != 0 ) {
     if ( code > 0 ) {
-      if ( profile[addr].last_change == 0 ) profile[addr].last_change = micros();
       uint32_t micros_passed = micros() - profile[addr].last_change;
-      if ( micros_passed >= profile[addr].press_micros ) {
+      if ( profile[addr].last_change > 0 && micros_passed >= profile[addr].press_micros ) {
         return code; // And process 'press'
       } else {
         profile[addr].last_change = micros(); // Update stamp when 'press' state is still unstable    
@@ -307,8 +301,13 @@ int16_t IO::scan_filtered( void ) {
       }    
     } else {
       uint32_t micros_passed = micros() - profile[addr].last_change;
+#ifdef TRACE_SWITCH
+        if ( addr == TRACE_SWITCH ) {
+            Serial.printf( "%d Passed: %d ticks\n", micros() / 100, micros_passed / 100 );
+        }
+#endif        
       if ( micros_passed >= profile[addr].release_micros ) {
-        profile[addr].last_change = 0;      
+        profile[addr].last_change = 0;  // Process 'release'    
         return code;
       } else {
         return reject();

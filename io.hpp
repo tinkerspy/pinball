@@ -10,7 +10,7 @@
 #define MAX_LEDS_PER_STRIP 256
 
 // Specify a switch or led number to trace activity for
-#undef TRACE_SWITCH 
+#define TRACE_SWITCH 5
 #undef TRACE_LED 
 
 #ifdef CORE_TEENSY

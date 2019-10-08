@@ -271,33 +271,44 @@ int16_t IO::scan_raw() {
     }
   }
 }  
-
-// First layer of debouncing (leading and trailing edges)
-
-int16_t IO::scan_filtered( void ) { 
-  int16_t code = scan_raw();
-  int16_t addr = abs( code );
+/*
 #ifdef TRACE_SWITCH
     if ( addr == TRACE_SWITCH ) {
       uint32_t trace_diff = micros() - trace_micros;
       if ( code > 0 ) { // Log time on release
         trace_micros = micros();
       } else {
-        Serial.printf( "%d IO::scan_raw: %d (%d us, press %d, release)\n", trace_micros / 1000, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
+        Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 1000, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
       }
     }
 #endif
+
+#ifdef TRACE_SWITCH
+        if ( addr == TRACE_SWITCH ) {
+            Serial.printf( "Passed: %d ms\n", micros_passed );
+        }
+#endif        
+*/
+
+// First layer of debouncing (leading and trailing edges)
+
+int16_t IO::scan_filtered( void ) { 
+  int16_t code = scan_raw();
+  int16_t addr = abs( code );
   if ( code != 0 ) {
-    uint32_t millis_passed = micros() - profile[addr].last_change;
     if ( code > 0 ) {
-      if ( millis_passed >= profile[addr].press_micros ) {
+      if ( profile[addr].last_change == 0 ) profile[addr].last_change = micros();
+      uint32_t micros_passed = micros() - profile[addr].last_change;
+      if ( micros_passed >= profile[addr].press_micros ) {
         return code; // And process 'press'
       } else {
         profile[addr].last_change = micros(); // Update stamp when 'press' state is still unstable    
         return reject();
       }    
     } else {
-      if ( millis_passed >= profile[addr].release_micros ) {      
+      uint32_t micros_passed = micros() - profile[addr].last_change;
+      if ( micros_passed >= profile[addr].release_micros ) {
+        profile[addr].last_change = 0;      
         return code;
       } else {
         return reject();
@@ -357,6 +368,7 @@ IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint1
     profile[n].press_micros = press_100us * 100UL;
     profile[n].release_micros = release_100us * 100UL;
     profile[n].throttle_micros = throttle_100us * 100UL;
+    profile[n].last_change = 0;
   }
   return *this;  
 }

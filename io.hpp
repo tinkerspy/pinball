@@ -43,8 +43,10 @@ class IO {
     uint32_t throttle_micros; // after a registered press/release wait this long before allowing a new press/release
   };
  
-
   protected:
+#ifdef TRACE_SWITCH
+    uint32_t trace_micros;
+#endif
     uint8_t pin_clock; 
     uint8_t pin_latch; 
     uint8_t *gate;

@@ -283,7 +283,7 @@ int16_t IO::scan_filtered( void ) {
       if ( code > 0 ) { // Log time on release
         trace_micros = micros();
       } else {
-        Serial.printf( "%d IO::scan_raw: %d (%d us, press %d, release)\n", trace_micros / 1000, code, trace_diff, profile[addr].press_micros, profile[addr].release_micros );   
+        Serial.printf( "%d IO::scan_raw: %d (%d us, press %d, release)\n", trace_micros / 1000, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
       }
     }
 #endif
@@ -314,7 +314,7 @@ int16_t IO::scan( void ) { // Handles switch throttling
   int16_t addr = abs( code );
 #ifdef TRACE_SWITCH
     if ( addr == TRACE_SWITCH ) 
-      Serial.printf( "%d IO::scan_filtered: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros );    
+      Serial.printf( "%d IO::scan_filtered: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros / 100 );    
 #endif
   if ( code != 0 ) {
     if ( code > 0 ) {

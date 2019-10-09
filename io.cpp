@@ -277,12 +277,18 @@ int16_t IO::scan_raw() {
 
 // First layer of debouncing (leading and trailing edges)
 
-int16_t IO::scan_filtered( void ) { 
+int16_t IO::scan_cooked( void ) { 
+#ifdef TRACE_SWITCH
+      pinMode( 19, OUTPUT ); // Sample indicator
+      digitalWrite( 9, HIGH );
+#endif
   int16_t code = scan_raw();
   int16_t addr = abs( code );
 #ifdef TRACE_SWITCH
+    pinMode( 19, OUTPUT );
+    digitalWrite( 19, HIGH );
     if ( addr == TRACE_SWITCH ) {
-      pinMode( 9, OUTPUT );
+      pinMode( 9, OUTPUT ); // raw state
       digitalWrite( 9, code > 0 );
       uint32_t trace_diff = micros() - trace_micros;
       if ( code > 0 ) { // Log time on release
@@ -322,11 +328,11 @@ int16_t IO::scan_filtered( void ) {
 // Second layer of debouncing (throttling)
 
 int16_t IO::scan( void ) { // Handles switch throttling
-  int16_t code = scan_filtered();
+  int16_t code = scan_cooked();
   int16_t addr = abs( code );
 #ifdef TRACE_SWITCH
     if ( addr == TRACE_SWITCH ) 
-      pinMode( 10, OUTPUT );
+      pinMode( 10, OUTPUT ); // cooked state
       digitalWrite( 10, code > 0 );
       Serial.printf( "%d IO::scan_filtered: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros / 100 );    
 #endif
@@ -340,7 +346,7 @@ int16_t IO::scan( void ) { // Handles switch throttling
         profile[addr].last_press = micros();
 #ifdef TRACE_SWITCH
         pinMode( 18, OUTPUT );
-        digitalWrite( 18, HIGH );
+        digitalWrite( 18, HIGH ); // throttled state
         if ( addr == TRACE_SWITCH ) 
           Serial.printf( "%d IO::scan: %d\n", millis(), code );    
 #endif

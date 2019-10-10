@@ -66,6 +66,15 @@ void setup() {
  ;
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
+
+  playfield.enable();
+  playfield.device( GI, COIL_GI, ledbank_firmware );    
+  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware );
+  playfield.device( GI ).trigger( IN_LBANK_ON );
+
+  automaton.delay( 1000000000 );
+  
   
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, KICKER, IN_KICKER_ON )

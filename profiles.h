@@ -23,10 +23,10 @@ const int16_t profiles[] = {
 /* SLINGSHOTS     */   'S',    200,    0,  5000,     SLING_L, SLING_R, -1, 
 /* FLIPPERS       */   'S',     50,    0,     0,     FLIPPER, -1,
 /* COUNTERS       */   'S',      0,  200,     0,     COUNTER0, COUNTER1, COUNTER2, COUNTER3, -1,
-/* ROLLOVERS      */   'S',    500,    0, 10000,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
+/* ROLLOVERS      */   'S',    100,    0,     0,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
                                                      UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, -1, 
-/* FLIPPERS       */   'S',      0,   50,     0,     BALL_EXIT, -1,
-/* FLIPPERS       */   'S',    200,    0,  5000,     FRONTBTN, -1,
+/* BALL_EXIT      */   'S',      0,   50,     0,     BALL_EXIT, -1,
+/* FRONTBTN       */   'S',    200,    0,  5000,     FRONTBTN, -1,
 
 -1,  
 };

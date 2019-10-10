@@ -369,14 +369,14 @@ int16_t IO::scan( void ) {
   digitalWrite( 19, HIGH );
   int16_t code = scan_raw();
   digitalWrite( 19, LOW );    
-  pinMode( 9, OUTPUT ); // Raw
-  digitalWrite( 9, code > 0 );
+  pinMode( 9, OUTPUT ); 
+  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 9, code > 0 ); // Raw scan
   code = debounce( code );
-  pinMode( 10, OUTPUT ); // Debounced
-  digitalWrite( 10, code > 0 );
+  pinMode( 10, OUTPUT ); 
+  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 10, code > 0 ); // Debounced
   code = throttle( code );
-  pinMode( 18, OUTPUT ); // Throttled
-  digitalWrite( 18, code > 0 );
+  pinMode( 18, OUTPUT ); 
+  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 18, code > 0 ); // Throttled
   return code;  
 #else 
   return throttle( debounce( scan_raw ) );

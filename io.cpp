@@ -337,38 +337,38 @@ int16_t IO::debounce( int16_t code ) {
 int16_t IO::debounce2( int16_t code ) {
   int16_t addr = abs( code );
   switch ( profile[addr].state ) {
-  case IDLE:
-    if ( code > 0 ) {
-      profile[addr].state = WAIT_ACTIVE;
-      profile[addr].timer = micros();
-    }
-    break;
-  case WAIT_ACTIVE:
-    if ( micros() - profile[addr].timer > profile[addr].press_micros ) {
-      profile[addr].state = ACTIVE;     
-      profile[addr].timer = micros();
-      return code; // PRESS
-    }  
-    if ( code < 0 ) {
-      profile[addr].state = IDLE;
-    } 
-    break;
-  case ACTIVE:
-    if ( micros() - profile[addr].timer > profile[addr].release_micros ) {
-      if ( isPressed( addr ) ) {
-        profile[addr].state = WAIT_IDLE;
-      } else {
+    case IDLE:
+      if ( code > 0 ) {
+        profile[addr].state = WAIT_ACTIVE;
+        profile[addr].timer = micros();
+      }
+      break;
+    case WAIT_ACTIVE:
+      if ( micros() - profile[addr].timer > profile[addr].press_micros ) {
+        profile[addr].state = ACTIVE;     
+        profile[addr].timer = micros();
+        return code; // PRESS
+      }  
+      if ( code < 0 ) {
         profile[addr].state = IDLE;
-        return -addr;       
       } 
-    }
-    break;
-  case WAIT_IDLE:
-    if ( code < 0 ) {
-      profile[addr].state = IDLE;
-      return code; // RELEASE
-    }
-    break;    
+      break;
+    case ACTIVE:
+      if ( micros() - profile[addr].timer > profile[addr].release_micros ) {
+        if ( isPressed( addr ) ) {
+          profile[addr].state = WAIT_IDLE;
+        } else {
+          profile[addr].state = IDLE;
+          return -addr;       
+        } 
+      }
+      break;
+    case WAIT_IDLE:
+      if ( code < 0 ) {
+        profile[addr].state = IDLE;
+        return code; // RELEASE
+      }
+      break;    
   }
   return reject();
 }  

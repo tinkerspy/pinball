@@ -277,22 +277,14 @@ int16_t IO::scan_raw() {
 
 // First layer of debouncing (leading and trailing edges)
 
-int16_t IO::scan_cooked( void ) { 
-#ifdef TRACE_SWITCH
-      pinMode( 19, OUTPUT ); // Sample indicator
-      digitalWrite( 9, HIGH );
-#endif
-  int16_t code = scan_raw();
+int16_t IO::debounce( int16_t code ) { 
   int16_t addr = abs( code );
 #ifdef TRACE_SWITCH
-    pinMode( 19, OUTPUT );
-    digitalWrite( 19, HIGH );
     if ( addr == TRACE_SWITCH ) {
-      pinMode( 9, OUTPUT ); // raw state
-      digitalWrite( 9, code > 0 );
       uint32_t trace_diff = micros() - trace_micros;
       if ( code > 0 ) { // Log time on release
         trace_micros = micros();
+        Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 100, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
       } else {
         Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 100, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
       }
@@ -300,8 +292,15 @@ int16_t IO::scan_cooked( void ) {
 #endif
   if ( code != 0 ) {
     if ( code > 0 ) {
+      if ( profile[addr].last_change == 0 ) profile[addr].last_change = micros();
       uint32_t micros_passed = micros() - profile[addr].last_change;
-      if ( profile[addr].last_change > 0 && micros_passed >= profile[addr].press_micros ) {
+#ifdef TRACE_SWITCH
+        if ( addr == TRACE_SWITCH ) {
+            Serial.printf( "%d Make test (cooked): %d ticks (>= %d)\n", micros() / 100, micros_passed / 100, profile[addr].press_micros / 100 );
+        }
+#endif        
+      if ( micros_passed >= profile[addr].press_micros ) {
+        Serial.println( code );
         return code; // And process 'press'
       } else {
         profile[addr].last_change = micros(); // Update stamp when 'press' state is still unstable    
@@ -311,7 +310,7 @@ int16_t IO::scan_cooked( void ) {
       uint32_t micros_passed = micros() - profile[addr].last_change;
 #ifdef TRACE_SWITCH
         if ( addr == TRACE_SWITCH ) {
-            Serial.printf( "%d Passed: %d ticks\n", micros() / 100, micros_passed / 100 );
+            Serial.printf( "%d Passed: %d ticks (>= %d)\n", micros() / 100, micros_passed / 100, profile[addr].release_micros / 100 );
         }
 #endif        
       if ( micros_passed >= profile[addr].release_micros ) {
@@ -327,14 +326,12 @@ int16_t IO::scan_cooked( void ) {
 
 // Second layer of debouncing (throttling)
 
-int16_t IO::scan( void ) { // Handles switch throttling
-  int16_t code = scan_cooked();
+int16_t IO::throttle( int16_t code ) { // Handles switch throttling
   int16_t addr = abs( code );
 #ifdef TRACE_SWITCH
-    if ( addr == TRACE_SWITCH ) 
-      pinMode( 10, OUTPUT ); // cooked state
-      digitalWrite( 10, code > 0 );
-      Serial.printf( "%d IO::scan_filtered: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros / 100 );    
+    if ( addr == TRACE_SWITCH ) { 
+      Serial.printf( "%d IO::scan_cooked: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros / 100 );    
+    }
 #endif
   if ( code != 0 ) {
     if ( code > 0 ) {
@@ -345,8 +342,6 @@ int16_t IO::scan( void ) { // Handles switch throttling
       } else {
         profile[addr].last_press = micros();
 #ifdef TRACE_SWITCH
-        pinMode( 18, OUTPUT );
-        digitalWrite( 18, HIGH ); // throttled state
         if ( addr == TRACE_SWITCH ) 
           Serial.printf( "%d IO::scan: %d\n", millis(), code );    
 #endif
@@ -358,8 +353,6 @@ int16_t IO::scan( void ) { // Handles switch throttling
         return 0;
       } else {
 #ifdef TRACE_SWITCH
-        pinMode( 18, OUTPUT );
-        digitalWrite( 18, LOW );
         if ( addr == TRACE_SWITCH ) 
           Serial.printf( "%d IO::scan: %d\n", millis(), code );    
 #endif
@@ -368,6 +361,26 @@ int16_t IO::scan( void ) { // Handles switch throttling
     }
   }
   return 0;
+}
+
+int16_t IO::scan( void ) { 
+#ifdef TRACE_SWITCH
+  pinMode( 19, OUTPUT ); // Sample heartbeat
+  digitalWrite( 19, HIGH );
+  int16_t code = scan_raw();
+  digitalWrite( 19, LOW );    
+  pinMode( 9, OUTPUT ); // Raw
+  digitalWrite( 9, code > 0 );
+  code = debounce( code );
+  pinMode( 10, OUTPUT ); // Debounced
+  digitalWrite( 10, code > 0 );
+  code = throttle( code );
+  pinMode( 18, OUTPUT ); // Throttled
+  digitalWrite( 18, code > 0 );
+  return code;  
+#else 
+  return throttle( debounce( scan_raw ) );
+#endif  
 }
 
 int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event

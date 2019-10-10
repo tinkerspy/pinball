@@ -156,7 +156,7 @@ void setup() {
   
   Serial.println( FreeRam() );
   
-  playfield.disable();     
+  //playfield.disable();     
 
 }
 

@@ -92,7 +92,8 @@ class IO {
     bool show();
     uint16_t isPressed( int16_t code );
     int16_t scan_raw(); 
-    int16_t scan_cooked( void );
+    int16_t debounce( int16_t code );
+    int16_t throttle( int16_t code );
     int16_t scan( void );
     int16_t reject();
     uint32_t timer(); // Last time in usec needed for matrix read

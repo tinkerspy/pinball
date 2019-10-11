@@ -71,6 +71,7 @@ class IO {
     uint16_t switch_cnt = 0;
     int16_t log_last_pixel = -1;        
     uint8_t soll[MATRIX_NODES][MATRIX_SWITCHES];
+    uint8_t sub[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t input_filter[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t ist[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t nc[MATRIX_NODES][MATRIX_SWITCHES];
@@ -81,7 +82,6 @@ class IO {
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
     IO& select( int row, bool latch = false );
     switch_record profile[NUM_IOPORTS * MATRIX_NODES * MATRIX_SWITCHES + 1];
-    enum{ IDLE, WAIT_ACTIVE, ACTIVE, WAIT_IDLE };
 
   public:
     IO& begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate );
@@ -98,10 +98,10 @@ class IO {
     uint16_t isPressed( int16_t code );
     int16_t scan_raw(); 
     int16_t debounce( int16_t code );
-    int16_t debounce2( int16_t code );
     int16_t throttle( int16_t code );
     int16_t scan( void );
-    int16_t reject();
+    IO& subscribe( void );
+    IO& unsubscribe( void );
     uint32_t timer(); // Last time in usec needed for matrix read
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );

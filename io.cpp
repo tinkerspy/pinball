@@ -240,10 +240,11 @@ int16_t IO::scan_raw() {
   for (;;) {      
     // Check one normalized (=corrected for normally closed switches) byte (5 bits) for changes
     uint8_t soll_normalized = soll[node_ptr][switch_ptr] ^ nc[node_ptr][switch_ptr];
-    if ( uint8_t changes = ist[node_ptr][switch_ptr] ^ soll_normalized ) {
+    uint8_t changes = ist[node_ptr][switch_ptr] ^ soll_normalized;
+    uint8_t subscriptions = sub[node_ptr][switch_ptr];
+    if ( changes || subscriptions ) {
       while ( io_ptr < NUM_IOPORTS ) {
         if ( changes & ( 1 << io_ptr ) & switch_map ) {
-        //if ( changes & ( 1 << io_ptr ) ) { // something changed
           if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
             ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
             io_ptr++; // Skip next scan() call         
@@ -252,6 +253,13 @@ int16_t IO::scan_raw() {
             ist[node_ptr][switch_ptr] &= ~( 1 << io_ptr );                    
             io_ptr++; // Skip next scan() call         
             return decimal_encode( io_ptr - 1, node_ptr, switch_ptr ) * -1;
+          }
+        }
+        if ( subscriptions & ( 1 << io_ptr ) ) {
+          if ( ist[node_ptr][switch_ptr] & ( 1 << io_ptr ) ) {
+            return decimal_encode( io_ptr - 1, node_ptr, switch_ptr );            
+          } else {
+            return decimal_encode( io_ptr - 1, node_ptr, switch_ptr ) * -1;                        
           }
         }
         io_ptr++;
@@ -275,91 +283,55 @@ int16_t IO::scan_raw() {
 
 */
 
-// First layer of debouncing (leading and trailing edges)
 
-int16_t IO::debounce( int16_t code ) { 
-  
-  int16_t addr = abs( code );
-#ifdef TRACE_SWITCH
-    if ( addr == TRACE_SWITCH ) {
-      uint32_t trace_diff = micros() - trace_micros;
-      if ( code > 0 ) { // Log time on release
-        trace_micros = micros();
-  //      Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 100, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
-      } else {
-  //      Serial.printf( "%d IO::scan_raw: %d (%d ticks, press %d, release %d)\n", trace_micros / 100, code, trace_diff / 100, profile[addr].press_micros / 100, profile[addr].release_micros / 100 );   
-      }
-    }
-#endif
-  if ( code != 0 ) {
-    if ( code > 0 ) {
-      if ( profile[addr].last_change == 0 ) profile[addr].last_change = micros();
-      uint32_t micros_passed = micros() - profile[addr].last_change;
-#ifdef TRACE_SWITCH
-        if ( addr == TRACE_SWITCH ) {
-            Serial.printf( "%d Make test (cooked): %d - %d = %d\n", 
-              micros() / 100, micros(), profile[addr].last_change, micros_passed );
-        }
-#endif        
-      profile[addr].deb_state = 1;
-      if ( micros_passed >= profile[addr].press_micros ) {
-        profile[addr].debouncing = 0;    
-        if ( addr == TRACE_SWITCH ) Serial.printf( "%d Press\n", millis() );
-        return code; // And process 'press'
-      } else {
-//        profile[addr].last_change = micros(); // Update stamp when 'press' state is still unstable
-        profile[addr].debouncing = 1;    
-        if ( addr == TRACE_SWITCH ) Serial.printf( "%d Press reject %d\n", millis(), micros_passed );
-        return reject();
-      }    
-    } else {
-      uint32_t micros_passed = micros() - profile[addr].last_change;
-#ifdef TRACE_SWITCH
-//        if ( addr == TRACE_SWITCH ) {
-//            Serial.printf( "%d Passed: %d ticks (>= %d)\n", micros() / 100, micros_passed / 100, profile[addr].release_micros / 100 );
-//        }
-#endif        
-      if ( micros_passed >= profile[addr].release_micros ) {
-        profile[addr].debouncing = 0;    
-        if ( addr == TRACE_SWITCH ) Serial.printf( "%d Release\n", millis() );
-        profile[addr].deb_state = 0;
-        profile[addr].last_change = 0;  // Process 'release'    
-        return code;
-      } else {
-        if ( addr == TRACE_SWITCH ) Serial.printf( "%d Release reject\n", millis() );
-        return 0; //reject();
-      }
-    }
-  }
-  return 0;
+// Subscribe/unsubscribe to the most recently triggered switch
+
+IO& IO::subscribe( void ) {
+  sub[node_ptr][switch_ptr] |= ( 1 << ( io_ptr - 1 ) );
+  return *this;
 }
 
-int16_t IO::debounce2( int16_t code ) {
+IO& IO::unsubscribe( void ) {
+  sub[node_ptr][switch_ptr] &= ~( 1 << ( io_ptr - 1 ) );
+  return *this;
+}
+
+// First layer of debouncing (leading and trailing edges)
+
+int16_t IO::debounce( int16_t code ) {
+  enum { IDLE, WAIT_ACTIVE, ACTIVE, WAIT_IDLE };
   int16_t addr = abs( code );
   switch ( profile[addr].state ) {
     case IDLE:
       if ( code > 0 ) {
-        profile[addr].state = WAIT_ACTIVE;
+        profile[addr].state = WAIT_ACTIVE; // Posssibly shortcut to ACTIVE if !press_micros
         profile[addr].timer = micros();
+        subscribe();
+        return 0;
       }
       break;
     case WAIT_ACTIVE:
-      if ( micros() - profile[addr].timer > profile[addr].press_micros ) {
-        profile[addr].state = ACTIVE;     
+      if ( micros() - profile[addr].timer >= profile[addr].press_micros ) {
+        profile[addr].state = ACTIVE; // Possible shortcut to WAIT_IDLE w/unsubscribe if !release_micros     
         profile[addr].timer = micros();
+        subscribe();
         return code; // PRESS
       }  
       if ( code < 0 ) {
-        profile[addr].state = IDLE;
+        profile[addr].state = IDLE; 
+        unsubscribe();
+        return 0;
       } 
       break;
     case ACTIVE:
-      if ( micros() - profile[addr].timer > profile[addr].release_micros ) {
-        if ( isPressed( addr ) ) {
-          profile[addr].state = WAIT_IDLE;
+      if ( micros() - profile[addr].timer >= profile[addr].release_micros ) {
+        unsubscribe();
+        if ( code > 0 ) {
+          profile[addr].state = WAIT_IDLE; 
+          return 0;
         } else {
           profile[addr].state = IDLE;
-          return -addr;       
+          return -addr; // RELEASE      
         } 
       }
       break;
@@ -370,7 +342,7 @@ int16_t IO::debounce2( int16_t code ) {
       }
       break;    
   }
-  return reject();
+  return 0;
 }  
 
 
@@ -434,11 +406,6 @@ int16_t IO::scan( void ) {
 #endif  
 }
 
-int16_t IO::reject() { // Mark the last keypress as unprocessed so that will generate another scan() event
-  ist[node_ptr][switch_ptr] ^= ( 1 << ( io_ptr - 1 ) );
-  return 0;
-}
-
 // Test edge case: laatste switch!
 IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
   if ( n > 0 && n <= numberOfSwitches() ) {
@@ -446,7 +413,7 @@ IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint1
     profile[n].release_micros = release_100us * 100UL;
     profile[n].throttle_micros = throttle_100us * 100UL;
     profile[n].last_change = 0;
-    profile[n].state = IDLE;
+    profile[n].state = 0;
   }
   return *this;  
 }

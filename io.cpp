@@ -257,8 +257,11 @@ int16_t IO::scan_raw() {
         }
         if ( subscriptions & ( 1 << io_ptr ) ) { // Send updates
           if ( ist[node_ptr][switch_ptr] & ( 1 << io_ptr ) ) {
+            io_ptr++;
             return decimal_encode( io_ptr - 1, node_ptr, switch_ptr );            
+            //return decimal_encode( io_ptr++, node_ptr, switch_ptr );  // etc (if everything works)          
           } else {
+            io_ptr++;
             return decimal_encode( io_ptr - 1, node_ptr, switch_ptr ) * -1;                        
           }
         }
@@ -279,10 +282,6 @@ int16_t IO::scan_raw() {
     }
   }
 }  
-/*
-
-*/
-
 
 // Subscribe/unsubscribe to the most recently triggered switch
 
@@ -301,46 +300,45 @@ IO& IO::unsubscribe( void ) {
 int16_t IO::debounce( int16_t code ) {
   enum { IDLE, WAIT_ACTIVE, ACTIVE, WAIT_IDLE };
   int16_t addr = abs( code );
-  switch ( profile[addr].state ) {
-    case IDLE:
-      if ( code > 0 ) {
-        profile[addr].state = WAIT_ACTIVE; // Posssibly shortcut to ACTIVE if !press_micros
-        profile[addr].timer = micros();
-        subscribe();
-        return 0;
-      }
-      break;
-    case WAIT_ACTIVE:
-      if ( micros() - profile[addr].timer >= profile[addr].press_micros ) {
-        profile[addr].state = ACTIVE; // Possible shortcut to WAIT_IDLE w/unsubscribe if !release_micros     
-        profile[addr].timer = micros();
-        subscribe();
-        return code; // PRESS
-      }  
-      if ( code < 0 ) {
-        profile[addr].state = IDLE; 
-        unsubscribe();
-        return 0;
-      } 
-      break;
-    case ACTIVE:
-      if ( micros() - profile[addr].timer >= profile[addr].release_micros ) {
-        unsubscribe();
+  if ( code != 0 ) {
+    switch ( profile[addr].state ) {
+      case IDLE:
         if ( code > 0 ) {
-          profile[addr].state = WAIT_IDLE; 
-          return 0;
-        } else {
-          profile[addr].state = IDLE;
-          return -addr; // RELEASE      
+          profile[addr].state = WAIT_ACTIVE; // Posssibly shortcut to ACTIVE if !press_micros
+          profile[addr].timer = micros();
+          subscribe();
+        }
+        break;
+      case WAIT_ACTIVE:
+        if ( micros() - profile[addr].timer >= profile[addr].press_micros ) {
+          profile[addr].state = ACTIVE; // Possible shortcut to WAIT_IDLE w/unsubscribe if !release_micros     
+          profile[addr].timer = micros();
+          subscribe();
+          return code; // PRESS
+        }  
+        if ( code < 0 ) {
+          profile[addr].state = IDLE; 
+          unsubscribe();
         } 
-      }
-      break;
-    case WAIT_IDLE:
-      if ( code < 0 ) {
-        profile[addr].state = IDLE;
-        return code; // RELEASE
-      }
-      break;    
+        break;
+      case ACTIVE:
+        if ( micros() - profile[addr].timer >= profile[addr].release_micros ) {
+          unsubscribe();
+          if ( code > 0 ) {
+            profile[addr].state = WAIT_IDLE; 
+          } else {
+            profile[addr].state = IDLE;
+            return -addr; // RELEASE      
+          } 
+        }
+        break;
+      case WAIT_IDLE:
+        if ( code < 0 ) {
+          profile[addr].state = IDLE;
+          return code; // RELEASE
+        }
+        break;    
+    }
   }
   return 0;
 }  

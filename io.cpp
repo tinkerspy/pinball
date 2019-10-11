@@ -244,7 +244,7 @@ int16_t IO::scan_raw() {
     uint8_t subscriptions = sub[node_ptr][switch_ptr];
     if ( changes || subscriptions ) {
       while ( io_ptr < NUM_IOPORTS ) {
-        if ( changes & ( 1 << io_ptr ) & switch_map ) {
+        if ( changes & ( 1 << io_ptr ) & switch_map ) { // Send changes
           if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
             ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
             io_ptr++; // Skip next scan() call         
@@ -255,7 +255,7 @@ int16_t IO::scan_raw() {
             return decimal_encode( io_ptr - 1, node_ptr, switch_ptr ) * -1;
           }
         }
-        if ( subscriptions & ( 1 << io_ptr ) ) {
+        if ( subscriptions & ( 1 << io_ptr ) ) { // Send updates
           if ( ist[node_ptr][switch_ptr] & ( 1 << io_ptr ) ) {
             return decimal_encode( io_ptr - 1, node_ptr, switch_ptr );            
           } else {
@@ -407,20 +407,20 @@ int16_t IO::scan( void ) {
 }
 
 // Test edge case: laatste switch!
-IO& IO::debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
+IO& IO::debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks ) {
   if ( n > 0 && n <= numberOfSwitches() ) {
-    profile[n].press_micros = press_100us * 100UL;
-    profile[n].release_micros = release_100us * 100UL;
-    profile[n].throttle_micros = throttle_100us * 100UL;
+    profile[n].press_micros = press_ticks * IO_TICK_MS;
+    profile[n].release_micros = release_ticks * IO_TICK_MS;
+    profile[n].throttle_micros = throttle_ticks * IO_TICK_MS;
     profile[n].last_change = 0;
     profile[n].state = 0;
   }
   return *this;  
 }
 
-IO& IO::debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us ) {
+IO& IO::debounce( uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks ) {
   for ( int16_t i = 0; i < this->numberOfSwitches(); i++ ) {
-    debounce( i + 1, press_100us, release_100us, throttle_100us );
+    debounce( i + 1, press_ticks, release_ticks, throttle_ticks );
   }
   return *this;  
 }

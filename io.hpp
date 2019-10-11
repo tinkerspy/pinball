@@ -8,6 +8,7 @@
 #define MATRIX_NODES 8
 #define MATRIX_SWITCHES 8
 #define MAX_LEDS_PER_STRIP 256
+#define IO_TICK_MS 100UL
 
 // Specify a switch or led number to trace activity for
 #define TRACE_SWITCH 5

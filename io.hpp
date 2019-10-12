@@ -36,16 +36,13 @@ class IO {
   };
 
   struct switch_record { 
-    uint8_t debouncing : 1;
-    uint8_t throttling : 1;
-    uint8_t deb_state : 1;
-    uint8_t state;
+    uint8_t state; 
     uint32_t timer;
-    uint32_t last_change;
-    uint32_t last_press;
+    uint8_t throttle_state;
+    uint32_t throttle_timer;
     uint32_t press_micros; // press must be stable for this period to register (if not: unscan event)
     uint32_t release_micros; // minimum wait period after registered press for a break (if not: unscan event)
-    uint32_t throttle_micros; // after a registered press/release wait this long before allowing a new press/release
+    uint32_t throttle_millis; // after a registered press/release wait this long before allowing a new press/release
   };
  
   protected:

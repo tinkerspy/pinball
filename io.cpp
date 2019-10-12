@@ -345,39 +345,40 @@ int16_t IO::debounce( int16_t code ) {
 
 
 // Second layer of debouncing (throttling)
+// Uses millis to mnimize chance of overflow
+// Does not use subscribe()
 
-int16_t IO::throttle( int16_t code ) { // Handles switch throttling
+int16_t IO::throttle( int16_t code ) { 
+  enum { IDLE, BLOCKING };
   int16_t addr = abs( code );
-#ifdef TRACE_SWITCH
-    //if ( addr == TRACE_SWITCH ) { 
-    //  Serial.printf( "%d IO::scan_cooked: %d (throttle %d)\n", millis(), code, profile[addr].throttle_micros / 100 );    
-    //}
-#endif
   if ( code != 0 ) {
-    if ( code > 0 ) {
-      uint32_t millis_passed = micros() - profile[addr].last_press;
-      if ( millis_passed < profile[addr].throttle_micros ) {
-        profile[addr].throttling = 1;
-        return 0;
-      } else {
-        profile[addr].last_press = micros();
-#ifdef TRACE_SWITCH
-//        if ( addr == TRACE_SWITCH ) 
-//          Serial.printf( "%d IO::scan: %d\n", millis(), code );    
-#endif
-        return code;
-      }
-    } else {
-      if ( profile[addr].throttling ) {
-        profile[addr].throttling = 0;
-        return 0;
-      } else {
-#ifdef TRACE_SWITCH
-//        if ( addr == TRACE_SWITCH ) 
-//          Serial.printf( "%d IO::scan: %d\n", millis(), code );    
-#endif
-        return code;
-      }
+    switch ( profile[addr].throttle_state ) {
+      case IDLE:
+        if ( code > 0 ) {
+          if ( profile[addr].throttle_millis ) {
+            profile[addr].throttle_timer = millis(); // Move to blocking
+            profile[addr].throttle_state = BLOCKING;
+          }
+          return code; // PRESS
+        } else {
+          return code; // RELEASE
+        }
+        break;
+      case BLOCKING:
+        if ( code > 0 ) {
+          if ( millis() - profile[addr].throttle_timer >= profile[addr].throttle_millis ) {
+            profile[addr].throttle_timer = millis(); // Stay in blocking
+            profile[addr].throttle_state = BLOCKING; // PRESS
+            return code;                        
+          }
+          return 0; // IGNORE 
+        } else {
+          if ( millis() - profile[addr].throttle_timer >= profile[addr].throttle_millis ) {
+            profile[addr].throttle_state = IDLE;     // Leave blocking
+          }
+          return code; // RELEASE
+        }  
+        break;      
     }
   }
   return 0;
@@ -409,8 +410,8 @@ IO& IO::debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint1
   if ( n > 0 && n <= numberOfSwitches() ) {
     profile[n].press_micros = press_ticks * IO_TICK_MS;
     profile[n].release_micros = release_ticks * IO_TICK_MS;
-    profile[n].throttle_micros = throttle_ticks * IO_TICK_MS;
-    profile[n].last_change = 0;
+    profile[n].throttle_millis = throttle_ticks / 10;
+    profile[n].throttle_state = 0;
     profile[n].state = 0;
   }
   return *this;  

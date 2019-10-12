@@ -977,13 +977,13 @@ COIL, LIGHT
 003 persist OFF, OFF
 004 led COIL, OFF
 005 led LIGHT, OFF
-004 end  
+006 end  
 
 100 led COIL, ON
 110 output SCORE
 120 if (  led( LIGHT ) ) then output SCORE_LIT
 130 if ( !led( LIGHT ) ) then output SCORE_UNLIT
-130 end
+140 end
 
 300 led LIGHT, ON
 310 output LIGHT_ON

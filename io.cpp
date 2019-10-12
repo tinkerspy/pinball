@@ -298,15 +298,10 @@ IO& IO::unsubscribe( void ) {
 
 // First layer of debouncing (leading and trailing edges)
 
-char state_str[] = "IDLE\0WACT\0ACTV\0WIDL";
-
 int16_t IO::debounce( int16_t code ) {
   enum { IDLE, WAIT_ACTIVE, ACTIVE, WAIT_IDLE };
   int16_t addr = abs( code );
   if ( code != 0 ) {
-#ifdef TRACE_SWITCH
-          //if ( addr == TRACE_SWITCH ) Serial.printf( "%d Debounce state (code=%d), %d = %s\n", millis(), code, profile[addr].state, state_str + ( profile[addr].state * 5 ) ); 
-#endif          
     switch ( profile[addr].state ) {
       case IDLE:
         if ( code > 0 ) {
@@ -325,10 +320,16 @@ int16_t IO::debounce( int16_t code ) {
         break;
       case WAIT_ACTIVE:
         if ( micros() - profile[addr].timer >= profile[addr].press_micros ) {
-          profile[addr].state = ACTIVE; // Possible shortcut to WAIT_IDLE w/unsubscribe if !release_micros     
-          profile[addr].timer = micros();
-          subscribe();
-          return code; // PRESS
+          if ( !profile[addr].release_micros ) {
+            profile[addr].state = WAIT_IDLE; // Shortcut to WAIT_IDLE    
+            unsubscribe();
+            return code; // PRESS
+          } else {
+            profile[addr].state = ACTIVE;  
+            profile[addr].timer = micros();
+            subscribe();
+            return code; // PRESS
+          }
         }  
         if ( code < 0 ) {
           profile[addr].state = IDLE; 
@@ -357,9 +358,8 @@ int16_t IO::debounce( int16_t code ) {
   return 0;
 }  
 
-
 // Second layer of debouncing (throttling)
-// Uses millis to mnimize chance of overflow
+// Uses millis to minimize chance of overflow
 // Does not use subscribe()
 
 int16_t IO::throttle( int16_t code ) { 
@@ -399,32 +399,7 @@ int16_t IO::throttle( int16_t code ) {
 }
 
 int16_t IO::scan( void ) { 
-#ifdef TRACE_SWITCH
-  pinMode( 19, OUTPUT ); // Sample heartbeat
-  digitalWrite( 19, HIGH );
-  int16_t code = scan_raw();
-  //if ( abs( code ) == TRACE_SWITCH ) Serial.printf( "%d Raw %d\n", millis(), code );
-  digitalWrite( 19, LOW );    
-  pinMode( 9, OUTPUT ); 
-  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 9, code > 0 ); // Raw scan
-  if ( abs( code ) == TRACE_SWITCH ) {
-//    uint8_t save_code = code;
-//    uint8_t save_state = profile[abs(code)].state;
-    code = debounce( code );
-    //Serial.printf( "%d Debounce state %s => ", millis(), state_str + ( save_state * 5 ) ); 
-    //Serial.printf( "%s\n", state_str + ( profile[abs(save_code)].state * 5 ) ); 
-  } else {
-    code = debounce( code );
-  }
-  pinMode( 10, OUTPUT ); 
-  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 10, code > 0 ); // Debounced
-  code = throttle( code );
-  pinMode( 18, OUTPUT ); 
-  if ( abs( code ) == TRACE_SWITCH ) digitalWrite( 18, code > 0 ); // Throttled
-  return code;  
-#else 
   return throttle( debounce( scan_raw() ) );
-#endif  
 }
 
 // Test edge case: laatste switch!

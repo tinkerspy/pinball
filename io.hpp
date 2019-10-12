@@ -11,7 +11,7 @@
 #define IO_TICK_MS 100UL
 
 // Specify a switch or led number to trace activity for
-#define TRACE_SWITCH 5
+#undef TRACE_SWITCH 
 #undef TRACE_LED 
 
 #ifdef CORE_TEENSY

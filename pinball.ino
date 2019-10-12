@@ -47,6 +47,8 @@ void setup() {
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups )
     .readProfiles( 'S', profiles );
+
+  //io.debounce( 0, 0, 0 ); // No switch preprocessing
     
   Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
   Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
@@ -66,7 +68,7 @@ void setup() {
  ;
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
-
+/*
   playfield.enable();
   playfield.device( GI, COIL_GI, ledbank_firmware );    
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
@@ -74,7 +76,7 @@ void setup() {
   playfield.device( GI ).trigger( IN_LBANK_ON );
 
   automaton.delay( 1000000000 );
-  
+ */ 
   
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, KICKER, IN_KICKER_ON )
@@ -166,12 +168,14 @@ void setup() {
   Serial.println( FreeRam() );
   
   //playfield.disable();     
+  playfield.device( PLAYERS ).select( 0 );
 
 }
 
 void loop() {
   automaton.run(); 
   if ( playfield.isPressed( FRONTBTN ) ) {
+    automaton.delay( 10 );
     playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
     playfield.leds()->off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).select( 1 ).init( 1 );

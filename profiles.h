@@ -18,15 +18,18 @@ const int16_t profiles[] = {
 /* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,  // pwm 127?
 
 /*                     L/S     PR,    RL,    TH      SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
-/* DEFAULT SWITCH */   'S',    200,  200,     0,     SWITCHES, -1,
+/* DEFAULT SWITCH */   'S',    200,    0,     0,     SWITCHES, -1,
 /* MULTILANE      */   'S',    200,  200,     0,     MULTILANE, -1, 
-/* SLINGSHOTS     */   'S',    200,    0,  5000,     SLING_L, SLING_R, -1, 
-/* FLIPPERS       */   'S',     50,    0,     0,     FLIPPER, -1,
+/* SLINGSHOTS     */   'S',      5,    0,  2000,     SLING_L, SLING_R, -1, 
+/* BUMPERS        */   'S',     10,    0,  2000,     BUMPER_A, BUMPER_B, BUMPER_C, -1, 
+/* FLIPPERS       */   'S',      0,   10,     0,     FLIPPER, -1,
 /* COUNTERS       */   'S',      0,  200,     0,     COUNTER0, COUNTER1, COUNTER2, COUNTER3, -1,
-/* ROLLOVERS      */   'S',    100,    0,     0,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
+/* ROLLOVERS      */   'S',      5,    0,  5000,     PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  
                                                      UPLANE_R, OUTLANE, INLANE_L, ROLLOVER, INLANE_R, BALL_ENTER, -1, 
-/* BALL_EXIT      */   'S',      0,   50,     0,     BALL_EXIT, -1,
-/* FRONTBTN       */   'S',    200,    0,  5000,     FRONTBTN, -1,
+/* TARGETS        */   'S',      2,    0,     0,     TARGET_A, TARGET_B, -1,
+/* BALL_EXIT      */   'S',      0,   50,  5000,     BALL_EXIT, -1,
+/* BALL_ENTER     */   'S',    200,    0,     0,     BALL_ENTER, -1,
+/* FRONTBTN       */   'S',      0,   50,  5000,     FRONTBTN, -1,
 
 -1,  
 };

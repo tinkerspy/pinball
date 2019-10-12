@@ -175,8 +175,15 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( playfield.isPressed( FRONTBTN ) ) {
-    automaton.delay( 10 );
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
+    //playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, Atm_device::SELECT_ALL );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0001 );
+    automaton.delay( 30 );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0010 );
+    automaton.delay( 30 );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0100 );
+    automaton.delay( 30 );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B1000 );
+    automaton.delay( 30 );
     playfield.leds()->off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).select( 1 ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );

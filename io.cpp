@@ -306,7 +306,7 @@ int16_t IO::debounce( int16_t code ) {
     switch ( profile[addr].state ) {
       case IDLE:
         if ( code > 0 ) {
-          if ( ! profile[addr].press_micros ) {
+          if ( profile[addr].press_micros == 0 ) {
             profile[addr].state = ACTIVE; // Shortcut to ACTIVE
             profile[addr].timer = micros();
             subscribe();
@@ -321,7 +321,7 @@ int16_t IO::debounce( int16_t code ) {
         break;
       case WAIT_ACTIVE:
         if ( micros() - profile[addr].timer >= profile[addr].press_micros ) {
-          if ( !profile[addr].release_micros ) {
+          if ( profile[addr].release_micros == 0 ) {
             profile[addr].state = WAIT_IDLE; // Shortcut to WAIT_IDLE    
             unsubscribe();
             return code; // PRESS
@@ -370,7 +370,7 @@ int16_t IO::throttle( int16_t code ) {
     switch ( profile[addr].throttle_state ) {
       case IDLE:
         if ( code > 0 ) {
-          if ( profile[addr].throttle_millis ) {
+          if ( profile[addr].throttle_millis != 0 ) {
             profile[addr].throttle_timer = millis(); // Move to blocking
             profile[addr].throttle_state = BLOCKING;
           }

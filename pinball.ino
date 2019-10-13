@@ -49,10 +49,9 @@ void setup() {
   playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware ).chain( COUNTER3 );
   playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware ).chain( COUNTER2 );
   playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).chain( COUNTER1 )
-  //   .onEvent( OUT_CTR_DIGIT1, CHIMES, IN_LBANK_ON0 )
-  //   .onEvent( OUT_CTR_DIGIT2, CHIMES, IN_LBANK_ON1 )
-  //   .onEvent( OUT_CTR_DIGIT3, CHIMES, IN_LBANK_ON2 )
-  ;
+    .onEvent( OUT_CTR_DIGIT1, CHIMES, IN_LBANK_ON0 )
+    .onEvent( OUT_CTR_DIGIT2, CHIMES, IN_LBANK_ON1 )
+    .onEvent( OUT_CTR_DIGIT3, CHIMES, IN_LBANK_ON2 );
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
   
@@ -154,6 +153,10 @@ void setup() {
     .onEvent( OUT_GAME_KICKOFF, FEEDER, IN_LBANK_ON )
     .onEvent( OUT_GAME_PLAYERS_FIX, PLAYERS, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
+
+    //FRONTBTN => INIT GAME
+    //BALL EXIT => AFTER BALL
+    
 */    
 
 }

@@ -21,7 +21,7 @@ Atm_switch_matrix playfield;
  * - make every device do it's own ball initialization
  * 
  * Known issues:
- * - second game player selection does not work
+ * - second game player ion does not work
  * - phantom key presses 
  * - 
  */
@@ -174,14 +174,7 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( playfield.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0001 ); // Staggered reset
-    automaton.delay( 30 );
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0010 );
-    automaton.delay( 30 );
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B0100 );
-    automaton.delay( 30 );
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B1000 );
-    automaton.delay( 30 );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B1111 ); // Staggered reset
     playfield.leds()->off( LED_FLASHER_GRP );
     playfield.device( PLAYERS ).select( 1 ).init( 1 );
     Serial.printf( "%d Counter reset\n", millis() );
@@ -190,7 +183,6 @@ void loop() {
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
-          playfield.device( COUNTER0 ).select( 1 << player );
           playfield.leds()->off( LED_FLASHER_GRP );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );

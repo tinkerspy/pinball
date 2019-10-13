@@ -32,8 +32,9 @@ class Atm_device: public Machine {
  public:
   enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
   enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
-  Atm_device( void ) : Machine() {};
-  Atm_device& begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script );
+  Atm_device( void ) : Machine() { };
+  Atm_device& begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script, 
+          int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
   Atm_device& trace( Stream & stream );

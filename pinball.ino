@@ -68,15 +68,6 @@ void setup() {
  ;
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
-/*
-  playfield.enable();
-  playfield.device( GI, COIL_GI, ledbank_firmware );    
-  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
-  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware );
-  playfield.device( GI ).trigger( IN_LBANK_ON );
-
-  automaton.delay( 1000000000 );
- */ 
   
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware )
     .onEvent( OUT_OXO_WIN_ROW, KICKER, IN_KICKER_ON )
@@ -148,7 +139,7 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE3, COUNTER0, IN_CTR_PT500 )
     .onEvent( OUT_SBANK_SCORE4, COUNTER0, IN_CTR_PT1000 )        // 4 OUTLANE
     .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY ) // 5 BALL_EXIT
-    .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR )   // 6 BALL_ENTER (physically disabled for now)
+    .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR )   // 6 BALL_ENTER 
     .onEvent( OUT_SBANK_PRESS7, PLAYERS, IN_SCALAR_ADVANCE );    // 7 FRONTBTN
 
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
@@ -159,12 +150,10 @@ void setup() {
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
-  playfield.device( GI, COIL_GI, ledbank_firmware );  
+  playfield.device( GI, COIL_GI, ledbank_firmware, 1 );   // Default ON
   
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
-  playfield.device( GI ).trigger( IN_LBANK_ON );
-  
   Serial.println( FreeRam() );
   
   playfield.disable();     
@@ -174,32 +163,27 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( playfield.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET, B1111 ); // Staggered reset
-    playfield.leds()->off( LED_FLASHER_GRP );
-    playfield.device( PLAYERS ).select( 1 ).init( 1 );
-    Serial.printf( "%d Counter reset\n", millis() );
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET );
+    playfield.trigger( playfield.EVT_INIT );    
+    playfield.device( PLAYERS ).trigger( IN_SCALAR_ZERO );
     while ( playfield.device( COUNTER0 ).state() ) automaton.run();
-    automaton.delay( 1000 );
+    automaton.delay( 500 );
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
-          playfield.leds()->off( LED_FLASHER_GRP );
+          playfield.trigger( playfield.EVT_INIT );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
-          playfield.device( OXO ).trigger( ball == 4 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
-          Serial.printf( "%d Serve player %d, ball %d\n", millis(), player, ball );
+          playfield.device( OXO ).trigger( ball == NUMBER_OF_BALLS - 1 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
           playfield.device( FEEDER ).trigger( IN_LBANK_ON );
           automaton.delay( 500 ); 
-          playfield.enable();
+          playfield.trigger( playfield.EVT_ENABLE );
           while ( playfield.enabled() ) automaton.run();            
-          Serial.printf( "%d Ball play finished, bonus collect %d\n", millis(), playfield.device( OXO ).state() );  
           playfield.device( OXO ).trigger( IN_OXO_COLLECT );
           while ( playfield.device( OXO ).state() ) automaton.run(); 
-          Serial.printf( "%d Bonus collect done\n", millis() );
-          automaton.delay( 1000 );
-          playfield.device( PLAYERS ).select( 0 );
-        } while ( playfield.leds()->active( LED_AGAIN0 ) ); // Extra ball
-        //} while ( playfield.device( AGAIN ).state() ); 
+          automaton.delay( 500 );
+          playfield.device( PLAYERS ).trigger( IN_SCALAR_FREEZE );
+        } while ( playfield.device( AGAIN ).state() ); 
       } 
     } 
     playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );

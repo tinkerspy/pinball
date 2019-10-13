@@ -4,7 +4,8 @@
  * Add extra initialization code
  */
 
-Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script ) {
+Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script,
+    int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*             ON_ENTER    ON_LOOP  ON_EXIT  EVT_NOTIFY  EVT_TIMER  EVT_YIELD  ELSE */
@@ -24,6 +25,14 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   enabled = true;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
+  reg( 0, r0 );
+  reg( 1, r1 );
+  reg( 2, r2 );
+  reg( 3, r3 );
+  reg( 4, r4 );
+  reg( 5, r5 );
+  reg( 6, r6 );
+  reg( 7, r7 );
   timer.set( ATM_TIMER_OFF );
   core[0].ptr = 0;
   core[1].ptr = 0;
@@ -337,7 +346,7 @@ Atm_device& Atm_device::trigger( int event ) {
     //Serial.printf( "%x next %x\n", (long)(this), (long)next );
     next->trigger( event );
   }
-  if ( playfield->enabled() || input_persistence ) {
+  if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( this->enabled ) {
       if ( event > 0 and event < 65 ) {
         int16_t sw = event - 1; // sw = 0..63
@@ -357,7 +366,7 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   if ( next && sel > 1 ) {
     next->trigger( event, sel >> 1 );
   }
-  if ( playfield->enabled() || input_persistence ) {
+  if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( sel & 1 ) {
       if ( event > 0 and event < 65 ) {
         int16_t sw = event - 1; // sw = 0..63

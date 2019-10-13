@@ -3,12 +3,13 @@
 Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY,     ELSE */
-    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     READY,     WAIT,
-    /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,     READY,       -1,
-    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     READY,     SCAN,
-    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1,     READY, DISABLED, 
-    /*  READY    */    ENT_READY,      -1,      -1,          -1,      SCAN,        -1,        -1,    READY, 
+    /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY, EVT_INIT,    ELSE */
+    /*  IDLE     */           -1,      -1,      -1,    DISABLED,        -1,        -1,     READY,     INIT,     WAIT,
+    /*  WAIT     */           -1,      -1,      -1,    DISABLED,        -1,      SCAN,     READY,     INIT,       -1,
+    /*  SCAN     */     ENT_SCAN,      -1,      -1,    DISABLED,        -1,        -1,     READY,     INIT,     SCAN,
+    /*  DISABLED */ ENT_DISABLED,      -1,      -1,          -1,      SCAN,        -1,     READY,     INIT, DISABLED, 
+    /*  READY    */    ENT_READY,      -1,      -1,          -1,      SCAN,        -1,        -1,     INIT,    READY, 
+    /*  INIT     */     ENT_INIT,      -1,      -1,          -1,      SCAN,        -1,        -1,       -1, DISABLED, 
   };
 
   // clang-format on
@@ -46,6 +47,13 @@ void Atm_switch_matrix::action( int id ) {
     case ENT_READY:
       pf_enabled = false;
       scan_matrix();
+      return;
+    case ENT_INIT:
+      for ( int16_t n = 0; n < numOfSwitches + numOfGroups; n++ ) {
+        if ( prof[n+1].device != NULL ) {
+          prof[n+1].device->trigger( 0 ); 
+        }
+      }
       return;
   }
 }
@@ -162,22 +170,12 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
   //Serial.printf( "Device rquest %d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_device* device = new Atm_device();
-    device->begin( this, led_group, device_script );
+    device->begin( this, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
     return *device;
   }
   if ( prof[n].device_index == 0 ) { 
     Atm_device* device = new Atm_device(); // Create device
-    if ( device_script != NULL ) {
-      device->reg( 0, r0 );
-      device->reg( 1, r1 );
-      device->reg( 2, r2 );
-      device->reg( 3, r3 );
-      device->reg( 4, r4 );
-      device->reg( 5, r5 );
-      device->reg( 6, r6 );
-      device->reg( 7, r7 );
-    }
-    device->begin( this, led_group, device_script );
+    device->begin( this, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
     // Check and warn (Serial stream) if switch was already in use!
     if ( callback_trace && prof[n].device ) 
       stream_trace->printf( "Atm_switch_matrix::device( %d ): switch already in use!\n", n );
@@ -247,7 +245,7 @@ int Atm_switch_matrix::state( void ) {
 Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
   
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "ATM_SWITCH_MATRIX\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY" );
+    "ATM_SWITCH_MATRIX\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0EVT_INIT\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY\0INIT" );
   Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
 }

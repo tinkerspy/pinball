@@ -24,8 +24,8 @@ struct switch_record {
 class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
 
  public:
-  enum { IDLE, WAIT, SCAN, DISABLED, READY }; 
-  enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, ELSE }; // EVENTS
+  enum { IDLE, WAIT, SCAN, DISABLED, READY, INIT }; 
+  enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, EVT_INIT, ELSE }; // EVENTS
   Atm_switch_matrix( void ) : Machine() {};
   Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL );
   Atm_switch_matrix& trace( Stream & stream );
@@ -47,7 +47,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   switch_record prof[MAX_SWITCHES + 1 ];
  
  protected:
-  enum { ENT_SCAN, ENT_DISABLED, ENT_READY }; // ACTIONS
+  enum { ENT_SCAN, ENT_DISABLED, ENT_READY, ENT_INIT }; // ACTIONS
   int event( int id ); 
   void action( int id ); 
   void scan_matrix( void );

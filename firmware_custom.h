@@ -252,7 +252,7 @@ int16_t tictactoe_firmware[] = {
   'Y', -1, -1, 1000,
   'S', -1, -1, SUB_OXO_COLLECT,    
   'I', -1, -1, -1,
-  'S', -1, -1, SUB_OXO_CLEAR,
+//  'S', -1, -1, SUB_OXO_CLEAR,
   -1,
 
   SUB_OXO_MATCH_123,

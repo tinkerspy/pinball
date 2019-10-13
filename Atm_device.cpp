@@ -258,7 +258,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             }            
             break;            
           case 'X':  // Xctr
-            selected_action = ( xctr == selector ? action_t : action_f );
+            selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
             if ( selected_action  > -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {

@@ -86,6 +86,6 @@ class Atm_device: public Machine {
   bool enabled;
   core_state core[2];
   uint32_t switches; 
-  uint16_t xctr;
+  uint32_t xctr;
   
 };

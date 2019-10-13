@@ -163,8 +163,8 @@ void setup() {
 void loop() {
   automaton.run(); 
   if ( playfield.isPressed( FRONTBTN ) ) {
-    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET );
     playfield.trigger( playfield.EVT_INIT );    
+    playfield.device( COUNTER0 ).trigger( IN_CTR_RESET );
     playfield.device( PLAYERS ).trigger( IN_SCALAR_ZERO );
     while ( playfield.device( COUNTER0 ).state() ) automaton.run();
     automaton.delay( 500 );

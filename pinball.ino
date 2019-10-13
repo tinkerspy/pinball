@@ -58,10 +58,10 @@ void setup() {
   Serial.println( "init devices" ); delay( 100 );
 
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
-  playfield.device( COUNTER3, COIL_COUNTER3_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER2, COIL_COUNTER2_GRP, counter_em4d1w_firmware ).chain( COUNTER3 );
-  playfield.device( COUNTER1, COIL_COUNTER1_GRP, counter_em4d1w_firmware ).chain( COUNTER2 );
-  playfield.device( COUNTER0, COIL_COUNTER0_GRP, counter_em4d1w_firmware ).chain( COUNTER1 )
+  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware ).chain( COUNTER3 );
+  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware ).chain( COUNTER2 );
+  playfield.device( COUNTER0, LED_COUNTER0_GRP, counter_em4d1w_firmware ).chain( COUNTER1 )
  //   .onEvent( OUT_CTR_DIGIT1, CHIMES, IN_LBANK_ON0 )
  //   .onEvent( OUT_CTR_DIGIT2, CHIMES, IN_LBANK_ON1 )
  //   .onEvent( OUT_CTR_DIGIT3, CHIMES, IN_LBANK_ON2 )

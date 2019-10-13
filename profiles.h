@@ -15,7 +15,7 @@ const int16_t profiles[] = {
 /* GATE           */   'L',     0,   0,  0, 255,     COIL_SAVE_GATE, -1,
 /* BUMPER         */   'L',     0, 255, 40,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
 /* FEEDER         */   'L',     0, 127, 30,   0,     COIL_FEEDER, -1,
-/* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER0_GRP, COIL_COUNTER1_GRP, COIL_COUNTER2_GRP, COIL_COUNTER3_GRP, -1,  // pwm 127?
+/* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER_GRP, -1,  
 
 /*                     L/S     PR,    RL,    TH      SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
 /* DEFAULT SWITCH */   'S',    200,    0,     0,     SWITCHES, -1,

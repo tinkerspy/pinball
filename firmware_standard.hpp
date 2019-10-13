@@ -667,7 +667,7 @@ enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
   SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
   SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
 };
-enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10 }; 
+enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP }; 
 enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
 enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_POS1, REG_CTR_POS2, REG_CTR_POS3 };
 enum { VAR_CTR_LOW = 0, VAR_CTR_HIGH = 1, VAR_CTR_DELAY = 120 };
@@ -863,6 +863,7 @@ int16_t counter_em4d1w_firmware[] = {
 
   IN_CTR_PT10, 
   '0', -1,  0, -1,                      // Force primary core
+  'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
   'T', -1, -1, OUT_CTR_DIGIT3,
   'S', -1, -1, SUB_CTR_PULSE_10,
@@ -870,6 +871,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   IN_CTR_PT100, 
   '0', -1,  0, -1,                      // Force primary core
+  'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
   'T', -1, -1, OUT_CTR_DIGIT2,
   'S', -1, -1, SUB_CTR_PULSE_100,
@@ -877,6 +879,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   IN_CTR_PT1000,
   '0', -1,  0, -1,                      // Force primary core
+  'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
   'T', -1, -1, OUT_CTR_DIGIT1,
   'S', -1, -1, SUB_CTR_PULSE_1K,
@@ -884,6 +887,7 @@ int16_t counter_em4d1w_firmware[] = {
    
   IN_CTR_PT500, 
   '0', -1,  0, -1,                      // Force primary core
+  'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
   'T', -1, -1, OUT_CTR_DIGIT2,
   'S', -1, -1, SUB_CTR_PULSE_100,
@@ -899,6 +903,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   IN_CTR_PT5000,
   '0', -1,  0, -1,                      // Force primary core
+  'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
   'T', -1, -1, OUT_CTR_DIGIT1,
   'S', -1, -1, SUB_CTR_PULSE_1K,

@@ -193,13 +193,14 @@ void loop() {
 }
 
 /*
-100 while ( !switch( FRONTBTN ) 
+100 trigger GAME_OVER
+102 while ( !switch( FRONTBTN ) 
 105   wait 0
 110 wend
 120 trigger INIT
 130 trigger RESET
 140 trigger PLAYERS_ZERO
-150 while ( !led( COUNTER0 ) or !led( COUNTER1 ) or !led( COUNTER2 ) or !led( COUNTER3 )
+150 while ( led( COUNTER0 ) or led( COUNTER1 ) or led( COUNTER2 ) or led( COUNTER3 )
 155   wait 0
 160 wend
 170 for BALL = 0 to NUMBER_OF_BALLS -1 
@@ -216,6 +217,7 @@ void loop() {
 260       wait 0
 270     wend
 280     trigger BONUS_COLLECT
+285     delay 100
 290     while ( led( VLED_COLLECTING ) ) 
 300       wait 0
 310     wend
@@ -224,5 +226,5 @@ void loop() {
 340     if ( led( again) ) then GOTO 180
 350   next
 360 next
-370 trigger GAME_OVER
+380 goto 100
 */

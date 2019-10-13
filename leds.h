@@ -94,6 +94,7 @@ enum {
 /* 090 */   LED_BALL4,
 /* 091 */   LED_BALL1,
 /* 092 */   LED_GAME_OVER, // Last physical led
+
 /* 093 */   LED_KICKER_GRP, // Logical leds start here 
 /* 094 */   LED_UPLANE_GRP,
 /* 095 */   LED_OXO_GRP,

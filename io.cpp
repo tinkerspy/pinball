@@ -29,6 +29,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
+  debounce( 0, 0, 0 );
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;

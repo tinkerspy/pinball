@@ -42,6 +42,7 @@ enum {
 /* 038 */   SWITCH316,
 /* 039 */   COUNTER1,
 /* 040 */   COUNTER3,  // Last physical switch
+
 /* 041 */   SAVE_GATE, // Logical switches start here
 /* 042 */   MULTILANE,
 /* 043 */   DUAL_TARGET,
@@ -62,7 +63,6 @@ enum {
 /* 058 */   GAME_OVER,
 /* 059 */   SWITCHES,
 };
-
 
 int16_t switch_groups[] = {
 

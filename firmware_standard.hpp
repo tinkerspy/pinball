@@ -34,7 +34,7 @@ enum { IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_ON1, IN_LBANK_ON2, IN_LBANK_ON3, IN
 enum { ARG_LBANK_LED0, ARG_LBANK_LED1, ARG_LBANK_LED2, ARG_LBANK_LED3, ARG_LBANK_LED4, ARG_LBANK_LED5, ARG_LBANK_LED6, ARG_LBANK_LED7 };
 enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4, OUT_LBANK_ON5, OUT_LBANK_ON6, OUT_LBANK_ON7, 
         OUT_LBANK_OFF0, OUT_LBANK_OFF1, OUT_LBANK_OFF2, OUT_LBANK_OFF3, OUT_LBANK_OFF4, OUT_LBANK_OFF5, OUT_LBANK_OFF6, OUT_LBANK_OFF7 }; 
-enum { REG_LBANK_STATE, REG_LBANK_DEFAULT, REG_LBANK_INITDONE };
+enum { REG_LBANK_STATE, REG_LBANK_DEFAULT };
 
 int16_t ledbank_firmware[] {
   IN_LBANK_INIT, 
@@ -60,19 +60,16 @@ int16_t ledbank_firmware[] {
 
   IN_LBANK_INIT,
   'P', -1, -1, 1,
-  'R', -1, -1, REG_LBANK_INITDONE,
-  'C',  0,  0, 4,
+  'X',  1,  0, 4, // Skip the rest if not on 1st INIT
   'R', -1, -1, REG_LBANK_STATE,
   'C',  0,  2, 0,
   'R', -1, -1, REG_LBANK_DEFAULT,
-  'I', -1, -1, 1,
-  'R', -1, -1, REG_LBANK_INITDONE,
   'I', -1, -1, 1,
   'R', -1, -1, REG_LBANK_STATE,   
   'I', -1, -1, -1,
   'S', -1, -1, IN_LBANK_OFF,  
   'R', -1, -1, REG_LBANK_DEFAULT,
-  'C',  0, -1, 0,
+  'C',  0,  1, 0,
   'S', -1, -1, IN_LBANK_ON,    
   -1,
 
@@ -570,7 +567,7 @@ int16_t dual_flipper_firmware[] = {
 
 enum { IN_SCALAR_INIT, IN_SCALAR_ZERO, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
 enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
-enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK, REG_SCALAR_INITDONE };
+enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK, REG_SCALAR };
 
 int16_t scalar_firmware[] = {
   IN_SCALAR_INIT, 
@@ -587,13 +584,10 @@ int16_t scalar_firmware[] = {
 
   IN_SCALAR_INIT,
   'P', -1, -1, 1,  // Persistent
-  'R', -1, -1, REG_SCALAR_INITDONE,
-  'C',  0,  0, 3, 
+  'X',  1, -1, -1, // Skip the rest if not 1st INIT
   'R', -1, -1, REG_SCALAR_BLOCK,
   'I', -1, -1, -1,
   'S', -1, -1, IN_SCALAR_ZERO,
-  'R', -1, -1, REG_SCALAR_INITDONE,
-  'I', -1, -1, 1,  
   -1,
 
   IN_SCALAR_ZERO,
@@ -693,7 +687,7 @@ enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
 };
 enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP }; 
 enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
-enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_INITDONE, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10 };
+enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_WAIT };
 enum { VAR_CTR_LOW = 0, VAR_CTR_HIGH = 1, VAR_CTR_DELAY = 120 };
  
 int16_t counter_em4d1w_firmware[] = {
@@ -706,13 +700,10 @@ int16_t counter_em4d1w_firmware[] = {
 
   IN_CTR_INIT,
   'P', -1, -1,  1,                      // Persistent
-  'R', -1, -1, REG_CTR_INITDONE,
-  'C',  0,  0,  3,
+  'X',  1,  0,  -1,
   'R', -1, -1, REG_CTR_STATE,           // Set dirty flag on 1st init only
   'I', -1, -1, -1,
   'I', -1, -1,  1,                      // Dirty: reset before use
-  'R', -1, -1, REG_CTR_INITDONE,
-  'I', -1, -1,  1,                      // Set INITDONE
   -1,
 
   IN_CTR_PRESS,

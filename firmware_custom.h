@@ -97,8 +97,6 @@ int16_t tictactoe_firmware[] = {
 
   IN_OXO_INIT,
   'P', -1, -1, 1,
-//'P', -1, -1, 1 << IN_OXO_COLLECT,
-//'Q', -1, -1, 1 << OUT_OXO_COLLECT,
   'S', -1, -1, SUB_OXO_CLEAR,
   -1,
 

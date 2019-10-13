@@ -25,14 +25,14 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   enabled = true;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
-  reg( 0, r0 );
-  reg( 1, r1 );
-  reg( 2, r2 );
-  reg( 3, r3 );
-  reg( 4, r4 );
-  reg( 5, r5 );
-  reg( 6, r6 );
-  reg( 7, r7 );
+  registers[0] = r0;
+  registers[1] = r1;
+  registers[2] = r2;
+  registers[3] = r3;
+  registers[4] = r4;
+  registers[5] = r5;
+  registers[6] = r6;
+  registers[7] = r7;
   timer.set( ATM_TIMER_OFF );
   core[0].ptr = 0;
   core[1].ptr = 0;

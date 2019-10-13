@@ -62,8 +62,8 @@ enum {
 /* 058 */ VLED_COUNTER1,
 /* 059 */ VLED_COUNTER2,
 /* 060 */ VLED_COUNTER3,
-/* 061 */ VLED_PLAYING,
-/* 062 */ VLED_COLLECTING,
+/* 061 */ VLED_COLLECTING,
+/* 062 */ VLED_5,
 /* 063 */ VLED_6,
 /* 064 */ VLED_7,
 /* 065 */ COIL_COUNTER0_10, // Strip on P3 (Headbox) - Powernode 5

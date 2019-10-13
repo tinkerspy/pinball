@@ -138,30 +138,25 @@ void setup() {
   
   playfield.disable();     
 
-}
-
 /*
- * Outputs:
- * playfield init
- * counter reset
- * zero players
- * set ball (advance/zero)
- * set player (advance/zero)
- * set oxo bonus multiplier
- * kick feeder
- * enable playfield
- * bonus collect
- * freeze players
- * game over
- * 
- * Inputs:
- * front button
- * no of players
- * plays again
- * while-counter-resetting (semaphore virtual led) * 4
- * while-in-play (EXTRA_LED)
- * while-collecting (semaphore virtual led)
- */
+  // FRONTBTN, LED_PLAYERS_GRP, AGAIN0, VLED_COUNTER0, VLED_COUNTER1, VLED_COUNTER2, VLED_COUNTER3, EXTRA_LED, VLED_COLLECTING
+  playfield.device( GAME, LED_GAME_GRP, game_firmware )
+    .onEvent( OUT_GAME_INIT, playfield, playfield.EVT_INIT )
+    .onEvent( OUT_GAME_ENABLE, playfield, playfield.EVT_ENABLE )
+    .onEvent( OUT_GAME_RESET, COUNTER, IN_CTR_RESET )
+    .onEvent( OUT_GAME_PLAYERS_ZERO, PLAYERS, IN_SCALAR_ZERO )
+    .onEvent( OUT_GAME_BALL_ZERO, BALLUP, IN_SCALAR_ZERO )
+    .onEvent( OUT_GAME_PLAYER_ZERO, PLAYERUP, IN_SCALAR )
+    .onEvent( OUT_GAME_BALL_ADV, BALLUP, IN_SCALAR_ADVANCE )
+    .onEvent( OUT_GAME_PLAYER_ADV, PLAYERUP, IN_SCALAR_ADVANCE )
+    .onEvent( OUT_GAME_3BONUS, OXO, IN_OXO_TRIPLE )
+    .onEvent( OUT_GAME_COLLECT, OXO, IN_OXO_COLLECT )
+    .onEvent( OUT_GAME_KICKOFF, FEEDER, IN_LBANK_ON )
+    .onEvent( OUT_GAME_PLAYERS_FIX, PLAYERS, IN_SCALAR_ZERO )
+    .onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
+*/    
+
+}
 
 void loop() {
   automaton.run(); 

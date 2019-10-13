@@ -236,8 +236,6 @@ uint16_t IO::isPressed( int16_t code ) {
   }
 }
 
-// TODO: remember last scan bitpos and continue from there...
-
 int16_t IO::scan_raw() {
   for (;;) {      
     // Check one normalized (=corrected for normally closed switches) byte (5 bits) for changes

@@ -726,8 +726,6 @@ int16_t counter_em4d1w_firmware[] = {
   'I', -1, -1, -1,                     // Clear sensor flag
   -1,
 
-// IF THIS WORKS WE DON'T NEED THE POS REGISTERS AT ALL
-
   IN_CTR_RESET, 
   '0', -1,  0, -1,                      // Force primary core
   'C',  0, -1,  0,                      // Only when dirty

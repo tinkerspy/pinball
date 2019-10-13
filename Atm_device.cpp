@@ -36,6 +36,7 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   timer.set( ATM_TIMER_OFF );
   core[0].ptr = 0;
   core[1].ptr = 0;
+  xctr = 0;
   switches = 0;
   if ( device_script != NULL ) {
     set_led( led_group );
@@ -203,6 +204,7 @@ void Atm_device::start_code( int16_t e ) {
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( callback_trace ) 
       stream_trace->printf( "run_code event %03d called -> %d%03d\n", e, active_core, core[active_core].ptr );
+    xctr++;
     run_code( active_core );      
   }
 }
@@ -252,6 +254,16 @@ void Atm_device::run_code( uint8_t active_core ) {
             } else {
               if ( callback_trace ) 
                 stream_trace->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }            
+            break;            
+          case 'X':  // Xctr
+            selected_action = ( xctr == selector ? action_t : action_f );
+            if ( selected_action  > -1 ) {
+              core[active_core].ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: xctr exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;            

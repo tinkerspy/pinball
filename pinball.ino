@@ -9,7 +9,7 @@
 using namespace standard_firmware;
 using namespace custom_firmware; 
 
-#define NUMBER_OF_BALLS 5
+#define NUMBER_OF_BALLS 3
 
 IO io;
 Atm_led_matrix leds; 
@@ -23,7 +23,7 @@ void setup() {
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
-    .addStrip( new IO_Adafruit_NeoPixel(  8, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet with 4 virtual leds added 
+    .addStrip( new IO_Adafruit_NeoPixel( 12, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet with 8 virtual leds added 
     .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
     .invert( BALL_ENTER )
     .retrigger()
@@ -34,7 +34,7 @@ void setup() {
     .readProfiles( 'L', profiles );  
   
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, switch_groups )
+  playfield.begin( io, leds, switch_groups, LED_EXTRA )
     .readProfiles( 'S', profiles );
 
   Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
@@ -157,9 +157,9 @@ void setup() {
  * Inputs:
  * front button
  * no of players
- * playfield enabled (semaphore virtual led)
  * plays again
- * while-in-play (semaphore virtual led)
+ * while-counter-resetting (semaphore virtual led) * 4
+ * while-in-play (EXTRA_LED)
  * while-collecting (semaphore virtual led)
  */
 
@@ -174,6 +174,7 @@ void loop() {
     for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
       for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
         do {
+          //automaton.delay( 500 ); // replaces the other two
           playfield.trigger( playfield.EVT_INIT );
           playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
           playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );

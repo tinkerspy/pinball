@@ -27,7 +27,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   enum { IDLE, WAIT, SCAN, DISABLED, READY, INIT }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, EVT_INIT, ELSE }; // EVENTS
   Atm_switch_matrix( void ) : Machine() {};
-  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL );
+  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL, int16_t status_led = -1 );
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
   Atm_switch_matrix& trigger( int event );
@@ -62,4 +62,5 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   atm_timer_millis timer;
   bool pf_enabled = false;
   IO *io;
+  int16_t status_led;
 };

@@ -685,7 +685,7 @@ enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
   SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
   SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
 };
-enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP }; 
+enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP, ARG_CTR_DIRTY }; 
 enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
 enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_WAIT };
 enum { VAR_CTR_LOW = 0, VAR_CTR_HIGH = 1, VAR_CTR_DELAY = 120 };
@@ -701,9 +701,9 @@ int16_t counter_em4d1w_firmware[] = {
   IN_CTR_INIT,
   'P', -1, -1,  1,                      // Persistent
   'X',  1,  0,  -1,
-  'R', -1, -1, REG_CTR_STATE,           // Set dirty flag on 1st init only
+  'H', -1, -1, ARG_CTR_DIRTY,           // Set dirty led on 1st init
   'I', -1, -1, -1,
-  'I', -1, -1,  1,                      // Dirty: reset before use
+  'I', -1, -1,  1,
   -1,
 
   IN_CTR_PRESS,
@@ -724,6 +724,7 @@ int16_t counter_em4d1w_firmware[] = {
   'S', -1, -1, SUB_CTR_SOLVE_POS1,  
   'R', -1, -1, REG_CTR_STATE,
   'I', -1, -1, -1,                      // Clean!
+  'L', -1, -1, ARG_CTR_DIRTY,           
   'R', -1, -1, REG_CTR_10,              // Reset digit counter registers to 0
   'I', -1, -1, -1,
   'R', -1, -1, REG_CTR_100,
@@ -859,6 +860,7 @@ int16_t counter_em4d1w_firmware[] = {
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
+  'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT3,
   'S', -1, -1, SUB_CTR_PULSE_10,
   -1,
@@ -867,6 +869,7 @@ int16_t counter_em4d1w_firmware[] = {
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
+  'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT2,
   'S', -1, -1, SUB_CTR_PULSE_100,
   -1,
@@ -875,6 +878,7 @@ int16_t counter_em4d1w_firmware[] = {
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
+  'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT1,
   'S', -1, -1, SUB_CTR_PULSE_1K,
   -1,
@@ -883,6 +887,7 @@ int16_t counter_em4d1w_firmware[] = {
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
+  'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT2,
   'S', -1, -1, SUB_CTR_PULSE_100,
   'T', -1, -1, OUT_CTR_DIGIT2,
@@ -899,6 +904,7 @@ int16_t counter_em4d1w_firmware[] = {
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
   'I', -1, -1,  1,                      
+  'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT1,
   'S', -1, -1, SUB_CTR_PULSE_1K,
   'T', -1, -1, OUT_CTR_DIGIT1,

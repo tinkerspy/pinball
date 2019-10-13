@@ -16,6 +16,7 @@ const int16_t profiles[] = {
 /* BUMPER         */   'L',     0, 255, 40,   0,     COIL_BUMPER_A, COIL_BUMPER_B, COIL_BUMPER_C, -1,
 /* FEEDER         */   'L',     0, 127, 30,   0,     COIL_FEEDER, -1,
 /* COUNTER        */   'L',     0, 127, 20,   0,     COIL_COUNTER_GRP, -1,  
+/* VIRTUSL LEDS   */   'L',     0,   0,  0, 127,     VLED_COUNTER0, VLED_COUNTER1, VLED_COUNTER2, VLED_COUNTER3, VLED_PLAYING, VLED_COLLECTING, VLED_6, VLED_7, -1,
 
 /*                     L/S     PR,    RL,    TH      SWITCHES (debounce delays are specified in 1/10's of a millisecond!) */ 
 /* DEFAULT SWITCH */   'S',    200,    0,     0,     SWITCHES, -1,
@@ -31,6 +32,5 @@ const int16_t profiles[] = {
 /* BALL_EXIT      */   'S',      0,   50,  5000,     BALL_EXIT, -1,
 /* BALL_ENTER     */   'S',    200,    0,     0,     BALL_ENTER, -1,
 /* FRONTBTN       */   'S',      0,   50,  5000,     FRONTBTN, -1,
-
 -1,  
 };

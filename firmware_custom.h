@@ -79,7 +79,7 @@ enum { // Arguments (leds)
   ARG_OXO_7A, ARG_OXO_7B, ARG_OXO_7C,
   ARG_OXO_8A, ARG_OXO_8B, ARG_OXO_8C,
   ARG_OXO_9A, ARG_OXO_9B, ARG_OXO_9C,
-  ARG_OXO_X, ARG_OXO_O, ARG_OXO_TRIPLE,
+  ARG_OXO_X, ARG_OXO_O, ARG_OXO_TRIPLE, ARG_OXO_COLLECT,
 };
 
 int16_t tictactoe_firmware[] = {
@@ -97,6 +97,7 @@ int16_t tictactoe_firmware[] = {
 
   IN_OXO_INIT,
   'P', -1, -1, 1,
+  'L', -1, -1, ARG_OXO_COLLECT,
   'S', -1, -1, SUB_OXO_CLEAR,
   -1,
 
@@ -243,6 +244,7 @@ int16_t tictactoe_firmware[] = {
   -1,
 
   IN_OXO_COLLECT,
+  'H', -1, -1, ARG_OXO_COLLECT,
   'S', -1, -1, SUB_OXO_COLLECT,    
   'J', ARG_OXO_TRIPLE, 0, 4,
   'Y', -1, -1, 1000,
@@ -250,7 +252,7 @@ int16_t tictactoe_firmware[] = {
   'Y', -1, -1, 1000,
   'S', -1, -1, SUB_OXO_COLLECT,    
   'I', -1, -1, -1,
-//  'S', -1, -1, SUB_OXO_CLEAR,
+  'L', -1, -1, ARG_OXO_COLLECT,
   -1,
 
   SUB_OXO_MATCH_123,

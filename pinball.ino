@@ -213,6 +213,7 @@ void loop() {
 230     trigger FEEDER
 240     delay 500
 245     trigger PLAYFIELD_ENABLE
+247     delay 100
 250     while ( led( LED_EXTRA ) ) 
 260       wait 0
 270     wend

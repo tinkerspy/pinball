@@ -5,7 +5,7 @@
  *  ledbank
  *  dual_kicker
  *  switchbank
- *  dual_combo_leds
+ *  dual_combo
  *  bumper
  *  dual_target
  *  dual flipper
@@ -366,6 +366,7 @@ int16_t dual_combo_firmware[] = {
 
   IN_COMBO_INIT,
   'P', -1, -1, 0,  // Not persistent 
+  'S', -1, -1, IN_COMBO_OFF,
   -1,
 
   IN_COMBO_PRESS0,

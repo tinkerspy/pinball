@@ -41,7 +41,8 @@ void setup() {
   Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
   Serial.printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
   Serial.printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
-  
+
+  int32_t base_ram = FreeRam();
   Serial.println( "init devices" ); delay( 100 );
 
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
@@ -133,7 +134,8 @@ void setup() {
   
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
-  Serial.println( FreeRam() );
+  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n", 
+        (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
   
   playfield.disable();     
 

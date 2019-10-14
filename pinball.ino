@@ -5,6 +5,8 @@
 #include "profiles.h"
 #include "firmware_custom.h"
 #include "freeram.hpp"
+#include <SD.h>
+#include <SPI.h>
 
 using namespace standard_firmware;
 using namespace custom_firmware; 
@@ -14,11 +16,37 @@ using namespace custom_firmware;
 IO io;
 Atm_led_matrix leds; 
 Atm_switch_matrix playfield;
+File myFile;
 
 void setup() {
   delay( 1000 );
   Serial.println( "Singularity framework\ninit IO" );
   delay( 100 );
+
+  Serial.print("Initializing SD card...");
+
+  if ( !SD.begin( BUILTIN_SDCARD ) ) {
+    Serial.println("initialization failed!");
+    return;
+  }
+  Serial.println("Initialization done.");
+
+
+  myFile = SD.open("sing0000.cfg");
+  if (myFile) {
+    Serial.println("sing0000.cfg:");
+    
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+      Serial.write(myFile.read());
+    }
+    // close the file:
+    myFile.close();
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening sing0000.cfg");
+  }
+
 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )

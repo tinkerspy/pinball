@@ -276,7 +276,15 @@ void Atm_device::run_code( uint8_t active_core ) {
                 stream_trace->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
-            break;            
+            break; 
+          case 'U':  // Resume
+            if ( active_core == 1 ) {
+              sleep( 0 );
+              timer.set( 0 );
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: core resume\n", active_core, core[active_core].ptr - 4 );
+            }
+            break;                       
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
             if ( selected_action  > -1 ) {

@@ -237,8 +237,28 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = script[selected_action];          
             }
             break;
-          case 'C': // JmpRE
+          case '=': // JmpRE
             selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
+            if ( selected_action  > -1 ) {
+              core[active_core].ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }            
+            break;
+          case '<': // JmpRL
+            selected_action = ( registers[core[active_core].reg_ptr] < selector ) ? action_t : action_f;
+            if ( selected_action  > -1 ) {
+              core[active_core].ptr += selected_action * 4;          
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }            
+            break;
+          case '>': // JmpRG
+            selected_action = ( registers[core[active_core].reg_ptr] > selector ) ? action_t : action_f;
             if ( selected_action  > -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {

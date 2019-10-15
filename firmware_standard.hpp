@@ -62,14 +62,14 @@ int16_t ledbank_firmware[] {
   'P', -1, -1, 1,
   'X',  1,  0, 4, // Skip the rest if not on 1st INIT
   'R', -1, -1, REG_LBANK_STATE,
-  'C',  0,  2, 0,
+  '=',  0,  2, 0,
   'R', -1, -1, REG_LBANK_DEFAULT,
   'Z', -1, -1, 1,
   'R', -1, -1, REG_LBANK_STATE,   
   'Z', -1, -1, 0,
   'S', -1, -1, IN_LBANK_OFF,  
   'R', -1, -1, REG_LBANK_DEFAULT,
-  'C',  0,  1, 0,
+  '=',  0,  1, 0,
   'S', -1, -1, IN_LBANK_ON,    
   -1,
 
@@ -603,7 +603,7 @@ int16_t scalar_firmware[] = {
 
   IN_SCALAR_ADVANCE, 
   'R', -1, -1, REG_SCALAR_BLOCK,
-  'C', 1, -1, 0,
+  '=', 1, -1, 0,
   'J', ARG_BACKSTOP, -1, 0,
   'R', -1, -1, REG_SCALAR_STATE,
   'J', ARG_LED0, 0, 2,
@@ -712,7 +712,7 @@ int16_t counter_em4d1w_firmware[] = {
 
   IN_CTR_RESET, 
   '0', -1,  0, -1,                      // Force primary core
-  'C',  0, -1, 0,                      // Only when dirty
+  '=',  0, -1, 0,                      // Only when dirty
   'S', -1, -1, SUB_CTR_MOVE_START,
   'S', -1, -1, SUB_CTR_SOLVE_POS1,  
   'R', -1, -1, REG_CTR_STATE,
@@ -730,13 +730,13 @@ int16_t counter_em4d1w_firmware[] = {
 
   SUB_CTR_MOVE_START,                   // Pulse 0 & 1 while sensor is low
   'R', -1, -1, REG_CTR_SENSOR,          // Select sensor register   
-  'C', VAR_CTR_LOW,  0, -1,
+  '=', VAR_CTR_LOW,  0, -1,
   'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, -1,
+  '=', VAR_CTR_LOW,  0, -1,
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, -1,
+  '=', VAR_CTR_LOW,  0, -1,
   'A', -1, -1, SUB_CTR_MOVE_START,       // >> LOOP 
   -1,
 
@@ -744,13 +744,13 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_HIGH,  0, 7,
+  '=', VAR_CTR_HIGH,  0, 7,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_HIGH,  0, 5,
+  '=', VAR_CTR_HIGH,  0, 5,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_HIGH,  0, 3,
+  '=', VAR_CTR_HIGH,  0, 3,
   'A', -1, -1, SUB_CTR_SOLVE_POS1,      // >> LOOP
   'A', -1, -1, SUB_CTR_SOLVE_POS2_23,  
   'A', -1, -1, SUB_CTR_SOLVE_POS2_13,  
@@ -761,10 +761,10 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_SENSOR,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,
+  '=', VAR_CTR_LOW,  0, 4,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,  
+  '=', VAR_CTR_LOW,  0, 4,  
   'A', -1, -1, SUB_CTR_SOLVE_POS2_23,      // >> LOOP
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, VAR_CTR_DELAY,
@@ -778,10 +778,10 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_SENSOR,
   'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,
+  '=', VAR_CTR_LOW,  0, 4,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,  
+  '=', VAR_CTR_LOW,  0, 4,  
   'A', -1, -1, SUB_CTR_SOLVE_POS2_13,      // >> LOOP
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, VAR_CTR_DELAY,
@@ -795,10 +795,10 @@ int16_t counter_em4d1w_firmware[] = {
   'R', -1, -1, REG_CTR_SENSOR,
   'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,
+  '=', VAR_CTR_LOW,  0, 4,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, VAR_CTR_DELAY,
-  'C', VAR_CTR_LOW,  0, 4,  
+  '=', VAR_CTR_LOW,  0, 4,  
   'A', -1, -1, SUB_CTR_SOLVE_POS2_12,      // >> LOOP
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, VAR_CTR_DELAY,
@@ -810,7 +810,7 @@ int16_t counter_em4d1w_firmware[] = {
 
   SUB_CTR_SOLVE_POS3_1,
   'R', -1, -1, REG_CTR_SENSOR,
-  'C', VAR_CTR_LOW,  0, 3,
+  '=', VAR_CTR_LOW,  0, 3,
   'H', -1, -1, ARG_CTR_1K,
   'Y', -1, -1, VAR_CTR_DELAY,
   'A', -1, -1, SUB_CTR_SOLVE_POS3_1,  // >> LOOP
@@ -821,7 +821,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   SUB_CTR_SOLVE_POS3_2,
   'R', -1, -1, REG_CTR_SENSOR,
-  'C', VAR_CTR_LOW,  0, 3,
+  '=', VAR_CTR_LOW,  0, 3,
   'H', -1, -1, ARG_CTR_100,
   'Y', -1, -1, VAR_CTR_DELAY,
   'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  // >> LOOP
@@ -832,7 +832,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   SUB_CTR_SOLVE_POS3_3,
   'R', -1, -1, REG_CTR_SENSOR,
-  'C', VAR_CTR_LOW,  0, 3,
+  '=', VAR_CTR_LOW,  0, 3,
   'H', -1, -1, ARG_CTR_10,
   'Y', -1, -1, VAR_CTR_DELAY,
   'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  // >> LOOP
@@ -843,7 +843,7 @@ int16_t counter_em4d1w_firmware[] = {
   
   SUB_CTR_SOLVE_REEL0,
   'R', -1, -1, REG_CTR_SENSOR,          
-  'C', VAR_CTR_HIGH, 0, -1,
+  '=', VAR_CTR_HIGH, 0, -1,
   'H', -1, -1, ARG_CTR_10K,
   'Y', -1, -1, VAR_CTR_DELAY,
   'A', -1, -1, SUB_CTR_SOLVE_REEL0,  
@@ -913,7 +913,7 @@ int16_t counter_em4d1w_firmware[] = {
   SUB_CTR_PULSE_10,
   'R', -1, -1, REG_CTR_10,
   'H', -1, -1, ARG_CTR_10,
-  'C',  9,  3, 0,                      // Check rollover
+  '=',  9,  3, 0,                      // Check rollover
   'I', -1, -1, 1,                      // If not just increment & yield
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
@@ -924,7 +924,7 @@ int16_t counter_em4d1w_firmware[] = {
   SUB_CTR_PULSE_100,
   'R', -1, -1, REG_CTR_100,
   'H', -1, -1, ARG_CTR_100,
-  'C',  9,  3, 0,
+  '=',  9,  3, 0,
   'I', -1, -1, 1,
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
@@ -935,7 +935,7 @@ int16_t counter_em4d1w_firmware[] = {
   SUB_CTR_PULSE_1K,
   'R', -1, -1, REG_CTR_1K,
   'H', -1, -1, ARG_CTR_1K,
-  'C',  9,  3, 0,
+  '=',  9,  3, 0,
   'I', -1, -1, 1,
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,

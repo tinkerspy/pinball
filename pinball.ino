@@ -5,8 +5,6 @@
 #include "profiles.h"
 #include "firmware_custom.h"
 #include "freeram.hpp"
-#include <SD.h>
-#include <SPI.h>
 
 using namespace standard_firmware;
 using namespace custom_firmware; 
@@ -16,7 +14,6 @@ using namespace custom_firmware;
 IO io;
 Atm_led_matrix leds; 
 Atm_switch_matrix playfield;
-File myFile;
 
 void setup() {
   delay( 1000 );

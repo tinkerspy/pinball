@@ -282,19 +282,15 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'I': // Inc
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            if ( selected_action > - 1 ) {
-              registers[core[active_core].reg_ptr] += selected_action;
-            } else {
-              registers[core[active_core].reg_ptr] = 0;
-            }
+            registers[core[active_core].reg_ptr] += selected_action;
             break;
-          case 'D': // Dec
+          case 'Z': // Zap (really: set to value)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            if ( selected_action > - 1 ) {
-              registers[core[active_core].reg_ptr] -= selected_action;
-            } else {
-              registers[core[active_core].reg_ptr] = 0;
-            }
+            registers[core[active_core].reg_ptr] = selected_action;
+            break;
+          case 'D': // Dup - duplicate into named register
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            registers[selected_action] = registers[core[active_core].reg_ptr];
             break;
           case 'T': // Trig
             selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
@@ -311,7 +307,7 @@ void Atm_device::run_code( uint8_t active_core ) {
           case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
             break;           
-          case 'Y': // Yield
+          case 'Y': // Yield (negative value uses register!)
             if ( core[active_core].yield_enabled ) {
               selected_action = led_active( led_group, selector ) ? action_t : action_f;
               selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];

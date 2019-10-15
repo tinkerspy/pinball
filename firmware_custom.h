@@ -251,7 +251,7 @@ int16_t tictactoe_firmware[] = {
   'S', -1, -1, SUB_OXO_COLLECT,    
   'Y', -1, -1, 1000,
   'S', -1, -1, SUB_OXO_COLLECT,    
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'L', -1, -1, ARG_OXO_COLLECT,
   -1,
 
@@ -337,7 +337,7 @@ int16_t tictactoe_firmware[] = {
 
   SUB_OXO_MATCH_ALL,
   'T', -1, -1, OUT_OXO_SCORE, 
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'I', ARG_OXO_1A, 1, 0,
   'I', ARG_OXO_2A, 1, 0,
   'I', ARG_OXO_3A, 1, 0,

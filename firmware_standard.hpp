@@ -64,9 +64,9 @@ int16_t ledbank_firmware[] {
   'R', -1, -1, REG_LBANK_STATE,
   'C',  0,  2, 0,
   'R', -1, -1, REG_LBANK_DEFAULT,
-  'I', -1, -1, 1,
+  'Z', -1, -1, 1,
   'R', -1, -1, REG_LBANK_STATE,   
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'S', -1, -1, IN_LBANK_OFF,  
   'R', -1, -1, REG_LBANK_DEFAULT,
   'C',  0,  1, 0,
@@ -74,7 +74,7 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_ON,
-  'I', -1, -1, 1,
+  'Z', -1, -1, 1,
   'H', -1, -1, ARG_LBANK_LED0,
   'H', -1, -1, ARG_LBANK_LED1,
   'H', -1, -1, ARG_LBANK_LED2,
@@ -86,7 +86,7 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_OFF,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'L', -1, -1, ARG_LBANK_LED0,
   'L', -1, -1, ARG_LBANK_LED1,
   'L', -1, -1, ARG_LBANK_LED2,
@@ -98,13 +98,13 @@ int16_t ledbank_firmware[] {
   -1,
 
   IN_LBANK_ON0,
-  'I', -1, -1, 1,
+  'Z', -1, -1, 1,
   'H', -1, -1, ARG_LBANK_LED0,
   'T', -1, -1, OUT_LBANK_ON0,
   -1,
   
   IN_LBANK_OFF0,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'L', -1, -1, ARG_LBANK_LED0,
   'T', -1, -1, OUT_LBANK_OFF0,
   -1,
@@ -587,7 +587,7 @@ int16_t scalar_firmware[] = {
   'P', -1, -1, 1,  // Persistent
   'X',  1, -1, -1, // Skip the rest if not 1st INIT
   'R', -1, -1, REG_SCALAR_BLOCK,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'S', -1, -1, IN_SCALAR_ZERO,
   -1,
 
@@ -598,7 +598,7 @@ int16_t scalar_firmware[] = {
   'L', -1, -1, ARG_LED3,
   'L', -1, -1, ARG_LED4,
   'R', -1, -1, REG_SCALAR_BLOCK,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   -1,
 
   IN_SCALAR_ADVANCE, 
@@ -621,41 +621,35 @@ int16_t scalar_firmware[] = {
 
   IN_SCALAR_FREEZE,
   'R', -1, -1, REG_SCALAR_BLOCK,
-  'I', -1, -1, -1,
-  'I', -1, -1, 1,
+  'Z', -1, -1, 1,
   -1,   
 
   IN_SCALAR_SEL0,
-  'I', -1, -1, -1,
-  'I', -1, -1, 0,
+  'Z', -1, -1, 0,
   'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED0,
   -1,
 
   IN_SCALAR_SEL1,
-  'I', -1, -1, -1,
-  'I', -1, -1, 1,
+  'Z', -1, -1, 1,
   'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED1,
   -1,
 
   IN_SCALAR_SEL2,
-  'I', -1, -1, -1,
-  'I', -1, -1, 2,
+  'Z', -1, -1, 2,
   'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED2,
   -1,
 
   IN_SCALAR_SEL3,
-  'I', -1, -1, -1,
-  'I', -1, -1, 3,
+  'Z', -1, -1, 3,
   'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED3,
   -1,
 
   IN_SCALAR_SEL4,
-  'I', -1, -1, -1,
-  'I', -1, -1, 4,
+  'Z', -1, -1, 4,
   'S', -1, -1, SUB_SCALAR_CLEAR,  
   'H', -1, -1, ARG_LED4,
   -1,
@@ -703,37 +697,35 @@ int16_t counter_em4d1w_firmware[] = {
   'P', -1, -1,  1,                      // Persistent
   'X',  1,  0,  -1,
   'H', -1, -1, ARG_CTR_DIRTY,           // Set dirty led on 1st init
-  'I', -1, -1, -1,
-  'I', -1, -1,  1,
+  'Z', -1, -1,  1,
   -1,
 
   IN_CTR_PRESS,
   'R', -1, -1, REG_CTR_SENSOR,
-  'I', -1, -1, -1,
-  'I', -1, -1, 1,                      // Set sensor flag
+  'Z', -1, -1, 1,                      // Set sensor flag
   -1,
   
   IN_CTR_RELEASE,
   'R', -1, -1, REG_CTR_SENSOR,
-  'I', -1, -1, -1,                     // Clear sensor flag
+  'Z', -1, -1, 0,                      // Clear sensor flag
   -1,
 
   IN_CTR_RESET, 
   '0', -1,  0, -1,                      // Force primary core
-  'C',  0, -1,  0,                      // Only when dirty
+  'C',  0, -1, 0,                      // Only when dirty
   'S', -1, -1, SUB_CTR_MOVE_START,
   'S', -1, -1, SUB_CTR_SOLVE_POS1,  
   'R', -1, -1, REG_CTR_STATE,
-  'I', -1, -1, -1,                      // Clean!
+  'Z', -1, -1, 0,                      // Clean!
   'L', -1, -1, ARG_CTR_DIRTY,           
   'R', -1, -1, REG_CTR_10,              // Reset digit counter registers to 0
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'R', -1, -1, REG_CTR_100,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'R', -1, -1, REG_CTR_1K,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'R', -1, -1, REG_CTR_10K,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   -1,
 
   SUB_CTR_MOVE_START,                   // Pulse 0 & 1 while sensor is low
@@ -887,7 +879,7 @@ int16_t counter_em4d1w_firmware[] = {
   IN_CTR_PT500, 
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1,  1,                      
+  'I', -1, -1, 1,                      
   'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT2,
   'S', -1, -1, SUB_CTR_PULSE_100,
@@ -904,7 +896,7 @@ int16_t counter_em4d1w_firmware[] = {
   IN_CTR_PT5000,
   '0', -1,  0, -1,                      // Force primary core
   'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1,  1,                      
+  'I', -1, -1, 1,                      
   'H', -1, -1, ARG_CTR_DIRTY,          
   'T', -1, -1, OUT_CTR_DIGIT1,
   'S', -1, -1, SUB_CTR_PULSE_1K,
@@ -925,7 +917,7 @@ int16_t counter_em4d1w_firmware[] = {
   'I', -1, -1, 1,                      // If not just increment & yield
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
-  'I', -1, -1, -1,                     // Else reset digit counter register
+  'Z', -1, -1, 0,                     // Else reset digit counter register
   'S', -1, -1, SUB_CTR_PULSE_100,      // And rollover
   -1,
 
@@ -936,7 +928,7 @@ int16_t counter_em4d1w_firmware[] = {
   'I', -1, -1, 1,
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'S', -1, -1, SUB_CTR_PULSE_1K,  
   -1,
 
@@ -947,7 +939,7 @@ int16_t counter_em4d1w_firmware[] = {
   'I', -1, -1, 1,
   'Y', -1, -1, VAR_CTR_DELAY,
   'J', -1, -1, -1,
-  'I', -1, -1, -1,
+  'Z', -1, -1, 0,
   'S', -1, -1, SUB_CTR_PULSE_10K,  
   -1,
 

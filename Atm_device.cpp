@@ -223,7 +223,7 @@ void Atm_device::run_code( uint8_t active_core ) {
         switch ( opcode ) {
           case 'J': // JmpL
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -239,7 +239,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case '=': // JmpRE
             selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -249,7 +249,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case '<': // JmpRL
             selected_action = ( registers[core[active_core].reg_ptr] < selector ) ? action_t : action_f;
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -259,7 +259,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case '>': // JmpRG
             selected_action = ( registers[core[active_core].reg_ptr] > selector ) ? action_t : action_f;
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -269,7 +269,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case '0':  // Prim
             selected_action = ( active_core == 0 ? action_t : action_f );
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -277,17 +277,17 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break; 
-          case 'U':  // Resume
+          case 'U':  // Resume (only from secondary core)
             if ( active_core == 1 ) {
               sleep( 0 );
-              timer.set( 0 );
+              timer.set( 0 ); // Cut timer short
               if ( callback_trace ) 
                 stream_trace->printf( "run_code %d:%03d: core resume\n", active_core, core[active_core].ptr - 4 );
             }
             break;                       
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
-            if ( selected_action  > -1 ) {
+            if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
               if ( callback_trace ) 
@@ -339,7 +339,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( core[active_core].yield_enabled ) {
               selected_action = led_active( led_group, selector ) ? action_t : action_f;
               selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
-              timer.set( selected_action );
+              timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
               sleep( 0 );
               if ( callback_trace ) 
                 stream_trace->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );

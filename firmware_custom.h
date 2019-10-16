@@ -11,6 +11,99 @@
 
 namespace custom_firmware {
 
+/*
+
+
+
+enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, IN_GAME_RESET_DONE, IN_GAME_PF_DONE }; 
+enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
+        OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, OUT_GAME_PLAYERS_FIX, OUT_GAME_OVER };
+enum { ARG_GAME_ENABLED, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, ARG_GAME_COUNTER2, ARG_GAME_COUNTER3 };
+enum { REG_GAME_STATE, REG_GAME_NOPLAYERS, REG_GAME_BALLS, REG_GAME_BALL, REG_GAME_PLAYER };
+
+IN_GAME_PRESS,
+'R', -1, -1,  REG_GAME_NOPLAYERS,
+'I', -1, -1,  1,
+//'U', -1, -1, -1,
+-1,
+
+IN_GAME_INIT,
+'R', -1, -1, REG_GAME_NOBALLS
+'Z', -1, -1, 3,
+
+'T', -1, -1, OUT_GAME_OVER,      // $
+'R', -1, -1, REG_GAME_NOPLAYERS,
+'Y', -1, -1, 10,                 // Wait (busy) until game_players > 0
+'=',  0, -2, 0,
+'T', -1, -1, OUT_GAME_INIT,
+'T', -1, -1, OUT_GAME_COUNTER_RESET,
+'T', -1, -1, OUT_GAME_PLAYERS_ZERO,
+'Y', -1, -1, 100,                // Wait (busy) until counter reset finishes
+'J', ARG_GAME_COUNTER0, -2, 0,
+'J', ARG_GAME_COUNTER1, -3, 0,
+'J', ARG_GAME_COUNTER2, -4, 0,
+'J', ARG_GAME_COUNTER2, -5, 0,
+'R', -1, -1, REG_GAME_NOBALLS,   
+'D', -1, -1, REG_GAME_BALL,      // ball = noballs
+
+'R', -1, -1, REG_GAME_NOPLAYERS, // $$
+'D', -1, -1, REG_GAME_PLAYER,    // player = noplayers
+
+'Y', -1, -1, 500,                // $$$
+'T', -1, -1, OUT_GAME_INIT,
+
+'T', -1, -1, OUT_GAME_PLAYERUP_ADVANCE,
+'R', -1, -1, REG_GAME_PLAYER
+'I', -1, -1, -1,                 // player--
+'>',  0, $$$, 0,                 // Loop $$$
+
+'T', -1, -1, OUT_GAME_BALLUP_ADVANCE,
+'R', -1, -1, REG_GAME_BALL
+'I', -1, -1, -1,                 // ball--
+'>',  0,  0, $$,                 // Loop $$
+'J', -1, -1, $,
+-1,
+
+        
+100 trigger GAME_OVER
+102 while ( !switch( FRONTBTN ) 
+105   wait 0
+110 wend
+120 trigger INIT
+130 trigger RESET
+140 trigger PLAYERS_ZERO
+150 while ( led( COUNTER0 ) or led( COUNTER1 ) or led( COUNTER2 ) or led( COUNTER3 )
+155   wait 0
+160 wend
+170 for BALL = 0 to NUMBER_OF_BALLS -1 
+170   for PLAYER = 0 to NUMBER_OF_PLAYERS -1 ` Dit moet anders 
+180     delay 500
+190     trigger INIT
+200     trigger PLAYERUP_ADVANCE
+210     trigger BALLUP_ADVANCE
+220     if ( BALL = NUMBER_OF_BALLS -1 ) then trigger TRIPLE_BONUS
+230     trigger FEEDER
+240     delay 500
+245     trigger PLAYFIELD_ENABLE
+247     delay 100
+250     while ( led( LED_EXTRA ) ) 
+260       wait 0
+270     wend
+280     trigger BONUS_COLLECT
+285     delay 100
+290     while ( led( VLED_COLLECTING ) ) 
+300       wait 0
+310     wend
+320     delay 500
+330     trigger PLAYERS_FIX
+340     if ( led( again) ) then GOTO 180
+350   next
+360 next
+380 goto 100
+*/
+
+
+
 enum { IN_ANI_INIT, IN_ANI_CYCLE };
 enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 
 

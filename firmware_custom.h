@@ -11,15 +11,13 @@
 
 namespace custom_firmware {
 
-/*
-
-
-
 enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, IN_GAME_RESET_DONE, IN_GAME_PF_DONE }; 
 enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
         OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, OUT_GAME_PLAYERS_FIX, OUT_GAME_OVER };
 enum { ARG_GAME_ENABLED, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, ARG_GAME_COUNTER2, ARG_GAME_COUNTER3 };
-enum { REG_GAME_STATE, REG_GAME_NOPLAYERS, REG_GAME_BALLS, REG_GAME_BALL, REG_GAME_PLAYER };
+enum { REG_GAME_STATE, REG_GAME_NOPLAYERS, REG_GAME_NOBALLS, REG_GAME_BALL, REG_GAME_PLAYER };
+
+int16_t game_firmware[] = {
 
 IN_GAME_PRESS,
 'R', -1, -1,  REG_GAME_NOPLAYERS,
@@ -28,7 +26,7 @@ IN_GAME_PRESS,
 -1,
 
 IN_GAME_INIT,
-'R', -1, -1, REG_GAME_NOBALLS
+'R', -1, -1, REG_GAME_NOBALLS,
 'Z', -1, -1, 3,
 
 'T', -1, -1, OUT_GAME_OVER,      // $
@@ -51,19 +49,21 @@ IN_GAME_INIT,
 
 'Y', -1, -1, 500,                // $$$
 'T', -1, -1, OUT_GAME_INIT,
+'Y', -1, -1, 2000,               // placeholder for game
 
-'T', -1, -1, OUT_GAME_PLAYERUP_ADVANCE,
-'R', -1, -1, REG_GAME_PLAYER
+'T', -1, -1, OUT_GAME_PLAYER_ADV,
+'R', -1, -1, REG_GAME_PLAYER,
 'I', -1, -1, -1,                 // player--
 '>',  0, $$$, 0,                 // Loop $$$
 
-'T', -1, -1, OUT_GAME_BALLUP_ADVANCE,
+'T', -1, -1, OUT_GAME_BALL_ADV,
 'R', -1, -1, REG_GAME_BALL
 'I', -1, -1, -1,                 // ball--
 '>',  0,  0, $$,                 // Loop $$
 'J', -1, -1, $,
 -1,
 
+/*
         
 100 trigger GAME_OVER
 102 while ( !switch( FRONTBTN ) 

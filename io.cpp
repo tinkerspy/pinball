@@ -33,6 +33,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;
+  last_press = millis();
   return *this;
 }
 
@@ -397,11 +398,14 @@ int16_t IO::throttle( int16_t code ) {
   return 0;
 }
 
+// Separation filter
+// Only fire the switch after a minimum 'quiet' time (no other presses)
+
 int16_t IO::separate( int16_t code ) {
   if ( code > 0 ) {
     int16_t addr = abs( code );
     if ( profile[addr].separate_millis != 0 ) {
-      if ( millis() - last_press >= profile[addr].separate_millis ) {
+      if ( millis() - last_press < profile[addr].separate_millis ) {
         return 0;
       }      
     }    

@@ -87,19 +87,19 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
   return group_def;
 }
 
-Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us ) {
+Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks  ) {
   if ( n > numOfSwitches ) {
     int16_t p = group_def[n - numOfSwitches - 1];
     while ( group_def[p] != -1 ) {
       if ( callback_trace ) 
-        stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", group_def[p], press_100us, release_100us, throttle_100us );
-      io->debounce( group_def[p], press_100us, release_100us, throttle_100us );  
+        stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d, %d );\n", group_def[p], press_ticks, release_ticks, throttle_ticks, separate_ticks );
+      io->debounce( group_def[p], press_ticks, release_ticks, throttle_ticks, separate_ticks );  
       p++;
     }
   } else {
     if ( callback_trace ) 
-      stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d );\n", n, press_100us, release_100us, throttle_100us );
-    io->debounce( n, press_100us, release_100us, throttle_100us );        
+      stream_trace->printf( "Atm_switch_matrix::profile( %d, %d, %d, %d, %d );\n", n, press_ticks, release_ticks, throttle_ticks, separate_ticks );
+    io->debounce( n, press_ticks, release_ticks, throttle_ticks, separate_ticks );        
   }
   return *this;
 }
@@ -109,11 +109,12 @@ Atm_switch_matrix& Atm_switch_matrix::readProfiles(  char label, const int16_t* 
   while ( p[0] != -1 ) {
     int16_t ptype = *p++;
     if ( ptype == label ) {
-      int16_t press_100us = *p++;
-      int16_t release_100us = *p++;
-      int16_t throttle_100us = *p++;
+      int16_t press_ticks = *p++;
+      int16_t release_ticks = *p++;
+      int16_t throttle_ticks = *p++;
+      int16_t separate_ticks = *p++;
       while ( p[0] != -1 ) {
-        profile( *p++, press_100us, release_100us, throttle_100us );  
+        profile( *p++, press_ticks, release_ticks, throttle_ticks, separate_ticks );  
       }
     } else {
       while ( *p != -1 ) p++;

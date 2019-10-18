@@ -43,6 +43,7 @@ class IO {
     uint32_t press_micros; // press must be stable for this period to register (if not: unscan event)
     uint32_t release_micros; // minimum wait period after registered press for a break (if not: unscan event)
     uint32_t throttle_millis; // after a registered press/release wait this long before allowing a new press/release
+    uint32_t separate_millis; // don't allow this event too soon after another
   };
  
   protected:
@@ -80,7 +81,8 @@ class IO {
     uint16_t decimal_encode( uint8_t row, uint8_t col, uint8_t bus );    
     IO& select( int row, bool latch = false );
     switch_record profile[NUM_IOPORTS * MATRIX_NODES * MATRIX_SWITCHES + 1];
-
+    uint32_t last_press;
+    
   public:
     IO& begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate );
     IO& range( uint8_t row_max, uint8_t col_max ); // obsolete?
@@ -97,6 +99,7 @@ class IO {
     int16_t scan_raw(); 
     int16_t debounce( int16_t code );
     int16_t throttle( int16_t code );
+    int16_t separate( int16_t code );
     int16_t scan( void );
     IO& subscribe( void );
     IO& unsubscribe( void );
@@ -104,7 +107,7 @@ class IO {
     IO& retrigger(); // Makes all buttons in a pressed state trigger a keypress event
     IO& invert( uint8_t code );
     IO& invert( uint8_t c1, uint8_t c2, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0 );
-    IO& debounce( int16_t n, uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
-    IO& debounce( uint16_t press_100us, uint16_t release_100us, uint16_t throttle_100us );
+    IO& debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks );
+    IO& debounce( uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks );
 
 };

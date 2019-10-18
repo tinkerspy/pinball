@@ -29,7 +29,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
   IOWRITE( pin_clock, LOW );  
   switchMap( 8, 8, 8, 8, 8 );
   readMatrix( MATRIX_NODES, MATRIX_SWITCHES, true );
-  debounce( 0, 0, 0 );
+  debounce( 0, 0, 0,  0 );
   select( 0 );
   node_ptr = 0;
   switch_ptr = 0;
@@ -397,25 +397,39 @@ int16_t IO::throttle( int16_t code ) {
   return 0;
 }
 
+int16_t IO::separate( int16_t code ) {
+  if ( code > 0 ) {
+    int16_t addr = abs( code );
+    if ( profile[addr].separate_millis != 0 ) {
+      if ( millis() - last_press >= profile[addr].separate_millis ) {
+        return 0;
+      }      
+    }    
+    last_press = millis();
+  }
+  return code;
+}
+
 int16_t IO::scan( void ) { 
-  return throttle( debounce( scan_raw() ) );
+  return separate( throttle( debounce( scan_raw() ) ) );
 }
 
 // Test edge case: laatste switch!
-IO& IO::debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks ) {
+IO& IO::debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks ) {
   if ( n > 0 && n <= numberOfSwitches() ) {
     profile[n].press_micros = press_ticks * IO_TICK_MS;
     profile[n].release_micros = release_ticks * IO_TICK_MS;
     profile[n].throttle_millis = throttle_ticks / 10;
+    profile[n].separate_millis = separate_ticks / 10;
     profile[n].throttle_state = 0;
     profile[n].state = 0;
   }
   return *this;  
 }
 
-IO& IO::debounce( uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks ) {
+IO& IO::debounce( uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks ) {
   for ( int16_t i = 0; i < this->numberOfSwitches(); i++ ) {
-    debounce( i + 1, press_ticks, release_ticks, throttle_ticks );
+    debounce( i + 1, press_ticks, release_ticks, throttle_ticks, separate_ticks );
   }
   return *this;  
 }

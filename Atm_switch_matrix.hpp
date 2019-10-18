@@ -39,7 +39,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   bool ready();
   Atm_device& device( int16_t n, int16_t led_group = -1, int16_t* device_script = NULL,
         int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
-  Atm_switch_matrix& profile( int16_t n, int16_t press_100us, int16_t release_100us, int16_t throttle_100us );
+  Atm_switch_matrix& profile( int16_t n, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks );
   Atm_switch_matrix& readProfiles( char label, const int16_t* profile_def );
   Atm_led_matrix* leds( void );
   int16_t numberOfGroups( void );

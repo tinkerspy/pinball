@@ -54,14 +54,14 @@ IN_GAME_INIT,
 'T', -1, -1, OUT_GAME_PLAYER_ADV,
 'R', -1, -1, REG_GAME_PLAYER,
 'I', -1, -1, -1,                 // player--
-'>',  0, $$$, 0,                 // Loop $$$
+//'>',  0, $$$, 0,                 // Loop $$$
 
 'T', -1, -1, OUT_GAME_BALL_ADV,
-'R', -1, -1, REG_GAME_BALL
+'R', -1, -1, REG_GAME_BALL,
 'I', -1, -1, -1,                 // ball--
-'>',  0,  0, $$,                 // Loop $$
-'J', -1, -1, $,
--1,
+//'>',  0,  0, $$,                 // Loop $$
+//'J', -1, -1, $,
+-1 };
 
 /*
         

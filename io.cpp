@@ -403,13 +403,12 @@ int16_t IO::throttle( int16_t code ) {
 
 int16_t IO::separate( int16_t code ) {
   if ( code > 0 ) {
-    int16_t addr = abs( code );
-    if ( profile[addr].separate_millis != 0 ) {
-      if ( millis() - last_press < profile[addr].separate_millis ) {
+    if ( profile[code].separate_millis != 0 ) {
+      if ( millis() - last_press < profile[code].separate_millis ) {
         return 0;
       }      
+      last_press = millis();
     }    
-    last_press = millis();
   }
   return code;
 }
@@ -418,7 +417,6 @@ int16_t IO::scan( void ) {
   return separate( throttle( debounce( scan_raw() ) ) );
 }
 
-// Test edge case: laatste switch!
 IO& IO::debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks ) {
   if ( n > 0 && n <= numberOfSwitches() ) {
     profile[n].press_micros = press_ticks * IO_TICK_MS;

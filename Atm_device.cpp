@@ -231,14 +231,18 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
-          case 'A': // JmpLA
-            selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            if ( selected_action  > -1 ) {
+          case 'A': // JmpLA jump absolute on register equal
+            selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
+            if ( selected_action  != -1 ) {
               core[active_core].ptr = script[selected_action];          
-            }
+            } else {
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }            
             break;
           case '=': // JmpRE
-            selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
+            selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
@@ -248,7 +252,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             }            
             break;
           case '<': // JmpRL
-            selected_action = ( registers[core[active_core].reg_ptr] < selector ) ? action_t : action_f;
+            selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] < selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
@@ -258,7 +262,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             }            
             break;
           case '>': // JmpRG
-            selected_action = ( registers[core[active_core].reg_ptr] > selector ) ? action_t : action_f;
+            selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] > selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
@@ -321,7 +325,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             registers[selected_action] = registers[core[active_core].reg_ptr];
             break;
           case 'T': // Trig
-            selected_action = ( registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
+            selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action > -1 ) {
                 trigger_flags |= ( 1 << selected_action );
             } 

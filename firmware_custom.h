@@ -11,10 +11,11 @@
 
 namespace custom_firmware {
 
-enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, IN_GAME_RESET_DONE, IN_GAME_PF_DONE }; 
+enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, IN_GAME_RESET_DONE, IN_GAME_PF_DONE, 
+        SUB_GAME_WAIT_PLAYERS, SUB_GAME_WAIT_RESET, SUB_GAME_BALL_LOOP, SUB_GAME_PLAYER_LOOP, SUB_GAME_CORE, SUB_GAME_WAIT_PLAYING, SUB_GAME_WAIT_COLLECTING }; 
 enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
         OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, OUT_GAME_PLAYERS_FIX, OUT_GAME_OVER };
-enum { ARG_GAME_ENABLED, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, ARG_GAME_COUNTER2, ARG_GAME_COUNTER3 };
+enum { ARG_GAME_ENABLED, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, ARG_GAME_COUNTER2, ARG_GAME_COUNTER3, ARG_GAME_COLLECTING, ARG_GAME_AGAIN };
 enum { REG_GAME_STATE, REG_GAME_NOPLAYERS, REG_GAME_NOBALLS, REG_GAME_BALL, REG_GAME_PLAYER };
 
 int16_t game_firmware[] = {
@@ -28,40 +29,78 @@ IN_GAME_PRESS,
 IN_GAME_INIT,
 'R', -1, -1, REG_GAME_NOBALLS,
 'Z', -1, -1, 3,
-
 'T', -1, -1, OUT_GAME_OVER,      // $
+'S', -1, -1, SUB_GAME_WAIT_PLAYERS,
+'T', -1, -1, OUT_GAME_INIT,
+'T', -1, -1, OUT_GAME_PLAYERS_ZERO,
+'T', -1, -1, OUT_GAME_BALL_ZERO,
+'T', -1, -1, OUT_GAME_COUNTER_RESET,
+'S', -1, -1, SUB_GAME_WAIT_RESET,
+'R', -1, -1, REG_GAME_NOBALLS,   
+'D', -1, -1, REG_GAME_BALL,      // ball = noballs
+'S', -1, -1, SUB_GAME_BALL_LOOP,
+'A', -1, -1, IN_GAME_INIT,
+-1,
+SUB_GAME_BALL_LOOP,
+'R', -1, -1, REG_GAME_NOPLAYERS, // $$
+'D', -1, -1, REG_GAME_PLAYER,    // player = noplayers
+'S', -1, -1, SUB_GAME_PLAYER_LOOP,
+'T', -1, -1, OUT_GAME_BALL_ADV,
+'R', -1, -1, REG_GAME_BALL,
+'I', -1, -1, -1,                 // ball--
+'A',  0, -1, SUB_GAME_BALL_LOOP,
+-1,
+
+SUB_GAME_PLAYER_LOOP,
+'S', -1, -1, SUB_GAME_CORE,
+'J', ARG_GAME_AGAIN, -2, 0,
+'T', -1, -1, OUT_GAME_PLAYER_ADV,
+'R', -1, -1, REG_GAME_PLAYER,
+'I', -1, -1, -1,                 // player--
+'A',  0, -1, SUB_GAME_PLAYER_LOOP, // } while ( player > 0 );
+-1,
+
+SUB_GAME_CORE,
+'Y', -1, -1, 500,               
+'R', -1, -1, REG_GAME_BALL,
+'T',  1,  OUT_GAME_3BONUS, -1,
+'T', -1, -1, OUT_GAME_KICKOFF,
+'Y', -1, -1, 100,               
+'T', -1, -1, OUT_GAME_INIT,
+'S', -1, -1, SUB_GAME_WAIT_PLAYING,
+'Y', -1, -1, 100,               
+'T', -1, -1, OUT_GAME_COLLECT,
+'Y', -1, -1, 100,               
+'S', -1, -1, SUB_GAME_WAIT_COLLECTING,
+'Y', -1, -1, 100,               
+'T', -1, -1, OUT_GAME_PLAYERS_FIX,
+-1,
+
+SUB_GAME_WAIT_PLAYERS,
 'R', -1, -1, REG_GAME_NOPLAYERS,
 'Y', -1, -1, 10,                 // Wait (busy) until game_players > 0
-'=',  0, -2, 0,
-'T', -1, -1, OUT_GAME_INIT,
-'T', -1, -1, OUT_GAME_COUNTER_RESET,
-'T', -1, -1, OUT_GAME_PLAYERS_ZERO,
+'A',  0, SUB_GAME_WAIT_PLAYERS, -1,
+-1,
+
+SUB_GAME_WAIT_RESET,
 'Y', -1, -1, 100,                // Wait (busy) until counter reset finishes
 'J', ARG_GAME_COUNTER0, -2, 0,
 'J', ARG_GAME_COUNTER1, -3, 0,
 'J', ARG_GAME_COUNTER2, -4, 0,
 'J', ARG_GAME_COUNTER2, -5, 0,
-'R', -1, -1, REG_GAME_NOBALLS,   
-'D', -1, -1, REG_GAME_BALL,      // ball = noballs
+-1,
 
-'R', -1, -1, REG_GAME_NOPLAYERS, // $$
-'D', -1, -1, REG_GAME_PLAYER,    // player = noplayers
+SUB_GAME_WAIT_PLAYING,
+'Y', -1, -1, 100,               
+'J', ARG_GAME_ENABLED, -2, -1,
+-1,
 
-'Y', -1, -1, 500,                // $$$
-'T', -1, -1, OUT_GAME_INIT,
-'Y', -1, -1, 2000,               // placeholder for game
+SUB_GAME_WAIT_COLLECTING,
+'Y', -1, -1, 100,               
+'J', ARG_GAME_COLLECTING, -2, -1,
+-1,
 
-'T', -1, -1, OUT_GAME_PLAYER_ADV,
-'R', -1, -1, REG_GAME_PLAYER,
-'I', -1, -1, -1,                 // player--
-//'>',  0, $$$, 0,                 // Loop $$$
-
-'T', -1, -1, OUT_GAME_BALL_ADV,
-'R', -1, -1, REG_GAME_BALL,
-'I', -1, -1, -1,                 // ball--
-//'>',  0,  0, $$,                 // Loop $$
-//'J', -1, -1, $,
--1 };
+};
 
 /*
         

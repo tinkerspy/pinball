@@ -126,7 +126,7 @@ void setup() {
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
   playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware ).trace( Serial );
   playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );  
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );

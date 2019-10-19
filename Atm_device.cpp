@@ -127,6 +127,7 @@ void Atm_device::action( int id ) {
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() || output_persistence ) {
+            //Serial.printf( "%X Outgoing trigger: %d\n", (long)(this), i );
             push( connectors, ON_EVENT, i, i, 0 );
           }
         }
@@ -408,6 +409,7 @@ Atm_device& Atm_device::trigger( int event ) {
 }
 
 Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
+  //Serial.printf( "%x trigger2 %d\n", (long)(this), event );
   if ( next && sel > 1 ) {
     next->trigger( event, sel >> 1 );
   }

@@ -15,7 +15,8 @@ enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, SUB_GAME_WAIT_PLAYERS, SUB_
          SUB_GAME_BALL_LOOP, SUB_GAME_PLAYER_LOOP, SUB_GAME_CORE, SUB_GAME_WAIT_PLAYING, SUB_GAME_WAIT_COLLECTING }; 
 enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
         OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, OUT_GAME_PLAYERS_FIX, OUT_GAME_OVER };
-enum { ARG_GAME_ENABLED, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, ARG_GAME_COUNTER2, ARG_GAME_COUNTER3, ARG_GAME_COLLECTING, ARG_GAME_AGAIN };
+enum { ARG_GAME_ENABLED, ARG_GAME_COLLECTING, ARG_GAME_AGAIN, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, 
+        ARG_GAME_COUNTER2, ARG_GAME_COUNTER3, ARG_GAME_COUNTER4, ARG_GAME_COUNTER5 };
 enum { REG_GAME_STATE, REG_GAME_NOPLAYERS, REG_GAME_NOBALLS, REG_GAME_BALL, REG_GAME_PLAYER };
 
 int16_t game_firmware[] = {
@@ -38,6 +39,8 @@ int16_t game_firmware[] = {
   -1,
   
   IN_GAME_INIT,
+  '0', -1,  0, -1,                      // Force primary core
+  'P', -1, -1, 1,  // Persistent
   'R', -1, -1, REG_GAME_NOBALLS,
   'Z', -1, -1, 3,
   'T', -1, -1, OUT_GAME_OVER,      // $
@@ -49,6 +52,7 @@ int16_t game_firmware[] = {
   'S', -1, -1, SUB_GAME_WAIT_RESET,
   'R', -1, -1, REG_GAME_NOBALLS,   
   'D', -1, -1, REG_GAME_BALL,      // ball = noballs
+  'T', -1, -1, OUT_GAME_PLAYER_ZERO,
   'S', -1, -1, SUB_GAME_BALL_LOOP,
   'A', -1, -1, IN_GAME_INIT,
   -1,
@@ -82,7 +86,7 @@ int16_t game_firmware[] = {
   'Y', -1, -1, 100,               
   'T', -1, -1, OUT_GAME_KICKOFF,
   'Y', -1, -1, 100,               
-  '!', -1, -1, -1, // FIXME EXIT!!!!
+//  '!', -1, -1, -1, // FIXME EXIT!!!!
   'S', -1, -1, SUB_GAME_WAIT_PLAYING,
   'Y', -1, -1, 100,               
   'T', -1, -1, OUT_GAME_COLLECT,
@@ -94,16 +98,18 @@ int16_t game_firmware[] = {
   
   SUB_GAME_WAIT_PLAYERS,
   'R', -1, -1, REG_GAME_NOPLAYERS,
-  'Y', -1, -1, 10,                 // Wait (busy) until game_players > 0
+  'Y', -1, -1, 10,                 // Wait until game_players > 0
   'A',  0, SUB_GAME_WAIT_PLAYERS, -1,
   -1,
   
   SUB_GAME_WAIT_RESET,
-  'Y', -1, -1, 100,                // Wait (busy) until counter reset finishes
+  'Y', -1, -1, 100,                // Wait until all counter reset leds are off
   'J', ARG_GAME_COUNTER0, -2, 0,
   'J', ARG_GAME_COUNTER1, -3, 0,
   'J', ARG_GAME_COUNTER2, -4, 0,
-  'J', ARG_GAME_COUNTER2, -5, 0,
+  'J', ARG_GAME_COUNTER3, -5, 0,
+  'J', ARG_GAME_COUNTER4, -6, 0,
+  'J', ARG_GAME_COUNTER5, -7, 0,   // Max 6 counters
   -1,
   
   SUB_GAME_WAIT_PLAYING,

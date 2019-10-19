@@ -22,7 +22,7 @@ const int16_t profiles[] = {
 /* DEFAULT SWITCH */   'S',    200,    0,     0,   0,  SWITCHES, -1,
 /* MULTILANE      */   'S',    200,  200,     0,   0,  MULTILANE, -1, 
 /* SLINGSHOTS     */   'S',      5,    0,  2000,   0,  SLING_L, SLING_R, -1, 
-/* BUMPERS        */   'S',     10,    0,  2000,   0,  BUMPER_A, BUMPER_B, BUMPER_C, -1, 
+/* BUMPERS        */   'S',      0,    0,  2000,   0,  BUMPER_A, BUMPER_B, BUMPER_C, -1, 
 /* FLIPPERS       */   'S',      0,   10,     0,   0,  FLIPPER, -1,
 /* COUNTERS       */   'S',      0,  200,     0,   0,  COUNTER, COUNTER1, COUNTER2, COUNTER3, -1,
 /* ROLLOVERS      */   'S',      5,    0,  5000,   0,  PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, UPLANE_L,  

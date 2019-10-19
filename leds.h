@@ -124,6 +124,7 @@ enum {
 /* 120 */ LED_PLAYERUP_GRP,
 /* 121 */ LED_BALLUP_GRP,
 /* 122 */ LED_PLAYERS_GRP,
+/* 123 */ LED_GAME_GRP,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) 
@@ -152,6 +153,7 @@ int16_t led_groups[] = {
 /* 120 */ LED_PLAYERUP_GRP,
 /* 121 */ LED_BALLUP_GRP,
 /* 122 */ LED_PLAYERS_GRP,
+/* 123 */ LED_GAME_GRP,
   -1,
   
   LED_KICKER_GRP, 
@@ -211,5 +213,8 @@ int16_t led_groups[] = {
     LED_UP1, LED_UP2, LED_UP3, LED_UP4, LED_UP4, LED_UP4, -1,
   LED_BALLUP_GRP,
     LED_BALL1, LED_BALL2, LED_BALL3, LED_BALL4, LED_BALL5, LED_BALL5, -1,  
+  LED_GAME_GRP,
+    LED_EXTRA, VLED_COUNTER0, VLED_COUNTER1, VLED_COUNTER2, VLED_COUNTER3, VLED_COLLECTING, LED_AGAIN0, -1,
+  
   -1, 
 };

@@ -196,6 +196,7 @@ void Atm_device::led_off( int16_t led_group, int16_t selector ) {
 }
 
 void Atm_device::start_code( int16_t e ) {
+  //Serial.printf( "%d %X Start code %d\n", millis(), (long)(this), e );
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
     uint8_t active_core = core[0].ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
     core[active_core].reg_ptr = 0;
@@ -203,7 +204,7 @@ void Atm_device::start_code( int16_t e ) {
     core[active_core].ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( callback_trace ) 
-      stream_trace->printf( "run_code event %03d called -> %d%03d\n", e, active_core, core[active_core].ptr );
+      stream_trace->printf( "run_code event %03d called for %X -> %d%03d\n", e, (long)(this), active_core, core[active_core].ptr );
     xctr++;
     run_code( active_core );      
   }
@@ -299,6 +300,10 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;            
+          case '!': // Stop script!
+            core[active_core].stack_ptr = 0;
+            core[active_core].ptr = 0;
+            break;
           case 'H': // LedOn
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             led_on( led_group, selected_action );
@@ -486,7 +491,7 @@ Atm_device& Atm_device::onEvent( int sub, int sw, int event ) {
 
 Atm_device& Atm_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "LED_DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
+    "DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );
   Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
 }

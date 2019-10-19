@@ -120,7 +120,8 @@ void setup() {
     .onEvent( OUT_SBANK_SCORE4, COUNTER, IN_CTR_PT1000 )         // 4 OUTLANE
     .onEvent( OUT_SBANK_PRESS5, playfield, playfield.EVT_READY ) // 5 BALL_EXIT
     .onEvent( OUT_SBANK_PRESS6, DUAL_TARGET, IN_TARGET_CLEAR )   // 6 BALL_ENTER 
-    .onEvent( OUT_SBANK_PRESS7, PLAYERS, IN_SCALAR_ADVANCE );    // 7 FRONTBTN
+//    .onEvent( OUT_SBANK_PRESS7, PLAYERS, IN_SCALAR_ADVANCE );    // 7 FRONTBTN
+    ;
 
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
@@ -137,17 +138,16 @@ void setup() {
   Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
   
-  playfield.disable();     
+//  playfield.disable();     
 
-/*
-  // FRONTBTN, LED_PLAYERS_GRP, AGAIN0, VLED_COUNTER0, VLED_COUNTER1, VLED_COUNTER2, VLED_COUNTER3, EXTRA_LED, VLED_COLLECTING
-  playfield.device( GAME, LED_GAME_GRP, game_firmware )
+  playfield.device( FRONTBTN ).trace( Serial );
+  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware )
     .onEvent( OUT_GAME_INIT, playfield, playfield.EVT_INIT )
     .onEvent( OUT_GAME_ENABLE, playfield, playfield.EVT_ENABLE )
-    .onEvent( OUT_GAME_RESET, COUNTER, IN_CTR_RESET )
+    .onEvent( OUT_GAME_COUNTER_RESET, COUNTER, IN_CTR_RESET )
     .onEvent( OUT_GAME_PLAYERS_ZERO, PLAYERS, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_BALL_ZERO, BALLUP, IN_SCALAR_ZERO )
-    .onEvent( OUT_GAME_PLAYER_ZERO, PLAYERUP, IN_SCALAR )
+    .onEvent( OUT_GAME_PLAYER_ZERO, PLAYERUP, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_BALL_ADV, BALLUP, IN_SCALAR_ADVANCE )
     .onEvent( OUT_GAME_PLAYER_ADV, PLAYERUP, IN_SCALAR_ADVANCE )
     .onEvent( OUT_GAME_3BONUS, OXO, IN_OXO_TRIPLE )
@@ -156,15 +156,11 @@ void setup() {
     .onEvent( OUT_GAME_PLAYERS_FIX, PLAYERS, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
 
-    //FRONTBTN => INIT GAME
-    //BALL EXIT => AFTER BALL
-    
-*/    
-
 }
 
 void loop() {
   automaton.run(); 
+  /*
   if ( playfield.isPressed( FRONTBTN ) ) {
     playfield.trigger( playfield.EVT_INIT );    
     playfield.device( COUNTER ).trigger( IN_CTR_RESET );
@@ -192,4 +188,5 @@ void loop() {
     } 
     playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
   }
+  */
 }

@@ -11,21 +11,23 @@
 
 namespace custom_firmware {
 
-enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, SUB_GAME_WAIT_PLAYERS, SUB_GAME_WAIT_RESET, 
+enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, SUB_GAME_WAIT_PLAYERS, SUB_GAME_WAIT_RESET, SUB_GAME_LOOP,
          SUB_GAME_BALL_LOOP, SUB_GAME_PLAYER_LOOP, SUB_GAME_CORE, SUB_GAME_WAIT_PLAYING, SUB_GAME_WAIT_COLLECTING }; 
 enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
         OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, 
-        OUT_GAME_PLAYERS_FIX, OUT_GAME_OVER, OUT_GAME_PLAYERS_ADV };
+        OUT_GAME_OVER, OUT_GAME_PLAYERS_ADV }; 
 enum { ARG_GAME_ENABLED, ARG_GAME_COLLECTING, ARG_GAME_AGAIN, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, 
         ARG_GAME_COUNTER2, ARG_GAME_COUNTER3, ARG_GAME_COUNTER4, ARG_GAME_COUNTER5 };
-enum { REG_GAME_STATE, REG_GAME_MAX_PLAYERS, REG_GAME_NOPLAYERS, REG_GAME_PLAYER, REG_GAME_NOBALLS, REG_GAME_BALL  };
+enum { REG_GAME_STATE, REG_GAME_MAX_PLAYERS, REG_GAME_NO_OF_PLAYERS, REG_GAME_PLAYER, REG_GAME_NO_OF_BALLS, 
+         REG_GAME_BALL, REG_GAME_BALL_CNTR };
 
 int16_t game_firmware[] = {
   IN_GAME_INIT, 
   IN_GAME_PRESS, 
   IN_GAME_RELEASE, 
   SUB_GAME_WAIT_PLAYERS, 
-  SUB_GAME_WAIT_RESET, 
+  SUB_GAME_WAIT_RESET,
+  SUB_GAME_LOOP, 
   SUB_GAME_BALL_LOOP, 
   SUB_GAME_PLAYER_LOOP, 
   SUB_GAME_CORE,
@@ -34,38 +36,75 @@ int16_t game_firmware[] = {
   -1,
           
   IN_GAME_PRESS,
-  'R', -1, -1,  REG_GAME_NOPLAYERS,
-  'T', -1, -1,  OUT_GAME_PLAYERS_ADV,
-  'I', -1, -1,  1,
+  'R', -1, -1, REG_GAME_BALL_CNTR,
+  '>',  0, -1, 0,
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 6 && max == 6 ) exit
+  '=',  6,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  6, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 5 && max == 5 ) exit
+  '=',  5,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  5, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 4 && max == 4 ) exit
+  '=',  4,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  4, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 3 && max == 3 ) exit
+  '=',  3,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  3, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 2 && max == 2 ) exit
+  '=',  2,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  2, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 1 && max == 1 ) exit
+  '=',  1,  0, 2, 
+  'R', -1, -1, REG_GAME_MAX_PLAYERS,
+  '=',  1, -1, 0,   
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // no++
+  'T', -1, -1, OUT_GAME_PLAYERS_ADV,
+  'I', -1, -1, 1,
   //'U', -1, -1, -1,
   -1,
-  
+
   IN_GAME_INIT,
-  '0', -1,  0, -1,                      // Force primary core
+  '0', -1,  0, -1, // Force primary core
   'P', -1, -1, 1,  // Persistent
-  'T', -1, -1, OUT_GAME_INIT, // Only on first run?
+  'T', -1, -1, OUT_GAME_INIT, 
   'Y', -1, -1, 100,
-  'R', -1, -1, REG_GAME_NOBALLS,
-  'Z', -1, -1, 3,
-  'R', -1, -1, REG_GAME_NOPLAYERS,
+  'R', -1, -1, 0,
+  'D', -1, -1, REG_GAME_NO_OF_BALLS,  // Set NO_OF_BALLS from first constructor arg
+  'R', -1, -1, 1,
+  'D', -1, -1, REG_GAME_MAX_PLAYERS, // Set MAX_PLAYERS from second constructor arg
+  'R', -1, -1, 0,
   'Z', -1, -1, 0,
-  'T', -1, -1, OUT_GAME_OVER,      // $
+  'A', -1, -1, SUB_GAME_LOOP,
+  -1,
+
+  SUB_GAME_LOOP,  
+  'T', -1, -1, OUT_GAME_OVER,      
+  'R', -1, -1, REG_GAME_BALL_CNTR,
+  'Z', -1, -1, 0, 
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS,
+  'Z', -1, -1, 0,
   'S', -1, -1, SUB_GAME_WAIT_PLAYERS,
+  'Y', -1, -1, 100,
   'T', -1, -1, OUT_GAME_INIT,
   'T', -1, -1, OUT_GAME_PLAYERS_ZERO,
   'T', -1, -1, OUT_GAME_BALL_ZERO,
   'T', -1, -1, OUT_GAME_COUNTER_RESET,
   'S', -1, -1, SUB_GAME_WAIT_RESET,
-  'R', -1, -1, REG_GAME_NOBALLS,   
-  'D', -1, -1, REG_GAME_BALL,      // ball = noballs
+  'R', -1, -1, REG_GAME_NO_OF_BALLS,   
+  'D', -1, -1, REG_GAME_BALL,      // ball = no_of_balls
   'T', -1, -1, OUT_GAME_PLAYER_ZERO,
   'S', -1, -1, SUB_GAME_BALL_LOOP,
-  'A', -1, -1, IN_GAME_INIT,
+  'A', -1, -1, SUB_GAME_LOOP,
   -1,
   
   SUB_GAME_BALL_LOOP,
-  'R', -1, -1, REG_GAME_NOPLAYERS, // $$
-  'D', -1, -1, REG_GAME_PLAYER,    // player = noplayers
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, 
+  'D', -1, -1, REG_GAME_PLAYER,    // player = no_of_players
   'T', -1, -1, OUT_GAME_PLAYER_ZERO,
   'Y', -1, -1, 10,
   'S', -1, -1, SUB_GAME_PLAYER_LOOP,
@@ -79,7 +118,6 @@ int16_t game_firmware[] = {
   
   SUB_GAME_PLAYER_LOOP,
   'S', -1, -1, SUB_GAME_CORE,
-//  '!', -1, -1, -1, // FIXME EXIT!!!!
   'J', ARG_GAME_AGAIN, -2, 0,
   'R', -1, -1, REG_GAME_PLAYER,
   'I', -1, -1, -1,                 // player--
@@ -104,11 +142,15 @@ int16_t game_firmware[] = {
   'Y', -1, -1, 100,               
   'S', -1, -1, SUB_GAME_WAIT_COLLECTING,
   'Y', -1, -1, 100,               
-  'T', -1, -1, OUT_GAME_PLAYERS_FIX,
+  'R', -1, -1, REG_GAME_BALL_CNTR,     // Freeze the player add button
+  'I', -1, -1, 1,                          
+  '=',  1,  0, -1,                     // At the end of the 1st ball of the 1st player:
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // Initialize player register 
+  'D', -1, -1, REG_GAME_PLAYER,
   -1,
   
   SUB_GAME_WAIT_PLAYERS,
-  'R', -1, -1, REG_GAME_NOPLAYERS,
+  'R', -1, -1, REG_GAME_NO_OF_PLAYERS,
   'Y', -1, -1, 10,                 // Wait until game_players > 0
   'A',  0, SUB_GAME_WAIT_PLAYERS, -1,
   -1,
@@ -135,47 +177,6 @@ int16_t game_firmware[] = {
 
 -1,
 };
-
-/*
-        
-100 trigger GAME_OVER
-102 while ( !switch( FRONTBTN ) 
-105   wait 0
-110 wend
-120 trigger INIT
-130 trigger RESET
-140 trigger PLAYERS_ZERO
-150 while ( led( COUNTER0 ) or led( COUNTER1 ) or led( COUNTER2 ) or led( COUNTER3 )
-155   wait 0
-160 wend
-170 for BALL = 0 to NUMBER_OF_BALLS -1 
-170   for PLAYER = 0 to NUMBER_OF_PLAYERS -1 ` Dit moet anders 
-180     delay 500
-190     trigger INIT
-200     trigger PLAYERUP_ADVANCE
-210     trigger BALLUP_ADVANCE
-220     if ( BALL = NUMBER_OF_BALLS -1 ) then trigger TRIPLE_BONUS
-230     trigger FEEDER
-240     delay 500
-245     trigger PLAYFIELD_ENABLE
-247     delay 100
-250     while ( led( LED_EXTRA ) ) 
-260       wait 0
-270     wend
-280     trigger BONUS_COLLECT
-285     delay 100
-290     while ( led( VLED_COLLECTING ) ) 
-300       wait 0
-310     wend
-320     delay 500
-330     trigger PLAYERS_FIX
-340     if ( led( again) ) then GOTO 180
-350   next
-360 next
-380 goto 100
-*/
-
-
 
 enum { IN_ANI_INIT, IN_ANI_CYCLE };
 enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 

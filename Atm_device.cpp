@@ -275,7 +275,7 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
-          case '0':  // Prim
+          case '0':  // Prim (perhaps use 'Y', -1, -1, -1 for this: negative yield terminates thread on secondary core)
             selected_action = ( active_core == 0 ? action_t : action_f );
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
@@ -346,20 +346,22 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
+            if ( callback_trace ) 
+              stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
           case 'Y': // Yield (negative value uses register!)
+            selected_action = led_active( led_group, selector ) ? action_t : action_f;
+            selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
             if ( core[active_core].yield_enabled ) {
-              selected_action = led_active( led_group, selector ) ? action_t : action_f;
-              selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
-              timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
-              sleep( 0 );
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
+              if ( selected_action >= 0 ) { // negative values have no yield effect but do trip the core check
+                timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
+                sleep( 0 );
+                if ( callback_trace ) 
+                  stream_trace->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
+              }
             } else {
               if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: FATAL error: secondary core cannot yield at %d\n", active_core, core[active_core].ptr - 4 );
+                stream_trace->printf( "run_code %d:%03d: FATAL: secondary core cannot yield at %d, terminating thread\n", active_core, core[active_core].ptr - 4 );
               return;
             }
             return;           

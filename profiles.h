@@ -29,7 +29,7 @@ const int16_t profiles[] = {
                                                        UPLANE_R, OUTLANE, INLANE_L, INLANE_R, BALL_ENTER, -1, 
 /* ROLLOVER CENTER*/   'S',      1,    0,  5000,   0,  ROLLOVER, -1,
 /* TARGETS        */   'S',      2,    0,     0,   0,  TARGET_A, TARGET_B, TARGET_C, -1,
-/* BALL_EXIT      */   'S',      0,   50,  5000,   0,  BALL_EXIT, -1,
+/* BALL_EXIT      */   'S',     50,    0,  5000,   0,  BALL_EXIT, -1,
 /* BALL_ENTER     */   'S',    200,    0,     0,   0,  BALL_ENTER, -1,
 /* FRONTBTN       */   'S',      0,   50,  5000,   0,  FRONTBTN, -1,
 -1,  

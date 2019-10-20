@@ -126,7 +126,7 @@ void setup() {
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
   playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
   playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware ).trace( Serial );
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
   playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );  
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
@@ -140,12 +140,12 @@ void setup() {
   
 //  playfield.disable();     
 
-  playfield.device( FRONTBTN ).trace( Serial );
+  playfield.device( PLAYERS ).trace( Serial );
+//  playfield.device( FRONTBTN ).trace( Serial );
   playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware )
     .onEvent( OUT_GAME_INIT, playfield, playfield.EVT_INIT )
     .onEvent( OUT_GAME_ENABLE, playfield, playfield.EVT_ENABLE )
     .onEvent( OUT_GAME_COUNTER_RESET, COUNTER, IN_CTR_RESET )
-    .onEvent( OUT_GAME_PLAYERS_ZERO, PLAYERS, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_BALL_ZERO, BALLUP, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_PLAYER_ZERO, PLAYERUP, IN_SCALAR_ZERO )
     .onEvent( OUT_GAME_BALL_ADV, BALLUP, IN_SCALAR_ADVANCE )
@@ -153,40 +153,13 @@ void setup() {
     .onEvent( OUT_GAME_3BONUS, OXO, IN_OXO_TRIPLE )
     .onEvent( OUT_GAME_COLLECT, OXO, IN_OXO_COLLECT )
     .onEvent( OUT_GAME_KICKOFF, FEEDER, IN_LBANK_ON )
-    .onEvent( OUT_GAME_PLAYERS_FIX, PLAYERS, IN_SCALAR_ZERO )
+    .onEvent( OUT_GAME_PLAYERS_ZERO, PLAYERS, IN_SCALAR_ZERO )
+    .onEvent( OUT_GAME_PLAYERS_FIX, PLAYERS, IN_SCALAR_FREEZE )
+    .onEvent( OUT_GAME_PLAYERS_ADV, PLAYERS, IN_SCALAR_ADVANCE )
     .onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
 
 }
 
 void loop() {
   automaton.run(); 
-  /*
-  if ( playfield.isPressed( FRONTBTN ) ) {
-    playfield.trigger( playfield.EVT_INIT );    
-    playfield.device( COUNTER ).trigger( IN_CTR_RESET );
-    playfield.device( PLAYERS ).trigger( IN_SCALAR_ZERO );
-    while ( playfield.device( COUNTER ).state() ) automaton.run();
-    automaton.delay( 500 );
-    for ( int ball = 0; ball < NUMBER_OF_BALLS; ball++ ) {      
-      for ( int player = 0; player < playfield.device( PLAYERS ).state( 1 ) + 1; player++ ) {
-        do {
-          //automaton.delay( 500 ); // replaces the other two
-          playfield.trigger( playfield.EVT_INIT );
-          playfield.device( BALLUP ).trigger( IN_SCALAR_SEL0 + ball );
-          playfield.device( PLAYERUP ).trigger( IN_SCALAR_SEL0 + player );
-          playfield.device( OXO ).trigger( ball == NUMBER_OF_BALLS - 1 ? IN_OXO_TRIPLE : IN_OXO_SINGLE );
-          playfield.device( FEEDER ).trigger( IN_LBANK_ON );
-          automaton.delay( 500 ); 
-          playfield.trigger( playfield.EVT_ENABLE );
-          while ( playfield.enabled() ) automaton.run();            
-          playfield.device( OXO ).trigger( IN_OXO_COLLECT );
-          while ( playfield.device( OXO ).state() ) automaton.run(); 
-          automaton.delay( 500 );
-          playfield.device( PLAYERS ).trigger( IN_SCALAR_FREEZE );
-        } while ( playfield.device( AGAIN ).state() ); 
-      } 
-    } 
-    playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
-  }
-  */
 }

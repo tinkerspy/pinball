@@ -234,6 +234,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             }            
             break;
           case 'A': // JmpLA jump absolute on register equal
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr = script[selected_action];          
@@ -344,6 +346,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
+              if ( callback_trace ) 
+                stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
           case 'Y': // Yield (negative value uses register!)
             if ( core[active_core].yield_enabled ) {

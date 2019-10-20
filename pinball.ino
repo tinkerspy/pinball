@@ -10,6 +10,7 @@ using namespace standard_firmware;
 using namespace custom_firmware; 
 
 #define NUMBER_OF_BALLS 3
+#define NUMBER_OF_PLAYERS 4
 
 IO io;
 Atm_led_matrix leds; 
@@ -135,14 +136,8 @@ void setup() {
   
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   playfield.device( GAME_OVER ).trigger( IN_LBANK_ON );
-  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n", 
-        (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
   
-//  playfield.disable();     
-
-  playfield.device( PLAYERS ).trace( Serial );
-//  playfield.device( FRONTBTN ).trace( Serial );
-  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware )
+  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS )
     .onEvent( OUT_GAME_INIT, playfield, playfield.EVT_INIT )
     .onEvent( OUT_GAME_ENABLE, playfield, playfield.EVT_ENABLE )
     .onEvent( OUT_GAME_COUNTER_RESET, COUNTER, IN_CTR_RESET )
@@ -158,6 +153,9 @@ void setup() {
     .onEvent( OUT_GAME_PLAYERS_ADV, PLAYERS, IN_SCALAR_ADVANCE )
     .onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
 
+  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n", 
+        (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
+  
 }
 
 void loop() {

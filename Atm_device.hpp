@@ -37,6 +37,8 @@ class Atm_device: public Machine {
           int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
+  Atm_device& label( const char l[] );
+  const char* label( void);
   Atm_device& trace( Stream & stream );
   Atm_device& trace( void );
   Atm_device& dump( Stream & stream );
@@ -56,6 +58,7 @@ class Atm_device: public Machine {
   Atm_device& chain( Atm_device& next );
   Atm_device& chain( int16_t sw );
   Atm_device& select( uint32_t mask );
+  const char* dev_label;
   
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;

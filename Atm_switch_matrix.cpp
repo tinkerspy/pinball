@@ -28,6 +28,10 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   return *this;          
 }
 
+int16_t Atm_switch_matrix::exists( int16_t n ) {
+  return prof[n].device_index;
+}
+
 int Atm_switch_matrix::event( int id ) {
   switch ( id ) {
     case EVT_TIMER:

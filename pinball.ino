@@ -48,31 +48,31 @@ void setup() {
 
   //playfield.device( FRONTBTN ).trace( Serial );
 
-  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
-  playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
-  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware );
-  playfield.device( MULTILANE, -1, switchbank_firmware ); 
-  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware );
-  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware );
-  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware );
-  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware );
-  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware );
-  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware );
-  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
-  playfield.device( LOWER, -1, switchbank_firmware ); 
-  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
-  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
-  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
-  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );  
-  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
-  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
-  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
-  playfield.device( GI, COIL_GI, ledbank_firmware, 1 );   // Default ON
-  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
+  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).label( "CHIMES" );
+  playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).label( "COUNTER" );
+  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware ).label( "COUNTER1" );
+  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware ).label( "COUNTER2" );
+  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware ).label( "COUNTER3" );
+  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware ).label( "OXO" );
+  playfield.device( MULTILANE, -1, switchbank_firmware ).label( "MULTILANE" ); 
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware ).label( "BUMPER_A" );
+  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware ).label( "BUMPER_B" );
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware ).label( "BUMPER_C" );
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware ).label( "DUAL_TARGET" );
+  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware ).label( "KICKER" );
+  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware ).label( "UPLANE" );
+  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware ).label( "SLINGSHOT" );
+  playfield.device( LOWER, -1, switchbank_firmware ).label( "LOWER" ); 
+  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware ).label( "FLIPPER" );    
+  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware ).label( "AGAIN" );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware ).label( "SAVE_GATE" );
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware ).label( "FEEDER" );
+  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).label( "GAME_OVER" );  
+  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware ).label( "PLAYERS" );
+  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware ).label( "PLAYERUP" );
+  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware ).label( "BALLUP" );
+  playfield.device( GI, COIL_GI, ledbank_firmware, 1 ).label( "GI" );   // Default ON
+  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).label( "GAME" );
 
   Serial.println( "chain devices" ); delay( 100 );
 
@@ -159,9 +159,24 @@ void setup() {
 
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   
-  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n", 
+  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
-  
+
+  uint8_t map[32];
+  uint8_t cnt = 0;
+  memset( map, 0, sizeof( map ) );
+  for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
+    if ( playfield.exists( n + 1 ) == 1 ) {
+      Atm_device* dev = &playfield.device( n + 1 );
+      uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
+      if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
+        Serial.printf( "%02d %s %02d%c %s\n", cnt, 
+          dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
+        map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
+        cnt++;
+      }
+    }     
+  }
 }
 
 void loop() {

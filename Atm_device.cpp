@@ -45,6 +45,15 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   return *this;          
 }
 
+Atm_device& Atm_device::label( const char l[] ) {
+  this->dev_label = l;
+  return *this;
+}
+
+const char* Atm_device::label( void) {
+  return this->dev_label;
+}
+
 Atm_device& Atm_device::set_script( int16_t* script ) {
   this->script = script;
   parse_code( this->script );

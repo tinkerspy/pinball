@@ -31,6 +31,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
   Atm_switch_matrix& trigger( int event );
+  int16_t exists( int16_t n );
   int state( void );
   bool isPressed( int16_t n );
   Atm_switch_matrix& disable();

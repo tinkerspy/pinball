@@ -16,10 +16,60 @@ IO io;
 Atm_led_matrix leds; 
 Atm_switch_matrix playfield;
 
+char cmd_buffer[80];
+Atm_command cmd;
+
+enum { CMD_LS, CMD_STAT, CMD_TS };
+const char cmdlist[] = 
+  "ls stat ts";
+
+
+void list_devs() {
+  uint8_t map[32];
+  uint8_t cnt = 0;
+  memset( map, 0, sizeof( map ) );
+  for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
+    if ( playfield.exists( n + 1 ) == 1 ) {
+      Atm_device* dev = &playfield.device( n + 1 );
+      uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
+      if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
+        Serial.printf( "%02d %s %02d%c %s\n", cnt, 
+          dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
+        map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
+        cnt++;
+      }
+    }     
+  }
+  Serial.println();
+}
+
+void cmd_callback( int idx, int v, int up ) {
+  switch ( v ) {
+    case CMD_LS: 
+      list_devs();      
+      return;
+    case CMD_STAT:
+      Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
+      Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
+      Serial.printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
+      Serial.printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
+      Serial.println();
+      return;
+    case CMD_TS:
+      playfield.traceSwitches( Serial, atoi( cmd.arg( 1 ) ) );
+      Serial.printf( "Switch trace: %d\n", atoi( cmd.arg( 1 ) ) );
+      return;    
+  }
+}
+
 void setup() {
   delay( 1000 );
   Serial.println( "Singularity framework\ninit IO" );
   delay( 100 );
+
+  cmd.begin( Serial, cmd_buffer, sizeof( cmd_buffer ) )
+    .list( cmdlist )
+    .onCommand( cmd_callback );
 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
@@ -38,10 +88,6 @@ void setup() {
   playfield.begin( io, leds, switch_groups, LED_EXTRA )
     .readProfiles( 'S', profiles );
 
-  Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
-  Serial.printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
-  Serial.printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
-  Serial.printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
 
   int32_t base_ram = FreeRam();
   Serial.println( "init devices" ); delay( 100 );
@@ -162,21 +208,6 @@ void setup() {
   Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices\n\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024 );
 
-  uint8_t map[32];
-  uint8_t cnt = 0;
-  memset( map, 0, sizeof( map ) );
-  for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
-    if ( playfield.exists( n + 1 ) == 1 ) {
-      Atm_device* dev = &playfield.device( n + 1 );
-      uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
-      if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
-        Serial.printf( "%02d %s %02d%c %s\n", cnt, 
-          dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
-        map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
-        cnt++;
-      }
-    }     
-  }
 }
 
 void loop() {

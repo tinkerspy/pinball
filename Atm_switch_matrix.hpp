@@ -10,6 +10,9 @@
 #define DYNAMIC_ELEMENTS
 #define STARTUP_DELAY_MS 500
 
+#define TRACE_PRESS 1
+#define TRACE_RELEASE 2
+
 class Atm_device;
 
 struct switch_record { 
@@ -30,6 +33,7 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL, int16_t status_led = -1 );
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
+  Atm_switch_matrix& traceSwitches( Stream & stream, uint8_t bitmap = 1 );
   Atm_switch_matrix& trigger( int event );
   int16_t exists( int16_t n );
   int state( void );
@@ -64,4 +68,6 @@ class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
   bool pf_enabled = false;
   IO *io;
   int16_t status_led;
+  uint8_t trace_switches = 0;
+  Stream* ts_stream;
 };

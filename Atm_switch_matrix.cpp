@@ -163,6 +163,9 @@ void Atm_switch_matrix::scan_matrix( void ) {
         //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", sw, prof[sw].device_index, e );
         prof[sw].device->trigger( e, 1 );         
       }
+      if ( trace_switches & TRACE_PRESS ) {
+        ts_stream->printf( "PRESS %d\n", sw );
+      }
     } else {
       sw = abs( sw );
       if ( prof[sw].device_index ) {
@@ -170,6 +173,9 @@ void Atm_switch_matrix::scan_matrix( void ) {
         //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[sw].device_index, e ); delay( 100 );
         prof[sw].device->trigger( e, 1 );         
       }    
+      if ( trace_switches & TRACE_RELEASE ) {
+        ts_stream->printf( "RELEASE %d\n", sw );
+      }
     }
   }
 }
@@ -253,6 +259,12 @@ int Atm_switch_matrix::state( void ) {
  * Sets the symbol table and the default logging method for serial monitoring
  */
 
+Atm_switch_matrix& Atm_switch_matrix::traceSwitches( Stream & stream, uint8_t bitmap /* = 1 */ ) {
+  ts_stream = &stream;
+  trace_switches = bitmap;
+  return *this;
+}
+  
 Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
   
   Machine::setTrace( &stream, atm_serial_debug::trace,

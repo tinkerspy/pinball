@@ -19,9 +19,8 @@ Atm_switch_matrix playfield;
 char cmd_buffer[80];
 Atm_command cmd;
 
-enum { CMD_LS, CMD_STAT, CMD_TS };
-const char cmdlist[] = 
-  "ls stat ts";
+enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC };
+const char cmdlist[] = "ls stat ts tc";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -54,14 +53,18 @@ void cmd_callback( int idx, int v, int up ) {
       return;
     case CMD_TS:
       playfield.traceSwitches( Serial, atoi( cmd.arg( 1 ) ) );
-      Serial.printf( "Switch trace: %d\n", atoi( cmd.arg( 1 ) ) );
+      Serial.printf( "Trace switches: %d\n", atoi( cmd.arg( 1 ) ) );
+      return;    
+    case CMD_TC:
+      playfield.device( atoi( cmd.arg( 1 ) ) ).traceCode( Serial, atoi( cmd.arg( 2 ) ) ); // Check met exists() first!
+      Serial.printf( "Trace code: %d -> %d\n", atoi( cmd.arg( 1 ) ), atoi( cmd.arg( 2 ) ) );
       return;    
   }
 }
 
 void setup() {
   delay( 1000 );
-  Serial.println( "Singularity framework\ninit IO" );
+  Serial.println( "Singularity Pinball OS\ninit IO" );
   delay( 100 );
 
   cmd.begin( Serial, cmd_buffer, sizeof( cmd_buffer ) )

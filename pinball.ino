@@ -23,30 +23,27 @@ enum { CMD_LS, CMD_STAT, CMD_TS };
 const char cmdlist[] = 
   "ls stat ts";
 
-
-void list_devs() {
-  uint8_t map[32];
-  uint8_t cnt = 0;
-  memset( map, 0, sizeof( map ) );
-  for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
-    if ( playfield.exists( n + 1 ) == 1 ) {
-      Atm_device* dev = &playfield.device( n + 1 );
-      uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
-      if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
-        Serial.printf( "%02d %s %02d%c %s\n", cnt, 
-          dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
-        map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
-        cnt++;
-      }
-    }     
-  }
-  Serial.println();
-}
-
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
     case CMD_LS: 
-      list_devs();      
+      {  
+        uint8_t map[32];
+        uint8_t cnt = 0;
+        memset( map, 0, sizeof( map ) );
+        for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
+          if ( playfield.exists( n + 1 ) == 1 ) {
+            Atm_device* dev = &playfield.device( n + 1 );
+            uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
+            if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
+              Serial.printf( "%02d %s %02d%c %s\n", cnt, 
+                dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
+              map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
+              cnt++;
+            }
+          }     
+        }
+        Serial.println(); 
+      }
       return;
     case CMD_STAT:
       Serial.printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );

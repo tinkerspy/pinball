@@ -213,8 +213,8 @@ void Atm_device::start_code( int16_t e ) {
     core[active_core].stack_ptr = 0;
     core[active_core].ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
-    if ( callback_trace ) 
-      stream_trace->printf( "run_code event %03d called for %X -> %d%03d\n", e, (long)(this), active_core, core[active_core].ptr );
+    if ( trace_code ) 
+      tc_stream->printf( "run_code event %03d called for %X -> %d%03d\n", e, (long)(this), active_core, core[active_core].ptr );
     xctr++;
     run_code( active_core );      
   }
@@ -229,28 +229,28 @@ void Atm_device::run_code( uint8_t active_core ) {
       int16_t action_f = script[core[active_core].ptr++];
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
-        if ( callback_trace ) 
-          stream_trace->printf( "run_code %d:%03d: %c %d ? %d : %d\n", active_core, core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
+        if ( trace_code ) 
+          tc_stream->printf( "run_code %d:%03d: %c %d ? %d : %d\n", active_core, core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
         switch ( opcode ) {
           case 'J': // JmpL
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
           case 'A': // JmpLA jump absolute on register equal
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
+            if ( trace_code ) 
+              tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr = script[selected_action];          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -259,8 +259,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -269,8 +269,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -279,8 +279,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -289,8 +289,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break; 
@@ -298,8 +298,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( active_core == 1 ) {
               sleep( 0 );
               timer.set( 0 ); // Cut timer short
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: core resume\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: core resume\n", active_core, core[active_core].ptr - 4 );
             }
             break;                       
           case 'X':  // Xctr
@@ -307,8 +307,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: xctr exit\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: xctr exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;            
@@ -355,8 +355,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
-            if ( callback_trace ) 
-              stream_trace->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
+            if ( trace_code ) 
+              tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
           case 'Y': // Yield (negative value uses register!)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
@@ -365,18 +365,18 @@ void Atm_device::run_code( uint8_t active_core ) {
               if ( selected_action >= 0 ) { // negative values have no yield effect but do trip the core check
                 timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
                 sleep( 0 );
-                if ( callback_trace ) 
-                  stream_trace->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
+                if ( trace_code ) 
+                  tc_stream->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
               }
             } else {
-              if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: FATAL: secondary core cannot yield at %d, terminating thread\n", active_core, core[active_core].ptr - 4 );
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: FATAL: secondary core cannot yield at %d, terminating thread\n", active_core, core[active_core].ptr - 4 );
               return;
             }
             return;           
           default:
-            if ( callback_trace ) 
-                stream_trace->printf( "run_code %d:%03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", active_core, core[active_core].ptr - 4, opcode );
+            if ( trace_code ) 
+              tc_stream->printf( "run_code %d:%03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", active_core, core[active_core].ptr - 4, opcode );
             return;
         }
       } else {
@@ -384,12 +384,12 @@ void Atm_device::run_code( uint8_t active_core ) {
       }        
       if ( core[active_core].ptr == 0 ) {
         if ( core[active_core].stack_ptr > 0 ) {
-          if ( callback_trace ) 
-            stream_trace->printf( "run_code %d:%03d: Return to %d\n", active_core, core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
+          if ( trace_code ) 
+            tc_stream->printf( "run_code %d:%03d: Return to %d\n", active_core, core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
           core[active_core].ptr = core[active_core].stack[--core[active_core].stack_ptr];
         } else {
-          if ( callback_trace ) 
-            stream_trace->printf( "run_code %d:%03d: regular exit\n", active_core, core[active_core].ptr );
+          if ( trace_code ) 
+            tc_stream->printf( "run_code %d:%03d: regular exit\n", active_core, core[active_core].ptr );
           return;
         }
       }
@@ -505,7 +505,12 @@ Atm_device& Atm_device::onEvent( int sub, int sw, int event ) {
 /* State trace method
  * Sets the symbol table and the default logging method for serial monitoring
  */
-
+Atm_device& Atm_device::traceCode( Stream & stream, uint8_t bitmap /* = 1 */ ) {
+  tc_stream = &stream;
+  trace_code = bitmap;
+  return *this;
+}
+  
 Atm_device& Atm_device::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
     "DEVICE\0EVT_NOTIFY\0EVT_TIMER\0EVT_YIELD\0ELSE\0IDLE\0NOTIFY\0YIELD\0RESUME" );

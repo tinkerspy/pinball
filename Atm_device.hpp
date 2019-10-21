@@ -41,6 +41,7 @@ class Atm_device: public Machine {
   const char* label( void);
   Atm_device& trace( Stream & stream );
   Atm_device& trace( void );
+  Atm_device& traceCode( Stream & stream, uint8_t bitmap = 1 );
   Atm_device& dump( Stream & stream );
   Atm_device& trigger( int event );
   Atm_device& trigger( int event, uint32_t sel );
@@ -90,5 +91,7 @@ class Atm_device: public Machine {
   core_state core[2];
   uint32_t switches; 
   uint32_t xctr;
+  Stream* tc_stream;
+  uint8_t trace_code = 0;
   
 };

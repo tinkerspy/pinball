@@ -19,8 +19,10 @@ Atm_switch_matrix playfield;
 char cmd_buffer[80];
 Atm_command cmd;
 
-enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC };
-const char cmdlist[] = "ls stat ts tc";
+// TODO playfield.deviceIdByLabel()
+
+enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT };
+const char cmdlist[] = "ls stat ts tc tr press release init";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -56,8 +58,65 @@ void cmd_callback( int idx, int v, int up ) {
       Serial.printf( "Trace switches: %d\n", atoi( cmd.arg( 1 ) ) );
       return;    
     case CMD_TC:
-      playfield.device( atoi( cmd.arg( 1 ) ) ).traceCode( Serial, atoi( cmd.arg( 2 ) ) ); // Check met exists() first!
-      Serial.printf( "Trace code: %d -> %d\n", atoi( cmd.arg( 1 ) ), atoi( cmd.arg( 2 ) ) );
+      {
+        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t mode = atoi( cmd.arg( 2 ) );
+        if ( strlen( cmd.arg( 2 ) ) == 0 ) mode = 1;
+        if ( playfield.exists( sw ) ) {
+          playfield.device( sw ).traceCode( Serial, mode ); 
+          Serial.printf( "Trace code: device %d -> %d\n", sw, mode );
+        } else {
+          Serial.printf( "Trace code: device %d not found\n", sw );
+        }
+      }
+      return;    
+    case CMD_TR:
+      {
+        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t e = atoi( cmd.arg( 2 ) );
+        if ( playfield.exists( sw ) ) {
+          playfield.device( sw ).trigger( e, 1 ); 
+          Serial.printf( "Trigger: device %d -> %d\n", sw, e );
+        } else {
+          Serial.printf( "Trigger: device %d not found\n", sw );
+        }
+      }
+      return;    
+    case CMD_PRESS:
+      {
+        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t n = atoi( cmd.arg( 2 ) );
+        if ( playfield.exists( sw ) ) {
+          playfield.device( sw ).trigger( ( n * 2 ) + 1, 1 ); 
+          Serial.printf( "Press device %d, switch %d -> event %d\n", sw, n, ( n * 2 ) + 1 );
+        } else {
+          Serial.printf( "Press device %d not found\n", sw );
+        }
+      }
+      return;    
+    case CMD_RELEASE:
+      {
+        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t n = atoi( cmd.arg( 2 ) );
+        if ( playfield.exists( sw ) ) {
+          playfield.device( sw ).trigger( ( n * 2 ) + 2, 1 ); 
+          Serial.printf( "Release device %d -> switch %d, event %d\n", sw, n, ( n * 2 ) + 2 );
+        } else {
+          Serial.printf( "Release device %d not found\n", sw );
+        }
+      }
+      return;    
+    case CMD_INIT:
+      {
+        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t n = atoi( cmd.arg( 2 ) );
+        if ( playfield.exists( sw ) ) {
+          playfield.device( sw ).trigger( ( n * 2 ), 1 ); 
+          Serial.printf( "Init device %d -> %d\n", sw, n );
+        } else {
+          Serial.printf( "Init device %d not found\n", sw );
+        }
+      }
       return;    
   }
 }
@@ -118,7 +177,7 @@ void setup() {
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware ).label( "PLAYERUP" );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware ).label( "BALLUP" );
   playfield.device( GI, COIL_GI, ledbank_firmware, 1 ).label( "GI" );   // Default ON
-  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).label( "GAME" );
+  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).label( "FRONTBTN" );
 
   Serial.println( "chain devices" ); delay( 100 );
 

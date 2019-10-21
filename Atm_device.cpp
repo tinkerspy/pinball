@@ -23,6 +23,7 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   output_persistence = 0;
   next = NULL;
   enabled = true;
+  dev_label = "no-label";
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
   registers[0] = r0;
@@ -214,7 +215,7 @@ void Atm_device::start_code( int16_t e ) {
     core[active_core].ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( trace_code ) 
-      tc_stream->printf( "run_code event %03d called for %X -> %d%03d\n", e, (long)(this), active_core, core[active_core].ptr );
+      tc_stream->printf( "run_code event %03d called for %s -> %d%03d\n", e, dev_label, active_core, core[active_core].ptr );
     xctr++;
     run_code( active_core );      
   }

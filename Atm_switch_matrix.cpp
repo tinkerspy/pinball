@@ -29,7 +29,21 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
 }
 
 int16_t Atm_switch_matrix::exists( int16_t n ) {
-  return prof[n].device_index;
+  if ( n > 0 && n <= numOfSwitches + numOfGroups ) {
+    return prof[n].device_index;
+  }
+  return 0;
+}
+
+int16_t Atm_switch_matrix::deviceIdByLabel( char l[] ) {
+  for ( int16_t n = 1; n <= numOfSwitches + numOfGroups; n++ ) {
+    if ( exists( n ) ) {
+      if ( strcasecmp( l, device( n ).dev_label ) == 0 ) {
+        return n;
+      }
+    }
+  }
+  return 0;
 }
 
 int Atm_switch_matrix::event( int id ) {

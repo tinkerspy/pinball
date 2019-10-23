@@ -10,8 +10,8 @@
 #define DYNAMIC_ELEMENTS
 #define STARTUP_DELAY_MS 500
 
-#define TRACE_PRESS 1
-#define TRACE_RELEASE 2
+#define ATMSM_TRACE_PRESS 1
+#define ATMSM_TRACE_RELEASE 2
 
 class Atm_device;
 

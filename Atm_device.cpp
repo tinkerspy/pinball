@@ -55,6 +55,53 @@ const char* Atm_device::label( void) {
   return this->dev_label;
 }
 
+Atm_device& Atm_device::loadSymbols( char s[] ) {
+  while ( *s != '\0' ) {
+    s = loadString( s );
+  }
+  return *this; 
+}
+
+char* Atm_device::loadString( char* s ) { 
+  char buf[2048];
+  char sep[] = " ,";
+  char* b = buf;
+  int16_t char_cnt = 0;
+  while ( *s != '\0' && *s != '\n' ) {
+    while ( *s != '\0' && *s != '\n' && strchr( sep, *s ) != NULL ) {
+      s++;      
+    }
+    while ( *s != '\0' && *s != '\n' && strchr( sep, *s ) == NULL ) {
+      char_cnt++;
+      *b++ = tolower( *s );
+      s++;      
+    }
+    while ( *s != '\0' && *s != '\n' && strchr( sep, *s ) != NULL ) {
+      s++;      
+    }
+    if ( *s != '\0' && *s != '\n' ) *b++ = ',';
+  }
+  *b = '\0';
+  s++;
+  if ( char_cnt > 0 ) {
+    symbol_table** p = &symbol;
+    while ( *p != NULL ) { p = &(*p)->next; Serial.println( "NEXT" ); }
+    *p = (symbol_table*) malloc( sizeof( symbol_table ) + ( b - buf ) + 1 );
+    memcpy( (*p)->s, buf, ( b - buf ) + 1 );
+    (*p)->next = NULL;
+  }
+  return s;
+}
+
+int16_t Atm_device::findSymbol( const char s[] ) {
+  symbol_table* p = symbol;
+  while ( p != NULL ) {
+    Serial.printf( "%X %s\n", &(p->s), p->s );
+    p = p->next;
+  }
+  return 0;
+}
+
 Atm_device& Atm_device::set_script( int16_t* script ) {
   this->script = script;
   parse_code( this->script );

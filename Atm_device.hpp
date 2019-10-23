@@ -19,6 +19,11 @@ struct core_state {
   bool yield_enabled;
 };
 
+struct symbol_table {
+  symbol_table* next;
+  char s[];
+};
+
 namespace instruction_set {
 
   enum { JmpL = 'J', JmpLA = 'A', JmpRE = 'C', Prim = '0', LedOn = 'H', LedOff = 'L', GoSub = 'S', Inc = 'I', Dec = 'D', Trig = 'T', Pers = 'P', Reg = 'R', Yield = 'Y' };
@@ -60,7 +65,10 @@ class Atm_device: public Machine {
   Atm_device& chain( int16_t sw );
   Atm_device& select( uint32_t mask );
   const char* dev_label;
-  
+  Atm_device& loadSymbols( char s[] );
+  int16_t findSymbol( const char s[] );
+  char* loadString( char* s );
+ 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;
 
@@ -93,5 +101,5 @@ class Atm_device: public Machine {
   uint32_t xctr;
   Stream* tc_stream;
   uint8_t trace_code = 0;
-  
+  symbol_table* symbol = NULL;
 };

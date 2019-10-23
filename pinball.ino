@@ -74,9 +74,14 @@ void cmd_callback( int idx, int v, int up ) {
       {
         int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
         int16_t e = atoi( cmd.arg( 2 ) );
+        int16_t sel = atoi( cmd.arg( 3 ) );
         if ( playfield.exists( sw ) ) {
-          playfield.device( sw ).trigger( e, 1 ); 
-          Serial.printf( "Trigger: device %d -> %d\n", sw, e );
+          if ( sel ) {
+            playfield.device( sw ).trigger( e, sel ); 
+          } else {
+            playfield.device( sw ).trigger( e );             
+          }
+          Serial.printf( "Trigger: device %d -> %d (%d)\n", sw, e, sel );
         } else {
           Serial.printf( "Trigger: device %d not found\n", sw );
         }
@@ -184,6 +189,9 @@ void setup() {
   playfield.device( COUNTER ).chain( COUNTER1 );
   playfield.device( COUNTER1 ).chain( COUNTER2 );
   playfield.device( COUNTER2 ).chain( COUNTER3 );
+
+  playfield.device( FRONTBTN ).loadSymbols( game_symbols );
+  playfield.device( FRONTBTN ).findSymbol( "SUB_GAME_WAIT_PLAYERS" );
     
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 

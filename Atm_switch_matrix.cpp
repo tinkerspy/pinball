@@ -177,8 +177,8 @@ void Atm_switch_matrix::scan_matrix( void ) {
         //Serial.printf( "device trigger (press) %d, idx=%d, e=%d\n", sw, prof[sw].device_index, e );
         prof[sw].device->trigger( e, 1 );         
       }
-      if ( trace_switches & TRACE_PRESS ) {
-        ts_stream->printf( "PRESS %d\n", sw );
+      if ( trace_switches & ATMSM_TRACE_PRESS ) {
+        ts_stream->printf( "%d PRESS %d\n", millis(), sw );
       }
     } else {
       sw = abs( sw );
@@ -187,8 +187,8 @@ void Atm_switch_matrix::scan_matrix( void ) {
         //Serial.printf( "device trigger (release) %d, idx=%d, e=%d\n", n, prof[sw].device_index, e ); delay( 100 );
         prof[sw].device->trigger( e, 1 );         
       }    
-      if ( trace_switches & TRACE_RELEASE ) {
-        ts_stream->printf( "RELEASE %d\n", sw );
+      if ( trace_switches & ATMSM_TRACE_RELEASE ) {
+        ts_stream->printf( "%d RELEASE %d\n", millis(), sw );
       }
     }
   }

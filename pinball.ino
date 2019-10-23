@@ -191,7 +191,7 @@ void setup() {
   playfield.device( COUNTER2 ).chain( COUNTER3 );
 
   playfield.device( FRONTBTN ).loadSymbols( game_symbols );
-  playfield.device( FRONTBTN ).findSymbol( "SUB_GAME_WAIT_PLAYERS" );
+  playfield.device( FRONTBTN ).findSymbol( "SET_TEST" );
     
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 

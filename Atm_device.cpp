@@ -81,11 +81,12 @@ char* Atm_device::loadString( char* s ) {
     }
     if ( *s != '\0' && *s != '\n' ) *b++ = ',';
   }
-  *b = '\0';
+  *b = '\0'; 
   s++;
+  // Add new tables to the end of the list
   if ( char_cnt > 0 ) {
     symbol_table** p = &symbol;
-    while ( *p != NULL ) { p = &(*p)->next; Serial.println( "NEXT" ); }
+    while ( *p != NULL ) p = &(*p)->next;
     *p = (symbol_table*) malloc( sizeof( symbol_table ) + ( b - buf ) + 1 );
     memcpy( (*p)->s, buf, ( b - buf ) + 1 );
     (*p)->next = NULL;
@@ -96,9 +97,35 @@ char* Atm_device::loadString( char* s ) {
 int16_t Atm_device::findSymbol( const char s[] ) {
   symbol_table* p = symbol;
   while ( p != NULL ) {
-    Serial.printf( "%X %s\n", &(p->s), p->s );
+    Serial.printf( "%X: next=%X, s=%s\n", p, p->next, p->s );
+    if ( int16_t i = findString( s, p->s ) ) {
+       return i;
+    }
     p = p->next;
   }
+  return 0;
+}
+
+int16_t Atm_device::findString( const char s[], const char sym[] ) {
+  Serial.printf( "%s [IN] %s\n", s, sym );
+  const char* p = sym;
+
+  // Wrong! Just move to the 1st separator and compare until the next
+  
+  while ( tolower( *s ) != *p ) {
+    Serial.printf( "%c == %c\n", *s, *p );
+    p++;
+  }
+  const char* start = p;
+  Serial.printf( "%c equals %c\n", *s, *p );
+  while ( tolower( *s ) == *p ) {
+    Serial.printf( "%c == %c\n", *s, *p );
+    p++;
+    s++;
+  }
+    Serial.printf( "%c != %c\n", *s, *p );
+  Serial.printf( "LEN=%d\n", p - start );
+  Serial.printf( "POS=%d\n", p - sym );
   return 0;
 }
 

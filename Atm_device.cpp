@@ -55,12 +55,16 @@ const char* Atm_device::label( void) {
   return this->dev_label;
 }
 
+// Parses a string of \n separated symbol banks
+
 Atm_device& Atm_device::loadSymbols( char s[] ) {
   while ( *s != '\0' ) {
     s = loadString( s );
   }
   return *this; 
 }
+
+// Parses a string and stores the symbols in a bank added to the end of a linked list
 
 char* Atm_device::loadString( char* s ) { 
   char buf[2048];
@@ -79,11 +83,11 @@ char* Atm_device::loadString( char* s ) {
     while ( *s != '\0' && *s != '\n' && strchr( sep, *s ) != NULL ) {
       s++;      
     }
-    if ( *s != '\0' && *s != '\n' ) *b++ = ',';
+    *b++ = '\0';
   }
   *b = '\0'; 
   s++;
-  // Add new tables to the end of the list
+  // Add new tables to the end of the linked list
   if ( char_cnt > 0 ) {
     symbol_table** p = &symbol;
     while ( *p != NULL ) p = &(*p)->next;
@@ -94,39 +98,67 @@ char* Atm_device::loadString( char* s ) {
   return s;
 }
 
+// Returns the index of a symbol string in any of the banks
+
 int16_t Atm_device::findSymbol( const char s[] ) {
   symbol_table* p = symbol;
   while ( p != NULL ) {
-    Serial.printf( "%X: next=%X, s=%s\n", p, p->next, p->s );
-    if ( int16_t i = findString( s, p->s ) ) {
-       return i;
-    }
+    int16_t i = findString( s, p->s );
+    if ( i >= 0 ) return i;
     p = p->next;
   }
   return 0;
 }
 
-int16_t Atm_device::findString( const char s[], const char sym[] ) {
-  Serial.printf( "%s [IN] %s\n", s, sym );
-  const char* p = sym;
+// Returns the n-th symbol in a bank or a NULL pointer if it does not exist
 
-  // Wrong! Just move to the 1st separator and compare until the next
-  
-  while ( tolower( *s ) != *p ) {
-    Serial.printf( "%c == %c\n", *s, *p );
-    p++;
+char* Atm_device::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
+  symbol_table* p = symbol;
+  uint8_t pcnt = 0;
+  while ( p != NULL && pcnt < bank ) {
+    p = p->next;
+    pcnt++;
   }
-  const char* start = p;
-  Serial.printf( "%c equals %c\n", *s, *p );
-  while ( tolower( *s ) == *p ) {
-    Serial.printf( "%c == %c\n", *s, *p );
-    p++;
-    s++;
+  if ( p == NULL ) return NULL;
+  uint8_t scnt = 0;
+  char* s = p->s;
+  while ( *s != '\0' && scnt < idx ) {
+    s += strlen( s ) + 1;
+    scnt++;
   }
-    Serial.printf( "%c != %c\n", *s, *p );
-  Serial.printf( "LEN=%d\n", p - start );
-  Serial.printf( "POS=%d\n", p - sym );
-  return 0;
+  return *s == '\0' ? NULL : s;
+}
+
+// Returns number of symbols in a bank
+
+int16_t Atm_device::cntSymbols( int8_t bank ) {
+  symbol_table* p = symbol;
+  uint8_t pcnt = 0;
+  while ( p != NULL && pcnt < bank ) {
+    p = p->next;
+    pcnt++;
+  }
+  if ( p == NULL ) return 0;
+  uint8_t scnt = 0;
+  char* s = p->s;
+  while ( *s != '\0' ) {
+    s += strlen( s ) + 1;
+    scnt++;
+  }
+  return scnt;
+}
+
+// Find a string in a char array of null terminated strings (terminated by an empty string -- double \0 )
+// Returns string index or -1 if not found
+
+int16_t Atm_device::findString( const char s[], const char sym[] ) {
+  const char* p = sym;
+  int16_t cnt = 0;
+  while ( *p != '\0' && strcasecmp( s, p ) != 0 ) {
+    p += strlen( p ) + 1;    
+    cnt++;
+  }
+  return *p == '\0' ? -1 : cnt;
 }
 
 Atm_device& Atm_device::set_script( int16_t* script ) {

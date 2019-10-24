@@ -189,7 +189,14 @@ void setup() {
   playfield.device( COUNTER2 ).chain( COUNTER3 );
 
   playfield.device( FRONTBTN ).loadSymbols( game_symbols );
-  playfield.device( FRONTBTN ).findSymbol( "SET_TEST" );
+
+  for ( int c = 0; c < playfield.device( FRONTBTN ).cntSymbols( 1 ); c++ ) {
+    char* s = playfield.device( FRONTBTN ).findSymbol( c, 1 );
+    Serial.printf( "s=%s\n", s );
+  } 
+  int16_t p = playfield.device( FRONTBTN ).findSymbol( "OUT_GAME_OVER" );
+  Serial.printf( "String pos: %d\n", p );
+  Serial.printf( "String %d, bank %d: %s\n", p, 1, playfield.device( FRONTBTN ).findSymbol( p, 1 ) );
     
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 

@@ -66,9 +66,11 @@ class Atm_device: public Machine {
   Atm_device& select( uint32_t mask );
   const char* dev_label;
   Atm_device& loadSymbols( char s[] );
-  int16_t findSymbol( const char s[] );
   char* loadString( char* s );
   int16_t findString( const char s[], const char sym[] );
+  int16_t findSymbol( const char s[] );
+  char* findSymbol( int16_t idx, int8_t bank = 0 );
+  int16_t cntSymbols( int8_t bank );
 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;

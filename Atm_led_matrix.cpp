@@ -1,5 +1,4 @@
 #include "Atm_led_matrix.hpp"
-#include "io.hpp"
 
 Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   // clang-format off

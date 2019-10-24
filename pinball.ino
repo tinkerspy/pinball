@@ -19,8 +19,6 @@ Atm_switch_matrix playfield;
 char cmd_buffer[80];
 Atm_command cmd;
 
-// TODO playfield.deviceIdByLabel()
-
 enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT };
 const char cmdlist[] = "ls stat ts tc tr press release init";
 

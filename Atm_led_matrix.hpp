@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Automaton.h>
+#include "Symbolic_Machine.hpp"
 #include "IO.hpp"
 
 #define MAX_LEDS 320 // Physical leds
@@ -27,7 +28,7 @@ struct led_watcher {
  * L2 Hold level (when hold level zero, led is in pulse mode: off() is ignored)
  */
 
-class Atm_led_matrix: public Machine {
+class Atm_led_matrix: public Symbolic_Machine {
 
  public:
   enum { IDLE, WAITING, RUNNING, UPDATING }; // STATES
@@ -35,7 +36,7 @@ class Atm_led_matrix: public Machine {
   enum { LED_STATE_IDLE, LED_STATE_DELAY, LED_STATE_RGBW1, LED_STATE_RGBW2 };
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
-  Atm_led_matrix( void ) : Machine() {};
+  Atm_led_matrix( void ) : Symbolic_Machine() {};
   Atm_led_matrix& begin( IO &io, int16_t* group_definition );
   Atm_led_matrix& trace( Stream & stream );
   Atm_led_matrix& trace();

@@ -3,6 +3,7 @@
 #include <Automaton.h>
 #include "Atm_led_matrix.hpp"
 #include "Atm_switch_matrix.hpp"
+#include "Symbolic_Machine.hpp"
 
 // Number of outputs is also limited by the 32 bits in trigger_flags 
 
@@ -32,12 +33,12 @@ namespace instruction_set {
 
 class Atm_switch_matrix;
 
-class Atm_device: public Machine {
+class Atm_device: public Symbolic_Machine {
 
  public:
   enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
   enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
-  Atm_device( void ) : Machine() { };
+  Atm_device( void ) : Symbolic_Machine() { };
   Atm_device& begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script, 
           int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_device& set_script( int16_t* script );
@@ -65,12 +66,6 @@ class Atm_device: public Machine {
   Atm_device& chain( int16_t sw );
   Atm_device& select( uint32_t mask );
   const char* dev_label;
-  Atm_device& loadSymbols( char s[] );
-  char* loadString( char* s );
-  int16_t findString( const char s[], const char sym[] );
-  int16_t findSymbol( const char s[] );
-  char* findSymbol( int16_t idx, int8_t bank = 0 );
-  int16_t cntSymbols( int8_t bank );
 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;
@@ -104,5 +99,4 @@ class Atm_device: public Machine {
   uint32_t xctr;
   Stream* tc_stream;
   uint8_t trace_code = 0;
-  symbol_table* symbol = NULL;
 };

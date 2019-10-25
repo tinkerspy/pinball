@@ -10,7 +10,7 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
     /* UPDATING */ ENT_UPDATING,        -1,      -1,       -1, WAITING,         -1,        -1,    IDLE,
   };
   // clang-format on
-  Machine::begin( state_table, ELSE );
+  Symbolic_Machine::begin( state_table, ELSE );
   this->io = &io;
   numOfLeds = io.numberOfLeds();
   for ( int i = 0; i < numOfLeds; i++ )
@@ -149,7 +149,7 @@ Atm_led_matrix& Atm_led_matrix::set( int16_t ledno, uint32_t c ) {
 }
 
 Atm_led_matrix& Atm_led_matrix::trigger( int event ) {
-  Machine::trigger( event );
+  Symbolic_Machine::trigger( event );
   return *this;
 }
 
@@ -158,7 +158,7 @@ Atm_led_matrix& Atm_led_matrix::trigger( int event ) {
 */
 
 int Atm_led_matrix::state( void ) {
-  return Machine::state();
+  return Symbolic_Machine::state();
 }
 
 Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 /* = 0 */  ) {
@@ -315,7 +315,7 @@ Atm_led_matrix& Atm_led_matrix::update() {
 }
 
 Atm_led_matrix& Atm_led_matrix::trace( Stream & stream ) {
-  Machine::setTrace( &stream, atm_serial_debug::trace,
+  Symbolic_Machine::setTrace( &stream, atm_serial_debug::trace,
                      "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;

@@ -5,6 +5,7 @@
 #include <Automaton.h>
 #include "Atm_device.hpp"
 #include "Atm_led_matrix.hpp"
+#include "Symbolic_Machine.hpp"
 
 #define MAX_SWITCHES 320
 #define DYNAMIC_ELEMENTS
@@ -24,12 +25,12 @@ struct switch_record {
 #endif    
 };
 
-class Atm_switch_matrix: public Machine { // Beter: Atm_switch_zone
+class Atm_switch_matrix: public Symbolic_Machine { 
 
  public:
   enum { IDLE, WAIT, SCAN, DISABLED, READY, INIT }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, EVT_INIT, ELSE }; // EVENTS
-  Atm_switch_matrix( void ) : Machine() {};
+  Atm_switch_matrix( void ) : Symbolic_Machine() {};
   Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL, int16_t status_led = -1 );
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );

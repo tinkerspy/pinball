@@ -13,7 +13,7 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   };
 
   // clang-format on
-  Machine::begin( state_table, ELSE );
+  Symbolic_Machine::begin( state_table, ELSE );
   this->io = &io;
   this->pleds = &leds;
   this->status_led = status_led;
@@ -257,7 +257,7 @@ bool Atm_switch_matrix::ready() {
  */
 
 Atm_switch_matrix& Atm_switch_matrix::trigger( int event ) {
-  Machine::trigger( event );
+  Symbolic_Machine::trigger( event );
   return *this;
 }
 
@@ -266,7 +266,7 @@ Atm_switch_matrix& Atm_switch_matrix::trigger( int event ) {
  */
 
 int Atm_switch_matrix::state( void ) {
-  return Machine::state();
+  return Symbolic_Machine::state();
 }
 
 /* State trace method
@@ -281,7 +281,7 @@ Atm_switch_matrix& Atm_switch_matrix::traceSwitches( Stream & stream, uint8_t bi
   
 Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
   
-  Machine::setTrace( &stream, atm_serial_debug::trace,
+  Symbolic_Machine::setTrace( &stream, atm_serial_debug::trace,
     "ATM_SWITCH_MATRIX\0EVT_DISABLE\0EVT_ENABLE\0EVT_TIMER\0EVT_READY\0EVT_INIT\0ELSE\0IDLE\0WAIT\0SCAN\0DISABLED\0READY\0INIT" );
   Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
@@ -289,6 +289,6 @@ Atm_switch_matrix& Atm_switch_matrix::trace( Stream & stream ) {
 
 Atm_switch_matrix& Atm_switch_matrix::trace( void ) {
   Serial.printf( "%d Tracing disabled %s@%X\n", millis(), symbols, (long)(this) );
-  Machine::setTrace( NULL, NULL, "" );
+  Symbolic_Machine::setTrace( NULL, NULL, "" );
   return *this;
 }

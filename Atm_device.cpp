@@ -4,7 +4,7 @@
  * Add extra initialization code
  */
 
-Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script,
+Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_group, int16_t led_group, int16_t* device_script,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -18,12 +18,12 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   Symbolic_Machine::begin( state_table, ELSE );
   this->playfield = playfield;
   this->leds = playfield->leds();
+  this->switch_group = switch_group;
   trigger_flags = 0;
   input_persistence = 0; 
   output_persistence = 0;
   next = NULL;
   enabled = true;
-  dev_label = "no-label";
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
   memset( registers, 0, sizeof( registers ) ); 
   registers[0] = r0;
@@ -46,13 +46,27 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t led_group, 
   return *this;          
 }
 
-Atm_device& Atm_device::label( const char l[] ) {
-  this->dev_label = l;
-  return *this;
+int16_t Atm_device::switchGroup( void) {
+  return this->switch_group;
 }
 
-const char* Atm_device::label( void) {
-  return this->dev_label;
+int16_t Atm_device::ledGroup( void) {
+  return this->led_group;
+}
+
+int16_t Atm_device::handler( int16_t e ) {
+  if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
+    return script[e];
+  }
+  return 0;
+}
+
+Machine* Atm_device::outputPtr( int16_t n ) {
+  return connectors[n].machine;
+}
+
+int16_t Atm_device::outputEvent( int16_t n ) {
+  return connectors[n].event;
 }
 
 Atm_device& Atm_device::set_script( int16_t* script ) {
@@ -215,7 +229,7 @@ void Atm_device::start_code( int16_t e ) {
     core[active_core].ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( trace_code ) 
-      tc_stream->printf( "run_code event %03d called for %s -> %d%03d\n", e, dev_label, active_core, core[active_core].ptr );
+      tc_stream->printf( "run_code event %03d called for %d -> %d%03d\n", e, switch_group, active_core, core[active_core].ptr );
     xctr++;
     run_code( active_core );      
   }

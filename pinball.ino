@@ -19,8 +19,8 @@ Atm_switch_matrix playfield;
 char cmd_buffer[80];
 Atm_command cmd;
 
-enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT };
-const char cmdlist[] = "ls stat ts tc tr press release init";
+enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
+const char cmdlist[] = "ls stat ts tc tr press release init info";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -35,7 +35,7 @@ void cmd_callback( int idx, int v, int up ) {
             uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
             if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
               Serial.printf( "%02d %s %02d%c %s\n", cnt, 
-                dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', dev->label() );
+                dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', playfield.findSymbol( dev->switchGroup() ) );
               map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
               cnt++;
             }
@@ -57,7 +57,7 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
     case CMD_TC:
       {
-        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
         int16_t mode = atoi( cmd.arg( 2 ) );
         if ( strlen( cmd.arg( 2 ) ) == 0 ) mode = 1;
         if ( playfield.exists( sw ) ) {
@@ -70,14 +70,15 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
     case CMD_TR:
       {
-        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
-        int16_t e = atoi( cmd.arg( 2 ) );
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
         int16_t sel = atoi( cmd.arg( 3 ) );
         if ( playfield.exists( sw ) ) {
+          Atm_device* dev = &( playfield.device( sw ) );
+          int16_t e = dev->findSymbol( cmd.arg( 2 ) );
           if ( sel ) {
-            playfield.device( sw ).trigger( e, sel ); 
+            dev->trigger( e, sel ); 
           } else {
-            playfield.device( sw ).trigger( e );             
+            dev->trigger( e );             
           }
           Serial.printf( "Trigger: device %d -> %d (%d)\n", sw, e, sel );
         } else {
@@ -87,7 +88,7 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
     case CMD_PRESS:
       {
-        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
         int16_t n = atoi( cmd.arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ) + 1, 1 ); 
@@ -99,7 +100,7 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
     case CMD_RELEASE:
       {
-        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
         int16_t n = atoi( cmd.arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ) + 2, 1 ); 
@@ -111,7 +112,7 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
     case CMD_INIT:
       {
-        int16_t sw = playfield.deviceIdByLabel( cmd.arg( 1 ) );
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
         int16_t n = atoi( cmd.arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ), 1 ); 
@@ -121,8 +122,62 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       return;    
+    case CMD_INFO:
+      {
+        int16_t sw = playfield.findSymbol( cmd.arg( 1 ) );
+        if ( playfield.exists( sw ) ) {
+          Atm_device* dev = &( playfield.device( sw ) );
+          for ( uint16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
+            Serial.printf( "In[%02d]  %30s  %04X  %s\n", i, dev->findSymbol( i, 0 ), dev->handler( i ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( i + 1 ) >> 1 ) - 1 ) ) );
+          }
+          for ( uint16_t i = 0; i < dev->countSymbols( 1 ); i++ ) {
+            Machine* machine = dev->outputPtr( i );
+            if ( machine == &playfield ) {
+              Serial.printf( "Out[%02d] %30s  %s::%d\n", i, dev->findSymbol( i, 1 ), "playfield", dev->outputEvent( i ) );              
+            } else {
+              Atm_device* dest = ( Atm_device* ) machine;
+              char* dest_dev_str = playfield.findSymbol( dest->switchGroup() );
+              Serial.printf( "Out[%02d] %30s  ", i, dev->findSymbol( i, 1 ) );
+              if ( dest_dev_str ) { 
+                char* dest_event_str = dest->findSymbol( dev->outputEvent( i ) );
+                Serial.printf( "%s", dest_dev_str, dev->outputEvent( i ) );
+                if ( dest_event_str == NULL ) {
+                  Serial.printf( "::%d", dev->outputEvent( i ) );
+                } else {
+                  Serial.printf( "::%s", dest_event_str );
+                }
+              }
+              Serial.println();
+            }
+          }
+          for ( uint16_t i = 0; i < dev->countSymbols( 2 ); i++ ) {
+            char* arg_str = leds.findSymbol( leds.index( dev->ledGroup(), i ) );
+            if ( arg_str[0] == '\0' ) {
+              Serial.printf( "Arg[%02d] %30s\n", i, dev->findSymbol( i, 2 ) );
+            } else {
+              Serial.printf( "Arg[%02d] %30s  %s %s\n", i, dev->findSymbol( i, 2 ), leds.findSymbol( leds.index( dev->ledGroup(), i ) ), leds.active( leds.index( dev->ledGroup(), i ) ) ? "ON" : "OFF" );              
+            }
+          }
+          for ( uint16_t i = 0; i < dev->countSymbols( 3 ); i++ ) {
+            Serial.printf( "Reg[%02d] %30s  %d\n", i, dev->findSymbol( i, 3 ), dev->reg( i ) );
+          }
+        } else {
+          Serial.printf( "Init device %d not found\n", sw );
+        }
+      }
+      Serial.println();
+      return;    
   }
-}
+} 
+/*
+( x - 1 ) * 2
+
+0 -> -1
+1 -> 0
+2 -> 0
+3 -> 1
+4 -> 1
+*/
 
 void setup() {
   delay( 1000 );
@@ -144,43 +199,44 @@ void setup() {
 
   Serial.println( "init leds" ); delay( 100 );
   leds.begin( io, led_groups )
-    .readProfiles( 'L', profiles );  
+    .readProfiles( 'L', profiles )
+    .loadSymbols( led_symbols );  
   
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups, LED_EXTRA )
-    .readProfiles( 'S', profiles );
-
+    .readProfiles( 'S', profiles )
+    .loadSymbols( switch_symbols );
 
   int32_t base_ram = FreeRam();
   Serial.println( "init devices" ); delay( 100 );
 
   //playfield.device( FRONTBTN ).trace( Serial );
 
-  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).label( "CHIMES" );
-  playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).label( "COUNTER" );
-  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware ).label( "COUNTER1" );
-  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware ).label( "COUNTER2" );
-  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware ).label( "COUNTER3" );
-  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware ).label( "OXO" );
-  playfield.device( MULTILANE, -1, switchbank_firmware ).label( "MULTILANE" ); 
-  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware ).label( "BUMPER_A" );
-  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware ).label( "BUMPER_B" );
-  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware ).label( "BUMPER_C" );
-  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware ).label( "DUAL_TARGET" );
-  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware ).label( "KICKER" );
-  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware ).label( "UPLANE" );
-  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware ).label( "SLINGSHOT" );
-  playfield.device( LOWER, -1, switchbank_firmware ).label( "LOWER" ); 
-  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware ).label( "FLIPPER" );    
-  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware ).label( "AGAIN" );
-  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware ).label( "SAVE_GATE" );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware ).label( "FEEDER" );
-  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).label( "GAME_OVER" );  
-  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware ).label( "PLAYERS" );
-  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware ).label( "PLAYERUP" );
-  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware ).label( "BALLUP" );
-  playfield.device( GI, COIL_GI, ledbank_firmware, 1 ).label( "GI" );   // Default ON
-  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).label( "FRONTBTN" );
+  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
+  playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware );
+  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
+  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware ).loadSymbols( tictactoe_symbols );
+  playfield.device( MULTILANE, -1, switchbank_firmware ); 
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, bumper_firmware );
+  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, bumper_firmware );
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, bumper_firmware );
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware );
+  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware );
+  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware ).loadSymbols( dual_combo_symbols );
+  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
+  playfield.device( LOWER, -1, switchbank_firmware ); 
+  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
+  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
+  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
+  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );  
+  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
+  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
+  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
+  playfield.device( GI, COIL_GI, ledbank_firmware, 1 );   // Default ON
+  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).loadSymbols( game_symbols );
 
   Serial.println( "chain devices" ); delay( 100 );
 
@@ -188,16 +244,6 @@ void setup() {
   playfield.device( COUNTER1 ).chain( COUNTER2 );
   playfield.device( COUNTER2 ).chain( COUNTER3 );
 
-  playfield.device( FRONTBTN ).loadSymbols( game_symbols );
-
-  for ( int c = 0; c < playfield.device( FRONTBTN ).cntSymbols( 1 ); c++ ) {
-    char* s = playfield.device( FRONTBTN ).findSymbol( c, 1 );
-    Serial.printf( "s=%s\n", s );
-  } 
-  int16_t p = playfield.device( FRONTBTN ).findSymbol( "OUT_GAME_OVER" );
-  Serial.printf( "String pos: %d\n", p );
-  Serial.printf( "String %d, bank %d: %s\n", p, 1, playfield.device( FRONTBTN ).findSymbol( p, 1 ) );
-    
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 
   Serial.println( "link devices" ); delay( 100 );

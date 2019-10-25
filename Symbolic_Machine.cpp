@@ -44,9 +44,12 @@ char* Symbolic_Machine::loadString( char* s ) {
 }
 
 // Returns the index of a symbol string in any of the banks
+// If the argument string looks like a number return that number
 
 int16_t Symbolic_Machine::findSymbol( const char s[] ) {
   symbolic_machine_table* p = symbols;
+  if ( strlen( s ) == 0 ) return 0;
+  if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
   while ( p != NULL ) {
     int16_t i = findString( s, p->s );
     if ( i >= 0 ) return i;
@@ -60,6 +63,9 @@ int16_t Symbolic_Machine::findSymbol( const char s[] ) {
 char* Symbolic_Machine::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   uint8_t pcnt = 0;
+  if ( idx < 0 ) {
+    return null_str;
+  }  
   while ( p != NULL && pcnt < bank ) {
     p = p->next;
     pcnt++;
@@ -76,7 +82,7 @@ char* Symbolic_Machine::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
 
 // Returns number of symbols in a bank
 
-int16_t Symbolic_Machine::cntSymbols( int8_t bank ) {
+int16_t Symbolic_Machine::countSymbols( int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   uint8_t pcnt = 0;
   while ( p != NULL && pcnt < bank ) {

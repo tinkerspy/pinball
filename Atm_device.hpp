@@ -39,12 +39,13 @@ class Atm_device: public Symbolic_Machine {
   enum { IDLE, NOTIFY, YIELD, RESUME }; // STATES
   enum { EVT_NOTIFY, EVT_TIMER, EVT_YIELD, ELSE }; // EVENTS
   Atm_device( void ) : Symbolic_Machine() { };
-  Atm_device& begin( Atm_switch_matrix* playfield, int16_t led_group, int16_t* device_script, 
+  Atm_device& begin( Atm_switch_matrix* playfield, int16_t switch_group, int16_t led_group, int16_t* device_script, 
           int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_device& set_script( int16_t* script );
   Atm_device& set_led( int16_t led_group );
-  Atm_device& label( const char l[] );
-  const char* label( void);
+  int16_t switchGroup( void);
+  int16_t ledGroup( void);
+  int16_t handler( int16_t e );
   Atm_device& trace( Stream & stream );
   Atm_device& trace( void );
   Atm_device& traceCode( Stream & stream, uint8_t bitmap = 1 );
@@ -65,12 +66,13 @@ class Atm_device: public Symbolic_Machine {
   Atm_device& chain( Atm_device& next );
   Atm_device& chain( int16_t sw );
   Atm_device& select( uint32_t mask );
-  const char* dev_label;
+  Machine* outputPtr( int16_t n );
+  int16_t outputEvent( int16_t n );
 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;
 
- private:
+ protected:
   enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS
   enum { ON_EVENT, CONN_MAX = MAX_OUTPUTS }; // CONNECTORS
   atm_connector connectors[CONN_MAX+1];
@@ -99,4 +101,5 @@ class Atm_device: public Symbolic_Machine {
   uint32_t xctr;
   Stream* tc_stream;
   uint8_t trace_code = 0;
+  int16_t switch_group = 0;
 };

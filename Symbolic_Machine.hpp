@@ -16,8 +16,10 @@ class Symbolic_Machine: public Machine {
   int16_t findString( const char s[], const char sym[] );
   int16_t findSymbol( const char s[] );
   char* findSymbol( int16_t idx, int8_t bank = 0 );
-  int16_t cntSymbols( int8_t bank );
+  int16_t countSymbols( int8_t bank = 0 );
  
  protected:
   symbolic_machine_table* symbols;
+  char null_str[2] = "";
+
 };

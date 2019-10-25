@@ -35,17 +35,6 @@ int16_t Atm_switch_matrix::exists( int16_t n ) {
   return 0;
 }
 
-int16_t Atm_switch_matrix::deviceIdByLabel( char l[] ) {
-  for ( int16_t n = 1; n <= numOfSwitches + numOfGroups; n++ ) {
-    if ( exists( n ) ) {
-      if ( strcasecmp( l, device( n ).dev_label ) == 0 ) {
-        return n;
-      }
-    }
-  }
-  return 0;
-}
-
 int Atm_switch_matrix::event( int id ) {
   switch ( id ) {
     case EVT_TIMER:
@@ -103,6 +92,24 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
       p++;
   }
   return group_def;
+}
+
+int16_t Atm_switch_matrix::index( int16_t swno, int16_t n ) {
+  int16_t cnt = 0;
+  if ( swno > -1 ) {
+    if ( swno < numOfSwitches ) {
+      return n == 0 ? swno : -1;
+    } else {
+      int16_t p = group_def[swno - numOfSwitches - 1];
+      while ( p != -1 && group_def[p] != -1 ) {
+        if ( cnt++ == n ) {
+          return group_def[p];
+        }
+        p++;
+      }
+    }
+  }
+  return -1;  
 }
 
 Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks  ) {
@@ -178,7 +185,7 @@ void Atm_switch_matrix::scan_matrix( void ) {
         prof[sw].device->trigger( e, 1 );         
       }
       if ( trace_switches & ATMSM_TRACE_PRESS ) {
-        ts_stream->printf( "%d PRESS %d\n", millis(), sw );
+        ts_stream->printf( "%d PRESS %d %s\n", millis(), sw, findSymbol( sw ) );
       }
     } else {
       sw = abs( sw );
@@ -188,7 +195,7 @@ void Atm_switch_matrix::scan_matrix( void ) {
         prof[sw].device->trigger( e, 1 );         
       }    
       if ( trace_switches & ATMSM_TRACE_RELEASE ) {
-        ts_stream->printf( "%d RELEASE %d\n", millis(), sw );
+        ts_stream->printf( "%d RELEASE %d %s\n", millis(), sw, findSymbol( sw ) );
       }
     }
   }
@@ -201,12 +208,12 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
   //Serial.printf( "Device rquest %d\n", n, led_group ); 
   if ( n == -1 ) { // Create a floating device (untested)
     Atm_device* device = new Atm_device();
-    device->begin( this, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
+    device->begin( this, n, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
     return *device;
   }
   if ( prof[n].device_index == 0 ) { 
     Atm_device* device = new Atm_device(); // Create device
-    device->begin( this, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
+    device->begin( this, n, led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
     // Check and warn (Serial stream) if switch was already in use!
     if ( callback_trace && prof[n].device ) 
       stream_trace->printf( "Atm_switch_matrix::device( %d ): switch already in use!\n", n );

@@ -23,6 +23,12 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   return *this;
 }
 
+Atm_led_matrix& Atm_led_matrix::loadSymbols( const char s[] ) {
+  Symbolic_Machine::loadSymbols( s );
+  return *this;
+}
+
+
 int Atm_led_matrix::event( int id ) {
   switch ( id ) {
     case EVT_DONE:

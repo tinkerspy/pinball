@@ -35,6 +35,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
   Atm_switch_matrix& traceSwitches( Stream & stream, uint8_t bitmap = 1 );
+  Atm_switch_matrix& traceSwitches( Stream* stream, uint8_t bitmap = 1 );
   Atm_switch_matrix& trigger( int event );
   int16_t index( int16_t swno, int16_t n );
   int16_t exists( int16_t n );
@@ -50,11 +51,13 @@ class Atm_switch_matrix: public Symbolic_Machine {
   Atm_switch_matrix& readProfiles( char label, const int16_t* profile_def );
   Atm_led_matrix* leds( void );
   int16_t numberOfGroups( void );
+  Atm_switch_matrix& loadSymbols( const char s[] );
 
   switch_record prof[MAX_SWITCHES + 1 ];
  
  protected:
   enum { ENT_SCAN, ENT_DISABLED, ENT_READY, ENT_INIT }; // ACTIONS
+  char event_symbols[48] = "PF_DISABLE,PF_ENABLE,PF_TIMER,PF_READY,PF_INIT\n";
   int event( int id ); 
   void action( int id ); 
   void scan_matrix( void );

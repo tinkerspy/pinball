@@ -2,16 +2,23 @@
 
 // Parses a string of \n separated symbol banks
 
-Symbolic_Machine& Symbolic_Machine::loadSymbols( char s[] ) {
+Symbolic_Machine& Symbolic_Machine::loadSymbols( const char s[] ) {
   while ( *s != '\0' ) {
     s = loadString( s );
   }
   return *this; 
 }
 
+Symbolic_Machine& Symbolic_Machine::loadSymbols( symbolic_machine_table* sym ) {
+  symbols = sym;    
+  return *this; 
+}
+
 // Parses a string and stores the symbols in a bank added to the end of a linked list
 
-char* Symbolic_Machine::loadString( char* s ) { 
+// TODO: kan zonder buffer in two-pass: 1. bereken malloc lengte 2. kopieer karakters een voor een
+
+const char* Symbolic_Machine::loadString( const char* s ) { 
   char buf[2048];
   char sep[] = " ,";
   char* b = buf;

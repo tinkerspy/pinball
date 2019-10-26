@@ -60,6 +60,7 @@ class Atm_led_matrix: public Symbolic_Machine {
   uint8_t debug;
   Atm_led_matrix& dump( Stream& stream );
   Atm_led_matrix& dump_meta( Stream& stream );
+  Atm_led_matrix& loadSymbols( const char s[] );
 
 protected:
   int16_t* parseGroups( int16_t* group_def );

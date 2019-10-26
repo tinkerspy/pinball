@@ -459,6 +459,16 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   return *this;
 }
 
+Atm_device& Atm_device::loadSymbols( const char s[] ) {
+  Symbolic_Machine::loadSymbols( s );
+  return *this;
+}
+
+Atm_device& Atm_device::loadSymbols( symbolic_machine_table* sym ) {
+  Symbolic_Machine::loadSymbols( sym );
+  return *this;
+}
+
 /* Optionally override the default state() method
  * Control what the machine returns when another process requests its state
  */

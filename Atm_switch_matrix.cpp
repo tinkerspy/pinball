@@ -25,7 +25,13 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
     group_def = parseGroups( group_definition );
   }
   pleds->off( status_led );
+  loadSymbols( event_symbols );
   return *this;          
+}
+
+Atm_switch_matrix& Atm_switch_matrix::loadSymbols( const char s[] ) {
+  Symbolic_Machine::loadSymbols( s );
+  return *this;
 }
 
 int16_t Atm_switch_matrix::exists( int16_t n ) {
@@ -185,7 +191,7 @@ void Atm_switch_matrix::scan_matrix( void ) {
         prof[sw].device->trigger( e, 1 );         
       }
       if ( trace_switches & ATMSM_TRACE_PRESS ) {
-        ts_stream->printf( "%d PRESS %d %s\n", millis(), sw, findSymbol( sw ) );
+        ts_stream->printf( "%d PRESS %d %s\n", millis(), sw, findSymbol( sw, 1 ) );
       }
     } else {
       sw = abs( sw );
@@ -195,13 +201,12 @@ void Atm_switch_matrix::scan_matrix( void ) {
         prof[sw].device->trigger( e, 1 );         
       }    
       if ( trace_switches & ATMSM_TRACE_RELEASE ) {
-        ts_stream->printf( "%d RELEASE %d %s\n", millis(), sw, findSymbol( sw ) );
+        ts_stream->printf( "%d RELEASE %d %s\n", millis(), sw, findSymbol( sw, 1 ) );
       }
     }
   }
 }
 
-// TODO: Voor een switch group het device object koppelen aan alle fysieke switches!
 
 Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
@@ -282,6 +287,12 @@ int Atm_switch_matrix::state( void ) {
 
 Atm_switch_matrix& Atm_switch_matrix::traceSwitches( Stream & stream, uint8_t bitmap /* = 1 */ ) {
   ts_stream = &stream;
+  trace_switches = bitmap;
+  return *this;
+}
+  
+Atm_switch_matrix& Atm_switch_matrix::traceSwitches( Stream* stream, uint8_t bitmap /* = 1 */ ) {
+  ts_stream = stream;
   trace_switches = bitmap;
   return *this;
 }

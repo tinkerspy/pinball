@@ -3,8 +3,8 @@
 #include <Automaton.h>
 
 // Jump to the next record in the list? (mix of relative/absolute addressing)
-// p = p->next; change into:
-// p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
+// Offset should contain the size of the symbol data
+// Careful: next must be NULL for the last bank and !NULL for the others
 
 struct symbolic_machine_table {
   symbolic_machine_table* next;
@@ -21,11 +21,11 @@ class Symbolic_Machine: public Machine {
   const char* loadString( const char* s );
   int16_t findString( const char s[], const char sym[] );
   int16_t findSymbol( const char s[] );
-  char* findSymbol( int16_t idx, int8_t bank = 0 );
+  const char* findSymbol( int16_t idx, int8_t bank = 0 );
   int16_t countSymbols( int8_t bank = 0 );
  
  protected:
   symbolic_machine_table* symbols;
-  char null_str[2] = "";
+  const char null_str[2] = "";
 
 };

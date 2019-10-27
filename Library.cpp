@@ -171,7 +171,7 @@ int16_t Library::findSymbol( int16_t slot, const char s[] ) {
 
 // Returns the n-th symbol in a bank or a NULL pointer if it does not exist
 
-char* Library::findSymbol( int16_t slot, int16_t idx, int8_t bank /* = 0 */ ) {
+const char* Library::findSymbol( int16_t slot, int16_t idx, int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = lib[slot].symbols;
   uint8_t pcnt = 0;
   if ( idx < 0 ) {

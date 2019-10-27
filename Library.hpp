@@ -19,7 +19,7 @@ class Library {
   const char* cpunfold( char buf[], const char src[] );
   int16_t findString( const char s[], const char sym[] );
   int16_t findSymbol( int16_t slot, const char s[] );
-  char* findSymbol( int16_t slot, int16_t idx, int8_t bank = 0 );
+  const char* findSymbol( int16_t slot, int16_t idx, int8_t bank = 0 );
   int16_t countSymbols( int16_t slot, int8_t bank = 0 );
   int16_t* codePtr( int16_t idx );
   symbolic_machine_table* symbolPtr( int16_t idx );

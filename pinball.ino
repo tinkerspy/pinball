@@ -26,7 +26,7 @@ const char cmdlist[] = "ls stat ts tc tr press release init info";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
-    case CMD_LS: 
+    case CMD_LS:  // TODO add firmware label: 00 SLEEPING 58L    ledbank  game_over
       {  
         uint8_t map[32];
         uint8_t cnt = 0;
@@ -142,10 +142,10 @@ void cmd_callback( int idx, int v, int up ) {
               cmd[idx].stream->printf( "Out[%02d] %20s  %s::%s\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
             } else {
               Atm_device* dest = ( Atm_device* ) machine;
-              char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );
+              const char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );
               cmd[idx].stream->printf( "Out[%02d] %20s  ", i, dev->findSymbol( i, 1 ) );
               if ( strlen( dest_dev_str ) > 0 ) { 
-                char* dest_event_str = dest->findSymbol( dev->outputEvent( i ) );
+                const char* dest_event_str = dest->findSymbol( dev->outputEvent( i ) );
                 cmd[idx].stream->printf( "%s", dest_dev_str, dev->outputEvent( i ) );
                 if ( dest_event_str == NULL ) {
                   cmd[idx].stream->printf( "::%d", dev->outputEvent( i ) );
@@ -157,7 +157,7 @@ void cmd_callback( int idx, int v, int up ) {
             }
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 2 ); i++ ) {
-            char* arg_str = leds.findSymbol( leds.index( dev->ledGroup(), i ) );
+            const char* arg_str = leds.findSymbol( leds.index( dev->ledGroup(), i ) );
             if ( arg_str[0] == '\0' ) {
               cmd[idx].stream->printf( "Arg[%02d] %20s\n", i, dev->findSymbol( i, 2 ) );
             } else {

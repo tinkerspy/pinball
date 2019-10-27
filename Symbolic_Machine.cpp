@@ -68,14 +68,14 @@ int16_t Symbolic_Machine::findSymbol( const char s[] ) {
 
 // Returns the n-th symbol in a bank or a NULL pointer if it does not exist
 
-char* Symbolic_Machine::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
+const char* Symbolic_Machine::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   uint8_t pcnt = 0;
   if ( idx < 0 ) {
     return null_str;
   }  
   while ( p != NULL && pcnt < bank ) {
-    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table) + p->offset ) : p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return NULL;
@@ -94,7 +94,7 @@ int16_t Symbolic_Machine::countSymbols( int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   uint8_t pcnt = 0;
   while ( p != NULL && pcnt < bank ) {
-    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table) + p->offset ) : p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return 0;

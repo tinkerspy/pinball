@@ -227,7 +227,6 @@ void setup() {
   Serial.printf( "Compile -> %d\n", library.compile( "bumper", bumper_bytecode ) );
   Serial.printf( "Compile -> %d\n", library.compile( "dual_target", dual_target_bytecode ) );
 
-
 #ifdef SYMBOLS
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).loadSymbols( ledbank_symbols );
   playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).loadSymbols( counter_em4d1w_symbols );

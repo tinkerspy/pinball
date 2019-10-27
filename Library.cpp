@@ -129,6 +129,71 @@ int16_t Library::compile( const char label[], const char src[] ) {
   return lib_cnt++;
 }
 
+Library& Library::hexdump( Stream& stream, int16_t idx ) {
+  int16_t* p = lib[idx].code;
+  while ( *p != -1 ) {
+    stream.printf( "0x%04X, ", *p++ );
+  }
+  stream.println();
+  stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // -1 
+  while ( *p != -1 ) {
+    stream.printf( "0x%04X,\n", *p++ ); // procedure id
+    while ( *p != -1 ) {
+      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
+      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
+      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
+      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
+      stream.println();
+    }
+    stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // -1  
+  }
+  stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // final -1  
+  return *this;
+}
+
+Library& Library::hexdump(  Stream& stream, const char label[] ) {
+  hexdump ( stream, index( label ) );
+  return *this;
+}
+
+Library& Library::symdump( Stream& stream, int16_t slot ) {
+  char buf[1024];
+  uint8_t last = 0;
+  for ( int16_t b = 0; b < 4; b++ ) {
+    if ( countSymbols( slot, b ) > 0 ) {
+      last = b;
+    }
+  }
+  for ( int16_t b = 0; b <= last; b++ ) {
+    buf[0] = '\0';
+    uint16_t cnt = 0;
+    for ( int16_t i = 0; i < countSymbols( slot, b ); i++ ) {
+      const char* s = findSymbol( slot, i, b );
+      strcat( buf, s );
+      strcat( buf, "\\0" );
+      cnt += strlen( s ) + 1;
+    }
+    cnt++;
+    if ( b == last ) {
+      cnt = 0;
+    } else {
+      while ( cnt % 4 != 0 ) {
+        strcat( buf, "\\0" );
+        cnt++;
+      }
+    }
+    stream.printf( "\"\\x12\\x34\\x56\\x78\\x00\\x00\\x%02x\\x%02x\" \"%s\\0\"\n", 
+                      cnt >> 8, cnt & 0x00FF, buf );
+  }
+  return *this;
+}
+
+Library& Library::symdump(  Stream& stream, const char label[] ) {
+  symdump ( stream, index( label ) );
+  return *this;
+}
+
+
 int16_t* Library::codePtr( int16_t idx ) {
   return lib[idx].code;
 }

@@ -26,6 +26,10 @@ class Library {
   int16_t* codePtr( const char label[] );
   symbolic_machine_table* symbolPtr( const char label[] );
   int16_t index( const char label[] );
+  Library& hexdump( Stream& stream, int16_t idx );
+  Library& hexdump( Stream& stream, const char label[] );
+  Library& symdump( Stream& stream, int16_t idx );
+  Library& symdump( Stream& stream, const char label[] );
 
   protected:
   library_record lib[MAX_LIBRARY_ENTRIES];

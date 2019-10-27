@@ -57,9 +57,10 @@ int16_t Library::compile( const char label[], const char src[] ) {
       token = strtok(NULL, sep );
     }
     *p = '\0';  
-    // TOD: store in natural order (add to the end of the list!)
-    sym->next = lib[lib_cnt].symbols;
-    lib[lib_cnt].symbols = sym;
+    // TODO: store in natural order (add to the end of the list!)
+    symbolic_machine_table** psym = &(lib[lib_cnt].symbols);
+    while ( *psym != NULL ) psym = &(*psym)->next;
+    *psym = sym;
     cpunfold( buf, src );
   }
 
@@ -84,12 +85,12 @@ int16_t Library::compile( const char label[], const char src[] ) {
   }
   wordcnt += 2;
   int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
-  memset( pcode, 0, wordcnt * sizeof( pcode[0] ) );
+  memset( pcode, 0, wordcnt * 2 );
   
   lib[lib_cnt].code = pcode;
 
   src = code_start;
-  int16_t* porigin = pcode;
+  int16_t* porigin = pcode; 
   pcode += countSymbols( lib_cnt, SYM_INPUT );
   while ( strlen( src ) > 0 ) {
     char* ptr = strchr( src, '\n' );
@@ -131,8 +132,16 @@ int16_t* Library::codePtr( int16_t idx ) {
   return lib[idx].code;
 }
 
+int16_t* Library::codePtr( const char label[] ) {
+  return lib[index( label )].code;
+}
+
 symbolic_machine_table* Library::symbolPtr( int16_t idx ) {
   return lib[idx].symbols;
+}
+
+symbolic_machine_table* Library::symbolPtr( const char label[] ) {
+  return lib[index(label)].symbols;
 }
 
 int16_t Library::index( const char label[] ) {

@@ -1016,8 +1016,7 @@ dev.loadCode( library->code( "bumper_bytecode" ) );
 */
 
 const char bumper_bytecode[] = R""""(
-init, \
-press, release, turn_on, turn_off
+init, press, release, turn_on, turn_off
 out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
 arg_coil, arg_led
 

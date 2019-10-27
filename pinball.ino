@@ -144,7 +144,7 @@ void cmd_callback( int idx, int v, int up ) {
               Atm_device* dest = ( Atm_device* ) machine;
               char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );
               cmd[idx].stream->printf( "Out[%02d] %30s  ", i, dev->findSymbol( i, 1 ) );
-              if ( dest_dev_str ) { 
+              if ( strlen( dest_dev_str ) > 0 ) { 
                 char* dest_event_str = dest->findSymbol( dev->outputEvent( i ) );
                 cmd[idx].stream->printf( "%s", dest_dev_str, dev->outputEvent( i ) );
                 if ( dest_event_str == NULL ) {
@@ -175,6 +175,15 @@ void cmd_callback( int idx, int v, int up ) {
       return;    
   }
 } 
+
+void dumpSymbols( int16_t d ) {
+  Atm_device* dev = &playfield.device( d );
+  for ( int16_t b = 0; b < 4; b++ ) {
+    for ( int16_t i = 0; i < dev->countSymbols( b ); i++ ) {
+      Serial.printf( "%d %d %s -> %d\n", b, i, dev->findSymbol( i, b ), dev->findSymbol( dev->findSymbol( i, b ) ) );
+    }
+  }
+}
 
 void setup() {
   delay( 1000 );
@@ -250,10 +259,10 @@ void setup() {
   playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware );
   playfield.device( MULTILANE, -1, switchbank_firmware ); 
-  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( library.index( "dual_target" ) ) ).loadSymbols( library.symbolPtr( library.index( "dual_target" ) ) );
-  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, library.codePtr( library.index( "dual_target" ) ) );
-  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, library.codePtr( library.index( "dual_target" ) ) );
-  playfield.device( DUAL_TARGET, LED_TARGET_GRP, dual_target_firmware );
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, library.codePtr( "dual_target" ) ).loadSymbols( library.symbolPtr( "dual_target" ) );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware );
   playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
@@ -269,15 +278,7 @@ void setup() {
   playfield.device( GI, COIL_GI, ledbank_firmware, 1 ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ); //.loadSymbols( game_symbols );
 #endif
-
-
-  //symbolic_machine_table* sym = lib.symbolPtr( idx );
-  int16_t* code = library.codePtr( library.index( "dual_target" ) );
-
-  for ( int16_t i = 0; i < 67; i++ ) {
-    //Serial.printf( "%d\n", code[i] );
-  }
-  
+    
   Serial.println( "chain devices" ); delay( 100 );
 
   playfield.device( COUNTER ).chain( COUNTER1 );

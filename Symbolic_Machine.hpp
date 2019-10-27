@@ -2,8 +2,13 @@
 
 #include <Automaton.h>
 
+// Jump to the next record in the list? (mix of relative/absolute addressing)
+// p = p->next; change into:
+// p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
+
 struct symbolic_machine_table {
   symbolic_machine_table* next;
+  uint32_t offset;
   char s[];
 };
 

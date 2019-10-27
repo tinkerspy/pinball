@@ -49,7 +49,7 @@ class Atm_device: public Symbolic_Machine {
   Atm_device& trace( Stream & stream );
   Atm_device& trace( void );
   Atm_device& traceCode( Stream & stream, uint8_t bitmap = 1 );
-  Atm_device& dump( Stream & stream );
+  Atm_device& dump( Stream & streamint16_t, int16_t offset = 0 );
   Atm_device& trigger( int event );
   Atm_device& trigger( int event, uint32_t sel );
   int state( void );

@@ -110,9 +110,9 @@ Atm_device& Atm_device::select( uint32_t mask ) {
   return *this;
 }
 
-Atm_device& Atm_device::dump( Stream & stream ) {
+Atm_device& Atm_device::dump( Stream & stream, int16_t offset /* = 0 */ ) {
   int16_t l = parse_code( this->script );
-  for ( int16_t i = 0; i < l; i++ ) {
+  for ( int16_t i = offset; i < l; i++ ) {
     if ( i && i % 16 == 0 ) {
       stream.println();
     }

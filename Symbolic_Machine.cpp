@@ -46,6 +46,7 @@ const char* Symbolic_Machine::loadString( const char* s ) {
     *p = (symbolic_machine_table*) malloc( sizeof( symbolic_machine_table ) + ( b - buf ) + 1 );
     memcpy( (*p)->s, buf, ( b - buf ) + 1 );
     (*p)->next = NULL;
+    (*p)->offset = 0;
   }
   return s;
 }
@@ -60,7 +61,7 @@ int16_t Symbolic_Machine::findSymbol( const char s[] ) {
   while ( p != NULL ) {
     int16_t i = findString( s, p->s );
     if ( i >= 0 ) return i;
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
   }
   return 0;
 }
@@ -74,7 +75,7 @@ char* Symbolic_Machine::findSymbol( int16_t idx, int8_t bank /* = 0 */ ) {
     return null_str;
   }  
   while ( p != NULL && pcnt < bank ) {
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return NULL;
@@ -93,7 +94,7 @@ int16_t Symbolic_Machine::countSymbols( int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   uint8_t pcnt = 0;
   while ( p != NULL && pcnt < bank ) {
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return 0;

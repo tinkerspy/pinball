@@ -42,7 +42,7 @@ void cmd_callback( int idx, int v, int up ) {
               cnt++;
             }
           }     
-        }
+          }
         cmd[idx].stream->println(); 
       }
       return;
@@ -134,16 +134,16 @@ void cmd_callback( int idx, int v, int up ) {
           for ( int i = 0; i < 80; i++ ) Serial.print( "=" );
           Serial.println();
           for ( uint16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
-            cmd[idx].stream->printf( "In[%02d]  %30s  %04X  %s\n", i, dev->findSymbol( i, 0 ), dev->handler( i ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( i + 1 ) >> 1 ) - 1 ), 1 ) );
+            cmd[idx].stream->printf( "In[%02d]  %20s  %04X  %s\n", i, dev->findSymbol( i, 0 ), dev->handler( i ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( i + 1 ) >> 1 ) - 1 ), 1 ) );
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 1 ); i++ ) {
             Machine* machine = dev->outputPtr( i );
             if ( machine == &playfield ) {
-              cmd[idx].stream->printf( "Out[%02d] %30s  %s::%s\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
+              cmd[idx].stream->printf( "Out[%02d] %20s  %s::%s\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
             } else {
               Atm_device* dest = ( Atm_device* ) machine;
               char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );
-              cmd[idx].stream->printf( "Out[%02d] %30s  ", i, dev->findSymbol( i, 1 ) );
+              cmd[idx].stream->printf( "Out[%02d] %20s  ", i, dev->findSymbol( i, 1 ) );
               if ( strlen( dest_dev_str ) > 0 ) { 
                 char* dest_event_str = dest->findSymbol( dev->outputEvent( i ) );
                 cmd[idx].stream->printf( "%s", dest_dev_str, dev->outputEvent( i ) );
@@ -159,13 +159,13 @@ void cmd_callback( int idx, int v, int up ) {
           for ( uint16_t i = 0; i < dev->countSymbols( 2 ); i++ ) {
             char* arg_str = leds.findSymbol( leds.index( dev->ledGroup(), i ) );
             if ( arg_str[0] == '\0' ) {
-              cmd[idx].stream->printf( "Arg[%02d] %30s\n", i, dev->findSymbol( i, 2 ) );
+              cmd[idx].stream->printf( "Arg[%02d] %20s\n", i, dev->findSymbol( i, 2 ) );
             } else {
-              cmd[idx].stream->printf( "Arg[%02d] %30s  %s %s\n", i, dev->findSymbol( i, 2 ), leds.findSymbol( leds.index( dev->ledGroup(), i ) ), leds.active( leds.index( dev->ledGroup(), i ) ) ? "ON" : "OFF" );              
+              cmd[idx].stream->printf( "Arg[%02d] %20s  %s %s\n", i, dev->findSymbol( i, 2 ), leds.findSymbol( leds.index( dev->ledGroup(), i ) ), leds.active( leds.index( dev->ledGroup(), i ) ) ? "ON" : "OFF" );              
             }
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 3 ); i++ ) {
-            cmd[idx].stream->printf( "Reg[%02d] %30s  %d\n", i, dev->findSymbol( i, 3 ), dev->reg( i ) );
+            cmd[idx].stream->printf( "Reg[%02d] %20s  %d\n", i, dev->findSymbol( i, 3 ), dev->reg( i ) );
           }
         } else {
           cmd[idx].stream->printf( "Init device %d not found\n", sw );
@@ -176,11 +176,13 @@ void cmd_callback( int idx, int v, int up ) {
   }
 } 
 
-void dumpSymbols( int16_t d ) {
+void dumpSymbols( int16_t d, int16_t bank = -1 ) {
   Atm_device* dev = &playfield.device( d );
   for ( int16_t b = 0; b < 4; b++ ) {
     for ( int16_t i = 0; i < dev->countSymbols( b ); i++ ) {
-      Serial.printf( "%d %d %s -> %d\n", b, i, dev->findSymbol( i, b ), dev->findSymbol( dev->findSymbol( i, b ) ) );
+      if ( bank == -1 || bank == b ) {
+        Serial.printf( "%d %d %s -> %d\n", b, i, dev->findSymbol( i, b ), dev->findSymbol( dev->findSymbol( i, b ) ) );
+      }
     }
   }
 }
@@ -224,6 +226,7 @@ void setup() {
 
   Serial.printf( "Compile -> %d\n", library.compile( "bumper", bumper_bytecode ) );
   Serial.printf( "Compile -> %d\n", library.compile( "dual_target", dual_target_bytecode ) );
+
 
 #ifdef SYMBOLS
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).loadSymbols( ledbank_symbols );
@@ -278,7 +281,7 @@ void setup() {
   playfield.device( GI, COIL_GI, ledbank_firmware, 1 ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ); //.loadSymbols( game_symbols );
 #endif
-    
+
   Serial.println( "chain devices" ); delay( 100 );
 
   playfield.device( COUNTER ).chain( COUNTER1 );

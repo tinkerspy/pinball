@@ -47,8 +47,9 @@ int16_t Library::compile( const char label[], const char src[] ) {
     }
     src = cpunfold( buf, src ) + 1;
     
-    symbolic_machine_table* sym = (symbolic_machine_table*) malloc( 4 + len + 1 );
+    symbolic_machine_table* sym = (symbolic_machine_table*) malloc( sizeof( symbolic_machine_table ) + len + 1 );
     sym->next = NULL;
+    sym->offset = 0;
     char* p = sym->s;
     token = strtok( buf, sep );
     while( token != NULL ) {
@@ -57,7 +58,7 @@ int16_t Library::compile( const char label[], const char src[] ) {
       token = strtok(NULL, sep );
     }
     *p = '\0';  
-    // TODO: store in natural order (add to the end of the list!)
+    // TODO: Use relative offset instead of absolute pointers to make symbol tables relocatable & storable in flash
     symbolic_machine_table** psym = &(lib[lib_cnt].symbols);
     while ( *psym != NULL ) psym = &(*psym)->next;
     *psym = sym;
@@ -163,7 +164,7 @@ int16_t Library::findSymbol( int16_t slot, const char s[] ) {
   while ( p != NULL ) {
     int16_t i = findString( s, p->s );
     if ( i >= 0 ) return i;
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
   }
   return 0;
 }
@@ -177,7 +178,7 @@ char* Library::findSymbol( int16_t slot, int16_t idx, int8_t bank /* = 0 */ ) {
     return null_str;
   }  
   while ( p != NULL && pcnt < bank ) {
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return NULL;
@@ -196,7 +197,7 @@ int16_t Library::countSymbols( int16_t slot, int8_t bank /* = 0 */ ) {
   symbolic_machine_table* p = lib[slot].symbols;
   uint8_t pcnt = 0;
   while ( p != NULL && pcnt < bank ) {
-    p = p->next;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + p->offset ) : p->next;
     pcnt++;
   }
   if ( p == NULL ) return 0;

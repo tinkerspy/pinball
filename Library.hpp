@@ -14,6 +14,7 @@ struct library_record {
 class Library {
 
   public:
+  enum{ SYM_INPUT, SYM_OUTPUT, SYM_ARG, SYM_REG };
   int16_t compile( const char label[], const char src[] );
   const char* cpunfold( char buf[], const char src[] );
   int16_t findString( const char s[], const char sym[] );
@@ -27,7 +28,6 @@ class Library {
   int16_t index( const char label[] );
 
   protected:
-  enum{ SYM_INPUT, SYM_OUTPUT, SYM_ARG, SYM_REG };
   library_record lib[MAX_LIBRARY_ENTRIES];
   int16_t lib_cnt = 0;
   const char sep[3] = ", ";

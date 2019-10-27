@@ -1020,6 +1020,7 @@ init, press, release, turn_on, turn_off
 out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
 arg_coil, arg_led
 
+
 init
 P, -1, -1, 0                   
 L, -1, -1, arg_coil     
@@ -1047,6 +1048,7 @@ const char dual_target_bytecode[] = R""""(
 init, press0, release0, press1, release1, clear
 out_led0_on, out_led1_on, out_led0_off, out_led1_off, out_all_on, out_all_off, out_score
 arg_led0, arg_led1
+
 
 init
 P, -1, -1, 0
@@ -1076,6 +1078,254 @@ T, -1, -1, out_led1_off
 T, -1, -1, out_all_off
 
 )"""";
+
+const char counter_em4d1w_bytecode[] = R""""( // 5163 Bytes, compressed to 2404 bytes with compress_bytecode.pl
+init, press, release, reset, pt10, pt100, pt1000, pt500, pt5000, \
+sub_pulse_10, sub_pulse_100, sub_pulse_1k, sub_pulse_10k, sub_move_start, \
+sub_solve_pos1, sub_solve_pos2_12, sub_solve_pos2_13, sub_solve_pos2_23, \
+sub_solve_pos3_1, sub_solve_pos3_2, sub_solve_pos3_3, sub_solve_reel0
+out_digit1, out_digit2, out_digit3
+arg_10k, arg_1k, arg_100, arg_10, arg_up, arg_dirty 
+reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait
+
+init,
+P, -1, -1,  1,                     
+X,  1,  0,  -1,
+H, -1, -1,  arg_dirty,          
+Z, -1, -1,  1,
+
+press,
+R, -1, -1, reg_sensor,
+Z, -1, -1, 1,                      
+
+release,
+R, -1, -1, reg_sensor,
+Z, -1, -1, 0,                      
+
+reset, 
+0, -1,  0, -1,                     
+=,  0, -1, 0,                      
+S, -1, -1, sub_move_start,
+S, -1, -1, sub_solve_pos1,  
+R, -1, -1, reg_state,
+Z, -1, -1, 0,                      
+L, -1, -1, arg_dirty,           
+R, -1, -1, reg_10,             
+Z, -1, -1, 0,
+R, -1, -1, reg_100,
+Z, -1, -1, 0,
+R, -1, -1, reg_1k,
+Z, -1, -1, 0,
+R, -1, -1, reg_10k,
+Z, -1, -1, 0,
+
+sub_move_start,                   
+R, -1, -1, reg_sensor,             
+=, 0,  0, -1,
+H, -1, -1, arg_10k,
+Y, -1, -1, 120,
+=, 0,  0, -1,
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+=, 0,  0, -1,
+A, -1, -1, sub_move_start,      
+
+sub_solve_pos1,                   
+R, -1, -1, reg_sensor,             
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+=, 1,  0, 7,
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+=, 1,  0, 5,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+=, 1,  0, 3,
+A, -1, -1, sub_solve_pos1,      
+A, -1, -1, sub_solve_pos2_23,  
+A, -1, -1, sub_solve_pos2_13,  
+A, -1, -1, sub_solve_pos2_12,  
+
+sub_solve_pos2_23,
+R, -1, -1, reg_sensor,
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+=,  0,  0, 4,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+=,  0,  0, 4,  
+A, -1, -1, sub_solve_pos2_23,      
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_3,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_2,
+
+sub_solve_pos2_13,
+R, -1, -1, reg_sensor,
+H, -1, -1, arg_10k,
+Y, -1, -1, 120,
+=,  0,  0, 4,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+=,  0,  0, 4,  
+A, -1, -1, sub_solve_pos2_13,      
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_3,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_1,
+
+sub_solve_pos2_12,
+R, -1, -1, reg_sensor,
+H, -1, -1, arg_10k,
+Y, -1, -1, 120,
+=,  0,  0, 4,
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+=,  0,  0, 4,  
+A, -1, -1, sub_solve_pos2_12,      
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_2,
+H, -1, -1, arg_100,        
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_1,
+
+sub_solve_pos3_1,
+R, -1, -1, reg_sensor,
+=,  0,  0, 3,
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_1,  
+S, -1, -1, sub_solve_reel0,  
+H, -1, -1, arg_1k,
+Y, -1, -1, 120,
+
+sub_solve_pos3_2,
+R, -1, -1, reg_sensor,
+=,  0,  0, 3,
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_2,  
+S, -1, -1, sub_solve_reel0,  
+H, -1, -1, arg_100,
+Y, -1, -1, 120,
+
+sub_solve_pos3_3,
+R, -1, -1, reg_sensor,
+=,  0,  0, 3,
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_pos3_3,  
+S, -1, -1, sub_solve_reel0,  
+H, -1, -1, arg_10,
+Y, -1, -1, 120,
+
+sub_solve_reel0,
+R, -1, -1, reg_sensor,          
+=,  1, 0, -1,
+H, -1, -1, arg_10k,
+Y, -1, -1, 120,
+A, -1, -1, sub_solve_reel0,  
+
+pt10, 
+0, -1,  0, -1,                     
+J, arg_up, 0, -1,
+I, -1, -1,  1,                      
+H, -1, -1, arg_dirty,          
+T, -1, -1, out_digit3,
+S, -1, -1, sub_pulse_10,
+
+pt100, 
+0, -1,  0, -1,                     
+J, arg_up, 0, -1,
+I, -1, -1,  1,                      
+H, -1, -1, arg_dirty,          
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+
+pt1000,
+0, -1,  0, -1,                     
+J, arg_up, 0, -1,
+I, -1, -1,  1,                      
+H, -1, -1, arg_dirty,          
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+ 
+pt500, 
+0, -1,  0, -1,                     
+J, arg_up, 0, -1,
+I, -1, -1, 1,                      
+H, -1, -1, arg_dirty,          
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+T, -1, -1, out_digit2,
+S, -1, -1, sub_pulse_100,
+
+pt5000,
+0, -1,  0, -1,                     
+J, arg_up, 0, -1,
+I, -1, -1, 1,                      
+H, -1, -1, arg_dirty,          
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+T, -1, -1, out_digit1,
+S, -1, -1, sub_pulse_1k,
+
+sub_pulse_10,
+R, -1, -1, reg_10,
+H, -1, -1, arg_10,
+=,  9,  3, 0,                      
+I, -1, -1, 1,                      
+Y, -1, -1, 120,
+J, -1, -1, -1,
+Z, -1, -1, 0,                     
+S, -1, -1, sub_pulse_100,     
+
+sub_pulse_100,
+R, -1, -1, reg_100,
+H, -1, -1, arg_100,
+=,  9,  3, 0,
+I, -1, -1, 1,
+Y, -1, -1, 120,
+J, -1, -1, -1,
+Z, -1, -1, 0,
+S, -1, -1, sub_pulse_1k,  
+-1,
+
+sub_pulse_1k,
+R, -1, -1, reg_1k,
+H, -1, -1, arg_1k,
+=,  9,  3, 0,
+I, -1, -1, 1,
+Y, -1, -1, 120,
+J, -1, -1, -1,
+Z, -1, -1, 0,
+S, -1, -1, sub_pulse_10k,  
+
+sub_pulse_10k,
+R, -1, -1, reg_10k,
+H, -1, -1, arg_10k,
+I, -1, -1, 1,
+Y, -1, -1, 120,
+
+)"""";
+
 
 
 };

@@ -11,6 +11,198 @@
 
 namespace custom_firmware {
 
+const char game_bytecode[] = R""""(
+init, press, release, sub_wait_players, sub_wait_reset, sub_loop, \
+sub_ball_loop, sub_player_loop, sub_core, sub_wait_playing, sub_wait_collecting
+out_init, out_enable, out_counter_reset, out_players_zero, out_ball_zero,\
+out_player_zero, out_ball_adv, out_player_adv, out_3bonus, out_collect,\
+out_kickoff, out_over, out_players_adv
+arg_enabled, arg_collecting, arg_again, arg_counter0, arg_counter1,\
+arg_counter2, arg_counter3, arg_counter4, arg_counter5
+reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
+reg_ball, reg_ball_cntr
+
+press
+R, -1, -1, reg_ball_cntr
+>,  0, -1, 0
+R, -1, -1, reg_no_of_players
+=,  6,  0, 2
+R, -1, -1, reg_max_players
+=,  6, -1, 0
+R, -1, -1, reg_no_of_players
+=,  5,  0, 2
+R, -1, -1, reg_max_players
+=,  5, -1, 0
+R, -1, -1, reg_no_of_players
+=,  4,  0, 2
+R, -1, -1, reg_max_players
+=,  4, -1, 0
+R, -1, -1, reg_no_of_players
+=,  3,  0, 2
+R, -1, -1, reg_max_players
+=,  3, -1, 0
+R, -1, -1, reg_no_of_players
+=,  2,  0, 2
+R, -1, -1, reg_max_players
+=,  2, -1, 0
+R, -1, -1, reg_no_of_players
+=,  1,  0, 2
+R, -1, -1, reg_max_players
+=,  1, -1, 0
+R, -1, -1, reg_no_of_players
+T, -1, -1, out_players_adv
+I, -1, -1, 1
+
+init
+0, -1,  0, -1
+P, -1, -1, 1
+T, -1, -1, out_init
+Y, -1, -1, 100
+R, -1, -1, 0
+D, -1, -1, reg_no_of_balls
+R, -1, -1, 1
+D, -1, -1, reg_max_players
+R, -1, -1, 0
+Z, -1, -1, 0
+A, -1, -1, sub_loop
+
+sub_loop
+T, -1, -1, out_over
+R, -1, -1, reg_ball_cntr
+Z, -1, -1, 0
+R, -1, -1, reg_no_of_players
+Z, -1, -1, 0
+S, -1, -1, sub_wait_players
+Y, -1, -1, 100
+T, -1, -1, out_init
+T, -1, -1, out_players_zero
+T, -1, -1, out_ball_zero
+T, -1, -1, out_counter_reset
+S, -1, -1, sub_wait_reset
+R, -1, -1, reg_no_of_balls
+D, -1, -1, reg_ball
+T, -1, -1, out_player_zero
+S, -1, -1, sub_ball_loop
+A, -1, -1, sub_loop
+
+sub_ball_loop
+R, -1, -1, reg_no_of_players
+D, -1, -1, reg_player
+T, -1, -1, out_player_zero
+Y, -1, -1, 10
+S, -1, -1, sub_player_loop
+Y, -1, -1, 10
+R, -1, -1, reg_ball
+I, -1, -1, -1
+=,  0, -1, 0
+T, -1, -1, out_ball_adv
+A, -1, -1, sub_ball_loop
+
+sub_player_loop
+S, -1, -1, sub_core
+J, arg_again, -2, 0
+R, -1, -1, reg_player
+I, -1, -1, -1
+=,  0, -1, 0
+T, -1, -1, out_player_adv
+A, -1, -1, sub_player_loop
+
+sub_core
+Y, -1, -1, 500
+R, -1, -1, reg_ball
+T,  1,  out_3bonus, -1
+T, -1, -1, out_init
+Y, -1, -1, 100
+T, -1, -1, out_kickoff
+Y, -1, -1, 1000
+T, -1, -1, out_enable
+Y, -1, -1, 100
+S, -1, -1, sub_wait_playing
+Y, -1, -1, 100
+T, -1, -1, out_collect
+Y, -1, -1, 100
+S, -1, -1, sub_wait_collecting
+Y, -1, -1, 100
+R, -1, -1, reg_ball_cntr
+I, -1, -1, 1
+=,  1,  0, -1
+R, -1, -1, reg_no_of_players
+D, -1, -1, reg_player
+
+sub_wait_players
+R, -1, -1, reg_no_of_players
+Y, -1, -1, 10
+A,  0, sub_wait_players, -1
+
+sub_wait_reset
+Y, -1, -1, 100
+J, arg_counter0, -2, 0
+J, arg_counter1, -3, 0
+J, arg_counter2, -4, 0
+J, arg_counter3, -5, 0
+J, arg_counter4, -6, 0
+J, arg_counter5, -7, 0
+
+sub_wait_playing
+Y, -1, -1, 100
+J, arg_enabled, -2, -1
+
+sub_wait_collecting
+Y, -1, -1, 100
+J, arg_collecting, -2, -1
+)"""";
+
+const char game_symbin[] = { 
+  "\x78\x56\x34\x12\x8c\x00\x00\x00" "init\0press\0release\0sub_wait_players\0sub_wait_reset\0sub_loop\0sub_ball_loop\0sub_player_loop\0sub_core\0sub_wait_playing\0sub_wait_collecting\0\0\0\0\0"
+  "\x78\x56\x34\x12\xb0\x00\x00\x00" "out_init\0out_enable\0out_counter_reset\0out_players_zero\0out_ball_zero\0out_player_zero\0out_ball_adv\0out_player_adv\0out_3bonus\0out_collect\0out_kickoff\0out_over\0out_players_adv\0\0\0\0"
+  "\x78\x56\x34\x12\x74\x00\x00\x00" "arg_enabled\0arg_collecting\0arg_again\0arg_counter0\0arg_counter1\0arg_counter2\0arg_counter3\0arg_counter4\0arg_counter5\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "reg_state\0reg_max_players\0reg_no_of_players\0reg_player\0reg_no_of_balls\0reg_ball\0reg_ball_cntr\0\0"
+};
+
+const uint16_t game_hexbin[] = { 
+  0x0083, 0x000D, 0x0000, 0x0195, 0x01A3, 0x00B1, 0x00F7, 0x0125, 0x0143, 0x01C1, 0x01CB, 0xFFFF, 
+  0x0001, 0x0052, 0xFFFF, 0xFFFF, 0x0006, 0x003E, 0x0000, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0002, 0x003D, 0x0006, 0x0000, 0x0002, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0006, 0xFFFF, 
+  0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0002, 0x003D, 0x0005, 0x0000, 0x0002, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0001, 0x003D, 0x0005, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0002, 0x003D, 0x0004, 0x0000, 
+  0x0002, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0004, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0002, 0x003D, 0x0003, 0x0000, 0x0002, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0003, 0xFFFF, 
+  0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0002, 0x003D, 0x0002, 0x0000, 0x0002, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0001, 0x003D, 0x0002, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0002, 0x003D, 0x0001, 0x0000, 
+  0x0002, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0001, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0002, 0x0054, 0xFFFF, 0xFFFF, 0x000C, 0x0049, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0000, 0x0030, 
+  0xFFFF, 0x0000, 0xFFFF, 0x0050, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0059, 
+  0xFFFF, 0xFFFF, 0x0064, 0x0052, 0xFFFF, 0xFFFF, 0x0000, 0x0044, 0xFFFF, 0xFFFF, 0x0004, 0x0052, 
+  0xFFFF, 0xFFFF, 0x0001, 0x0044, 0xFFFF, 0xFFFF, 0x0001, 0x0052, 0xFFFF, 0xFFFF, 0x0000, 0x005A, 
+  0xFFFF, 0xFFFF, 0x0000, 0x0041, 0xFFFF, 0xFFFF, 0x0005, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 
+  0x000B, 0x0052, 0xFFFF, 0xFFFF, 0x0006, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0002, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0003, 0x0059, 0xFFFF, 0xFFFF, 
+  0x0064, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0x0053, 0xFFFF, 0xFFFF, 0x0004, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0004, 0x0044, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0x0053, 0xFFFF, 0xFFFF, 
+  0x0006, 0x0041, 0xFFFF, 0xFFFF, 0x0005, 0xFFFF, 0x0006, 0x0052, 0xFFFF, 0xFFFF, 0x0002, 0x0044, 
+  0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0x0059, 0xFFFF, 0xFFFF, 0x000A, 0x0053, 
+  0xFFFF, 0xFFFF, 0x0007, 0x0059, 0xFFFF, 0xFFFF, 0x000A, 0x0052, 0xFFFF, 0xFFFF, 0x0005, 0x0049, 
+  0xFFFF, 0xFFFF, 0xFFFF, 0x003D, 0x0000, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0006, 0x0041, 
+  0xFFFF, 0xFFFF, 0x0006, 0xFFFF, 0x0007, 0x0053, 0xFFFF, 0xFFFF, 0x0008, 0x004A, 0x0002, 0xFFFE, 
+  0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0003, 0x0049, 0xFFFF, 0xFFFF, 0xFFFF, 0x003D, 0x0000, 0xFFFF, 
+  0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0007, 0x0041, 0xFFFF, 0xFFFF, 0x0007, 0xFFFF, 0x0008, 0x0059, 
+  0xFFFF, 0xFFFF, 0x01F4, 0x0052, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 0x0001, 0x0008, 0xFFFF, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0000, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x0054, 0xFFFF, 0xFFFF, 0x000A, 0x0059, 
+  0xFFFF, 0xFFFF, 0x03E8, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x0053, 
+  0xFFFF, 0xFFFF, 0x0009, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x0054, 0xFFFF, 0xFFFF, 0x0009, 0x0059, 
+  0xFFFF, 0xFFFF, 0x0064, 0x0053, 0xFFFF, 0xFFFF, 0x000A, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x0052, 
+  0xFFFF, 0xFFFF, 0x0006, 0x0049, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0001, 0x0000, 0xFFFF, 0x0052, 
+  0xFFFF, 0xFFFF, 0x0002, 0x0044, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0003, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0002, 0x0059, 0xFFFF, 0xFFFF, 0x000A, 0x0041, 0x0000, 0x0003, 0xFFFF, 0xFFFF, 0x0004, 0x0059, 
+  0xFFFF, 0xFFFF, 0x0064, 0x004A, 0x0003, 0xFFFE, 0x0000, 0x004A, 0x0004, 0xFFFD, 0x0000, 0x004A, 
+  0x0005, 0xFFFC, 0x0000, 0x004A, 0x0006, 0xFFFB, 0x0000, 0x004A, 0x0007, 0xFFFA, 0x0000, 0x004A, 
+  0x0008, 0xFFF9, 0x0000, 0xFFFF, 0x0009, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x004A, 0x0000, 0xFFFE, 
+  0xFFFF, 0xFFFF, 0x000A, 0x0059, 0xFFFF, 0xFFFF, 0x0064, 0x004A, 0x0001, 0xFFFE, 0xFFFF, 0xFFFF, 
+  0xFFFF
+};
+
+
 enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, SUB_GAME_WAIT_PLAYERS, SUB_GAME_WAIT_RESET, SUB_GAME_LOOP,
          SUB_GAME_BALL_LOOP, SUB_GAME_PLAYER_LOOP, SUB_GAME_CORE, SUB_GAME_WAIT_PLAYING, SUB_GAME_WAIT_COLLECTING }; 
 enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
@@ -21,192 +213,6 @@ enum { ARG_GAME_ENABLED, ARG_GAME_COLLECTING, ARG_GAME_AGAIN, ARG_GAME_COUNTER0,
 enum { REG_GAME_STATE, REG_GAME_MAX_PLAYERS, REG_GAME_NO_OF_PLAYERS, REG_GAME_PLAYER, REG_GAME_NO_OF_BALLS, 
          REG_GAME_BALL, REG_GAME_BALL_CNTR };
 
-const char game_symbols[] = {
-  "INIT, PRESS, RELEASE, SUB_WAIT_PLAYERS, SUB_WAIT_RESET, SUB_LOOP,"
-    "SUB_BALL_LOOP, SUB_PLAYER_LOOP, SUB_CORE, SUB_WAIT_PLAYING, SUB_WAIT_COLLECTING\n"
-  "OUT_INIT, OUT_ENABLE, OUT_COUNTER_RESET, OUT_PLAYERS_ZERO, OUT_BALL_ZERO,"
-    "OUT_PLAYER_ZERO, OUT_BALL_ADV, OUT_PLAYER_ADV, OUT_3BONUS, OUT_COLLECT,"
-    "OUT_KICKOFF, OUT_OVER, OUT_PLAYERS_ADV\n" 
-  "ARG_ENABLED, ARG_COLLECTING, ARG_AGAIN, ARG_COUNTER0, ARG_COUNTER1," 
-     "ARG_COUNTER2, ARG_COUNTER3, ARG_COUNTER4, ARG_COUNTER5\n"
-  "REG_STATE, REG_MAX_PLAYERS, REG_NO_OF_PLAYERS, REG_PLAYER, REG_NO_OF_BALLS," 
-      "REG_BALL, REG_BALL_CNTR\n"
-};
-
-const char game_symbols_in[] = 
-  "INIT\0PRESS\0RELEASE\0SUB_WAIT_PLAYERS\0SUB_WAIT_RESET\0SUB_LOOP\0"
-    "SUB_BALL_LOOP\0SUB_PLAYER_LOOP\0SUB_CORE\0SUB_WAIT_PLAYING\0SUB_WAIT_COLLECTING\0\0";
-
-const char game_symbols_out[] = 
-  "OUT_INIT\0OUT_ENABLE\0OUT_COUNTER_RESET\0OUT_PLAYERS_ZERO\0OUT_BALL_ZERO\0"
-    "OUT_PLAYER_ZERO\0OUT_BALL_ADV\0OUT_PLAYER_ADV\0OUT_3BONUS\0OUT_COLLECT\0"
-    "OUT_KICKOFF\0OUT_OVER\0OUT_PLAYERS_ADV\0\0";
-     
-const char game_symbols_arg[] = 
-  "ARG_ENABLED\0ARG_COLLECTING\0ARG_AGAIN\0ARG_COUNTER0\0ARG_COUNTER1\0" 
-     "ARG_COUNTER2\0ARG_COUNTER3\0ARG_COUNTER4\0ARG_COUNTER5\0\0";
-     
-const char game_symbols_reg[] = 
-  "REG_STATE\0REG_MAX_PLAYERS\0REG_NO_OF_PLAYERS\0REG_PLAYER\0REG_NO_OF_BALLS\0" 
-      "REG_BALL\0REG_BALL_CNTR\0\0";
-
-
-int16_t game_firmware[] = {
-  IN_GAME_INIT, 
-  IN_GAME_PRESS, 
-  IN_GAME_RELEASE, 
-  SUB_GAME_WAIT_PLAYERS, 
-  SUB_GAME_WAIT_RESET,
-  SUB_GAME_LOOP, 
-  SUB_GAME_BALL_LOOP, 
-  SUB_GAME_PLAYER_LOOP, 
-  SUB_GAME_CORE,
-  SUB_GAME_WAIT_PLAYING, 
-  SUB_GAME_WAIT_COLLECTING,
-  -1,
-          
-  IN_GAME_PRESS,
-  'R', -1, -1, REG_GAME_BALL_CNTR,
-  '>',  0, -1, 0,
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 6 && max == 6 ) exit
-  '=',  6,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  6, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 5 && max == 5 ) exit
-  '=',  5,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  5, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 4 && max == 4 ) exit
-  '=',  4,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  4, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 3 && max == 3 ) exit
-  '=',  3,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  3, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 2 && max == 2 ) exit
-  '=',  2,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  2, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // if ( no == 1 && max == 1 ) exit
-  '=',  1,  0, 2, 
-  'R', -1, -1, REG_GAME_MAX_PLAYERS,
-  '=',  1, -1, 0,   
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // no++
-  'T', -1, -1, OUT_GAME_PLAYERS_ADV,
-  'I', -1, -1, 1,
-  //'U', -1, -1, -1,
-  -1,
-
-  IN_GAME_INIT,
-  '0', -1,  0, -1, // Force primary core
-  'P', -1, -1, 1,  // Persistent
-  'T', -1, -1, OUT_GAME_INIT, 
-  'Y', -1, -1, 100,
-  'R', -1, -1, 0,
-  'D', -1, -1, REG_GAME_NO_OF_BALLS,  // Set NO_OF_BALLS from first constructor arg
-  'R', -1, -1, 1,
-  'D', -1, -1, REG_GAME_MAX_PLAYERS, // Set MAX_PLAYERS from second constructor arg
-  'R', -1, -1, 0,
-  'Z', -1, -1, 0,
-  'A', -1, -1, SUB_GAME_LOOP,
-  -1,
-
-  SUB_GAME_LOOP,  
-  'T', -1, -1, OUT_GAME_OVER,      
-  'R', -1, -1, REG_GAME_BALL_CNTR,
-  'Z', -1, -1, 0, 
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS,
-  'Z', -1, -1, 0,
-  'S', -1, -1, SUB_GAME_WAIT_PLAYERS,
-  'Y', -1, -1, 100,
-  'T', -1, -1, OUT_GAME_INIT,
-  'T', -1, -1, OUT_GAME_PLAYERS_ZERO,
-  'T', -1, -1, OUT_GAME_BALL_ZERO,
-  'T', -1, -1, OUT_GAME_COUNTER_RESET,
-  'S', -1, -1, SUB_GAME_WAIT_RESET,
-  'R', -1, -1, REG_GAME_NO_OF_BALLS,   
-  'D', -1, -1, REG_GAME_BALL,      // ball = no_of_balls
-  'T', -1, -1, OUT_GAME_PLAYER_ZERO,
-  'S', -1, -1, SUB_GAME_BALL_LOOP,
-  'A', -1, -1, SUB_GAME_LOOP,
-  -1,
-  
-  SUB_GAME_BALL_LOOP,
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, 
-  'D', -1, -1, REG_GAME_PLAYER,    // player = no_of_players
-  'T', -1, -1, OUT_GAME_PLAYER_ZERO,
-  'Y', -1, -1, 10,
-  'S', -1, -1, SUB_GAME_PLAYER_LOOP,
-  'Y', -1, -1, 10,
-  'R', -1, -1, REG_GAME_BALL,
-  'I', -1, -1, -1,                 // ball--
-  '=',  0, -1, 0,                  // Exit if ball == 0
-  'T', -1, -1, OUT_GAME_BALL_ADV,
-  'A', -1, -1, SUB_GAME_BALL_LOOP,
-  -1,
-  
-  SUB_GAME_PLAYER_LOOP,
-  'S', -1, -1, SUB_GAME_CORE,
-  'J', ARG_GAME_AGAIN, -2, 0,
-  'R', -1, -1, REG_GAME_PLAYER,
-  'I', -1, -1, -1,                 // player--
-  '=',  0, -1, 0,                  // Exit if player == 0
-  'T', -1, -1, OUT_GAME_PLAYER_ADV,
-  'A', -1, -1, SUB_GAME_PLAYER_LOOP, 
-  -1,
-  
-  SUB_GAME_CORE,
-  'Y', -1, -1, 500,               
-  'R', -1, -1, REG_GAME_BALL,
-  'T',  1,  OUT_GAME_3BONUS, -1,
-  'T', -1, -1, OUT_GAME_INIT,
-  'Y', -1, -1, 100,               
-  'T', -1, -1, OUT_GAME_KICKOFF,
-  'Y', -1, -1, 1000,               
-  'T', -1, -1, OUT_GAME_ENABLE,
-  'Y', -1, -1, 100,               
-  'S', -1, -1, SUB_GAME_WAIT_PLAYING,
-  'Y', -1, -1, 100,               
-  'T', -1, -1, OUT_GAME_COLLECT,
-  'Y', -1, -1, 100,               
-  'S', -1, -1, SUB_GAME_WAIT_COLLECTING,
-  'Y', -1, -1, 100,               
-  'R', -1, -1, REG_GAME_BALL_CNTR,     // Freeze the player add button
-  'I', -1, -1, 1,                          
-  '=',  1,  0, -1,                     // At the end of the 1st ball of the 1st player:
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS, // Initialize player register 
-  'D', -1, -1, REG_GAME_PLAYER,
-  -1,
-  
-  SUB_GAME_WAIT_PLAYERS,
-  'R', -1, -1, REG_GAME_NO_OF_PLAYERS,
-  'Y', -1, -1, 10,                 // Wait until game_players > 0
-  'A',  0, SUB_GAME_WAIT_PLAYERS, -1,
-  -1,
-  
-  SUB_GAME_WAIT_RESET,
-  'Y', -1, -1, 100,                // Wait until all counter reset leds are off
-  'J', ARG_GAME_COUNTER0, -2, 0,
-  'J', ARG_GAME_COUNTER1, -3, 0,
-  'J', ARG_GAME_COUNTER2, -4, 0,
-  'J', ARG_GAME_COUNTER3, -5, 0,
-  'J', ARG_GAME_COUNTER4, -6, 0,
-  'J', ARG_GAME_COUNTER5, -7, 0,   // Max 6 counters
-  -1,
-  
-  SUB_GAME_WAIT_PLAYING,
-  'Y', -1, -1, 100,               
-  'J', ARG_GAME_ENABLED, -2, -1,
-  -1,
-  
-  SUB_GAME_WAIT_COLLECTING,
-  'Y', -1, -1, 100,               
-  'J', ARG_GAME_COLLECTING, -2, -1,
-  -1,
-
--1,
-};
 
 enum { IN_ANI_INIT, IN_ANI_CYCLE };
 enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 

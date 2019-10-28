@@ -46,7 +46,8 @@ int16_t Library::compile( const char label[], const char src[] ) {
       token = strtok(NULL, sep );
     }
     src = cpunfold( buf, src ) + 1;
-    
+        Serial.println( "compile sym w/malloc" );
+
     symbolic_machine_table* sym = (symbolic_machine_table*) malloc( sizeof( symbolic_machine_table ) + len + 1 );
     sym->next = NULL;
     sym->offset = 0;
@@ -85,6 +86,8 @@ int16_t Library::compile( const char label[], const char src[] ) {
     }
   }
   wordcnt += 2;
+      Serial.println( "compile code w/malloc" );
+
   int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
   memset( pcode, 0, wordcnt * 2 );
   
@@ -106,7 +109,8 @@ int16_t Library::compile( const char label[], const char src[] ) {
       if ( rescnt == 0 && strlen( token ) == 1 ) {
         opcode = token[0]; 
       }
-      res[rescnt] = findSymbol( lib_cnt, token );
+      res[rescnt] = findSymbol( lib_cnt, token ); 
+      if ( strlen( token ) > 1 && find_error ) Serial.printf( "Compile error: token '%s' not found\n", token );
       //Serial.printf( "%s = %d\n", token, res[rescnt] ); 
       token = strtok(NULL, sep );
       rescnt++;
@@ -129,34 +133,24 @@ int16_t Library::compile( const char label[], const char src[] ) {
   return lib_cnt++;
 }
 
-Library& Library::hexdump( Stream& stream, int16_t idx ) {
-  int16_t* p = lib[idx].code;
-  while ( *p != -1 ) {
-    stream.printf( "0x%04X, ", *p++ );
-  }
-  stream.println();
-  stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // -1 
-  while ( *p != -1 ) {
-    stream.printf( "0x%04X,\n", *p++ ); // procedure id
-    while ( *p != -1 ) {
-      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
-      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
-      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
-      stream.printf( "0x%04X, ", (uint16_t)*p++ );  
-      stream.println();
-    }
-    stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // -1  
-  }
-  stream.printf( "0x%04X,\n", (uint16_t)*p++ ); // final -1  
+int16_t Library::import( const char label[], const char symbols[], const uint16_t code[] ) {
+  strcpy( lib[lib_cnt].label, label );
+  lib[lib_cnt].label[strlen(label)] = '\0';
+  lib[lib_cnt].symbols = (symbolic_machine_table*) symbols;
+  lib[lib_cnt].code = (int16_t*) code;
+  return lib_cnt++;
+}
+
+Library& Library::printHexWord( Stream* stream, int16_t v, bool last /* = false */ ) {
+  if ( last ) 
+    stream->printf( "0x%04X", (uint16_t)v );
+  else 
+    stream->printf( "0x%04X, ", (uint16_t)v );
+  if ( ++word_cnt % 12 == 0 ) stream->println();
   return *this;
 }
 
-Library& Library::hexdump(  Stream& stream, const char label[] ) {
-  hexdump ( stream, index( label ) );
-  return *this;
-}
-
-Library& Library::symdump( Stream& stream, int16_t slot ) {
+Library& Library::hexdump( Stream* stream, int16_t slot ) {
   char buf[1024];
   uint8_t last = 0;
   for ( int16_t b = 0; b < 4; b++ ) {
@@ -174,25 +168,46 @@ Library& Library::symdump( Stream& stream, int16_t slot ) {
       cnt += strlen( s ) + 1;
     }
     cnt++;
-    if ( b == last ) {
-      cnt = 0;
-    } else {
+    if ( b < last ) {
       while ( cnt % 4 != 0 ) {
         strcat( buf, "\\0" );
         cnt++;
       }
     }
-    stream.printf( "\"\\x12\\x34\\x56\\x78\\x00\\x00\\x%02x\\x%02x\" \"%s\\0\"\n", 
-                      cnt >> 8, cnt & 0x00FF, buf );
+    if ( b == last ) {
+      stream->printf( "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\" \"%s\\0\"\n", buf );      
+    } else {
+      // Portability note: uint32_t byte order assumed
+      stream->printf( "\"\\x78\\x56\\x34\\x12\\x%02x\\x%02x\\x00\\x00\" \"%s\\0\"\n", 
+                      cnt & 0x00FF, cnt >> 8, buf );
+    }
+  } 
+  stream->println();
+  int16_t* p = lib[slot].code;
+  word_cnt = 0;
+  while ( *p != -1 ) {
+    printHexWord( stream, *p++ );
   }
+  printHexWord( stream, *p++ );
+  while ( *p != -1 ) {
+    printHexWord( stream, *p++ );
+    while ( *p != -1 ) {
+      printHexWord( stream, *p++ );
+      printHexWord( stream, *p++ );
+      printHexWord( stream, *p++ );
+      printHexWord( stream, *p++ );
+    }
+    printHexWord( stream, *p++ );
+  }
+  printHexWord( stream, *p++, true );
+  stream->println();
   return *this;
 }
 
-Library& Library::symdump(  Stream& stream, const char label[] ) {
-  symdump ( stream, index( label ) );
+Library& Library::hexdump(  Stream* stream, const char label[] ) {
+  hexdump ( stream, index( label ) );
   return *this;
 }
-
 
 int16_t* Library::codePtr( int16_t idx ) {
   return lib[idx].code;
@@ -224,6 +239,7 @@ int16_t Library::index( const char label[] ) {
 
 int16_t Library::findSymbol( int16_t slot, const char s[] ) {
   symbolic_machine_table* p = lib[slot].symbols;
+  find_error = 0;
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
   while ( p != NULL ) {
@@ -231,6 +247,7 @@ int16_t Library::findSymbol( int16_t slot, const char s[] ) {
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table) + p->offset ) : p->next;
   }
+  find_error = 1;
   return 0;
 }
 
@@ -287,6 +304,15 @@ int16_t Library::findString( const char s[], const char sym[] ) {
   }
   return *p == '\0' ? -1 : cnt;
 }
+
+int16_t Library::count() {
+  return lib_cnt;
+}
+
+char* Library::label( int16_t slot ) {
+  return lib[slot].label;
+}
+
 
 /*
 

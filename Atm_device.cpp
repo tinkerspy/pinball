@@ -4,7 +4,9 @@
  * Add extra initialization code
  */
 
-Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_group, int16_t led_group, int16_t* device_script,
+// Note: device_script cannot be altered 
+
+Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_group, int16_t led_group, const int16_t* device_script,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
@@ -69,7 +71,7 @@ int16_t Atm_device::outputEvent( int16_t n ) {
   return connectors[n].event;
 }
 
-Atm_device& Atm_device::set_script( int16_t* script ) {
+Atm_device& Atm_device::set_script( const int16_t* script ) {
   this->script = script;
   parse_code( this->script );
   start_code( 0 );
@@ -165,27 +167,10 @@ void Atm_device::action( int id ) {
   }
 }
 
-int16_t Atm_device::parse_code( int16_t* device_script ) {
-  int16_t* p = device_script;
-  while ( p[0] != -1 ) *p++ = 0;
+int16_t Atm_device::parse_code( const int16_t* device_script ) {
+  const int16_t* p = device_script;
+  while ( p[0] != -1 ) p++; // <<<<
   numberOfInputs = p - device_script;
-  p++;
-  while ( p[0] != -1 ) {
-    int iid = p[0];
-    if ( iid > -1 && iid < numberOfInputs ) {
-      device_script[iid] = ( p - device_script ) + 1;
-    } else {
-      if ( callback_trace ) 
-        stream_trace->printf( "Parse error: illegal input id %d (max input number: %d)\n", iid, numberOfInputs );        
-    }
-    p++;
-    while ( p[0] != -1 ) {
-      //if ( callback_trace ) 
-      //  stream_trace->printf( "Atm_device parse %03d -> %d: %c %d ? %d : %d\n", iid, p - device_script, p[0], p[1], p[2], p[3] );
-      p += 4;
-    }
-    p++;
-  }
   return p - device_script;
 }
 

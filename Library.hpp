@@ -26,15 +26,19 @@ class Library {
   int16_t* codePtr( const char label[] );
   symbolic_machine_table* symbolPtr( const char label[] );
   int16_t index( const char label[] );
-  Library& hexdump( Stream& stream, int16_t idx );
-  Library& hexdump( Stream& stream, const char label[] );
-  Library& symdump( Stream& stream, int16_t idx );
-  Library& symdump( Stream& stream, const char label[] );
+  Library& hexdump( Stream* stream, int16_t idx );
+  Library& hexdump( Stream* stream, const char label[] );
+  int16_t import( const char label[], const char symbols[], const uint16_t code[] );
+  int16_t count();
+  char* label( int16_t slot );
 
   protected:
+  Library& printHexWord( Stream* stream, int16_t v, bool last = false );
   library_record lib[MAX_LIBRARY_ENTRIES];
   int16_t lib_cnt = 0;
   const char sep[3] = ", ";
   char null_str[2] = "";
-
+  int16_t word_cnt = 0;
+  uint8_t find_error = 0;
+  
 };

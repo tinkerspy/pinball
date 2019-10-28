@@ -3,6 +3,7 @@
 // Parses a string of \n separated symbol banks
 
 Symbolic_Machine& Symbolic_Machine::loadSymbols( const char s[] ) {
+    Serial.println( "loadString w/malloc" );
   while ( *s != '\0' ) {
     s = loadString( s );
   }
@@ -10,6 +11,7 @@ Symbolic_Machine& Symbolic_Machine::loadSymbols( const char s[] ) {
 }
 
 Symbolic_Machine& Symbolic_Machine::loadSymbols( symbolic_machine_table* sym ) {
+    Serial.println( "loadString no malloc" );
   symbols = sym;    
   return *this; 
 }

@@ -21,8 +21,8 @@ Library library;
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_LS, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
-const char cmdlist[] = "ls stat ts tc tr press release init info";
+enum { CMD_LS, CMD_LL, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
+const char cmdlist[] = "ls ll hd stat ts tc tr press release init info";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -45,6 +45,18 @@ void cmd_callback( int idx, int v, int up ) {
           }
         cmd[idx].stream->println(); 
       }
+      return;
+    case CMD_LL:
+      {  
+        for ( int16_t i = 0; i < library.count(); i++ ) {
+          cmd[idx].stream->printf( "%d: %s\n", i, library.label( i )); 
+        }
+        cmd[idx].stream->println(); 
+      }
+      return;
+    case CMD_HD:
+      library.hexdump( cmd[idx].stream, cmd[idx].arg( 1 ) );
+      cmd[idx].stream->println(); 
       return;
     case CMD_STAT:
       cmd[idx].stream->printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
@@ -224,9 +236,14 @@ void setup() {
   int32_t base_ram = FreeRam();
   Serial.println( "init devices" ); delay( 100 );
 
-  Serial.printf( "Compile -> %d\n", library.compile( "bumper", bumper_bytecode ) );
-  Serial.printf( "Compile -> %d\n", library.compile( "dual_target", dual_target_bytecode ) );
+  library.import( "bumper", bumper_symbin, bumper_hexbin );
+  library.import( "dual_target", dual_target_symbin, dual_target_hexbin );
+  library.import( "game", game_symbin, game_hexbin );
 
+ // library.compile( "game", game_bytecode );
+
+  // NIETS WERKT TOT ALLE FIRMWARE VIA DE LIBRARY LOOPT!!! (parse_code() initialiseert de jumptable niet meer)
+  
 #ifdef SYMBOLS
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).loadSymbols( ledbank_symbols );
   playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).loadSymbols( counter_em4d1w_symbols );
@@ -278,7 +295,8 @@ void setup() {
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
   playfield.device( GI, COIL_GI, ledbank_firmware, 1 ); // Default ON
-  playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ); //.loadSymbols( game_symbols );
+  playfield.device( FRONTBTN, LED_GAME_GRP, library.codePtr( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS )
+    .loadSymbols( library.symbolPtr( "game" ) );
 #endif
 
   Serial.println( "chain devices" ); delay( 100 );

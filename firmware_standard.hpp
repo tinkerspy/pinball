@@ -1009,12 +1009,6 @@ int16_t counter_em4d1w_firmware[] = {
   -1,
 };
 
-/*
-library->add( "bumper_bytecode", bumper_bytecode );
-dev.loadSymbols( library->symbols( "bumper_bytecode" ) );
-dev.loadCode( library->code( "bumper_bytecode" ) );
-*/
-
 const char bumper_bytecode[] = R""""(
 init, press, release, turn_on, turn_off
 out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
@@ -1044,19 +1038,23 @@ T, -1, -1, out_light_off
  
 )"""";
 
+// library.import( "bumper", bumper_hexbin, bumper_symbin );
+// playfield.device( BUMPER_A, LED_BUMPER_A, library.codePtr( "bumper" ) )
+//    .loadSymbols( library.symbolPtr( "bumper" ) );
+
 const uint16_t bumper_hexbin[] = {
   0x0007, 0x0015, 0x0000, 0x002F, 0x0039, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 
   0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 
   0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x004A, 0x0001, 0x0000, 0x0002, 0x0054, 0xFFFF, 0xFFFF, 
   0x0001, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0xFFFF, 0x0003, 0x0048, 
   0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0004, 0x004C, 0xFFFF, 0xFFFF, 
-  0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0xFFFF 
+  0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0xFFFF
 };
 
 const char bumper_symbin[] = { 
-  "\x12\x34\x56\x78\x00\x00\x00\x28" "init\0press\0release\0turn_on\0turn_off\0\0\0\0\0"
-  "\x12\x34\x56\x78\x00\x00\x00\x44" "out_score\0out_score_lit\0out_score_unlit\0out_light_on\0out_light_off\0\0"
-  "\x12\x34\x56\x78\x00\x00\x00\x00" "arg_coil\0arg_led\0\0"
+  "\x78\x56\x34\x12\x28\x00\x00\x00" "init\0press\0release\0turn_on\0turn_off\0\0\0\0\0"
+  "\x78\x56\x34\x12\x44\x00\x00\x00" "out_score\0out_score_lit\0out_score_unlit\0out_light_on\0out_light_off\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_coil\0arg_led\0\0"
 };
 
 const char dual_target_bytecode[] = R""""(
@@ -1102,13 +1100,13 @@ const uint16_t dual_target_hexbin[] = {
   0x004A, 0x0001, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 
   0x004A, 0x0000, 0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0x0005, 0x004C, 0xFFFF, 
   0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0x0054, 0xFFFF, 
-  0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0xFFFF, 0xFFFF 
+  0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0xFFFF, 0xFFFF
 };
 
 const char dual_target_symbin[] = { 
-  "\x12\x34\x56\x78\x00\x00\x00\x2c" "init\0press0\0release0\0press1\0release1\0clear\0\0"
-  "\x12\x34\x56\x78\x00\x00\x00\x54" "out_led0_on\0out_led1_on\0out_led0_off\0out_led1_off\0out_all_on\0out_all_off\0out_score\0\0"
-  "\x12\x34\x56\x78\x00\x00\x00\x00" "arg_led0\0arg_led1\0\0"
+  "\x78\x56\x34\x12\x2c\x00\x00\x00" "init\0press0\0release0\0press1\0release1\0clear\0\0"
+  "\x78\x56\x34\x12\x54\x00\x00\x00" "out_led0_on\0out_led1_on\0out_led0_off\0out_led1_off\0out_all_on\0out_all_off\0out_score\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_led0\0arg_led1\0\0"
 };
 
 const char counter_em4d1w_bytecode[] = R""""( // 5163 Bytes, compressed to 2404 bytes with compress_bytecode.pl

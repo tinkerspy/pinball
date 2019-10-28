@@ -21,8 +21,8 @@ Library library;
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_PS, CMD_LL, CMD_LO, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
-const char cmdlist[] = "ps ll lo hd stat ts tc tr press release init info";
+enum { CMD_PS, CMD_LL, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
+const char cmdlist[] = "ps ll lo hd stats ts tc tr press release init info reboot";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -68,7 +68,8 @@ void cmd_callback( int idx, int v, int up ) {
       library.hexdump( cmd[idx].stream, cmd[idx].arg( 1 ) );
       cmd[idx].stream->println(); 
       return;
-    case CMD_STAT:
+    case CMD_STATS:
+      cmd[idx].stream->printf( "Uptime: %02d:%02d:%02d (h:m:s)\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
       cmd[idx].stream->printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
       cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
       cmd[idx].stream->printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
@@ -81,7 +82,16 @@ void cmd_callback( int idx, int v, int up ) {
       cmd[idx].stream->printf( "Trace switches: %d\n", atoi( cmd[idx].arg( 1 ) ) );
       return;    
     case CMD_TC:
-      {
+      { // No arg1? turn all device tracing off!
+        if ( strlen( cmd[idx].arg( 1 ) ) == 0 ) {
+          for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
+            if ( playfield.exists( n + 1 ) == 1 ) {
+              playfield.device( n + 1 ).traceCode( *cmd[idx].stream, 0 );
+            }
+          }          
+          cmd[idx].stream->println( "Tracing interrupted\n" );
+          return;
+        }
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t mode = atoi( cmd[idx].arg( 2 ) );
         if ( strlen( cmd[idx].arg( 2 ) ) == 0 ) mode = 1;
@@ -147,6 +157,9 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       return;    
+    case CMD_REBOOT:
+      _reboot_Teensyduino_();
+      return;
     case CMD_INFO: // TODO show firmware label & running/sleeping state!
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
@@ -249,9 +262,12 @@ void setup() {
   library.import( "bumper", bumper_symbin, bumper_hexbin );
   library.import( "dual_target", dual_target_symbin, dual_target_hexbin );
   library.import( "game", game_symbin, game_hexbin );
+  library.import( "counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
 
- // library.compile( "game", game_bytecode );
+  library.compile( "ledbank", ledbank_bytecode );
 
+  //library.hexdump( &Serial, "counter_em4d1w" );
+  
   // NIETS WERKT TOT ALLE FIRMWARE VIA DE LIBRARY LOOPT!!! (parse_code() initialiseert de jumptable niet meer)
   
 #ifdef SYMBOLS
@@ -271,21 +287,21 @@ void setup() {
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware ).loadSymbols( dual_kicker_symbols );
   playfield.device( LOWER, -1, switchbank_firmware ).loadSymbols( switchbank_symbols ); 
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware ).loadSymbols( dual_flipper_symbols );    
-  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware ).loadSymbols( ledbank_symbols );
-  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware ).loadSymbols( ledbank_symbols );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware ).loadSymbols( ledbank_symbols );
-  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware ).loadSymbols( ledbank_symbols );  
+  playfield.device( AGAIN, LED_AGAIN_GRP, library.codePtr( "ledbank" ) ).loadSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, library.codePtr( "ledbank" ) ).loadSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( FEEDER, COIL_FEEDER, library.codePtr( "ledbank" ) ).loadSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( GAME_OVER, LED_GAME_OVER, library.codePtr( "ledbank" ) ).loadSymbols( library.symbolPtr( "ledbank" ) );  
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware ).loadSymbols( scalar_symbols );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware ).loadSymbols( scalar_symbols );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware ).loadSymbols( scalar_symbols );
-  playfield.device( GI, COIL_GI, ledbank_firmware, 1 ).loadSymbols( ledbank_symbols ); // Default ON
+  playfield.device( GI, COIL_GI, library.codePtr( "ledbank" ), 1 ).loadSymbols( library.symbolPtr( "ledbank" ) ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, game_firmware, NUMBER_OF_BALLS, NUMBER_OF_PLAYERS ).loadSymbols( game_symbols );
 #else   
-  playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware );
-  playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ); //.loadSymbols( counter_em4d1w_symbols );
-  playfield.device( COUNTER1, LED_COUNTER1_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER2, LED_COUNTER2_GRP, counter_em4d1w_firmware );
-  playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
+  playfield.device( CHIMES, LED_CHIME_GRP, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( COUNTER, LED_COUNTER0_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
+  playfield.device( COUNTER1, LED_COUNTER1_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
+  playfield.device( COUNTER2, LED_COUNTER2_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
+  playfield.device( COUNTER3, LED_COUNTER3_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware );
   playfield.device( MULTILANE, -1, switchbank_firmware ); 
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
@@ -297,14 +313,14 @@ void setup() {
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
   playfield.device( LOWER, -1, switchbank_firmware ); 
   playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
-  playfield.device( AGAIN, LED_AGAIN_GRP, ledbank_firmware );
-  playfield.device( SAVE_GATE, COIL_SAVE_GATE, ledbank_firmware );
-  playfield.device( FEEDER, COIL_FEEDER, ledbank_firmware );
-  playfield.device( GAME_OVER, LED_GAME_OVER, ledbank_firmware );  
+  playfield.device( AGAIN, LED_AGAIN_GRP, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( SAVE_GATE, COIL_SAVE_GATE, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( FEEDER, COIL_FEEDER, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
+  playfield.device( GAME_OVER, LED_GAME_OVER, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );  
   playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
   playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
-  playfield.device( GI, COIL_GI, ledbank_firmware, 1 ); // Default ON
+  playfield.device( GI, COIL_GI, library.codePtr( "ledbank" ), 1 ).linkSymbols( library.symbolPtr( "ledbank" ) ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, library.codePtr( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS )
     .linkSymbols( library.symbolPtr( "game" ) );
 #endif

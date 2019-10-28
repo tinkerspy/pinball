@@ -285,437 +285,521 @@ enum { // Arguments (leds)
   ARG_OXO_X, ARG_OXO_O, ARG_OXO_TRIPLE, ARG_OXO_COLLECT,
 };
 
-const char tictactoe_symbols[] = 
-  "INIT, OXO_1O, OXO_1X, OXO_2O, OXO_2X, OXO_3O, OXO_3X, OXO_4, OXO_5, OXO_6, OXO_7, OXO_8, OXO_9," 
-    "TOGGLE, COLLECT, SINGLE, TRIPLE SUB_COLLECT, SUB_MATCH_123, SUB_MATCH_456, SUB_MATCH_789,"
-    "SUB_MATCH_147, SUB_MATCH_258, SUB_MATCH_369, SUB_MATCH_159, SUB_MATCH_357, SUB_MATCH_ALL, SUB_CLEAR\n"
-  "OUT_SCORE, OUT_WIN_ROW, OUT_WIN_ALL, OUT_COLLECT\n"
-  "ARG_1A, ARG_1B, ARG_1C, ARG_2A, ARG_2B, ARG_2C, ARG_3A, ARG_3B, ARG_3C, ARG_4A, ARG_4B, ARG_4C,"
-    "ARG_5A, ARG_5B, ARG_5C, ARG_6A, ARG_6B, ARG_6C, ARG_7A, ARG_7B, ARG_7C, ARG_8A, ARG_8B, ARG_8C,"
-    "ARG_9A, ARG_9B, ARG_9C, ARG_X, ARG_O, ARG_TRIPLE, ARG_COLLECT\n";
+const char tictactoe_bytecode[] = R""""(
+init, oxo_1o, oxo_1x, oxo_2o, oxo_2x, oxo_3o, oxo_3x, oxo_4, oxo_5, oxo_6, oxo_7, oxo_8, oxo_9,\
+toggle, collect, single, triple sub_collect, sub_match_123, sub_match_456, sub_match_789,\
+sub_match_147, sub_match_258, sub_match_369, sub_match_159, sub_match_357, sub_match_all, sub_clear
+out_score, out_win_row, out_win_all, out_collect
+arg_1a, arg_1b, arg_1c, arg_2a, arg_2b, arg_2c, arg_3a, arg_3b, arg_3c, arg_4a, arg_4b, arg_4c,\
+arg_5a, arg_5b, arg_5c, arg_6a, arg_6b, arg_6c, arg_7a, arg_7b, arg_7c, arg_8a, arg_8b, arg_8c,\
+arg_9a, arg_9b, arg_9c, arg_x, arg_o, arg_triple, arg_collect
 
-int16_t tictactoe_firmware[] = {
-  IN_OXO_INIT,
-  IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
-  IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
-  IN_OXO_TOGGLE, IN_OXO_COLLECT, IN_OXO_SINGLE, IN_OXO_TRIPLE,
-  SUB_OXO_COLLECT, 
-  SUB_OXO_MATCH_123, SUB_OXO_MATCH_456, SUB_OXO_MATCH_789,
-  SUB_OXO_MATCH_147, SUB_OXO_MATCH_258, SUB_OXO_MATCH_369,
-  SUB_OXO_MATCH_159, SUB_OXO_MATCH_357, 
-  SUB_OXO_MATCH_ALL,
-  SUB_OXO_CLEAR,
-  -1,
 
-  IN_OXO_INIT,
-  'P', -1, -1, 1,
-  'L', -1, -1, ARG_OXO_COLLECT,
-  'S', -1, -1, SUB_OXO_CLEAR,
-  -1,
+init
+P, -1, -1, 1
+L, -1, -1, arg_collect
+S, -1, -1, sub_clear
 
-  IN_OXO_1O, 
-  'J', ARG_OXO_1A, -1, 0, 
-  'J', ARG_OXO_1B, -1, 0, 
-  'H', -1, -1, ARG_OXO_1A, 
-  'H', -1, -1, ARG_OXO_1C, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_147,
-  'S', -1, -1, SUB_OXO_MATCH_159,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_1X, 
-  'J', ARG_OXO_1A, -1, 0, 
-  'J', ARG_OXO_1B, -1, 0, 
-  'H', -1, -1, ARG_OXO_1B, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_147,
-  'S', -1, -1, SUB_OXO_MATCH_159,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_2O, 
-  'J', ARG_OXO_2A, -1, 0, 
-  'J', ARG_OXO_2B, -1, 0, 
-  'H', -1, -1, ARG_OXO_2A, 
-  'H', -1, -1, ARG_OXO_2C, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_258,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_2X, 
-  'J', ARG_OXO_2A, -1, 0, 
-  'J', ARG_OXO_2B, -1, 0, 
-  'H', -1, -1, ARG_OXO_2B, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_258,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_3O, 
-  'J', ARG_OXO_3A, -1, 0, 
-  'J', ARG_OXO_3B, -1, 0, 
-  'H', -1, -1, ARG_OXO_3A, 
-  'H', -1, -1, ARG_OXO_3C, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_369,
-  'S', -1, -1, SUB_OXO_MATCH_357,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_3X, 
-  'J', ARG_OXO_3A, -1, 0, 
-  'J', ARG_OXO_3B, -1, 0, 
-  'H', -1, -1, ARG_OXO_3B, 
-  'S', -1, -1, SUB_OXO_MATCH_123,
-  'S', -1, -1, SUB_OXO_MATCH_369,
-  'S', -1, -1, SUB_OXO_MATCH_357,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
+oxo_1o
+J, arg_1a, -1, 0
+J, arg_1b, -1, 0
+H, -1, -1, arg_1a
+H, -1, -1, arg_1c
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_147
+S, -1, -1, sub_match_159
+S, -1, -1, sub_match_all
 
-  IN_OXO_4, 
-  'J', ARG_OXO_4A, -1, 0, 
-  'J', ARG_OXO_4B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_4B, ARG_OXO_4A, 
-  'H', ARG_OXO_X, ARG_OXO_4B, ARG_OXO_4C, 
-  'S', -1, -1, SUB_OXO_MATCH_147,
-  'S', -1, -1, SUB_OXO_MATCH_456,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_5, 
-  'J', ARG_OXO_5A, -1, 0, 
-  'J', ARG_OXO_5B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_5B, ARG_OXO_5A, 
-  'H', ARG_OXO_X, ARG_OXO_5B, ARG_OXO_5C, 
-  'S', -1, -1, SUB_OXO_MATCH_159,
-  'S', -1, -1, SUB_OXO_MATCH_258,
-  'S', -1, -1, SUB_OXO_MATCH_357,
-  'S', -1, -1, SUB_OXO_MATCH_456,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_6, 
-  'J', ARG_OXO_6A, -1, 0, 
-  'J', ARG_OXO_6B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_6B, ARG_OXO_6A, 
-  'H', ARG_OXO_X, ARG_OXO_6B, ARG_OXO_6C, 
-  'S', -1, -1, SUB_OXO_MATCH_369,
-  'S', -1, -1, SUB_OXO_MATCH_456,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_7, 
-  'J', ARG_OXO_7A, -1, 0, 
-  'J', ARG_OXO_7B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_7B, ARG_OXO_7A, 
-  'H', ARG_OXO_X, ARG_OXO_7B, ARG_OXO_7C, 
-  'S', -1, -1, SUB_OXO_MATCH_789,
-  'S', -1, -1, SUB_OXO_MATCH_147,
-  'S', -1, -1, SUB_OXO_MATCH_357,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_8, 
-  'J', ARG_OXO_8A, -1, 0, 
-  'J', ARG_OXO_8B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_8B, ARG_OXO_8A, 
-  'H', ARG_OXO_X, ARG_OXO_8B, ARG_OXO_8C, 
-  'S', -1, -1, SUB_OXO_MATCH_258,
-  'S', -1, -1, SUB_OXO_MATCH_789,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
-  
-  IN_OXO_9, 
-  'J', ARG_OXO_9A, -1, 0, 
-  'J', ARG_OXO_9B, -1, 0, 
-  'H', ARG_OXO_X, ARG_OXO_9B, ARG_OXO_9A, 
-  'H', ARG_OXO_X, ARG_OXO_9B, ARG_OXO_9C, 
-  'S', -1, -1, SUB_OXO_MATCH_159,
-  'S', -1, -1, SUB_OXO_MATCH_369,
-  'S', -1, -1, SUB_OXO_MATCH_789,
-  'S', -1, -1, SUB_OXO_MATCH_ALL,
-  -1,
+oxo_1x
+J, arg_1a, -1, 0
+J, arg_1b, -1, 0
+H, -1, -1, arg_1b
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_147
+S, -1, -1, sub_match_159
+S, -1, -1, sub_match_all
 
-  IN_OXO_TOGGLE, 
-  'J', ARG_OXO_X, 0, 3, 
-  'L', -1, -1, ARG_OXO_X, 
-  'H', -1, -1, ARG_OXO_O, 
-  'J', -1, -1, -1, 
-  'L', -1, -1, ARG_OXO_O, 
-  'H', -1, -1, ARG_OXO_X, 
-  -1,
+oxo_2o
+J, arg_2a, -1, 0
+J, arg_2b, -1, 0
+H, -1, -1, arg_2a
+H, -1, -1, arg_2c
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_258
+S, -1, -1, sub_match_all
 
-  IN_OXO_SINGLE,
-  'L', -1, -1, ARG_OXO_TRIPLE,
-  -1,
+oxo_2x
+J, arg_2a, -1, 0
+J, arg_2b, -1, 0
+H, -1, -1, arg_2b
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_258
+S, -1, -1, sub_match_all
 
-  IN_OXO_TRIPLE,
-  'H', -1, -1, ARG_OXO_TRIPLE,
-  -1,
+oxo_3o
+J, arg_3a, -1, 0
+J, arg_3b, -1, 0
+H, -1, -1, arg_3a
+H, -1, -1, arg_3c
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_369
+S, -1, -1, sub_match_357
+S, -1, -1, sub_match_all
 
-  IN_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_COLLECT,
-  'S', -1, -1, SUB_OXO_COLLECT,    
-  'J', ARG_OXO_TRIPLE, 0, 4,
-  'Y', -1, -1, 1000,
-  'S', -1, -1, SUB_OXO_COLLECT,    
-  'Y', -1, -1, 1000,
-  'S', -1, -1, SUB_OXO_COLLECT,    
-  'Z', -1, -1, 0,
-  'L', -1, -1, ARG_OXO_COLLECT,
-  -1,
+oxo_3x
+J, arg_3a, -1, 0
+J, arg_3b, -1, 0
+H, -1, -1, arg_3b
+S, -1, -1, sub_match_123
+S, -1, -1, sub_match_369
+S, -1, -1, sub_match_357
+S, -1, -1, sub_match_all
 
-  SUB_OXO_MATCH_123,
-  'J', ARG_OXO_1A, 0,  2,
-  'J', ARG_OXO_2A, 0, -1,
-  'J', ARG_OXO_3A, 3, -1,
-  'J', ARG_OXO_1B, 0, -1,
-  'J', ARG_OXO_2B, 0, -1,
-  'J', ARG_OXO_3B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
-  
-  SUB_OXO_MATCH_456,
-  'J', ARG_OXO_4A, 0,  2,
-  'J', ARG_OXO_5A, 0, -1,
-  'J', ARG_OXO_6A, 3, -1,
-  'J', ARG_OXO_4B, 0, -1,
-  'J', ARG_OXO_5B, 0, -1,
-  'J', ARG_OXO_6B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
+oxo_4
+J, arg_4a, -1, 0
+J, arg_4b, -1, 0
+H, arg_x, arg_4b, arg_4a
+H, arg_x, arg_4b, arg_4c
+S, -1, -1, sub_match_147
+S, -1, -1, sub_match_456
+S, -1, -1, sub_match_all
 
-  SUB_OXO_MATCH_789,
-  'J', ARG_OXO_7A, 0,  2,
-  'J', ARG_OXO_8A, 0, -1,
-  'J', ARG_OXO_9A, 3, -1,
-  'J', ARG_OXO_7B, 0, -1,
-  'J', ARG_OXO_8B, 0, -1,
-  'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
+oxo_5
+J, arg_5a, -1, 0
+J, arg_5b, -1, 0
+H, arg_x, arg_5b, arg_5a
+H, arg_x, arg_5b, arg_5c
+S, -1, -1, sub_match_159
+S, -1, -1, sub_match_258
+S, -1, -1, sub_match_357
+S, -1, -1, sub_match_456
+S, -1, -1, sub_match_all
 
-  SUB_OXO_MATCH_147, 
-  'J', ARG_OXO_1A, 0,  2,
-  'J', ARG_OXO_4A, 0, -1,
-  'J', ARG_OXO_7A, 3, -1,
-  'J', ARG_OXO_1B, 0, -1,
-  'J', ARG_OXO_4B, 0, -1,
-  'J', ARG_OXO_7B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
-  
-  SUB_OXO_MATCH_258, 
-  'J', ARG_OXO_2A, 0,  2,
-  'J', ARG_OXO_5A, 0, -1,
-  'J', ARG_OXO_8A, 3, -1,
-  'J', ARG_OXO_2B, 0, -1,
-  'J', ARG_OXO_5B, 0, -1,
-  'J', ARG_OXO_8B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
-  
-  SUB_OXO_MATCH_369,
-  'J', ARG_OXO_3A, 0,  2,
-  'J', ARG_OXO_6A, 0, -1,
-  'J', ARG_OXO_9A, 3, -1,
-  'J', ARG_OXO_3B, 0, -1,
-  'J', ARG_OXO_6B, 0, -1,
-  'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
-  
-  SUB_OXO_MATCH_159, 
-  'J', ARG_OXO_1A, 0,  2,
-  'J', ARG_OXO_5A, 0, -1,
-  'J', ARG_OXO_9A, 3, -1,
-  'J', ARG_OXO_1B, 0, -1,
-  'J', ARG_OXO_5B, 0, -1,
-  'J', ARG_OXO_9B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
-  
-  SUB_OXO_MATCH_357,
-  'J', ARG_OXO_3A, 0,  2,
-  'J', ARG_OXO_5A, 0, -1,
-  'J', ARG_OXO_7A, 3, -1,
-  'J', ARG_OXO_3B, 0, -1,
-  'J', ARG_OXO_5B, 0, -1,
-  'J', ARG_OXO_7B, 0, -1,
-  'T', -1, -1, OUT_OXO_WIN_ROW,
-  -1,
+oxo_6
+J, arg_6a, -1, 0
+J, arg_6b, -1, 0
+H, arg_x, arg_6b, arg_6a
+H, arg_x, arg_6b, arg_6c
+S, -1, -1, sub_match_369
+S, -1, -1, sub_match_456
+S, -1, -1, sub_match_all
 
-  SUB_OXO_MATCH_ALL,
-  'T', -1, -1, OUT_OXO_SCORE, 
-  'Z', -1, -1, 0,
-  'I', ARG_OXO_1A, 1, 0,
-  'I', ARG_OXO_2A, 1, 0,
-  'I', ARG_OXO_3A, 1, 0,
-  'I', ARG_OXO_4A, 1, 0,
-  'I', ARG_OXO_5A, 1, 0,
-  'I', ARG_OXO_6A, 1, 0,
-  'I', ARG_OXO_7A, 1, 0,
-  'I', ARG_OXO_8A, 1, 0,
-  'I', ARG_OXO_9A, 1, 0,
-  'I', ARG_OXO_1B, 1, 0,
-  'I', ARG_OXO_2B, 1, 0,
-  'I', ARG_OXO_3B, 1, 0,
-  'I', ARG_OXO_4B, 1, 0,
-  'I', ARG_OXO_5B, 1, 0,
-  'I', ARG_OXO_6B, 1, 0,
-  'I', ARG_OXO_7B, 1, 0,
-  'I', ARG_OXO_8B, 1, 0,
-  'I', ARG_OXO_9B, 1, 0,
-  'T', 9, OUT_OXO_WIN_ALL, -1,
-  -1,
-    
-  SUB_OXO_CLEAR,
-  'L', -1, -1, ARG_OXO_1A,
-  'L', -1, -1, ARG_OXO_1B,
-  'L', -1, -1, ARG_OXO_1C,
-  'L', -1, -1, ARG_OXO_2A,
-  'L', -1, -1, ARG_OXO_2B,
-  'L', -1, -1, ARG_OXO_2C,
-  'L', -1, -1, ARG_OXO_3A,
-  'L', -1, -1, ARG_OXO_3B,
-  'L', -1, -1, ARG_OXO_3C,
-  'L', -1, -1, ARG_OXO_4A,
-  'L', -1, -1, ARG_OXO_4B,
-  'L', -1, -1, ARG_OXO_4C,
-  'L', -1, -1, ARG_OXO_5A,
-  'L', -1, -1, ARG_OXO_5B,
-  'L', -1, -1, ARG_OXO_5C,
-  'L', -1, -1, ARG_OXO_6A,
-  'L', -1, -1, ARG_OXO_6B,
-  'L', -1, -1, ARG_OXO_6C,
-  'L', -1, -1, ARG_OXO_7A,
-  'L', -1, -1, ARG_OXO_7B,
-  'L', -1, -1, ARG_OXO_7C,
-  'L', -1, -1, ARG_OXO_8A,
-  'L', -1, -1, ARG_OXO_8B,
-  'L', -1, -1, ARG_OXO_8C,
-  'L', -1, -1, ARG_OXO_9A,
-  'L', -1, -1, ARG_OXO_9B,
-  'L', -1, -1, ARG_OXO_9C,
-  'L', -1, -1, ARG_OXO_X,
-  'H', -1, -1, ARG_OXO_O,  
-  'L', -1, -1, ARG_OXO_TRIPLE,  
-  -1,
-    
-  SUB_OXO_COLLECT,
-  'J', ARG_OXO_1A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_1B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_1B,
-  'J', ARG_OXO_1B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_1A,
-  'H', -1, -1, ARG_OXO_1C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_1A,
-  'L', -1, -1, ARG_OXO_1C,
-  'J', ARG_OXO_2A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_2B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_2B,
-  'J', ARG_OXO_2B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_2A,
-  'H', -1, -1, ARG_OXO_2C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_2A,
-  'L', -1, -1, ARG_OXO_2C,
-  'J', ARG_OXO_3A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_3B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_3B,
-  'J', ARG_OXO_3B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_3A,
-  'H', -1, -1, ARG_OXO_3C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_3A,
-  'L', -1, -1, ARG_OXO_3C,
-  'J', ARG_OXO_4A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_4B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_4B,
-  'J', ARG_OXO_4B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_4A,
-  'H', -1, -1, ARG_OXO_4C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_4A,
-  'L', -1, -1, ARG_OXO_4C,
-  'J', ARG_OXO_5A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_5B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_5B,
-  'J', ARG_OXO_5B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_5A,
-  'H', -1, -1, ARG_OXO_5C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_5A,
-  'L', -1, -1, ARG_OXO_5C,
-  'J', ARG_OXO_6A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_6B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_6B,
-  'J', ARG_OXO_6B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_6A,
-  'H', -1, -1, ARG_OXO_6C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_6A,
-  'L', -1, -1, ARG_OXO_6C,
-  'J', ARG_OXO_7A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_7B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_7B,
-  'J', ARG_OXO_7B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_7A,
-  'H', -1, -1, ARG_OXO_7C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_7A,
-  'L', -1, -1, ARG_OXO_7C,
-  'J', ARG_OXO_8A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_8B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_8B,
-  'J', ARG_OXO_8B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_8A,
-  'H', -1, -1, ARG_OXO_8C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_8A,
-  'L', -1, -1, ARG_OXO_8C,
-  'J', ARG_OXO_9A, 0, 4,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_9B,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_9B,
-  'J', ARG_OXO_9B, 0, 6,
-  'T', -1, -1, OUT_OXO_COLLECT,
-  'H', -1, -1, ARG_OXO_9A,
-  'H', -1, -1, ARG_OXO_9C,
-  'Y', -1, -1, 500,
-  'L', -1, -1, ARG_OXO_9A,
-  'L', -1, -1, ARG_OXO_9C,
-  -1,  
+oxo_7
+J, arg_7a, -1, 0
+J, arg_7b, -1, 0
+H, arg_x, arg_7b, arg_7a
+H, arg_x, arg_7b, arg_7c
+S, -1, -1, sub_match_789
+S, -1, -1, sub_match_147
+S, -1, -1, sub_match_357
+S, -1, -1, sub_match_all
 
-  -1,
-};      
+oxo_8
+J, arg_8a, -1, 0
+J, arg_8b, -1, 0
+H, arg_x, arg_8b, arg_8a
+H, arg_x, arg_8b, arg_8c
+S, -1, -1, sub_match_258
+S, -1, -1, sub_match_789
+S, -1, -1, sub_match_all
+
+oxo_9
+J, arg_9a, -1, 0
+J, arg_9b, -1, 0
+H, arg_x, arg_9b, arg_9a
+H, arg_x, arg_9b, arg_9c
+S, -1, -1, sub_match_159
+S, -1, -1, sub_match_369
+S, -1, -1, sub_match_789
+S, -1, -1, sub_match_all
+
+toggle
+J, arg_x, 0, 3
+L, -1, -1, arg_x
+H, -1, -1, arg_o
+J, -1, -1, -1
+L, -1, -1, arg_o
+H, -1, -1, arg_x
+
+single
+L, -1, -1, arg_triple
+
+triple
+H, -1, -1, arg_triple
+
+collect
+H, -1, -1, arg_collect
+S, -1, -1, sub_collect
+J, arg_triple, 0, 4
+Y, -1, -1, 1000
+S, -1, -1, sub_collect
+Y, -1, -1, 1000
+S, -1, -1, sub_collect
+Z, -1, -1, 0
+L, -1, -1, arg_collect
+
+sub_match_123
+J, arg_1a, 0,  2
+J, arg_2a, 0, -1
+J, arg_3a, 3, -1
+J, arg_1b, 0, -1
+J, arg_2b, 0, -1
+J, arg_3b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_456
+J, arg_4a, 0,  2
+J, arg_5a, 0, -1
+J, arg_6a, 3, -1
+J, arg_4b, 0, -1
+J, arg_5b, 0, -1
+J, arg_6b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_789
+J, arg_7a, 0,  2
+J, arg_8a, 0, -1
+J, arg_9a, 3, -1
+J, arg_7b, 0, -1
+J, arg_8b, 0, -1
+J, arg_9b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_147
+J, arg_1a, 0,  2
+J, arg_4a, 0, -1
+J, arg_7a, 3, -1
+J, arg_1b, 0, -1
+J, arg_4b, 0, -1
+J, arg_7b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_258
+J, arg_2a, 0,  2
+J, arg_5a, 0, -1
+J, arg_8a, 3, -1
+J, arg_2b, 0, -1
+J, arg_5b, 0, -1
+J, arg_8b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_369
+J, arg_3a, 0,  2
+J, arg_6a, 0, -1
+J, arg_9a, 3, -1
+J, arg_3b, 0, -1
+J, arg_6b, 0, -1
+J, arg_9b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_159
+J, arg_1a, 0,  2
+J, arg_5a, 0, -1
+J, arg_9a, 3, -1
+J, arg_1b, 0, -1
+J, arg_5b, 0, -1
+J, arg_9b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_357
+J, arg_3a, 0,  2
+J, arg_5a, 0, -1
+J, arg_7a, 3, -1
+J, arg_3b, 0, -1
+J, arg_5b, 0, -1
+J, arg_7b, 0, -1
+T, -1, -1, out_win_row
+
+sub_match_all
+T, -1, -1, out_score
+Z, -1, -1, 0
+I, arg_1a, 1, 0
+I, arg_2a, 1, 0
+I, arg_3a, 1, 0
+I, arg_4a, 1, 0
+I, arg_5a, 1, 0
+I, arg_6a, 1, 0
+I, arg_7a, 1, 0
+I, arg_8a, 1, 0
+I, arg_9a, 1, 0
+I, arg_1b, 1, 0
+I, arg_2b, 1, 0
+I, arg_3b, 1, 0
+I, arg_4b, 1, 0
+I, arg_5b, 1, 0
+I, arg_6b, 1, 0
+I, arg_7b, 1, 0
+I, arg_8b, 1, 0
+I, arg_9b, 1, 0
+T, 9, out_win_all, -1
+
+sub_clear
+L, -1, -1, arg_1a
+L, -1, -1, arg_1b
+L, -1, -1, arg_1c
+L, -1, -1, arg_2a
+L, -1, -1, arg_2b
+L, -1, -1, arg_2c
+L, -1, -1, arg_3a
+L, -1, -1, arg_3b
+L, -1, -1, arg_3c
+L, -1, -1, arg_4a
+L, -1, -1, arg_4b
+L, -1, -1, arg_4c
+L, -1, -1, arg_5a
+L, -1, -1, arg_5b
+L, -1, -1, arg_5c
+L, -1, -1, arg_6a
+L, -1, -1, arg_6b
+L, -1, -1, arg_6c
+L, -1, -1, arg_7a
+L, -1, -1, arg_7b
+L, -1, -1, arg_7c
+L, -1, -1, arg_8a
+L, -1, -1, arg_8b
+L, -1, -1, arg_8c
+L, -1, -1, arg_9a
+L, -1, -1, arg_9b
+L, -1, -1, arg_9c
+L, -1, -1, arg_x
+H, -1, -1, arg_o
+L, -1, -1, arg_triple
+
+sub_collect
+J, arg_1a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_1b
+Y, -1, -1, 500
+L, -1, -1, arg_1b
+J, arg_1b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_1a
+H, -1, -1, arg_1c
+Y, -1, -1, 500
+L, -1, -1, arg_1a
+L, -1, -1, arg_1c
+J, arg_2a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_2b
+Y, -1, -1, 500
+L, -1, -1, arg_2b
+J, arg_2b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_2a
+H, -1, -1, arg_2c
+Y, -1, -1, 500
+L, -1, -1, arg_2a
+L, -1, -1, arg_2c
+J, arg_3a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_3b
+Y, -1, -1, 500
+L, -1, -1, arg_3b
+J, arg_3b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_3a
+H, -1, -1, arg_3c
+Y, -1, -1, 500
+L, -1, -1, arg_3a
+L, -1, -1, arg_3c
+J, arg_4a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_4b
+Y, -1, -1, 500
+L, -1, -1, arg_4b
+J, arg_4b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_4a
+H, -1, -1, arg_4c
+Y, -1, -1, 500
+L, -1, -1, arg_4a
+L, -1, -1, arg_4c
+J, arg_5a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_5b
+Y, -1, -1, 500
+L, -1, -1, arg_5b
+J, arg_5b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_5a
+H, -1, -1, arg_5c
+Y, -1, -1, 500
+L, -1, -1, arg_5a
+L, -1, -1, arg_5c
+J, arg_6a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_6b
+Y, -1, -1, 500
+L, -1, -1, arg_6b
+J, arg_6b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_6a
+H, -1, -1, arg_6c
+Y, -1, -1, 500
+L, -1, -1, arg_6a
+L, -1, -1, arg_6c
+J, arg_7a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_7b
+Y, -1, -1, 500
+L, -1, -1, arg_7b
+J, arg_7b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_7a
+H, -1, -1, arg_7c
+Y, -1, -1, 500
+L, -1, -1, arg_7a
+L, -1, -1, arg_7c
+J, arg_8a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_8b
+Y, -1, -1, 500
+L, -1, -1, arg_8b
+J, arg_8b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_8a
+H, -1, -1, arg_8c
+Y, -1, -1, 500
+L, -1, -1, arg_8a
+L, -1, -1, arg_8c
+J, arg_9a, 0, 4
+T, -1, -1, out_collect
+H, -1, -1, arg_9b
+Y, -1, -1, 500
+L, -1, -1, arg_9b
+J, arg_9b, 0, 6
+T, -1, -1, out_collect
+H, -1, -1, arg_9a
+H, -1, -1, arg_9c
+Y, -1, -1, 500
+L, -1, -1, arg_9a
+L, -1, -1, arg_9c
+
+)"""";
+
+const char tictactoe_symbin[] = {
+  "\x78\x56\x34\x12\x08\x01\x00\x00" "init\0oxo_1o\0oxo_1x\0oxo_2o\0oxo_2x\0oxo_3o\0oxo_3x\0oxo_4\0oxo_5\0oxo_6\0oxo_7\0oxo_8\0oxo_9\0toggle\0collect\0single\0triple\0sub_collect\0sub_match_123\0sub_match_456\0sub_match_789\0sub_match_147\0sub_match_258\0sub_match_369\0sub_match_159\0sub_match_357\0sub_match_all\0sub_clear\0\0\0\0\0"
+  "\x78\x56\x34\x12\x30\x00\x00\x00" "out_score\0out_win_row\0out_win_all\0out_collect\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_1a\0arg_1b\0arg_1c\0arg_2a\0arg_2b\0arg_2c\0arg_3a\0arg_3b\0arg_3c\0arg_4a\0arg_4b\0arg_4c\0arg_5a\0arg_5b\0arg_5c\0arg_6a\0arg_6b\0arg_6c\0arg_7a\0arg_7b\0arg_7c\0arg_8a\0arg_8b\0arg_8c\0arg_9a\0arg_9b\0arg_9c\0arg_x\0arg_o\0arg_triple\0arg_collect\0\0"
+};
+
+const uint16_t tictactoe_hexbin[] = {
+  0x001E, 0x002C, 0x004E, 0x006C, 0x008A, 0x00A4, 0x00C6, 0x00E4, 0x0102, 0x0128, 0x0146, 0x0168, 
+  0x0186, 0x01A8, 0x01CE, 0x01C2, 0x01C8, 0x03B4, 0x01F4, 0x0212, 0x0230, 0x024E, 0x026C, 0x028A, 
+  0x02A8, 0x02C6, 0x02E4, 0x033A, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 0x0001, 0x004C, 0xFFFF, 
+  0xFFFF, 0x001E, 0x0053, 0xFFFF, 0xFFFF, 0x001B, 0xFFFF, 0x0001, 0x004A, 0x0000, 0xFFFF, 0x0000, 
+  0x004A, 0x0001, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0002, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 0xFFFF, 0x0015, 0x0053, 0xFFFF, 0xFFFF, 0x0018, 
+  0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0002, 0x004A, 0x0000, 0xFFFF, 0x0000, 0x004A, 0x0001, 
+  0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0015, 0x0053, 0xFFFF, 0xFFFF, 0x0018, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0003, 
+  0x004A, 0x0003, 0xFFFF, 0x0000, 0x004A, 0x0004, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0003, 
+  0x0048, 0xFFFF, 0xFFFF, 0x0005, 0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 0xFFFF, 0x0016, 
+  0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0004, 0x004A, 0x0003, 0xFFFF, 0x0000, 0x004A, 0x0004, 
+  0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0004, 0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0016, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0005, 0x004A, 0x0006, 0xFFFF, 0x0000, 
+  0x004A, 0x0007, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0006, 0x0048, 0xFFFF, 0xFFFF, 0x0008, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 0xFFFF, 0x0017, 0x0053, 0xFFFF, 0xFFFF, 0x0019, 
+  0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0006, 0x004A, 0x0006, 0xFFFF, 0x0000, 0x004A, 0x0007, 
+  0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0007, 0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0017, 0x0053, 0xFFFF, 0xFFFF, 0x0019, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0007, 
+  0x004A, 0x0009, 0xFFFF, 0x0000, 0x004A, 0x000A, 0xFFFF, 0x0000, 0x0048, 0x001B, 0x000A, 0x0009, 
+  0x0048, 0x001B, 0x000A, 0x000B, 0x0053, 0xFFFF, 0xFFFF, 0x0015, 0x0053, 0xFFFF, 0xFFFF, 0x0013, 
+  0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0008, 0x004A, 0x000C, 0xFFFF, 0x0000, 0x004A, 0x000D, 
+  0xFFFF, 0x0000, 0x0048, 0x001B, 0x000D, 0x000C, 0x0048, 0x001B, 0x000D, 0x000E, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0018, 0x0053, 0xFFFF, 0xFFFF, 0x0016, 0x0053, 0xFFFF, 0xFFFF, 0x0019, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0013, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x0009, 0x004A, 0x000F, 0xFFFF, 0x0000, 
+  0x004A, 0x0010, 0xFFFF, 0x0000, 0x0048, 0x001B, 0x0010, 0x000F, 0x0048, 0x001B, 0x0010, 0x0011, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0017, 0x0053, 0xFFFF, 0xFFFF, 0x0013, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 
+  0xFFFF, 0x000A, 0x004A, 0x0012, 0xFFFF, 0x0000, 0x004A, 0x0013, 0xFFFF, 0x0000, 0x0048, 0x001B, 
+  0x0013, 0x0012, 0x0048, 0x001B, 0x0013, 0x0014, 0x0053, 0xFFFF, 0xFFFF, 0x0014, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0015, 0x0053, 0xFFFF, 0xFFFF, 0x0019, 0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x000B, 
+  0x004A, 0x0015, 0xFFFF, 0x0000, 0x004A, 0x0016, 0xFFFF, 0x0000, 0x0048, 0x001B, 0x0016, 0x0015, 
+  0x0048, 0x001B, 0x0016, 0x0017, 0x0053, 0xFFFF, 0xFFFF, 0x0016, 0x0053, 0xFFFF, 0xFFFF, 0x0014, 
+  0x0053, 0xFFFF, 0xFFFF, 0x001A, 0xFFFF, 0x000C, 0x004A, 0x0018, 0xFFFF, 0x0000, 0x004A, 0x0019, 
+  0xFFFF, 0x0000, 0x0048, 0x001B, 0x0019, 0x0018, 0x0048, 0x001B, 0x0019, 0x001A, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0018, 0x0053, 0xFFFF, 0xFFFF, 0x0017, 0x0053, 0xFFFF, 0xFFFF, 0x0014, 0x0053, 0xFFFF, 
+  0xFFFF, 0x001A, 0xFFFF, 0x000D, 0x004A, 0x001B, 0x0000, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 0x001B, 
+  0x0048, 0xFFFF, 0xFFFF, 0x001C, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x004C, 0xFFFF, 0xFFFF, 0x001C, 
+  0x0048, 0xFFFF, 0xFFFF, 0x001B, 0xFFFF, 0x000F, 0x004C, 0xFFFF, 0xFFFF, 0x001D, 0xFFFF, 0x0010, 
+  0x0048, 0xFFFF, 0xFFFF, 0x001D, 0xFFFF, 0x000E, 0x0048, 0xFFFF, 0xFFFF, 0x001E, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0011, 0x004A, 0x001D, 0x0000, 0x0004, 0x0059, 0xFFFF, 0xFFFF, 0x03E8, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0011, 0x0059, 0xFFFF, 0xFFFF, 0x03E8, 0x0053, 0xFFFF, 0xFFFF, 0x0011, 0x005A, 0xFFFF, 
+  0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x001E, 0xFFFF, 0x0012, 0x004A, 0x0000, 0x0000, 0x0002, 
+  0x004A, 0x0003, 0x0000, 0xFFFF, 0x004A, 0x0006, 0x0003, 0xFFFF, 0x004A, 0x0001, 0x0000, 0xFFFF, 
+  0x004A, 0x0004, 0x0000, 0xFFFF, 0x004A, 0x0007, 0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 
+  0xFFFF, 0x0013, 0x004A, 0x0009, 0x0000, 0x0002, 0x004A, 0x000C, 0x0000, 0xFFFF, 0x004A, 0x000F, 
+  0x0003, 0xFFFF, 0x004A, 0x000A, 0x0000, 0xFFFF, 0x004A, 0x000D, 0x0000, 0xFFFF, 0x004A, 0x0010, 
+  0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0014, 0x004A, 0x0012, 0x0000, 0x0002, 
+  0x004A, 0x0015, 0x0000, 0xFFFF, 0x004A, 0x0018, 0x0003, 0xFFFF, 0x004A, 0x0013, 0x0000, 0xFFFF, 
+  0x004A, 0x0016, 0x0000, 0xFFFF, 0x004A, 0x0019, 0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 
+  0xFFFF, 0x0015, 0x004A, 0x0000, 0x0000, 0x0002, 0x004A, 0x0009, 0x0000, 0xFFFF, 0x004A, 0x0012, 
+  0x0003, 0xFFFF, 0x004A, 0x0001, 0x0000, 0xFFFF, 0x004A, 0x000A, 0x0000, 0xFFFF, 0x004A, 0x0013, 
+  0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0016, 0x004A, 0x0003, 0x0000, 0x0002, 
+  0x004A, 0x000C, 0x0000, 0xFFFF, 0x004A, 0x0015, 0x0003, 0xFFFF, 0x004A, 0x0004, 0x0000, 0xFFFF, 
+  0x004A, 0x000D, 0x0000, 0xFFFF, 0x004A, 0x0016, 0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 
+  0xFFFF, 0x0017, 0x004A, 0x0006, 0x0000, 0x0002, 0x004A, 0x000F, 0x0000, 0xFFFF, 0x004A, 0x0018, 
+  0x0003, 0xFFFF, 0x004A, 0x0007, 0x0000, 0xFFFF, 0x004A, 0x0010, 0x0000, 0xFFFF, 0x004A, 0x0019, 
+  0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0018, 0x004A, 0x0000, 0x0000, 0x0002, 
+  0x004A, 0x000C, 0x0000, 0xFFFF, 0x004A, 0x0018, 0x0003, 0xFFFF, 0x004A, 0x0001, 0x0000, 0xFFFF, 
+  0x004A, 0x000D, 0x0000, 0xFFFF, 0x004A, 0x0019, 0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 
+  0xFFFF, 0x0019, 0x004A, 0x0006, 0x0000, 0x0002, 0x004A, 0x000C, 0x0000, 0xFFFF, 0x004A, 0x0012, 
+  0x0003, 0xFFFF, 0x004A, 0x0007, 0x0000, 0xFFFF, 0x004A, 0x000D, 0x0000, 0xFFFF, 0x004A, 0x0013, 
+  0x0000, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x001A, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 
+  0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0049, 0x0000, 0x0001, 0x0000, 0x0049, 0x0003, 0x0001, 0x0000, 
+  0x0049, 0x0006, 0x0001, 0x0000, 0x0049, 0x0009, 0x0001, 0x0000, 0x0049, 0x000C, 0x0001, 0x0000, 
+  0x0049, 0x000F, 0x0001, 0x0000, 0x0049, 0x0012, 0x0001, 0x0000, 0x0049, 0x0015, 0x0001, 0x0000, 
+  0x0049, 0x0018, 0x0001, 0x0000, 0x0049, 0x0001, 0x0001, 0x0000, 0x0049, 0x0004, 0x0001, 0x0000, 
+  0x0049, 0x0007, 0x0001, 0x0000, 0x0049, 0x000A, 0x0001, 0x0000, 0x0049, 0x000D, 0x0001, 0x0000, 
+  0x0049, 0x0010, 0x0001, 0x0000, 0x0049, 0x0013, 0x0001, 0x0000, 0x0049, 0x0016, 0x0001, 0x0000, 
+  0x0049, 0x0019, 0x0001, 0x0000, 0x0054, 0x0009, 0x0002, 0xFFFF, 0xFFFF, 0x001B, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 0x0004, 0x004C, 0xFFFF, 0xFFFF, 0x0005, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0006, 0x004C, 0xFFFF, 0xFFFF, 0x0007, 0x004C, 0xFFFF, 0xFFFF, 0x0008, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0009, 0x004C, 0xFFFF, 0xFFFF, 0x000A, 0x004C, 0xFFFF, 0xFFFF, 0x000B, 0x004C, 0xFFFF, 
+  0xFFFF, 0x000C, 0x004C, 0xFFFF, 0xFFFF, 0x000D, 0x004C, 0xFFFF, 0xFFFF, 0x000E, 0x004C, 0xFFFF, 
+  0xFFFF, 0x000F, 0x004C, 0xFFFF, 0xFFFF, 0x0010, 0x004C, 0xFFFF, 0xFFFF, 0x0011, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0012, 0x004C, 0xFFFF, 0xFFFF, 0x0013, 0x004C, 0xFFFF, 0xFFFF, 0x0014, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0015, 0x004C, 0xFFFF, 0xFFFF, 0x0016, 0x004C, 0xFFFF, 0xFFFF, 0x0017, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0018, 0x004C, 0xFFFF, 0xFFFF, 0x0019, 0x004C, 0xFFFF, 0xFFFF, 0x001A, 0x004C, 0xFFFF, 
+  0xFFFF, 0x001B, 0x0048, 0xFFFF, 0xFFFF, 0x001C, 0x004C, 0xFFFF, 0xFFFF, 0x001D, 0xFFFF, 0x0011, 
+  0x004A, 0x0000, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x004A, 0x0001, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0002, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 
+  0x004A, 0x0003, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0004, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0004, 0x004A, 0x0004, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0005, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 0x0005, 
+  0x004A, 0x0006, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0007, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0007, 0x004A, 0x0007, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0006, 0x0048, 0xFFFF, 0xFFFF, 0x0008, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0006, 0x004C, 0xFFFF, 0xFFFF, 0x0008, 
+  0x004A, 0x0009, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x000A, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x000A, 0x004A, 0x000A, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x000B, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0009, 0x004C, 0xFFFF, 0xFFFF, 0x000B, 
+  0x004A, 0x000C, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x000D, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x000D, 0x004A, 0x000D, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x000C, 0x0048, 0xFFFF, 0xFFFF, 0x000E, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x000C, 0x004C, 0xFFFF, 0xFFFF, 0x000E, 
+  0x004A, 0x000F, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0010, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0010, 0x004A, 0x0010, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x000F, 0x0048, 0xFFFF, 0xFFFF, 0x0011, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x000F, 0x004C, 0xFFFF, 0xFFFF, 0x0011, 
+  0x004A, 0x0012, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0013, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0013, 0x004A, 0x0013, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0012, 0x0048, 0xFFFF, 0xFFFF, 0x0014, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0012, 0x004C, 0xFFFF, 0xFFFF, 0x0014, 
+  0x004A, 0x0015, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0016, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0016, 0x004A, 0x0016, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0015, 0x0048, 0xFFFF, 0xFFFF, 0x0017, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0015, 0x004C, 0xFFFF, 0xFFFF, 0x0017, 
+  0x004A, 0x0018, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0019, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0019, 0x004A, 0x0019, 0x0000, 0x0006, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0018, 0x0048, 0xFFFF, 0xFFFF, 0x001A, 
+  0x0059, 0xFFFF, 0xFFFF, 0x01F4, 0x004C, 0xFFFF, 0xFFFF, 0x0018, 0x004C, 0xFFFF, 0xFFFF, 0x001A, 
+  0xFFFF, 0xFFFF
+};
 
 };

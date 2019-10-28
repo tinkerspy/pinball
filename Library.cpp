@@ -1,12 +1,5 @@
 #include "Library.hpp"
 
-/*
-library->add( "bumper_bytecode", bumper_bytecode );
-dev.loadSymbols( library->symbols( "bumper_bytecode" ) );
-dev.loadCode( library->code( "bumper_bytecode" ) );
-*/
-
-
 const char* Library::cpunfold( char buf[], const char src[] ) {
   const char* ps = src;
   char* pb = buf;
@@ -143,13 +136,15 @@ Library& Library::printHexWord( Stream* stream, int16_t v, bool last /* = false 
     stream->printf( "0x%04X", (uint16_t)v );
   else 
     stream->printf( "0x%04X, ", (uint16_t)v );
-  if ( ++word_cnt % 12 == 0 ) stream->println();
+  if ( ++word_cnt % 12 == 0 ) stream->print( "\n  " );
   return *this;
 }
 
 Library& Library::hexdump( Stream* stream, int16_t slot ) {
   char buf[1024];
   uint8_t last = 0;
+  if ( slot == -1 ) return *this;
+  stream->printf( "const char %s_symbin[] = {\n", label( slot ) );
   for ( int16_t b = 0; b < 4; b++ ) {
     if ( countSymbols( slot, b ) > 0 ) {
       last = b;
@@ -172,14 +167,15 @@ Library& Library::hexdump( Stream* stream, int16_t slot ) {
       }
     }
     if ( b == last ) {
-      stream->printf( "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\" \"%s\\0\"\n", buf );      
+      stream->printf( "  \"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\" \"%s\\0\"\n};\n", buf );      
     } else {
       // Portability note: uint32_t byte order assumed
-      stream->printf( "\"\\x78\\x56\\x34\\x12\\x%02x\\x%02x\\x00\\x00\" \"%s\\0\"\n", 
+      stream->printf( "  \"\\x78\\x56\\x34\\x12\\x%02x\\x%02x\\x00\\x00\" \"%s\\0\"\n", 
                       cnt & 0x00FF, cnt >> 8, buf );
     }
   } 
   stream->println();
+  stream->printf( "const uint16_t %s_hexbin[] = {\n  ", label( slot ) );
   int16_t* p = lib[slot].code;
   word_cnt = 0;
   while ( *p != -1 ) {
@@ -197,7 +193,7 @@ Library& Library::hexdump( Stream* stream, int16_t slot ) {
     printHexWord( stream, *p++ );
   }
   printHexWord( stream, *p++, true );
-  stream->println();
+  stream->println( "\n};\n" );
   return *this;
 }
 

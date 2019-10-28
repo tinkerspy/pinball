@@ -82,7 +82,7 @@ void cmd_callback( int idx, int v, int up ) {
       cmd[idx].stream->printf( "Trace switches: %d\n", atoi( cmd[idx].arg( 1 ) ) );
       return;    
     case CMD_TC:
-      { // No arg1? turn all device tracing off!
+      { 
         if ( strlen( cmd[idx].arg( 1 ) ) == 0 ) {
           for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
             if ( playfield.exists( n + 1 ) == 1 ) {
@@ -263,13 +263,13 @@ void setup() {
   library.import( "dual_target", dual_target_symbin, dual_target_hexbin );
   library.import( "game", game_symbin, game_hexbin );
   library.import( "counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
+  library.import( "ledbank", ledbank_symbin, ledbank_hexbin );
+  library.import( "scalar", scalar_symbin, scalar_hexbin );
+  library.import( "dual_kicker", kicker_symbin, kicker_hexbin  );
+  library.import( "dual_combo", dual_combo_symbin, dual_combo_hexbin );
+  library.import( "dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
+  library.import( "tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
-  library.compile( "ledbank", ledbank_bytecode );
-
-  //library.hexdump( &Serial, "counter_em4d1w" );
-  
-  // NIETS WERKT TOT ALLE FIRMWARE VIA DE LIBRARY LOOPT!!! (parse_code() initialiseert de jumptable niet meer)
-  
 #ifdef SYMBOLS
   playfield.device( CHIMES, LED_CHIME_GRP, ledbank_firmware ).loadSymbols( ledbank_symbols );
   playfield.device( COUNTER, LED_COUNTER0_GRP, counter_em4d1w_firmware ).loadSymbols( counter_em4d1w_symbols );
@@ -302,24 +302,24 @@ void setup() {
   playfield.device( COUNTER1, LED_COUNTER1_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
   playfield.device( COUNTER2, LED_COUNTER2_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
   playfield.device( COUNTER3, LED_COUNTER3_GRP, library.codePtr( "counter_em4d1w" ) ).linkSymbols( library.symbolPtr( "counter_em4d1w" ) );
-  playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware );
-  playfield.device( MULTILANE, -1, switchbank_firmware ); 
+  playfield.device( OXO, LED_OXO_GRP, library.codePtr( "tictactoe" ) ).linkSymbols( library.symbolPtr( "tictactoe" ) );
+  playfield.device( MULTILANE, -1, library.codePtr( "switchbank" ) ).linkSymbols( library.symbolPtr( "switchbank" ) ); 
   playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
   playfield.device( BUMPER_B, LED_BUMPER_B_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
   playfield.device( BUMPER_C, LED_BUMPER_C_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
   playfield.device( DUAL_TARGET, LED_TARGET_GRP, library.codePtr( "dual_target" ) ).linkSymbols( library.symbolPtr( "dual_target" ) );
-  playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware );
-  playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware );
-  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
-  playfield.device( LOWER, -1, switchbank_firmware ); 
-  playfield.device( FLIPPER, LED_FLIPPER_GRP, dual_flipper_firmware );    
+  playfield.device( KICKER, LED_KICKER_GRP, library.codePtr( "dual_kicker" ) ).linkSymbols( library.symbolPtr( "dual_kicker" ) );
+  playfield.device( UPLANE, LED_UPLANE_GRP, library.codePtr( "dual_combo" ) ).linkSymbols( library.symbolPtr( "dual_combo" ) ); 
+  playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, library.codePtr( "dual_kicker" ) ).linkSymbols( library.symbolPtr( "dual_kicker" ) );
+  playfield.device( LOWER, -1, library.codePtr( "switchbank" ) ).linkSymbols( library.symbolPtr( "switchbank" ) ); 
+  playfield.device( FLIPPER, LED_FLIPPER_GRP, library.codePtr( "dual_flipper" ) ).linkSymbols( library.symbolPtr( "dual_flipper" ) ); 
   playfield.device( AGAIN, LED_AGAIN_GRP, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
   playfield.device( SAVE_GATE, COIL_SAVE_GATE, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
   playfield.device( FEEDER, COIL_FEEDER, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );
   playfield.device( GAME_OVER, LED_GAME_OVER, library.codePtr( "ledbank" ) ).linkSymbols( library.symbolPtr( "ledbank" ) );  
-  playfield.device( PLAYERS, LED_PLAYERS_GRP, scalar_firmware );
-  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, scalar_firmware );
-  playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
+  playfield.device( PLAYERS, LED_PLAYERS_GRP, library.codePtr( "scalar" ) ).linkSymbols( library.symbolPtr( "scalar" ) );
+  playfield.device( PLAYERUP, LED_PLAYERUP_GRP, library.codePtr( "scalar" ) ).linkSymbols( library.symbolPtr( "scalar" ) );
+  playfield.device( BALLUP, LED_BALLUP_GRP, library.codePtr( "scalar" ) ).linkSymbols( library.symbolPtr( "scalar" ) );
   playfield.device( GI, COIL_GI, library.codePtr( "ledbank" ), 1 ).linkSymbols( library.symbolPtr( "ledbank" ) ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, library.codePtr( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS )
     .linkSymbols( library.symbolPtr( "game" ) );

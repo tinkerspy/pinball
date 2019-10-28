@@ -28,6 +28,14 @@ namespace standard_firmware {
  *   8 leds (or coils) that can be turned on/off (or pulsed) 
  */
 
+enum {   IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_OFF0, IN_LBANK_ON1, IN_LBANK_OFF1, IN_LBANK_ON2, IN_LBANK_OFF2, 
+          IN_LBANK_ON3, IN_LBANK_OFF3, IN_LBANK_ON4, IN_LBANK_OFF4, IN_LBANK_ON5, IN_LBANK_OFF5, IN_LBANK_ON6, 
+          IN_LBANK_OFF6, IN_LBANK_ON7, IN_LBANK_OFF7, IN_LBANK_ON, IN_LBANK_OFF  };
+enum { ARG_LBANK_LED0, ARG_LBANK_LED1, ARG_LBANK_LED2, ARG_LBANK_LED3, ARG_LBANK_LED4, ARG_LBANK_LED5, ARG_LBANK_LED6, ARG_LBANK_LED7 };
+enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4, OUT_LBANK_ON5, OUT_LBANK_ON6, OUT_LBANK_ON7, 
+        OUT_LBANK_OFF0, OUT_LBANK_OFF1, OUT_LBANK_OFF2, OUT_LBANK_OFF3, OUT_LBANK_OFF4, OUT_LBANK_OFF5, OUT_LBANK_OFF6, OUT_LBANK_OFF7 }; 
+enum { REG_LBANK_STATE, REG_LBANK_DEFAULT };
+
 const char ledbank_bytecode[] = R""""(
 init, on0, off0, on1, off1, on2, off2,\
 on3, off3, on4, off4, on5, off5, on6,\
@@ -141,168 +149,41 @@ T, -1, -1, out_off7
 
 )"""";
 
+const char ledbank_symbin[] = { 
+  "\x78\x56\x34\x12\x58\x00\x00\x00" "init\0on0\0off0\0on1\0off1\0on2\0off2\0on3\0off3\0on4\0off4\0on5\0off5\0on6\0off6\0on7\0off7\0on\0off\0\0\0\0\0"
+  "\x78\x56\x34\x12\x8c\x00\x00\x00" "out_on0\0out_on1\0out_on2\0out_on3\0out_on4\0out_on5\0out_on6\0out_on7\0out_off0\0out_off1\0out_off2\0out_off3\0out_off4\0out_off5\0out_off6\0out_off7\0\0\0\0\0"
+  "\x78\x56\x34\x12\x4c\x00\x00\x00" "arg_led0\0arg_led1\0arg_led2\0arg_led3\0arg_led4\0arg_led5\0arg_led6\0arg_led7\0\0\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "reg_state\0reg_default\0\0"
+};
 
-enum {   IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_OFF0, IN_LBANK_ON1, IN_LBANK_OFF1, IN_LBANK_ON2, IN_LBANK_OFF2, 
-          IN_LBANK_ON3, IN_LBANK_OFF3, IN_LBANK_ON4, IN_LBANK_OFF4, IN_LBANK_ON5, IN_LBANK_OFF5, IN_LBANK_ON6, 
-          IN_LBANK_OFF6, IN_LBANK_ON7, IN_LBANK_OFF7, IN_LBANK_ON, IN_LBANK_OFF  };
-enum { ARG_LBANK_LED0, ARG_LBANK_LED1, ARG_LBANK_LED2, ARG_LBANK_LED3, ARG_LBANK_LED4, ARG_LBANK_LED5, ARG_LBANK_LED6, ARG_LBANK_LED7 };
-enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4, OUT_LBANK_ON5, OUT_LBANK_ON6, OUT_LBANK_ON7, 
-        OUT_LBANK_OFF0, OUT_LBANK_OFF1, OUT_LBANK_OFF2, OUT_LBANK_OFF3, OUT_LBANK_OFF4, OUT_LBANK_OFF5, OUT_LBANK_OFF6, OUT_LBANK_OFF7 }; 
-enum { REG_LBANK_STATE, REG_LBANK_DEFAULT };
-
-const char ledbank_symbols[] = 
-  "INIT, ON0, OFF0, ON1, OFF1, ON2, OFF2," 
-    "ON3, OFF3, ON4, OFF4, ON5, OFF5, ON6," 
-    "OFF6, ON7, OFF7, ON, OFF\n"
-  "OUT_ON0, OUT_ON1, OUT_ON2, OUT_ON3, OUT_ON4, OUT_ON5, OUT_ON6, OUT_ON7," 
-   "OUT_OFF0, OUT_OFF1, OUT_OFF2, OUT_OFF3, OUT_OFF4, OUT_OFF5, OUT_OFF6, OUT_OFF7\n" 
-  "ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_LED5, ARG_LED6, ARG_LED7\n"
-   "REG_STATE, REG_DEFAULT\n";
-
-int16_t ledbank_firmware[] {
-  IN_LBANK_INIT, 
-  IN_LBANK_ON0, 
-  IN_LBANK_OFF0, 
-  IN_LBANK_ON1, 
-  IN_LBANK_OFF1, 
-  IN_LBANK_ON2, 
-  IN_LBANK_OFF2, 
-  IN_LBANK_ON3, 
-  IN_LBANK_OFF3, 
-  IN_LBANK_ON4, 
-  IN_LBANK_OFF4, 
-  IN_LBANK_ON5, 
-  IN_LBANK_OFF5, 
-  IN_LBANK_ON6, 
-  IN_LBANK_OFF6, 
-  IN_LBANK_ON7, 
-  IN_LBANK_OFF7,
-  IN_LBANK_ON, 
-  IN_LBANK_OFF,
-  -1,
-
-  IN_LBANK_INIT,
-  'P', -1, -1, 1,
-  'X',  1,  0, 4, // Skip the rest if not on 1st INIT
-  'R', -1, -1, REG_LBANK_STATE,
-  '=',  0,  2, 0,
-  'R', -1, -1, REG_LBANK_DEFAULT,
-  'Z', -1, -1, 1,
-  'R', -1, -1, REG_LBANK_STATE,   
-  'Z', -1, -1, 0,
-  'S', -1, -1, IN_LBANK_OFF,  
-  'R', -1, -1, REG_LBANK_DEFAULT,
-  '=',  0,  1, 0,
-  'S', -1, -1, IN_LBANK_ON,    
-  -1,
-
-  IN_LBANK_ON,
-  'Z', -1, -1, 1,
-  'H', -1, -1, ARG_LBANK_LED0,
-  'H', -1, -1, ARG_LBANK_LED1,
-  'H', -1, -1, ARG_LBANK_LED2,
-  'H', -1, -1, ARG_LBANK_LED3,
-  'H', -1, -1, ARG_LBANK_LED4,
-  'H', -1, -1, ARG_LBANK_LED5,
-  'H', -1, -1, ARG_LBANK_LED6,
-  'H', -1, -1, ARG_LBANK_LED7,
-  -1,
-
-  IN_LBANK_OFF,
-  'Z', -1, -1, 0,
-  'L', -1, -1, ARG_LBANK_LED0,
-  'L', -1, -1, ARG_LBANK_LED1,
-  'L', -1, -1, ARG_LBANK_LED2,
-  'L', -1, -1, ARG_LBANK_LED3,
-  'L', -1, -1, ARG_LBANK_LED4,
-  'L', -1, -1, ARG_LBANK_LED5,
-  'L', -1, -1, ARG_LBANK_LED6,
-  'L', -1, -1, ARG_LBANK_LED7,
-  -1,
-
-  IN_LBANK_ON0,
-  'Z', -1, -1, 1,
-  'H', -1, -1, ARG_LBANK_LED0,
-  'T', -1, -1, OUT_LBANK_ON0,
-  -1,
-  
-  IN_LBANK_OFF0,
-  'Z', -1, -1, 0,
-  'L', -1, -1, ARG_LBANK_LED0,
-  'T', -1, -1, OUT_LBANK_OFF0,
-  -1,
-  
-  IN_LBANK_ON1,
-  'H', -1, -1, ARG_LBANK_LED1,
-  'T', -1, -1, OUT_LBANK_ON1,
-  -1,
-  
-  IN_LBANK_OFF1,
-  'L', -1, -1, ARG_LBANK_LED1,
-  'T', -1, -1, OUT_LBANK_OFF1,
-  -1,
-  
-  IN_LBANK_ON2,
-  'H', -1, -1, ARG_LBANK_LED2,
-  'T', -1, -1, OUT_LBANK_ON2,
-  -1,
-  
-  IN_LBANK_OFF2,
-  'L', -1, -1, ARG_LBANK_LED2,
-  'T', -1, -1, OUT_LBANK_OFF2,
-  -1,
-  
-  IN_LBANK_ON3,
-  'H', -1, -1, ARG_LBANK_LED3,
-  'T', -1, -1, OUT_LBANK_ON3,
-  -1,
-  
-  IN_LBANK_OFF3,
-  'L', -1, -1, ARG_LBANK_LED3,
-  'T', -1, -1, OUT_LBANK_OFF3,
-  -1,
-  
-  IN_LBANK_ON4,
-  'H', -1, -1, ARG_LBANK_LED4,
-  'T', -1, -1, OUT_LBANK_ON4,
-  -1,
-  
-  IN_LBANK_OFF4,
-  'L', -1, -1, ARG_LBANK_LED4,
-  'T', -1, -1, OUT_LBANK_OFF4,
-  -1,
-  
-  IN_LBANK_ON5,
-  'H', -1, -1, ARG_LBANK_LED5,
-  'T', -1, -1, OUT_LBANK_ON5,
-  -1,
-  
-  IN_LBANK_OFF5,
-  'L', -1, -1, ARG_LBANK_LED5,
-  'T', -1, -1, OUT_LBANK_OFF5,
-  -1,
-  
-  IN_LBANK_ON6,
-  'H', -1, -1, ARG_LBANK_LED6,
-  'T', -1, -1, OUT_LBANK_ON6,
-  -1,
-  
-  IN_LBANK_OFF6,
-  'L', -1, -1, ARG_LBANK_LED6,
-  'T', -1, -1, OUT_LBANK_OFF6,
-  -1,
-  
-  IN_LBANK_ON7,
-  'H', -1, -1, ARG_LBANK_LED7,
-  'T', -1, -1, OUT_LBANK_ON7,
-  -1,
-  
-  IN_LBANK_OFF7,
-  'L', -1, -1, ARG_LBANK_LED7,
-  'T', -1, -1, OUT_LBANK_OFF7,
-  -1,
-
-  -1,
+const uint16_t ledbank_hexbin[] = {
+  0x0015, 0x0093, 0x00A1, 0x00AF, 0x00B9, 0x00C3, 0x00CD, 0x00D7, 0x00E1, 0x00EB, 0x00F5, 0x00FF, 
+  0x0109, 0x0113, 0x011D, 0x0127, 0x0131, 0x0047, 0x006D, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 
+  0x0001, 0x0058, 0x0001, 0x0000, 0x0004, 0x0052, 0xFFFF, 0xFFFF, 0x0000, 0x003D, 0x0000, 0x0002, 
+  0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x005A, 0xFFFF, 0xFFFF, 0x0001, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0000, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0012, 0x0052, 0xFFFF, 0xFFFF, 
+  0x0001, 0x003D, 0x0000, 0x0001, 0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0011, 0xFFFF, 0x0011, 0x005A, 
+  0xFFFF, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0x0048, 
+  0xFFFF, 0xFFFF, 0x0002, 0x0048, 0xFFFF, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0004, 0x0048, 
+  0xFFFF, 0xFFFF, 0x0005, 0x0048, 0xFFFF, 0xFFFF, 0x0006, 0x0048, 0xFFFF, 0xFFFF, 0x0007, 0xFFFF, 
+  0x0012, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0001, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 0x004C, 0xFFFF, 0xFFFF, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0004, 0x004C, 0xFFFF, 0xFFFF, 0x0005, 0x004C, 0xFFFF, 0xFFFF, 0x0006, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0007, 0xFFFF, 0x0001, 0x005A, 0xFFFF, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0002, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0008, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0004, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0009, 0xFFFF, 0x0005, 0x0048, 0xFFFF, 0xFFFF, 0x0002, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0xFFFF, 
+  0x0006, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 0x0054, 0xFFFF, 0xFFFF, 0x000A, 0xFFFF, 0x0007, 0x0048, 
+  0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0008, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x000B, 0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x0004, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0x000A, 0x004C, 0xFFFF, 0xFFFF, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 
+  0x000C, 0xFFFF, 0x000B, 0x0048, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0xFFFF, 
+  0x000C, 0x004C, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x000D, 0xFFFF, 0x000D, 0x0048, 
+  0xFFFF, 0xFFFF, 0x0006, 0x0054, 0xFFFF, 0xFFFF, 0x0006, 0xFFFF, 0x000E, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0006, 0x0054, 0xFFFF, 0xFFFF, 0x000E, 0xFFFF, 0x000F, 0x0048, 0xFFFF, 0xFFFF, 0x0007, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0007, 0xFFFF, 0x0010, 0x004C, 0xFFFF, 0xFFFF, 0x0007, 0x0054, 0xFFFF, 0xFFFF, 
+  0x000F, 0xFFFF, 0xFFFF
 };
 
 /*
@@ -318,67 +199,70 @@ enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R
 enum { OUT_KICKER_SCORE_LIT, OUT_KICKER_SCORE_UNLIT, OUT_KICKER_SCORE, OUT_KICKER_PRESS_LIT, OUT_KICKER_PRESS_UNLIT, OUT_KICKER_PRESS };
 enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R, ARG_KICKER_LED_L, ARG_KICKER_LED_R };
 
-const char dual_kicker_symbols[] = 
-  "INIT, PRESS_L, RELEASE_L, PRESS_R, RELEASE_R, ON, OFF, PERSIST\n"
-  "OUT_SCORE_LIT, OUT_SCORE_UNLIT, OUT_SCORE, OUT_PRESS_LIT, OUT_PRESS_UNLIT, OUT_PRESS\n"  
-  "ARG_COIL_L, ARG_COIL_R, ARG_LED_L, ARG_LED_R\n";
+const char dual_kicker_bytecode[] = R""""(
+init, press_l, release_l, press_r, release_r, on, off, persist
+out_score_lit, out_score_unlit, out_score, out_press_lit, out_press_unlit, out_press  
+arg_coil_l, arg_coil_r, arg_led_l, arg_led_r
 
-int16_t dual_kicker_firmware[] {
-  IN_KICKER_INIT, 
-  IN_KICKER_PRESS_L, 
-  IN_KICKER_RELEASE_L, 
-  IN_KICKER_PRESS_R, 
-  IN_KICKER_RELEASE_R, 
-  IN_KICKER_ON, 
-  IN_KICKER_OFF, 
-  IN_KICKER_PERSIST,
-  -1,
-
-  IN_KICKER_INIT,
-  'P', -1, -1, 0,  // Default not persistent 
-  'L', -1, -1, ARG_KICKER_LED_L,
-  'L', -1, -1, ARG_KICKER_LED_R,
-  -1,
-
-  IN_KICKER_PERSIST,
-  'P', -1, -1, 1,  // Persistent 
-  -1,
-
-  IN_KICKER_PRESS_L,
-  'H', -1, -1, ARG_KICKER_COIL_L,
-  'T', -1, -1, OUT_KICKER_PRESS,
-  'T', -1, -1, OUT_KICKER_SCORE,
-  'J', ARG_KICKER_LED_L, 0, 3,
-  'T', -1, -1, OUT_KICKER_SCORE_LIT,
-  'T', -1, -1, OUT_KICKER_PRESS_LIT,
-  'J', -1, -1, -1,
-  'T', -1, -1, OUT_KICKER_SCORE_UNLIT,
-  'T', -1, -1, OUT_KICKER_PRESS_UNLIT,
-  -1,
-  
-  IN_KICKER_PRESS_R,
-  'H', -1, -1, ARG_KICKER_COIL_R,
-  'T', -1, -1, OUT_KICKER_PRESS,
-  'T', -1, -1, OUT_KICKER_SCORE,
-  'J', ARG_KICKER_LED_R, 0, 3,
-  'T', -1, -1, OUT_KICKER_SCORE_LIT,
-  'T', -1, -1, OUT_KICKER_PRESS_LIT,
-  'J', -1, -1, -1,
-  'T', -1, -1, OUT_KICKER_SCORE_UNLIT,
-  'T', -1, -1, OUT_KICKER_PRESS_UNLIT,
-  -1,
-
-  IN_KICKER_ON,
-  'H', -1, -1, ARG_KICKER_LED_L,
-  'H', -1, -1, ARG_KICKER_LED_R,
-  -1,
-  
-  IN_KICKER_OFF,
-  'L', -1, -1, ARG_KICKER_LED_L,
-  'L', -1, -1, ARG_KICKER_LED_R,
-  -1,
  
-  -1,
+init
+P, -1, -1, 0
+L, -1, -1, arg_led_l
+L, -1, -1, arg_led_r
+
+persist
+P, -1, -1, 1
+
+press_l
+H, -1, -1, arg_coil_l
+T, -1, -1, out_press
+T, -1, -1, out_score
+J, arg_led_l, 0, 3
+T, -1, -1, out_score_lit
+T, -1, -1, out_press_lit
+J, -1, -1, -1
+T, -1, -1, out_score_unlit
+T, -1, -1, out_press_unlit
+
+press_r
+H, -1, -1, arg_coil_r
+T, -1, -1, out_press
+T, -1, -1, out_score
+J, arg_led_r, 0, 3
+T, -1, -1, out_score_lit
+T, -1, -1, out_press_lit
+J, -1, -1, -1
+T, -1, -1, out_score_unlit
+T, -1, -1, out_press_unlit
+
+on
+H, -1, -1, arg_led_l
+H, -1, -1, arg_led_r
+
+off
+L, -1, -1, arg_led_l
+L, -1, -1, arg_led_r
+
+)"""";
+
+const char kicker_symbin[] = {
+  "\x78\x56\x34\x12\x3c\x00\x00\x00" "init\0press_l\0release_l\0press_r\0release_r\0on\0off\0persist\0\0\0\0\0"
+  "\x78\x56\x34\x12\x54\x00\x00\x00" "out_score_lit\0out_score_unlit\0out_score\0out_press_lit\0out_press_unlit\0out_press\0\0\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_coil_l\0arg_coil_r\0arg_led_l\0arg_led_r\0\0"
+};
+
+const uint16_t kicker_hexbin[] = {
+  0x000A, 0x001E, 0x0000, 0x0044, 0x0000, 0x006A, 0x0074, 0x0018, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 
+  0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 0x004C, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0007, 
+  0x0050, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 
+  0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0x004A, 0x0002, 0x0000, 0x0003, 0x0054, 0xFFFF, 
+  0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x0054, 0xFFFF, 
+  0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0x004A, 0x0003, 0x0000, 0x0003, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 
+  0x0054, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0x0005, 0x0048, 0xFFFF, 
+  0xFFFF, 0x0002, 0x0048, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0006, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 
+  0x004C, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0xFFFF
 };
 
 /*
@@ -395,86 +279,77 @@ enum { IN_SBANK_INIT, IN_SBANK_PRESS0, IN_SBANK_RELEASE0, IN_SBANK_PRESS1, IN_SB
 enum { OUT_SBANK_SCORE, OUT_SBANK_PRESS0, OUT_SBANK_PRESS1, OUT_SBANK_PRESS2, OUT_SBANK_PRESS3, OUT_SBANK_PRESS4, OUT_SBANK_PRESS5, OUT_SBANK_PRESS6, OUT_SBANK_PRESS7, 
         OUT_SBANK_SCORE0, OUT_SBANK_SCORE1, OUT_SBANK_SCORE2, OUT_SBANK_SCORE3, OUT_SBANK_SCORE4, OUT_SBANK_SCORE5, OUT_SBANK_SCORE6, OUT_SBANK_SCORE7 }; // Outputs
 
-const char switchbank_symbols[] = 
-  "INIT, PRESS0, RELEASE0, PRESS1, RELEASE1, PRESS2, RELEASE2,"
-  "PRESS3, RELEASE3, PRESS4, RELEASE4, PRESS5, RELEASE5,"
-  "PRESS6, RELEASE6, PRESS7, RELEASE7\n"
-  "OUT_SCORE, OUT_PRESS0, OUT_PRESS1, OUT_PRESS2, OUT_PRESS3, OUT_PRESS4, OUT_PRESS5, OUT_PRESS6, OUT_PRESS7," 
-  "OUT_SCORE0, OUT_SCORE1, OUT_SCORE2, OUT_SCORE3, OUT_SCORE4, OUT_SCORE5, OUT_SCORE6, OUT_SCORE7\n";
+const char switchbank_bytecode[] = R""""(
+init, press0, release0, press1, release1, press2, release2,\
+press3, release3, press4, release4, press5, release5,\
+press6, release6, press7, release7
+out_score, out_press0, out_press1, out_press2, out_press3, out_press4, out_press5, out_press6, out_press7,\
+out_score0, out_score1, out_score2, out_score3, out_score4, out_score5, out_score6, out_score7
 
-int16_t switchbank_firmware[] = {
-  IN_SBANK_INIT, 
-  IN_SBANK_PRESS0, 
-  IN_SBANK_RELEASE0, 
-  IN_SBANK_PRESS1, 
-  IN_SBANK_RELEASE1, 
-  IN_SBANK_PRESS2, 
-  IN_SBANK_RELEASE2, 
-  IN_SBANK_PRESS3, 
-  IN_SBANK_RELEASE3, 
-  IN_SBANK_PRESS4, 
-  IN_SBANK_RELEASE4, 
-  IN_SBANK_PRESS5, 
-  IN_SBANK_RELEASE5,
-  IN_SBANK_PRESS6, 
-  IN_SBANK_RELEASE6,
-  IN_SBANK_PRESS7, 
-  IN_SBANK_RELEASE7,
-  -1,
 
-  IN_SBANK_INIT,
-  'P', -1, -1, 0,  // Not persistent 
-  -1,
+init
+P, -1, -1, 0
 
-  IN_SBANK_PRESS0,
-  'T', -1, -1, OUT_SBANK_PRESS0,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE0,
-  -1,
+press0
+T, -1, -1, out_press0
+T, -1, -1, out_score
+T, -1, -1, out_score0
 
-  IN_SBANK_PRESS1,
-  'T', -1, -1, OUT_SBANK_PRESS1,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE1,
-  -1,
+press1
+T, -1, -1, out_press1
+T, -1, -1, out_score
+T, -1, -1, out_score1
 
-  IN_SBANK_PRESS2,
-  'T', -1, -1, OUT_SBANK_PRESS2,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE2,
-  -1,
+press2
+T, -1, -1, out_press2
+T, -1, -1, out_score
+T, -1, -1, out_score2
 
-  IN_SBANK_PRESS3,
-  'T', -1, -1, OUT_SBANK_PRESS3,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE3,
-  -1,
+press3
+T, -1, -1, out_press3
+T, -1, -1, out_score
+T, -1, -1, out_score3
 
-  IN_SBANK_PRESS4,
-  'T', -1, -1, OUT_SBANK_PRESS4,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE4,
-  -1,
+press4
+T, -1, -1, out_press4
+T, -1, -1, out_score
+T, -1, -1, out_score4
 
-  IN_SBANK_PRESS5,
-  'T', -1, -1, OUT_SBANK_PRESS5,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE5,
-  -1,
+press5
+T, -1, -1, out_press5
+T, -1, -1, out_score
+T, -1, -1, out_score5
 
-  IN_SBANK_PRESS6,
-  'T', -1, -1, OUT_SBANK_PRESS6,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE6,
-  -1,
+press6
+T, -1, -1, out_press6
+T, -1, -1, out_score
+T, -1, -1, out_score6
 
-  IN_SBANK_PRESS7,
-  'T', -1, -1, OUT_SBANK_PRESS7,
-  'T', -1, -1, OUT_SBANK_SCORE,
-  'T', -1, -1, OUT_SBANK_SCORE7,
-  -1,
+press7
+T, -1, -1, out_press7
+T, -1, -1, out_score
+T, -1, -1, out_score7
 
-  -1,
+)"""";
+
+const char switchbank_symbin[] = { 
+  "\x78\x56\x34\x12\x88\x00\x00\x00" "init\0press0\0release0\0press1\0release1\0press2\0release2\0press3\0release3\0press4\0release4\0press5\0release5\0press6\0release6\0press7\0release7\0\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "out_score\0out_press0\0out_press1\0out_press2\0out_press3\0out_press4\0out_press5\0out_press6\0out_press7\0out_score0\0out_score1\0out_score2\0out_score3\0out_score4\0out_score5\0out_score6\0out_score7\0\0"
+};
+
+const uint16_t switchbank_hexbin[] = {
+  0x0013, 0x0019, 0x0000, 0x0027, 0x0000, 0x0035, 0x0000, 0x0043, 0x0000, 0x0051, 0x0000, 0x005F, 
+  0x0000, 0x006D, 0x0000, 0x007B, 0x0000, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 
+  0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0009, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 
+  0xFFFF, 0xFFFF, 0x000A, 0xFFFF, 0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x000B, 0xFFFF, 0x0007, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x000C, 0xFFFF, 0x0009, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0005, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x000D, 0xFFFF, 0x000B, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0006, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 0x000E, 0xFFFF, 
+  0x000D, 0x0054, 0xFFFF, 0xFFFF, 0x0007, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 0xFFFF, 0xFFFF, 
+  0x000F, 0xFFFF, 0x000F, 0x0054, 0xFFFF, 0xFFFF, 0x0008, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0010, 0xFFFF, 0xFFFF
 };
 
 /*
@@ -489,63 +364,66 @@ enum { IN_COMBO_INIT, IN_COMBO_PRESS0, IN_COMBO_RELEASE0, IN_COMBO_PRESS1, IN_CO
 enum { OUT_COMBO_SCORE, OUT_COMBO_SCORE_LIT, OUT_COMBO_SCORE_UNLIT, OUT_COMBO_PRESS_LIT, OUT_COMBO_PRESS_UNLIT, OUT_COMBO_PRESS0_LIT, OUT_COMBO_PRESS0_UNLIT, OUT_COMBO_PRESS1_LIT, OUT_COMBO_PRESS1_UNLIT };
 enum { ARG_COMBO_LED0, ARG_COMBO_LED1 };
 
-const char dual_combo_symbols[] = 
-  "INIT, PRESS0, RELEASE0, PRESS1, RELEASE1, ON, OFF\n"
-  "OUT_SCORE, OUT_SCORE_LIT, OUT_SCORE_UNLIT, OUT_PRESS_LIT, OUT_PRESS_UNLIT, OUT_PRESS0_LIT, OUT_PRESS0_UNLIT, OUT_PRESS1_LIT, OUT_PRESS1_UNLIT\n"
-  "ARG_LED0, ARG_LED1\n";
+const char dual_combo_bytecode[] = R""""(
+init, press0, release0, press1, release1, on, off
+out_score, out_score_lit, out_score_unlit, out_press_lit, out_press_unlit, out_press0_lit, out_press0_unlit, out_press1_lit, out_press1_unlit
+arg_led0, arg_led1
 
-int16_t dual_combo_firmware[] = {
-  IN_COMBO_INIT, 
-  IN_COMBO_PRESS0, 
-  IN_COMBO_RELEASE0, 
-  IN_COMBO_PRESS1, 
-  IN_COMBO_RELEASE1, 
-  IN_COMBO_ON, 
-  IN_COMBO_OFF, 
-  -1,
 
-  IN_COMBO_INIT,
-  'P', -1, -1, 0,  // Not persistent 
-  'S', -1, -1, IN_COMBO_OFF,
-  -1,
+init
+P, -1, -1, 0
+S, -1, -1, off
 
-  IN_COMBO_PRESS0,
-  'T', -1, -1, OUT_COMBO_SCORE, 
-  'J', ARG_COMBO_LED0, 0, 4, 
-  'T', -1, -1, OUT_COMBO_PRESS_LIT,
-  'T', -1, -1, OUT_COMBO_PRESS0_LIT,
-  'T', -1, -1, OUT_COMBO_SCORE_LIT,
-  'J', -1, -1, -1,
-  'T', -1, -1, OUT_COMBO_PRESS_UNLIT,
-  'T', -1, -1, OUT_COMBO_PRESS0_UNLIT,
-  'T', -1, -1, OUT_COMBO_SCORE_UNLIT,
-  -1,
+press0
+T, -1, -1, out_score
+J, arg_led0, 0, 4
+T, -1, -1, out_press_lit
+T, -1, -1, out_press0_lit
+T, -1, -1, out_score_lit
+J, -1, -1, -1
+T, -1, -1, out_press_unlit
+T, -1, -1, out_press0_unlit
+T, -1, -1, out_score_unlit
 
-  IN_COMBO_PRESS1,
-  'T', -1, -1, OUT_COMBO_SCORE, 
-  'J', ARG_COMBO_LED0, 0, 4, 
-  'T', -1, -1, OUT_COMBO_PRESS_LIT,
-  'T', -1, -1, OUT_COMBO_PRESS1_LIT,
-  'T', -1, -1, OUT_COMBO_SCORE_LIT,
-  'J', -1, -1, -1,
-  'T', -1, -1, OUT_COMBO_PRESS_UNLIT,
-  'T', -1, -1, OUT_COMBO_PRESS1_UNLIT,
-  'T', -1, -1, OUT_COMBO_SCORE_UNLIT,
-  -1,
+press1
+T, -1, -1, out_score
+J, arg_led0, 0, 4
+T, -1, -1, out_press_lit
+T, -1, -1, out_press1_lit
+T, -1, -1, out_score_lit
+J, -1, -1, -1
+T, -1, -1, out_press_unlit
+T, -1, -1, out_press1_unlit
+T, -1, -1, out_score_unlit
 
-  IN_COMBO_ON,
-  'H', -1, -1, ARG_COMBO_LED0, 
-  'H', -1, -1, ARG_COMBO_LED1, 
-  -1,
+on
+H, -1, -1, arg_led0
+H, -1, -1, arg_led1
 
-  IN_COMBO_OFF,
-  'L', -1, -1, ARG_COMBO_LED0, 
-  'L', -1, -1, ARG_COMBO_LED1, 
-  -1,
+off
+L, -1, -1, arg_led0
+L, -1, -1, arg_led1
 
-  -1,
+)"""";
+
+const char dual_combo_symbin[] = {
+  "\x78\x56\x34\x12\x30\x00\x00\x00" "init\0press0\0release0\0press1\0release1\0on\0off\0\0\0\0\0"
+  "\x78\x56\x34\x12\x88\x00\x00\x00" "out_score\0out_score_lit\0out_score_unlit\0out_press_lit\0out_press_unlit\0out_press0_lit\0out_press0_unlit\0out_press1_lit\0out_press1_unlit\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_led0\0arg_led1\0\0"
 };
 
+const uint16_t dual_combo_hexbin[] = {
+  0x0009, 0x0013, 0x0000, 0x0039, 0x0000, 0x005F, 0x0069, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 
+  0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0006, 0xFFFF, 0x0001, 0x0054, 0xFFFF, 0xFFFF, 0x0000, 0x004A, 
+  0x0000, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 0x0005, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0001, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 0x0004, 0x0054, 
+  0xFFFF, 0xFFFF, 0x0006, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0000, 0x004A, 0x0000, 0x0000, 0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0003, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0007, 0x0054, 0xFFFF, 0xFFFF, 0x0001, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x0054, 0xFFFF, 0xFFFF, 
+  0x0004, 0x0054, 0xFFFF, 0xFFFF, 0x0008, 0x0054, 0xFFFF, 0xFFFF, 0x0002, 0xFFFF, 0x0005, 0x0048, 
+  0xFFFF, 0xFFFF, 0x0000, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0006, 0x004C, 0xFFFF, 0xFFFF, 
+  0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0xFFFF
+};
 
 /*
  * Firmware: bumper_firmware
@@ -558,570 +436,6 @@ int16_t dual_combo_firmware[] = {
 enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
 enum { OUT_BUMPER_SCORE, OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
 enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
-
-const char bumper_symbols[] = 
-  "INIT, PRESS, RELEASE, LIGHT_ON, LIGHT_OFF\n"
-  "OUT_SCORE, OUT_SCORE_LIT, OUT_SCORE_UNLIT, OUT_LIGHT_ON, OUT_LIGHT_OFF\n"
-  "ARG_COIL, ARG_LED\n";
-
-int16_t bumper_firmware[] = {
-  IN_BUMPER_INIT,                       // Input event jump table (initialized by parser)
-  IN_BUMPER_PRESS,
-  IN_BUMPER_RELEASE,  
-  IN_BUMPER_LIGHT_ON, 
-  IN_BUMPER_LIGHT_OFF,
-  -1,
-
-  IN_BUMPER_INIT,
-  'P', -1, -1, 0,                       // Not a persistent device
-  'L', -1, -1, ARG_BUMPER_COIL,         // Turn off coil
-  'L', -1, -1, ARG_BUMPER_LED,          // Turn off led
-  -1,
-
-  IN_BUMPER_PRESS,
-  'H', -1, -1, ARG_BUMPER_COIL,         // Pulse the bumper coil
-  'T', -1, -1, OUT_BUMPER_SCORE,        // Emit score event
-  'J', ARG_BUMPER_LED, 0, 2,            // Check bumper light
-  'T', -1, -1, OUT_BUMPER_SCORE_LIT,    // Emit lit score event
-  'J', -1, -1, -1,                      // Exit
-  'T', -1, -1, OUT_BUMPER_SCORE_UNLIT,  // Emit unlit score event
-  -1,
-
-  IN_BUMPER_LIGHT_ON,
-  'H', -1, -1, ARG_BUMPER_LED,          // Light the bumper 
-  'T', -1, -1, OUT_BUMPER_LIGHT_ON,     // Emit bumper light on event
-  -1,
-
-  IN_BUMPER_LIGHT_OFF,
-  'L', -1, -1, ARG_BUMPER_LED,          // Turn off the bumper light
-  'T', -1, -1, OUT_BUMPER_LIGHT_OFF,    // Emit bumper light off event
-  -1,
-
-  -1,
-};
-
-
-/*
- * Firmware: dual_target_firmware
- * Maximum switches: 2
- * Led arguments: LED0, LED1
- * Description: 
- *   Dual target device
- */
-
-enum { IN_TARGET_INIT, IN_TARGET_PRESS0, IN_TARGET_RELEASE0, IN_TARGET_PRESS1, IN_TARGET_RELEASE1, IN_TARGET_CLEAR };
-enum { OUT_TARGET_LED0_ON, OUT_TARGET_LED1_ON, OUT_TARGET_LED0_OFF, OUT_TARGET_LED1_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF, OUT_TARGET_SCORE };
-enum { ARG_TARGET_LED0, ARG_TARGET_LED1 };
-
-const char dual_target_symbols[] = 
-  "INIT, PRESS0, RELEASE0, PRESS1, RELEASE1, CLEAR\n"
-  "OUT_LED0_ON, OUT_LED1_ON, OUT_LED0_OFF, OUT_LED1_OFF, OUT_ALL_ON, OUT_ALL_OFF, OUT_SCORE\n"
-  "ARG_LED0, ARG_LED1\n";
-
-int16_t dual_target_firmware[] = {
-  IN_TARGET_INIT,    
-  IN_TARGET_PRESS0,
-  IN_TARGET_RELEASE0,  
-  IN_TARGET_PRESS1,
-  IN_TARGET_RELEASE1,  
-  IN_TARGET_CLEAR,  
-  -1,
-
-  IN_TARGET_INIT,
-  'P', -1, -1, 0,
-  'S', -1, -1, IN_TARGET_CLEAR,
-  -1,
-  
-  IN_TARGET_PRESS0,
-  'T', -1, -1, OUT_TARGET_SCORE,
-  'J', ARG_TARGET_LED0, -1, 0,
-  'H', -1, -1, ARG_TARGET_LED0,
-  'T', -1, -1, OUT_TARGET_LED0_ON,
-  'J', ARG_TARGET_LED1, 0, -1,
-  'T', -1, -1, OUT_TARGET_ALL_ON,
-  -1,
-   
-  IN_TARGET_PRESS1,
-  'T', -1, -1, OUT_TARGET_SCORE,
-  'J', ARG_TARGET_LED1, -1, 0,
-  'H', -1, -1, ARG_TARGET_LED1,
-  'T', -1, -1, OUT_TARGET_LED1_ON,
-  'J', ARG_TARGET_LED0, 0, -1,
-  'T', -1, -1, OUT_TARGET_ALL_ON,
-  -1,
-
-  IN_TARGET_CLEAR, // Only send off events if leds were on in the first place?
-  'L', -1, -1, ARG_TARGET_LED0,
-  'L', -1, -1, ARG_TARGET_LED1,
-  'T', -1, -1, OUT_TARGET_LED0_OFF,
-  'T', -1, -1, OUT_TARGET_LED1_OFF,
-  'T', -1, -1, OUT_TARGET_ALL_OFF,
-  -1,
-  
-  -1,
-};
-
-
-/*
- * Firmware: dual_flipper_firmware
- * Maximum switches: 2
- * Led arguments: COIL_L, COIL_R
- * Description: 
- *   Dual flipper device)
- */
-
-enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
-enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
-
-const char dual_flipper_symbols[] = 
-  "INIT, PRESS_L, RELEASE_L, PRESS_R, RELEASE_R\n"
-  "\n"
-  "ARG_COIL_L, ARG_COIL_R\n"; 
-
-int16_t dual_flipper_firmware[] = {
-  IN_FLIPPER_INIT,
-  IN_FLIPPER_PRESS_L,
-  IN_FLIPPER_RELEASE_L,  
-  IN_FLIPPER_PRESS_R,
-  IN_FLIPPER_RELEASE_R,  
-  -1,
-
-  IN_FLIPPER_INIT,
-  'P', -1, -1, 0,  // Not persistent
-  'L', -1, -1, ARG_FLIPPER_COIL_L,
-  'L', -1, -1, ARG_FLIPPER_COIL_R,
-  -1,
-
-  IN_FLIPPER_PRESS_L,
-  'H', -1, -1, ARG_FLIPPER_COIL_L,
-  -1,
-
-  IN_FLIPPER_RELEASE_L,
-  'L', -1, -1, ARG_FLIPPER_COIL_L,
-  -1,
-
-  IN_FLIPPER_PRESS_R,
-  'H', -1, -1, ARG_FLIPPER_COIL_R,
-  -1,
-
-  IN_FLIPPER_RELEASE_R,
-  'L', -1, -1, ARG_FLIPPER_COIL_R,
-  -1,
-
-  -1,
-};
-
-/*
- * Firmware: scalar_firmware
- * Maximum switches: 0
- * Led arguments: LED0, LED1, LED2, LED3, LED4, BACKSTOP
- * Description: 
- *   Led position indicator with 5 places (0..4), used for # of players, # of ball, # of player up
- *   Advances until ARG_BACKTOP led is lit
- *   or until IN_SCALAR_FREEZE is called
- */
-
-enum { IN_SCALAR_INIT, IN_SCALAR_ZERO, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
-enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
-enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK, REG_SCALAR };
-
-const char scalar_symbols[] = 
-  "INIT, ZERO, ADVANCE, FREEZE, SEL0, SEL1, SEL2, SEL3, SEL4, SUB_CLEAR\n"
-  "\n"
-  "ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP\n"
-  "REG_STATE, REG_BLOCK, REG_SCALAR\n";
-
-int16_t scalar_firmware[] = {
-  IN_SCALAR_INIT, 
-  IN_SCALAR_ZERO, 
-  IN_SCALAR_ADVANCE, 
-  IN_SCALAR_FREEZE, 
-  IN_SCALAR_SEL0, 
-  IN_SCALAR_SEL1, 
-  IN_SCALAR_SEL2, 
-  IN_SCALAR_SEL3, 
-  IN_SCALAR_SEL4, 
-  SUB_SCALAR_CLEAR,  
-  -1,
-
-  IN_SCALAR_INIT,
-  'P', -1, -1, 1,  // Persistent
-  'X',  1, -1, -1, // Skip the rest if not 1st INIT
-  'R', -1, -1, REG_SCALAR_BLOCK,
-  'Z', -1, -1, 0,
-  'S', -1, -1, IN_SCALAR_ZERO,
-  -1,
-
-  IN_SCALAR_ZERO,
-  'H', -1, -1, ARG_LED0,
-  'L', -1, -1, ARG_LED1,
-  'L', -1, -1, ARG_LED2,
-  'L', -1, -1, ARG_LED3,
-  'L', -1, -1, ARG_LED4,
-  'R', -1, -1, REG_SCALAR_BLOCK,
-  'Z', -1, -1, 0,
-  -1,
-
-  IN_SCALAR_ADVANCE, 
-  'R', -1, -1, REG_SCALAR_BLOCK,
-  '=', 1, -1, 0,
-  'J', ARG_BACKSTOP, -1, 0,
-  'R', -1, -1, REG_SCALAR_STATE,
-  'J', ARG_LED0, 0, 2,
-  'S', -1, -1, IN_SCALAR_SEL1,
-  'J', -1, -1, -1,
-  'J', ARG_LED1, 0, 2,
-  'S', -1, -1, IN_SCALAR_SEL2,
-  'J', -1, -1, -1,
-  'J', ARG_LED2, 0, 2,
-  'S', -1, -1, IN_SCALAR_SEL3,
-  'J', -1, -1, -1,
-  'J', ARG_LED3, 0, -1,
-  'S', -1, -1, IN_SCALAR_SEL4,
-  -1,
-
-  IN_SCALAR_FREEZE,
-  'R', -1, -1, REG_SCALAR_BLOCK,
-  'Z', -1, -1, 1,
-  -1,   
-
-  IN_SCALAR_SEL0,
-  'Z', -1, -1, 0,
-  'S', -1, -1, SUB_SCALAR_CLEAR,  
-  'H', -1, -1, ARG_LED0,
-  -1,
-
-  IN_SCALAR_SEL1,
-  'Z', -1, -1, 1,
-  'S', -1, -1, SUB_SCALAR_CLEAR,  
-  'H', -1, -1, ARG_LED1,
-  -1,
-
-  IN_SCALAR_SEL2,
-  'Z', -1, -1, 2,
-  'S', -1, -1, SUB_SCALAR_CLEAR,  
-  'H', -1, -1, ARG_LED2,
-  -1,
-
-  IN_SCALAR_SEL3,
-  'Z', -1, -1, 3,
-  'S', -1, -1, SUB_SCALAR_CLEAR,  
-  'H', -1, -1, ARG_LED3,
-  -1,
-
-  IN_SCALAR_SEL4,
-  'Z', -1, -1, 4,
-  'S', -1, -1, SUB_SCALAR_CLEAR,  
-  'H', -1, -1, ARG_LED4,
-  -1,
-
-  SUB_SCALAR_CLEAR,
-  'L', -1, -1, ARG_LED0,
-  'L', -1, -1, ARG_LED1,
-  'L', -1, -1, ARG_LED2,
-  'L', -1, -1, ARG_LED3,
-  'L', -1, -1, ARG_LED4,
-  -1,
-
-  -1,
-};
-
-
-/*
- * Firmware: counter_em4d1w_firmware
- * Maximum switches: 1 (sensor wire)
- * Led arguments: COIL0, COIL1, COIL2, COIL3
- * Description: 
- *   4 digit electromechanical counter device with 1 sensor wire
- */
-
-enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
-  IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
-  SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
-  SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
-  SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
-};
-enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP, ARG_CTR_DIRTY }; 
-enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
-enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_WAIT };
-
-const char counter_em4d1w_symbols[] = 
-  "INIT, PRESS, RELEASE, RESET,"
-  "PT10, PT100, PT1000, PT500, PT5000,"
-  "SUB_PULSE_10, SUB_PULSE_100, SUB_PULSE_1K, SUB_PULSE_10K,"
-  "SUB_MOVE_START, SUB_SOLVE_POS1, SUB_SOLVE_POS2_12, SUB_SOLVE_POS2_13, SUB_SOLVE_POS2_23," 
-  "SUB_SOLVE_POS3_1, SUB_SOLVE_POS3_2, SUB_SOLVE_POS3_3, SUB_SOLVE_REEL0,\n"
-  "OUT_DIGIT1, OUT_DIGIT2, OUT_DIGIT3\n"
-  "ARG_10K, ARG_1K, ARG_100, ARG_10, ARG_UP, ARG_DIRTY\n" 
-  "REG_STATE, REG_SENSOR, REG_10K, REG_1K, REG_100, REG_10, REG_WAIT\n";
- 
-int16_t counter_em4d1w_firmware[] = {
-  IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
-  IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
-  SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
-  SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
-  SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
-  -1,
-
-  IN_CTR_INIT,
-  'P', -1, -1,  1,                      // Persistent
-  'X',  1,  0,  -1,
-  'H', -1, -1, ARG_CTR_DIRTY,           // Set dirty led on 1st init
-  'Z', -1, -1,  1,
-  -1,
-
-  IN_CTR_PRESS,
-  'R', -1, -1, REG_CTR_SENSOR,
-  'Z', -1, -1, 1,                      // Set sensor flag
-  -1,
-  
-  IN_CTR_RELEASE,
-  'R', -1, -1, REG_CTR_SENSOR,
-  'Z', -1, -1, 0,                      // Clear sensor flag
-  -1,
-
-  IN_CTR_RESET, 
-  '0', -1,  0, -1,                      // Force primary core
-  '=',  0, -1, 0,                      // Only when dirty
-  'S', -1, -1, SUB_CTR_MOVE_START,
-  'S', -1, -1, SUB_CTR_SOLVE_POS1,  
-  'R', -1, -1, REG_CTR_STATE,
-  'Z', -1, -1, 0,                      // Clean!
-  'L', -1, -1, ARG_CTR_DIRTY,           
-  'R', -1, -1, REG_CTR_10,              // Reset digit counter registers to 0
-  'Z', -1, -1, 0,
-  'R', -1, -1, REG_CTR_100,
-  'Z', -1, -1, 0,
-  'R', -1, -1, REG_CTR_1K,
-  'Z', -1, -1, 0,
-  'R', -1, -1, REG_CTR_10K,
-  'Z', -1, -1, 0,
-  -1,
-
-  SUB_CTR_MOVE_START,                   // Pulse 0 & 1 while sensor is low
-  'R', -1, -1, REG_CTR_SENSOR,          // Select sensor register   
-  '=', 0,  0, -1,
-  'H', -1, -1, ARG_CTR_10K,
-  'Y', -1, -1, 120,
-  '=', 0,  0, -1,
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  '=', 0,  0, -1,
-  'A', -1, -1, SUB_CTR_MOVE_START,       // >> LOOP 
-  -1,
-
-  SUB_CTR_SOLVE_POS1,                    // Pulse 1 & 2 & 3 while sensor is high (store pos of 1ST)
-  'R', -1, -1, REG_CTR_SENSOR,           // Select sensor register   
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  '=', 1,  0, 7,
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  '=', 1,  0, 5,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  '=', 1,  0, 3,
-  'A', -1, -1, SUB_CTR_SOLVE_POS1,      // >> LOOP
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_23,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_13,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_12,  
-  -1,  
-
-  SUB_CTR_SOLVE_POS2_23,
-  'R', -1, -1, REG_CTR_SENSOR,
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_23,      // >> LOOP
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,
-  -1, 
-
-  SUB_CTR_SOLVE_POS2_13,
-  'R', -1, -1, REG_CTR_SENSOR,
-  'H', -1, -1, ARG_CTR_10K,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_13,      // >> LOOP
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_1,
-  -1, 
-
-  SUB_CTR_SOLVE_POS2_12,
-  'R', -1, -1, REG_CTR_SENSOR,
-  'H', -1, -1, ARG_CTR_10K,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  '=',  0,  0, 4,  
-  'A', -1, -1, SUB_CTR_SOLVE_POS2_12,      // >> LOOP
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,
-  'H', -1, -1, ARG_CTR_100,        // We know 100 & 10 (23 -> 1)
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_1,
-  -1, 
-
-  SUB_CTR_SOLVE_POS3_1,
-  'R', -1, -1, REG_CTR_SENSOR,
-  '=',  0,  0, 3,
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_1,  // >> LOOP
-  'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
-  'H', -1, -1, ARG_CTR_1K,
-  'Y', -1, -1, 120,
-  -1,
-  
-  SUB_CTR_SOLVE_POS3_2,
-  'R', -1, -1, REG_CTR_SENSOR,
-  '=',  0,  0, 3,
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_2,  // >> LOOP
-  'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
-  'H', -1, -1, ARG_CTR_100,
-  'Y', -1, -1, 120,
-  -1,
-  
-  SUB_CTR_SOLVE_POS3_3,
-  'R', -1, -1, REG_CTR_SENSOR,
-  '=',  0,  0, 3,
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_POS3_3,  // >> LOOP
-  'S', -1, -1, SUB_CTR_SOLVE_REEL0,  
-  'H', -1, -1, ARG_CTR_10,
-  'Y', -1, -1, 120,
-  -1,
-  
-  SUB_CTR_SOLVE_REEL0,
-  'R', -1, -1, REG_CTR_SENSOR,          
-  '=',  1, 0, -1,
-  'H', -1, -1, ARG_CTR_10K,
-  'Y', -1, -1, 120,
-  'A', -1, -1, SUB_CTR_SOLVE_REEL0,  
-  -1,
-
-  IN_CTR_PT10, 
-  '0', -1,  0, -1,                      // Force primary core
-  'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1,  1,                      
-  'H', -1, -1, ARG_CTR_DIRTY,          
-  'T', -1, -1, OUT_CTR_DIGIT3,
-  'S', -1, -1, SUB_CTR_PULSE_10,
-  -1,
-  
-  IN_CTR_PT100, 
-  '0', -1,  0, -1,                      // Force primary core
-  'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1,  1,                      
-  'H', -1, -1, ARG_CTR_DIRTY,          
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  -1,
-  
-  IN_CTR_PT1000,
-  '0', -1,  0, -1,                      // Force primary core
-  'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1,  1,                      
-  'H', -1, -1, ARG_CTR_DIRTY,          
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  -1,
-   
-  IN_CTR_PT500, 
-  '0', -1,  0, -1,                      // Force primary core
-  'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1, 1,                      
-  'H', -1, -1, ARG_CTR_DIRTY,          
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  'T', -1, -1, OUT_CTR_DIGIT2,
-  'S', -1, -1, SUB_CTR_PULSE_100,
-  -1,
-  
-  IN_CTR_PT5000,
-  '0', -1,  0, -1,                      // Force primary core
-  'J', ARG_CTR_UP, 0, -1,
-  'I', -1, -1, 1,                      
-  'H', -1, -1, ARG_CTR_DIRTY,          
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  'T', -1, -1, OUT_CTR_DIGIT1,
-  'S', -1, -1, SUB_CTR_PULSE_1K,
-  -1,
-
-  SUB_CTR_PULSE_10,
-  'R', -1, -1, REG_CTR_10,
-  'H', -1, -1, ARG_CTR_10,
-  '=',  9,  3, 0,                      // Check rollover
-  'I', -1, -1, 1,                      // If not just increment & yield
-  'Y', -1, -1, 120,
-  'J', -1, -1, -1,
-  'Z', -1, -1, 0,                     // Else reset digit counter register
-  'S', -1, -1, SUB_CTR_PULSE_100,      // And rollover
-  -1,
-
-  SUB_CTR_PULSE_100,
-  'R', -1, -1, REG_CTR_100,
-  'H', -1, -1, ARG_CTR_100,
-  '=',  9,  3, 0,
-  'I', -1, -1, 1,
-  'Y', -1, -1, 120,
-  'J', -1, -1, -1,
-  'Z', -1, -1, 0,
-  'S', -1, -1, SUB_CTR_PULSE_1K,  
-  -1,
-
-  SUB_CTR_PULSE_1K,
-  'R', -1, -1, REG_CTR_1K,
-  'H', -1, -1, ARG_CTR_1K,
-  '=',  9,  3, 0,
-  'I', -1, -1, 1,
-  'Y', -1, -1, 120,
-  'J', -1, -1, -1,
-  'Z', -1, -1, 0,
-  'S', -1, -1, SUB_CTR_PULSE_10K,  
-  -1,
-
-  SUB_CTR_PULSE_10K,
-  'R', -1, -1, REG_CTR_10K,
-  'H', -1, -1, ARG_CTR_10K,
-  'I', -1, -1, 1,
-  'Y', -1, -1, 120,
-  -1,
-
-  -1,
-};
 
 const char bumper_bytecode[] = R""""(
 init, press, release, turn_on, turn_off
@@ -1152,10 +466,6 @@ T, -1, -1, out_light_off
  
 )"""";
 
-// library.import( "bumper", bumper_hexbin, bumper_symbin );
-// playfield.device( BUMPER_A, LED_BUMPER_A, library.codePtr( "bumper" ) )
-//    .loadSymbols( library.symbolPtr( "bumper" ) );
-
 const uint16_t bumper_hexbin[] = {
   0x0007, 0x0015, 0x0000, 0x002F, 0x0039, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 
   0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 
@@ -1170,6 +480,19 @@ const char bumper_symbin[] = {
   "\x78\x56\x34\x12\x44\x00\x00\x00" "out_score\0out_score_lit\0out_score_unlit\0out_light_on\0out_light_off\0\0"
   "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_coil\0arg_led\0\0"
 };
+
+
+/*
+ * Firmware: dual_target_firmware
+ * Maximum switches: 2
+ * Led arguments: LED0, LED1
+ * Description: 
+ *   Dual target device
+ */
+
+enum { IN_TARGET_INIT, IN_TARGET_PRESS0, IN_TARGET_RELEASE0, IN_TARGET_PRESS1, IN_TARGET_RELEASE1, IN_TARGET_CLEAR };
+enum { OUT_TARGET_LED0_ON, OUT_TARGET_LED1_ON, OUT_TARGET_LED0_OFF, OUT_TARGET_LED1_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF, OUT_TARGET_SCORE };
+enum { ARG_TARGET_LED0, ARG_TARGET_LED1 };
 
 const char dual_target_bytecode[] = R""""(
 init, press0, release0, press1, release1, clear
@@ -1222,6 +545,193 @@ const char dual_target_symbin[] = {
   "\x78\x56\x34\x12\x54\x00\x00\x00" "out_led0_on\0out_led1_on\0out_led0_off\0out_led1_off\0out_all_on\0out_all_off\0out_score\0\0"
   "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_led0\0arg_led1\0\0"
 };
+
+/*
+ * Firmware: dual_flipper_firmware
+ * Maximum switches: 2
+ * Led arguments: COIL_L, COIL_R
+ * Description: 
+ *   Dual flipper device)
+ */
+
+enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
+enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
+
+const char dual_flipper_bytecode[] = R""""(
+init, press_l, release_l, press_r, release_r
+
+arg_coil_l, arg_coil_r
+
+
+init
+P, -1, -1, 0
+L, -1, -1, arg_coil_l
+L, -1, -1, arg_coil_r
+
+press_l
+H, -1, -1, arg_coil_l
+
+release_l
+L, -1, -1, arg_coil_l
+
+press_r
+H, -1, -1, arg_coil_r
+
+release_r
+L, -1, -1, arg_coil_r
+
+)"""";
+
+const char dual_flipper_symbin[] = {
+  "\x78\x56\x34\x12\x2c\x00\x00\x00" "init\0press_l\0release_l\0press_r\0release_r\0\0\0\0"
+  "\x78\x56\x34\x12\x04\x00\x00\x00" "\0\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "arg_coil_l\0arg_coil_r\0\0"
+};
+
+const uint16_t dual_flipper_hexbin[] = {
+  0x0007, 0x0015, 0x001B, 0x0021, 0x0027, 0xFFFF, 0x0000, 0x0050, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 
+  0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 0xFFFF, 
+  0x0000, 0xFFFF, 0x0002, 0x004C, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0003, 0x0048, 0xFFFF, 0xFFFF, 
+  0x0001, 0xFFFF, 0x0004, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0xFFFF
+};
+
+/*
+ * Firmware: scalar_firmware
+ * Maximum switches: 0
+ * Led arguments: LED0, LED1, LED2, LED3, LED4, BACKSTOP
+ * Description: 
+ *   Led position indicator with 5 places (0..4), used for # of players, # of ball, # of player up
+ *   Advances until ARG_BACKTOP led is lit
+ *   or until IN_SCALAR_FREEZE is called
+ */
+
+enum { IN_SCALAR_INIT, IN_SCALAR_ZERO, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
+enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
+enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK, REG_SCALAR };
+
+const char scalar_bytecode[] = R""""(
+init, zero, advance, freeze, sel0, sel1, sel2, sel3, sel4, sub_clear
+
+arg_led0, arg_led1, arg_led2, arg_led3, arg_led4, arg_backstop
+reg_state, reg_block, reg_scalar
+
+init
+P, -1, -1, 1
+X,  1, -1, -1
+R, -1, -1, reg_block
+Z, -1, -1, 0
+S, -1, -1, zero
+
+zero
+H, -1, -1, arg_led0
+L, -1, -1, arg_led1
+L, -1, -1, arg_led2
+L, -1, -1, arg_led3
+L, -1, -1, arg_led4
+R, -1, -1, reg_block
+Z, -1, -1, 0
+
+advance
+R, -1, -1, reg_block
+=, 1, -1, 0
+J, arg_backstop, -1, 0
+R, -1, -1, reg_state
+J, arg_led0, 0, 2
+S, -1, -1, sel1
+J, -1, -1, -1
+J, arg_led1, 0, 2
+S, -1, -1, sel2
+J, -1, -1, -1
+J, arg_led2, 0, 2
+S, -1, -1, sel3
+J, -1, -1, -1
+J, arg_led3, 0, -1
+S, -1, -1, sel4
+
+freeze
+R, -1, -1, reg_block
+Z, -1, -1, 1
+
+sel0
+Z, -1, -1, 0
+S, -1, -1, sub_clear
+H, -1, -1, arg_led0
+
+sel1
+Z, -1, -1, 1
+S, -1, -1, sub_clear
+H, -1, -1, arg_led1
+
+sel2
+Z, -1, -1, 2
+S, -1, -1, sub_clear
+H, -1, -1, arg_led2
+
+sel3
+Z, -1, -1, 3
+S, -1, -1, sub_clear
+H, -1, -1, arg_led3
+
+sel4
+Z, -1, -1, 4
+S, -1, -1, sub_clear
+H, -1, -1, arg_led4
+
+sub_clear
+L, -1, -1, arg_led0
+L, -1, -1, arg_led1
+L, -1, -1, arg_led2
+L, -1, -1, arg_led3
+L, -1, -1, arg_led4
+
+)"""";
+
+const char scalar_symbin[] = { 
+  "\x78\x56\x34\x12\x40\x00\x00\x00" "init\0zero\0advance\0freeze\0sel0\0sel1\0sel2\0sel3\0sel4\0sub_clear\0\0\0\0\0"
+  "\x78\x56\x34\x12\x04\x00\x00\x00" "\0\0\0\0"
+  "\x78\x56\x34\x12\x3c\x00\x00\x00" "arg_led0\0arg_led1\0arg_led2\0arg_led3\0arg_led4\0arg_backstop\0\0\0"
+  "\x00\x00\x00\x00\x00\x00\x00\x00" "reg_state\0reg_block\0reg_scalar\0\0"
+};
+
+const uint16_t scalar_hexbin[] = {
+  0x000C, 0x0022, 0x0040, 0x007E, 0x0088, 0x0096, 0x00A4, 0x00B2, 0x00C0, 0x00CE, 0xFFFF, 0x0000, 
+  0x0050, 0xFFFF, 0xFFFF, 0x0001, 0x0058, 0x0001, 0xFFFF, 0xFFFF, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 
+  0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0001, 0x0048, 0xFFFF, 
+  0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x004C, 0xFFFF, 0xFFFF, 0x0002, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 0x0004, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x005A, 0xFFFF, 
+  0xFFFF, 0x0000, 0xFFFF, 0x0002, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x003D, 0x0001, 0xFFFF, 0x0000, 
+  0x004A, 0x0005, 0xFFFF, 0x0000, 0x0052, 0xFFFF, 0xFFFF, 0x0000, 0x004A, 0x0000, 0x0000, 0x0002, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0005, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x004A, 0x0001, 0x0000, 0x0002, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0006, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x004A, 0x0002, 0x0000, 0x0002, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0007, 0x004A, 0xFFFF, 0xFFFF, 0xFFFF, 0x004A, 0x0003, 0x0000, 0xFFFF, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0008, 0xFFFF, 0x0003, 0x0052, 0xFFFF, 0xFFFF, 0x0001, 0x005A, 0xFFFF, 
+  0xFFFF, 0x0001, 0xFFFF, 0x0004, 0x005A, 0xFFFF, 0xFFFF, 0x0000, 0x0053, 0xFFFF, 0xFFFF, 0x0009, 
+  0x0048, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0005, 0x005A, 0xFFFF, 0xFFFF, 0x0001, 0x0053, 0xFFFF, 
+  0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x0001, 0xFFFF, 0x0006, 0x005A, 0xFFFF, 0xFFFF, 0x0002, 
+  0x0053, 0xFFFF, 0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x0002, 0xFFFF, 0x0007, 0x005A, 0xFFFF, 
+  0xFFFF, 0x0003, 0x0053, 0xFFFF, 0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0x0008, 
+  0x005A, 0xFFFF, 0xFFFF, 0x0004, 0x0053, 0xFFFF, 0xFFFF, 0x0009, 0x0048, 0xFFFF, 0xFFFF, 0x0004, 
+  0xFFFF, 0x0009, 0x004C, 0xFFFF, 0xFFFF, 0x0000, 0x004C, 0xFFFF, 0xFFFF, 0x0001, 0x004C, 0xFFFF, 
+  0xFFFF, 0x0002, 0x004C, 0xFFFF, 0xFFFF, 0x0003, 0x004C, 0xFFFF, 0xFFFF, 0x0004, 0xFFFF, 0xFFFF
+};
+
+/*
+ * Firmware: counter_em4d1w_firmware
+ * Maximum switches: 1 (sensor wire)
+ * Led arguments: COIL0, COIL1, COIL2, COIL3
+ * Description: 
+ *   4 digit electromechanical counter device with 1 sensor wire
+ */
+
+enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
+  IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
+  SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
+  SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
+  SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
+};
+enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP, ARG_CTR_DIRTY }; 
+enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
+enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_WAIT };
 
 const char counter_em4d1w_bytecode[] = R""""(
 init, press, release, reset, pt10, pt100, pt1000, pt500, pt5000, \
@@ -1468,6 +978,7 @@ I, -1, -1, 1
 Y, -1, -1, 120
 
 )"""";
+
 
 const char counter_em4d1w_symbin[] = { 
   "\x78\x56\x34\x12\xd8\x00\x00\x00" "init\0press\0release\0reset\0pt10\0pt100\0pt1000\0pt500\0pt5000\0sub_pulse_10\0sub_pulse_100\0sub_pulse_1k\0sub_pulse_10k\0sub_move_start\0sub_pos1\0sub_pos2_12\0sub_pos2_13\0sub_pos2_23\0sub_pos3_1\0sub_pos3_2\0sub_pos3_3\0sub_reel0\0\0\0\0"

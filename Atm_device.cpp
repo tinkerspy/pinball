@@ -449,8 +449,8 @@ Atm_device& Atm_device::loadSymbols( const char s[] ) {
   return *this;
 }
 
-Atm_device& Atm_device::loadSymbols( symbolic_machine_table* sym ) {
-  Symbolic_Machine::loadSymbols( sym );
+Atm_device& Atm_device::linkSymbols( symbolic_machine_table* sym ) {
+  Symbolic_Machine::linkSymbols( sym );
   return *this;
 }
 

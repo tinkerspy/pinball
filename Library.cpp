@@ -46,8 +46,6 @@ int16_t Library::compile( const char label[], const char src[] ) {
       token = strtok(NULL, sep );
     }
     src = cpunfold( buf, src ) + 1;
-        Serial.println( "compile sym w/malloc" );
-
     symbolic_machine_table* sym = (symbolic_machine_table*) malloc( sizeof( symbolic_machine_table ) + len + 1 );
     sym->next = NULL;
     sym->offset = 0;
@@ -86,7 +84,6 @@ int16_t Library::compile( const char label[], const char src[] ) {
     }
   }
   wordcnt += 2;
-      Serial.println( "compile code w/malloc" );
 
   int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
   memset( pcode, 0, wordcnt * 2 );

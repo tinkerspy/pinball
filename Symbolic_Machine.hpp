@@ -17,7 +17,7 @@ class Symbolic_Machine: public Machine {
  public:
   Symbolic_Machine( void ) : Machine() { symbols = NULL; };
   Symbolic_Machine& loadSymbols( const char s[] );
-  Symbolic_Machine& loadSymbols( symbolic_machine_table* sym );
+  Symbolic_Machine& linkSymbols( symbolic_machine_table* sym );
   const char* loadString( const char* s );
   int16_t findString( const char s[], const char sym[] );
   int16_t findSymbol( const char s[] );

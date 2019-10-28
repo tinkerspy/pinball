@@ -21,8 +21,8 @@ Library library;
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_LS, CMD_LL, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
-const char cmdlist[] = "ls ll hd stat ts tc tr press release init info";
+enum { CMD_LS, CMD_LL, CMD_LO, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
+const char cmdlist[] = "ls ll lo hd stat ts tc tr press release init info";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -46,10 +46,20 @@ void cmd_callback( int idx, int v, int up ) {
         cmd[idx].stream->println(); 
       }
       return;
-    case CMD_LL:
+    case CMD_LL: // List library entries
       {  
         for ( int16_t i = 0; i < library.count(); i++ ) {
-          cmd[idx].stream->printf( "%d: %s\n", i, library.label( i )); 
+          cmd[idx].stream->printf( "%d: %s\n", i, library.label( i ) );
+        }
+        cmd[idx].stream->println(); 
+      }
+      return;
+    case CMD_LO: // List leds that are active
+      {  
+        for ( int16_t i = 0; i < io.numberOfLeds(); i++ ) {
+          if ( leds.active( i ) ) {
+            cmd[idx].stream->printf( "Led %d: %s %s\n", i, leds.findSymbol( i ), leds.active( i ) ? "ON" : "OFF" );
+          } 
         }
         cmd[idx].stream->println(); 
       }
@@ -278,10 +288,10 @@ void setup() {
   playfield.device( COUNTER3, LED_COUNTER3_GRP, counter_em4d1w_firmware );
   playfield.device( OXO, LED_OXO_GRP, tictactoe_firmware );
   playfield.device( MULTILANE, -1, switchbank_firmware ); 
-  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
-  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
-  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, library.codePtr( "bumper" ) ).loadSymbols( library.symbolPtr( "bumper" ) );
-  playfield.device( DUAL_TARGET, LED_TARGET_GRP, library.codePtr( "dual_target" ) ).loadSymbols( library.symbolPtr( "dual_target" ) );
+  playfield.device( BUMPER_A, LED_BUMPER_A_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( BUMPER_B, LED_BUMPER_B_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( BUMPER_C, LED_BUMPER_C_GRP, library.codePtr( "bumper" ) ).linkSymbols( library.symbolPtr( "bumper" ) );
+  playfield.device( DUAL_TARGET, LED_TARGET_GRP, library.codePtr( "dual_target" ) ).linkSymbols( library.symbolPtr( "dual_target" ) );
   playfield.device( KICKER, LED_KICKER_GRP, dual_kicker_firmware );
   playfield.device( UPLANE, LED_UPLANE_GRP, dual_combo_firmware );
   playfield.device( SLINGSHOT, LED_SLINGSHOT_GRP, dual_kicker_firmware );
@@ -296,7 +306,7 @@ void setup() {
   playfield.device( BALLUP, LED_BALLUP_GRP, scalar_firmware );
   playfield.device( GI, COIL_GI, ledbank_firmware, 1 ); // Default ON
   playfield.device( FRONTBTN, LED_GAME_GRP, library.codePtr( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS )
-    .loadSymbols( library.symbolPtr( "game" ) );
+    .linkSymbols( library.symbolPtr( "game" ) );
 #endif
 
   Serial.println( "chain devices" ); delay( 100 );
@@ -384,8 +394,8 @@ void setup() {
 
   playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
   
-  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f KBytes free\n\n", 
-        (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024, (float)( FreeRam() / 1024 ) );
+  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f Bytes free\n\n", 
+        (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024, (float)( FreeRam() ) );
 
 }
 

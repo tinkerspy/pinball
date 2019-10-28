@@ -69,7 +69,7 @@ class Atm_device: public Symbolic_Machine {
   Machine* outputPtr( int16_t n );
   int16_t outputEvent( int16_t n );
   Atm_device& loadSymbols( const char s[] );
-  Atm_device& loadSymbols( symbolic_machine_table* sym );
+  Atm_device& linkSymbols( symbolic_machine_table* sym );
 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
   Atm_device* next;

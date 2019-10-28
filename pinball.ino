@@ -21,13 +21,13 @@ Library library;
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_LS, CMD_LL, CMD_LO, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
-const char cmdlist[] = "ls ll lo hd stat ts tc tr press release init info";
+enum { CMD_PS, CMD_LL, CMD_LO, CMD_HD, CMD_STAT, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO };
+const char cmdlist[] = "ps ll lo hd stat ts tc tr press release init info";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
-    case CMD_LS:  // TODO add firmware label: 00 SLEEPING 58L    ledbank  game_over
-      {  
+    case CMD_PS:  // TODO add firmware label: 00 SLEEPING 58L    ledbank  game_over
+      {           // Better call it PS (because it lists tasks)
         uint8_t map[32];
         uint8_t cnt = 0;
         memset( map, 0, sizeof( map ) );
@@ -147,7 +147,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       return;    
-    case CMD_INFO:
+    case CMD_INFO: // TODO show firmware label & running/sleeping state!
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {

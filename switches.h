@@ -1,12 +1,12 @@
 #pragma once
 
-char switch_symbols[] = 
-  "NULL_SW, TARGET_B, PORT_3X, PORT_3O, PORT_2X, PORT_2O, PORT_1X, PORT_1O, TARGET_A, KICKER_L, UPLANE_L," 
-  "BUMPER_A, BUMPER_C, KICKER_R, BUMPER_B, UPLANE_R, TARGET_C, OUTLANE, INLANE_L, SLING_L, SLING_R," 
-  "ROLLOVER, INLANE_R, BALL_ENTER, BALL_EXIT, TILT_PEND, TILT_RAMP, SWITCH213, FLIPPER_L, FLIPPER_R," 
-  "SWITCH216, SWITCH217, FRONTBTN, COUNTER2, COUNTER, SWITCH313, SWITCH314, SWITCH315, SWITCH316," 
-  "COUNTER1, COUNTER3, SAVE_GATE, MULTILANE, DUAL_TARGET, OXO, GI, KICKER, FLIPPER, UPLANE, SLINGSHOT," 
-  "LOWER, FEEDER, AGAIN, CHIMES, PLAYERS, PLAYERUP, BALLUP, ANIMATION, GAME_OVER, SWITCHES"; 
+const char switch_symbols[] = 
+  "null_sw, target_b, port_3x, port_3o, port_2x, port_2o, port_1x, port_1o, target_a, kicker_l, uplane_l," 
+  "bumper_a, bumper_c, kicker_r, bumper_b, uplane_r, target_c, outlane, inlane_l, sling_l, sling_r," 
+  "rollover, inlane_r, ball_enter, ball_exit, tilt_pend, tilt_ramp, switch213, flipper_l, flipper_r," 
+  "switch216, switch217, frontbtn, counter2, counter, switch313, switch314, switch315, switch316," 
+  "counter1, counter3, save_gate, multilane, dual_target, oxo, gi, kicker, flipper, uplane, slingshot," 
+  "lower, feeder, again, chimes, players, playerup, ballup, animation, game_over, switches"; 
 
 enum { 
 /* 000 */   NULL_SW,  // Dummy, physical switches start at 1
@@ -125,7 +125,7 @@ int16_t switch_groups[] = {
 
 #define SWITCH_NAME( sw ) switch_names + ( sw * 11 )
 
-char switch_names[] = 
+const char switch_names[] = 
   "NULL_SW   \0"
   "TARGET_B  \0"
   "PORT_3X   \0"

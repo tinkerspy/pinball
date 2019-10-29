@@ -297,8 +297,8 @@ void setup() {
     .linkSymbols( lib.symbolPtr( "game" ) );
 
   // Compileert maar ongetest:
-  //playfield.device( "frontbtn", "led_game_grp", lib.codePack( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
-
+  //playfield.device( "bumper_a", "led_bumper_a_grp", lib.code( "bumper" ) );
+  
   Serial.println( "chain devices" ); delay( 100 );
 
   playfield.device( "counter" ).chain( "counter1" );
@@ -317,7 +317,7 @@ void setup() {
   playfield.link( "oxo", "out_win_all", "uplane", "on" );
   playfield.link( "oxo", "out_collect", "counter", "pt1000" );
    
-  playfield.link( "multilane", "PRESS0", "OXO", "OXO_1O" );
+  playfield.link( "multilane", "press0", "oxo", "oxo_1o" );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS1, OXO, IN_OXO_1X );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS2, OXO, IN_OXO_2O );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS3, OXO, IN_OXO_2X );
@@ -382,7 +382,7 @@ void setup() {
   playfield.device( FRONTBTN ).onEvent( OUT_GAME_PLAYERS_ADV, PLAYERS, IN_SCALAR_ADVANCE );
   playfield.device( FRONTBTN ).onEvent( OUT_GAME_OVER, GAME_OVER, IN_LBANK_ON );
 
-  playfield.device( KICKER ).trigger( IN_KICKER_PERSIST );
+  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST );
   
   Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f Bytes free\n\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024, (float)( FreeRam() ) );

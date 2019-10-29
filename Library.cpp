@@ -202,6 +202,17 @@ Library& Library::hexdump(  Stream* stream, const char label[] ) {
   return *this;
 }
 
+uint64_t Library::codePack( int16_t idx ) {
+  lib_code_pack cp;
+  cp.code = lib[idx].code;
+  cp.symbols = lib[idx].symbols;
+  return cp.pack;
+}
+
+int64_t Library::codePack( const char label[] ) {
+  return codePack( index( label ) );
+}
+
 int16_t* Library::codePtr( int16_t idx ) {
   return lib[idx].code;
 }

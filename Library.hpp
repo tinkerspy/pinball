@@ -11,6 +11,14 @@ struct library_record {
   int16_t* code;    
 };
 
+union lib_code_pack {
+    struct {
+        symbolic_machine_table* symbols;
+        int16_t* code;
+    };
+    uint64_t pack;
+};
+
 class Library {
 
   public:
@@ -32,6 +40,8 @@ class Library {
   int16_t import( const char label[], const char symbols[], const uint16_t code[] );
   int16_t count();
   char* label( int16_t slot );
+  uint64_t codePack( int16_t idx );
+  int64_t codePack( const char label[] );
 
   protected:
   Library& printHexWord( Stream* stream, int16_t v, bool last = false );

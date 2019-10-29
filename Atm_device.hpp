@@ -20,11 +20,6 @@ struct core_state {
   bool yield_enabled;
 };
 
-struct symbol_table {
-  symbol_table* next;
-  char s[];
-};
-
 namespace instruction_set {
 
   enum { JmpL = 'J', JmpLA = 'A', JmpRE = 'C', Prim = '0', LedOn = 'H', LedOff = 'L', GoSub = 'S', Inc = 'I', Dec = 'D', Trig = 'T', Pers = 'P', Reg = 'R', Yield = 'Y' };

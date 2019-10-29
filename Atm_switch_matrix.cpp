@@ -265,6 +265,13 @@ Atm_device& Atm_switch_matrix::device( const char dev_str[], int16_t led_group /
   return device( findSymbol( dev_str ), led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
 }
  
+ Atm_device& Atm_switch_matrix::device( const char dev_str[], const char led_group_str[], int64_t code_pack,
+  int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
+  symbol_code_pack cp;
+  cp.pack = code_pack;  
+  return device( findSymbol( dev_str ), findSymbol( led_group_str ), cp.code, r0, r1, r2, r3, r4, r5, r6, r7 ).linkSymbols( cp.symbols );  
+}
+ 
 Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], const char dest_str[], const char in_str[] ) {
   Atm_device* src = &device( findSymbol( src_str ) );
   Atm_device* dest = &device( findSymbol( dest_str ) );

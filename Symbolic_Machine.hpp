@@ -12,6 +12,14 @@ struct symbolic_machine_table {
   char s[];
 };
 
+union symbol_code_pack {
+    struct {
+        symbolic_machine_table* symbols;
+        int16_t* code;
+    };
+    uint64_t pack;
+};
+
 class Symbolic_Machine: public Machine {
 
  public:

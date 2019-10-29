@@ -260,6 +260,11 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
   return *prof[n].device;
 }
 
+Atm_device& Atm_switch_matrix::device( const char dev_str[], int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
+    int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
+    return device( findSymbol( dev_str ), led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
+}
+
 bool Atm_switch_matrix::ready() {
   return state() == READY;
 }

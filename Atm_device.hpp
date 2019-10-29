@@ -57,6 +57,7 @@ class Atm_device: public Symbolic_Machine {
   Atm_device& onEvent( int sub, Machine& machine, int event = 0 );
   Atm_device& onEvent( int sub, atm_cb_push_t callback, int idx = 0 );
   Atm_device& onEvent( int sub, int sw, int event );
+  Atm_device& onEvent( const char sub_str[], const char sw_str[], const char event_str[] );
   Atm_device& init( void );
   Atm_device& init( uint32_t sel );
   Atm_device& press( void );
@@ -65,6 +66,7 @@ class Atm_device: public Symbolic_Machine {
   int16_t reg( uint8_t r );
   Atm_device& chain( Atm_device& next );
   Atm_device& chain( int16_t sw );
+  Atm_device& chain( const char s[] );
   Atm_device& select( uint32_t mask );
   Machine* outputPtr( int16_t n );
   int16_t outputEvent( int16_t n );

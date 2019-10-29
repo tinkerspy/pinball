@@ -160,7 +160,7 @@ void cmd_callback( int idx, int v, int up ) {
     case CMD_REBOOT:
       _reboot_Teensyduino_();
       return;
-    case CMD_INFO: // TODO show firmware label & running/sleeping state!
+    case CMD_INFO: // TODO show firmware label & running/sleeping state & device next in chain...
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
@@ -327,22 +327,22 @@ void setup() {
 
   Serial.println( "chain devices" ); delay( 100 );
 
-  playfield.device( COUNTER ).chain( COUNTER1 );
-  playfield.device( COUNTER1 ).chain( COUNTER2 );
-  playfield.device( COUNTER2 ).chain( COUNTER3 );
+  playfield.device( "counter" ).chain( "counter1" );
+  playfield.device( "counter1" ).chain( "counter2" );
+  playfield.device( "counter2" ).chain( "counter3" );
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 
   Serial.println( "link devices" ); delay( 100 );
 
-  playfield.device( COUNTER ).onEvent( OUT_CTR_DIGIT1, CHIMES, IN_LBANK_ON0 );
-  playfield.device( COUNTER ).onEvent( OUT_CTR_DIGIT2, CHIMES, IN_LBANK_ON1 );
-  playfield.device( COUNTER ).onEvent( OUT_CTR_DIGIT3, CHIMES, IN_LBANK_ON2 );
+  playfield.device( "counter" ).onEvent( "out_digit1", "chimes", "on0" );
+  playfield.device( "counter" ).onEvent( "out_digit2", "chimes", "on1" );
+  playfield.device( "counter" ).onEvent( "out_digit3", "chimes", "on2" );
   
-  playfield.device( OXO, LED_OXO_GRP).onEvent( OUT_OXO_WIN_ROW, KICKER, IN_KICKER_ON );
-  playfield.device( OXO, LED_OXO_GRP).onEvent( OUT_OXO_WIN_ALL, UPLANE, IN_COMBO_ON );
-  playfield.device( OXO, LED_OXO_GRP).onEvent( OUT_OXO_COLLECT, COUNTER, IN_CTR_PT1000 );
-  
+  playfield.device( "oxo" ).onEvent( "out_win_row", "kicker", "on" );
+  playfield.device( "oxo" ).onEvent( "out_win_all", "uplane", "on" );
+  playfield.device( "oxo" ).onEvent( "out_collect", "counter", "pt1000" );
+   
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS0, OXO, IN_OXO_1O );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS1, OXO, IN_OXO_1X );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS2, OXO, IN_OXO_2O );

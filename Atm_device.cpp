@@ -104,6 +104,10 @@ Atm_device& Atm_device::chain( int16_t sw ) {
   return *this;
 }
 
+Atm_device& Atm_device::chain( const char s[] ) {
+  return chain( playfield->findSymbol( s ) );
+}
+
 Atm_device& Atm_device::select( uint32_t mask ) {
   this->enabled = mask & 1;
   if ( next ) {
@@ -358,11 +362,11 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( trace_code ) 
               tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
-          case 'Y': // Yield (negative value uses register!)
+          case 'Y': // Yield (negative selector value uses register!)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
             if ( core[active_core].yield_enabled ) {
-              if ( selected_action >= 0 ) { // negative values have no yield effect but do trip the core check
+              if ( selected_action >= 0 ) { // negative time values have no yield effect but do trip the core check
                 timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
                 sleep( 0 );
                 if ( trace_code ) 
@@ -507,6 +511,15 @@ Atm_device& Atm_device::onEvent( int sub, atm_cb_push_t callback, int idx ) {
 }
 
 Atm_device& Atm_device::onEvent( int sub, int sw, int event ) {
+  if ( next ) next->onEvent( sub, playfield->device( sw ), event );    
+  if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, playfield->device( sw ), event );
+  return *this;
+}
+
+Atm_device& Atm_device::onEvent( const char sub_str[], const char sw_str[], const char event_str[] ) {
+  int sub = this->findSymbol( sub_str );
+  int sw = playfield->findSymbol( sw_str );
+  int event = playfield->device( sw ).findSymbol( event_str );
   if ( next ) next->onEvent( sub, playfield->device( sw ), event );    
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, playfield->device( sw ), event );
   return *this;

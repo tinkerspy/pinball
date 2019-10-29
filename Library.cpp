@@ -244,6 +244,10 @@ int16_t Library::findSymbol( int16_t slot, const char s[] ) {
   return 0;
 }
 
+int16_t Library::findSymbol( const char label[], const char s[] ) {
+  return findSymbol( index( label ), s );  
+}
+
 // Returns the n-th symbol in a bank or a NULL pointer if it does not exist
 
 const char* Library::findSymbol( int16_t slot, int16_t idx, int8_t bank /* = 0 */ ) {

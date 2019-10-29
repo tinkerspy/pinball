@@ -95,13 +95,14 @@ int16_t Atm_device::reg( uint8_t r ) {
 Atm_device& Atm_device::chain( Atm_device& next ) {
   //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
   this->next = &next;  
-  return *this;
+  return next;
 }
 
 Atm_device& Atm_device::chain( int16_t sw ) {
   //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
-  this->next = &(playfield->device( sw ));  
-  return *this;
+  Atm_device& dev = playfield->device( sw );
+  this->next = &dev;  
+  return dev;
 }
 
 Atm_device& Atm_device::chain( const char s[] ) {

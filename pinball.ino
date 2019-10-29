@@ -305,6 +305,9 @@ void setup() {
   playfield.device( "counter1" ).chain( "counter2" );
   playfield.device( "counter2" ).chain( "counter3" );
 
+  // This should work too:
+  //playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" );
+
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 
   Serial.println( "link devices" ); delay( 100 );

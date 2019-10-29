@@ -335,15 +335,15 @@ void setup() {
 
   Serial.println( "link devices" ); delay( 100 );
 
-  playfield.device( "counter" ).onEvent( "out_digit1", "chimes", "on0" );
-  playfield.device( "counter" ).onEvent( "out_digit2", "chimes", "on1" );
-  playfield.device( "counter" ).onEvent( "out_digit3", "chimes", "on2" );
+  playfield.link( "counter","out_digit1", "chimes", "on0" );
+  playfield.link( "counter", "out_digit2", "chimes", "on1" );
+  playfield.link( "counter", "out_digit3", "chimes", "on2" );
   
-  playfield.device( "oxo" ).onEvent( "out_win_row", "kicker", "on" );
-  playfield.device( "oxo" ).onEvent( "out_win_all", "uplane", "on" );
-  playfield.device( "oxo" ).onEvent( "out_collect", "counter", "pt1000" );
+  playfield.link( "oxo", "out_win_row", "kicker", "on" );
+  playfield.link( "oxo", "out_win_all", "uplane", "on" );
+  playfield.link( "oxo", "out_collect", "counter", "pt1000" );
    
-  playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS0, OXO, IN_OXO_1O );
+  playfield.link( "multilane", "PRESS0", "OXO", "OXO_1O" );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS1, OXO, IN_OXO_1X );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS2, OXO, IN_OXO_2O );
   playfield.device( MULTILANE ).onEvent( OUT_SBANK_PRESS3, OXO, IN_OXO_2X );

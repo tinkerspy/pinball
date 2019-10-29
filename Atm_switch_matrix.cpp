@@ -261,8 +261,14 @@ Atm_device& Atm_switch_matrix::device( int16_t n, int16_t led_group /* = -1 */, 
 }
 
 Atm_device& Atm_switch_matrix::device( const char dev_str[], int16_t led_group /* = -1 */, int16_t* device_script /* = NULL */,
-    int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
-    return device( findSymbol( dev_str ), led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
+  int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
+  return device( findSymbol( dev_str ), led_group, device_script, r0, r1, r2, r3, r4, r5, r6, r7 );
+}
+ 
+Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], const char dest_str[], const char in_str[] ) {
+  Atm_device* src = &device( findSymbol( src_str ) );
+  Atm_device* dest = &device( findSymbol( dest_str ) );
+  return src->onEvent( src->findSymbol( out_str ), findSymbol( dest_str ), dest->findSymbol( in_str ) );  
 }
 
 bool Atm_switch_matrix::ready() {

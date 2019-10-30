@@ -17,7 +17,7 @@ const char led_symbols[] =
   "led_ball1, led_game_over, led_kicker_grp, led_uplane_grp, led_oxo_grp, led_bumper_grp, led_bumper_a_grp," 
   "led_bumper_b_grp, led_bumper_c_grp, led_target_grp, led_counter0_grp, led_counter1_grp, led_counter2_grp," 
   "led_counter3_grp, coil_counter_grp, led_again_grp, led_oxo_ani_grp, led_headbox_grp, led_flipper_grp," 
-  "led_slingshot_grp, led_chime_grp, led_playerup_grp, led_ballup_grp, led_players_grp, led_game_grp\n";   
+  "led_slingshot_grp, led_chime_grp, led_playerup_grp, led_ballup_grp, led_players_grp, led_game_grp, led_none_grp\n";   
 
 enum { 
 /* 000 */ COIL_SAVE_GATE, // Strip on P1 (playfield) - Powernode 1
@@ -144,6 +144,7 @@ enum {
 /* 121 */ LED_BALLUP_GRP,
 /* 122 */ LED_PLAYERS_GRP,
 /* 123 */ LED_GAME_GRP,
+/* 124 */ LED_NONE_GRP,
 };
 
 /* group_map - Defines virtual LEDs (groups of leds) 
@@ -173,6 +174,7 @@ int16_t led_groups[] = {
 /* 121 */ LED_BALLUP_GRP,
 /* 122 */ LED_PLAYERS_GRP,
 /* 123 */ LED_GAME_GRP,
+/* 124 */ LED_NONE_GRP,
   -1,
   
   LED_KICKER_GRP, 
@@ -234,6 +236,7 @@ int16_t led_groups[] = {
     LED_BALL1, LED_BALL2, LED_BALL3, LED_BALL4, LED_BALL5, LED_BALL5, -1,  
   LED_GAME_GRP,
     LED_EXTRA, VLED_COLLECTING, LED_AGAIN0, VLED_COUNTER0, VLED_COUNTER1, VLED_COUNTER2, VLED_COUNTER3, -1,
+  LED_NONE_GRP, -1,
   
   -1, 
 };

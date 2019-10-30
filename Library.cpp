@@ -235,6 +235,7 @@ int16_t Library::index( const char label[] ) {
       return i;
     }
   }
+  Serial.printf( "ERROR: Library::index( %s ) failed\n", label );
   return -1;
 }
 
@@ -252,6 +253,7 @@ int16_t Library::findSymbol( int16_t slot, const char s[] ) {
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table) + p->offset ) : p->next;
   }
   find_error = 1;
+  Serial.printf( "ERROR: Library::findSymbol( %d, %s ) failed\n", slot, s );
   return 0;
 }
 

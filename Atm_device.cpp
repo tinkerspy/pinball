@@ -522,6 +522,7 @@ Atm_device& Atm_device::onEvent( const char sub_str[], const char sw_str[], cons
   int sw = playfield->findSymbol( sw_str );
   int event = playfield->device( sw ).findSymbol( event_str );
   if ( next ) next->onEvent( sub, playfield->device( sw ), event );    
+  //Serial.printf( "%s -> %s:%s --- %d -> %d:%d\n", sub_str, sw_str, event_str, sub, sw, event );
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, playfield->device( sw ), event );
   return *this;
 }

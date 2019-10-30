@@ -269,13 +269,17 @@ Atm_device& Atm_switch_matrix::device( const char dev_str[], int16_t led_group /
   int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   symbol_code_pack cp;
   cp.pack = code_pack;  
-  return device( findSymbol( dev_str ), findSymbol( led_group_str ), cp.code, r0, r1, r2, r3, r4, r5, r6, r7 ).linkSymbols( cp.symbols );  
+  return device( findSymbol( dev_str ), pleds->findSymbol( led_group_str ), cp.code, r0, r1, r2, r3, r4, r5, r6, r7 ).linkSymbols( cp.symbols );  
 }
  
+Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], Machine& dest, int16_t dest_input ) {
+  Atm_device src_dev = device( this->findSymbol( src_str ) );
+  Serial.printf( "src_str %s, src_output=%d, dest=%X, dest_input=%d\n", src_str, src_dev.findSymbol( out_str ), &dest, dest_input );
+  return src_dev.onEvent( src_dev.findSymbol( out_str ), dest, dest_input );  
+}
+
 Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], const char dest_str[], const char in_str[] ) {
-  Atm_device* src = &device( findSymbol( src_str ) );
-  Atm_device* dest = &device( findSymbol( dest_str ) );
-  return src->onEvent( src->findSymbol( out_str ), findSymbol( dest_str ), dest->findSymbol( in_str ) );  
+  return device( findSymbol( src_str ) ).onEvent( out_str, dest_str, in_str );  
 }
 
 bool Atm_switch_matrix::ready() {

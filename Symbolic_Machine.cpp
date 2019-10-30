@@ -63,6 +63,7 @@ int16_t Symbolic_Machine::findSymbol( const char s[] ) {
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
   }
+  Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
   return 0;
 }
 

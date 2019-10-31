@@ -272,12 +272,6 @@ Atm_device& Atm_switch_matrix::device( const char dev_str[], int16_t led_group /
   return device( findSymbol( dev_str ), pleds->findSymbol( led_group_str ), cp.code, r0, r1, r2, r3, r4, r5, r6, r7 ).linkSymbols( cp.symbols );  
 }
  
-Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], Machine& dest, int16_t dest_input ) {
-  Atm_device src_dev = device( this->findSymbol( src_str ) );
-  Serial.printf( "src_str %s, src_output=%d, dest=%X, dest_input=%d\n", src_str, src_dev.findSymbol( out_str ), &dest, dest_input );
-  return src_dev.onEvent( src_dev.findSymbol( out_str ), dest, dest_input );  
-}
-
 Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], const char dest_str[], const char in_str[] ) {
   return device( findSymbol( src_str ) ).onEvent( out_str, dest_str, in_str );  
 }

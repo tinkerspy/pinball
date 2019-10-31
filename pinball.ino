@@ -164,7 +164,7 @@ void cmd_callback( int idx, int v, int up ) {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
-          cmd[idx].stream->printf( "Device info for %d: %s [%X]\n", sw, playfield.findSymbol( sw, 1 ), dev );
+          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s]\n", sw, playfield.findSymbol( sw, 1 ), dev, dev->sleep() ? "SLEEPING" : "RUNNING" );
           for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
           cmd[idx].stream->println();
           for ( uint16_t in = 0; in < dev->countSymbols( 0 ); in++ ) {

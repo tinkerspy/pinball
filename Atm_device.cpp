@@ -4,8 +4,6 @@
  * Add extra initialization code
  */
 
-// Note: device_script cannot be altered 
-
 Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_group, int16_t led_group, const int16_t* device_script,
     int16_t r0, int16_t r1, int16_t r2, int16_t r3, int16_t r4, int16_t r5, int16_t r6, int16_t r7 ) {
   // clang-format off

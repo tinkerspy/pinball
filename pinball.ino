@@ -41,7 +41,7 @@ void cmd_callback( int idx, int v, int up ) {
               cnt++;
             }
           }     
-          }
+        }
         cmd[idx].stream->println(); 
       }
       return;
@@ -164,11 +164,30 @@ void cmd_callback( int idx, int v, int up ) {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
-          Serial.printf( "Device info for: %s\n", playfield.findSymbol( sw, 1 ) );
-          for ( int i = 0; i < 80; i++ ) Serial.print( "=" );
-          Serial.println();
-          for ( uint16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
-            cmd[idx].stream->printf( "In[%02d]  %20s  %04X  %s\n", i, dev->findSymbol( i, 0 ), dev->handler( i ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( i + 1 ) >> 1 ) - 1 ), 1 ) );
+          cmd[idx].stream->printf( "Device info for %d: %s [%X]\n", sw, playfield.findSymbol( sw, 1 ), dev );
+          for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
+          cmd[idx].stream->println();
+          for ( uint16_t in = 0; in < dev->countSymbols( 0 ); in++ ) {
+            cmd[idx].stream->printf( "In[%02d]  %20s  %04X  %s", in, dev->findSymbol( in, 0 ), dev->handler( in ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( in + 1 ) >> 1 ) - 1 ), 1 ) );
+            uint8_t map[32];
+            uint8_t cnt = 0;
+            memset( map, 0, sizeof( map ) );
+            for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
+              if ( playfield.exists( n + 1 ) == 1 ) { 
+                Atm_device* d = &playfield.device( n + 1 );
+                uint8_t addr = ( (uint32_t)d & 0xFFFF ) >> 8;
+                if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
+                  for ( int16_t i = 0; i < d->countSymbols( 1 ); i++ ) {
+                    if ( dev == d->outputPtr( i ) && in == d->outputEvent( i ) ) { 
+                      cmd[idx].stream->printf( "%s:%s ", playfield.findSymbol( d->switchGroup(), 1 ), d->findSymbol( i, 1 ) );
+                    }
+                  }
+                  map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
+                  cnt++;
+                }
+              }     
+            }            
+            Serial.println();        
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 1 ); i++ ) {
             Machine* machine = dev->outputPtr( i );
@@ -318,7 +337,7 @@ void setup() {
   playfield.link( "multilane", "out_press1", "oxo", "oxo_1x" );
   playfield.link( "multilane", "out_press2", "oxo", "oxo_2o" );
   playfield.link( "multilane", "out_press3", "oxo", "oxo_2x" );
-  playfield.link( "multilane", "out_press4", "oxo", "oxo_3o" );
+  playfield.link( "multilane", "out_press4", "oxo", "oxo_3o" ); 
   playfield.link( "multilane", "out_press5", "oxo", "oxo_3x" );
   playfield.link( "multilane", "out_score", "counter", "pt1000" );
 

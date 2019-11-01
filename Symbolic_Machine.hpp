@@ -31,7 +31,7 @@ class Symbolic_Machine: public Machine {
   int16_t findSymbol( const char s[], int16_t def = 0 );
   const char* findSymbol( int16_t idx, int8_t bank = 0 );
   int16_t countSymbols( int8_t bank = 0 );
-  int16_t* compile( const char src[], int16_t dict_size );
+  int16_t* compile( const char src[], int16_t dict_size, int16_t offset = 0  );
 
  protected:
   symbolic_machine_table* symbols;

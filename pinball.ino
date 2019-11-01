@@ -30,7 +30,7 @@ void cmd_callback( int idx, int v, int up ) {
         uint8_t map[32];
         uint8_t cnt = 0;
         memset( map, 0, sizeof( map ) );
-        cmd[idx].stream->printf( "## State    Sw#             Bytecode               Device\n" ); 
+        cmd[idx].stream->printf( "## State    Sw#               Device             Bytecode\n" ); 
         for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
           if ( playfield.exists( n + 1 ) == 1 ) {
             Atm_device* dev = &playfield.device( n + 1 );
@@ -40,8 +40,9 @@ void cmd_callback( int idx, int v, int up ) {
                 dev->sleep() ? "SLEEPING" : "RUNNING ", 
                 n + 1, 
                 n > io.numberOfSwitches() ? 'L' : 'P', 
-                lib.label( lib.findCode( dev->script ) ),
-                playfield.findSymbol( dev->switchGroup(), 1 ) );
+                playfield.findSymbol( dev->switchGroup(), 1 ),
+                lib.label( lib.findCode( dev->script ) )
+                );
               map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
               cnt++;
             }
@@ -178,7 +179,7 @@ void cmd_callback( int idx, int v, int up ) {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
-          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s]\n", sw, playfield.findSymbol( sw, 1 ), dev, dev->sleep() ? "SLEEPING" : "RUNNING" );
+          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s] %s\n", sw, playfield.findSymbol( sw, 1 ), dev, dev->sleep() ? "SLEEPING" : "RUNNING", lib.label( lib.findCode( dev->script ) ) );
           for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
           cmd[idx].stream->println();
           for ( uint16_t in = 0; in < dev->countSymbols( 0 ); in++ ) {
@@ -288,7 +289,7 @@ void setup() {
     .loadSymbols( switch_symbols )
     .readProfiles( 'S', profiles );
 
-  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) );
+  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
 
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); delay( 100 );

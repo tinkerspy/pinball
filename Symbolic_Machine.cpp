@@ -1,7 +1,9 @@
 #include "Symbolic_Machine.hpp"
 
 
-int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size ) {
+#include "HexDump.h"
+
+int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size, int16_t offset /* = 0 */ ) {
   char buf[2048];
   char *token;
   Serial.println( src ); delay( 1000 );
@@ -42,34 +44,21 @@ int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size ) {
     strncpy( buf, src, ptr - src );
     buf[ptr - src] = '\0';
     src += ptr - src + 1;
-    int16_t rescnt = 0;
-    int16_t res[4];
-    int16_t opcode = 0;
     token = strtok( buf, sep );
+    int16_t i = findSymbol( token, -1 ); 
+    Serial.printf( "Section %s = %d\n", token, i - offset );
+    porigin[i - offset] = ( pcode - porigin );
     while( token != NULL ) {
-      if ( rescnt == 0 && strlen( token ) == 1 ) {
-        opcode = token[0]; 
-      }
-      res[rescnt] = findSymbol( token, -1 ); 
-      if ( strlen( token ) > 1 && res[rescnt] == -1 ) Serial.printf( "Compile error: token '%s' not found\n", token );
-      Serial.printf( "%s = %d\n", token, res[rescnt] ); 
+      int16_t i = findSymbol( token, -1 ); 
+      if ( strlen( token ) > 1 && i == -1 ) Serial.printf( "Compile error: token '%s' not found\n", token );
+      *pcode++ = i;
+      Serial.printf( "%s = %d\n", token, i );
       token = strtok(NULL, sep );
-      rescnt++;
-    }
-    if ( rescnt == 1 ) { // A label
-      *pcode++ = -1;
-      *pcode++ = res[0];
-      porigin[res[0]] = ( pcode - porigin );
-      Serial.printf( "-1\n%d -> offset %d\n", res[0], (pcode - porigin) );
-    } else { // A code line
-      for ( int16_t i = 0; i < rescnt; i++ ) {
-      *pcode++ = res[i];
-      }
-      Serial.printf( "%c, %d, %d, %d\n", res[0], res[1], res[2], res[3] );
     }
   }
   *pcode++ = -1;
   *pcode++ = -1;
+  HexDump( Serial, (uint8_t*) porigin, ( pcode - porigin ) * 2 );
   return data_ptr;
 }
 

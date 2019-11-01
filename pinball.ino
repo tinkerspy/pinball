@@ -288,6 +288,8 @@ void setup() {
     .loadSymbols( switch_symbols )
     .readProfiles( 'S', profiles );
 
+  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) );
+
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); delay( 100 );
 

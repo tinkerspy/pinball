@@ -26,14 +26,16 @@ class Symbolic_Machine: public Machine {
   Symbolic_Machine( void ) : Machine() { symbols = NULL; };
   Symbolic_Machine& loadSymbols( const char s[] );
   Symbolic_Machine& linkSymbols( symbolic_machine_table* sym );
-  const char* loadString( const char* s );
-  int16_t findString( const char s[], const char sym[] );
+  const char* loadSymbolString( const char* s );
+  int16_t findSymbolString( const char s[], const char sym[] );
   int16_t findSymbol( const char s[], int16_t def = 0 );
   const char* findSymbol( int16_t idx, int8_t bank = 0 );
   int16_t countSymbols( int8_t bank = 0 );
- 
+  int16_t* compile( const char src[], int16_t dict_size );
+
  protected:
   symbolic_machine_table* symbols;
   const char null_str[2] = "";
+  const char sep[3] = ", ";
 
 };

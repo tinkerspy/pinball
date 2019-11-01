@@ -1,10 +1,84 @@
 #include "Symbolic_Machine.hpp"
 
+
+int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size ) {
+  char buf[2048];
+  char *token;
+  Serial.println( src ); delay( 1000 );
+  const char* code_start = src;
+  int16_t wordcnt = dict_size;
+  while ( strlen( src ) > 0 ) {
+    char* ptr = strchr( src, ';' );
+    strncpy( buf, src, ptr - src );
+    buf[ptr - src] = '\0';
+    Serial.printf( "Section %s\n", buf );
+    src += ptr - src + 1;
+    int16_t rescnt = 0;
+    token = strtok( buf, sep );
+    while( token != NULL ) {
+      Serial.printf( "PASS 1: %s\n", token );
+      token = strtok(NULL, sep );
+      rescnt++;
+    }
+    if ( rescnt == 1 ) { // A label
+      wordcnt += 2; 
+    } else { 
+      wordcnt += rescnt; 
+    }
+  }
+  wordcnt += 2;
+  Serial.printf( "%d words\n", wordcnt );
+
+  int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
+  memset( pcode, 0, wordcnt * 2 );
+  
+  int16_t* data_ptr = pcode;
+
+  src = code_start;
+  int16_t* porigin = pcode; 
+  pcode += dict_size;
+  while ( strlen( src ) > 0 ) {
+    char* ptr = strchr( src, ';' );
+    strncpy( buf, src, ptr - src );
+    buf[ptr - src] = '\0';
+    src += ptr - src + 1;
+    int16_t rescnt = 0;
+    int16_t res[4];
+    int16_t opcode = 0;
+    token = strtok( buf, sep );
+    while( token != NULL ) {
+      if ( rescnt == 0 && strlen( token ) == 1 ) {
+        opcode = token[0]; 
+      }
+      res[rescnt] = findSymbol( token, -1 ); 
+      if ( strlen( token ) > 1 && res[rescnt] == -1 ) Serial.printf( "Compile error: token '%s' not found\n", token );
+      Serial.printf( "%s = %d\n", token, res[rescnt] ); 
+      token = strtok(NULL, sep );
+      rescnt++;
+    }
+    if ( rescnt == 1 ) { // A label
+      *pcode++ = -1;
+      *pcode++ = res[0];
+      porigin[res[0]] = ( pcode - porigin );
+      Serial.printf( "-1\n%d -> offset %d\n", res[0], (pcode - porigin) );
+    } else { // A code line
+      for ( int16_t i = 0; i < rescnt; i++ ) {
+      *pcode++ = res[i];
+      }
+      Serial.printf( "%c, %d, %d, %d\n", res[0], res[1], res[2], res[3] );
+    }
+  }
+  *pcode++ = -1;
+  *pcode++ = -1;
+  return data_ptr;
+}
+
+
 // Parses a string of \n separated symbol banks
 
 Symbolic_Machine& Symbolic_Machine::loadSymbols( const char s[] ) {
   while ( *s != '\0' ) {
-    s = loadString( s );
+    s = loadSymbolString( s );
   }
   return *this; 
 }
@@ -18,7 +92,7 @@ Symbolic_Machine& Symbolic_Machine::linkSymbols( symbolic_machine_table* sym ) {
 
 // TODO: kan zonder buffer in two-pass: 1. bereken malloc lengte 2. kopieer karakters een voor een
 
-const char* Symbolic_Machine::loadString( const char* s ) { 
+const char* Symbolic_Machine::loadSymbolString( const char* s ) { 
   char buf[2048];
   char sep[] = " ,";
   char* b = buf;
@@ -59,7 +133,7 @@ int16_t Symbolic_Machine::findSymbol( const char s[], int16_t def /* = 0 */ ) {
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
   while ( p != NULL ) {
-    int16_t i = findString( s, p->s );
+    int16_t i = findSymbolString( s, p->s );
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
   }
@@ -111,7 +185,7 @@ int16_t Symbolic_Machine::countSymbols( int8_t bank /* = 0 */ ) {
 // Find a string in a char array of null terminated strings (terminated by an empty string -- double \0 )
 // Returns string index or -1 if not found
 
-int16_t Symbolic_Machine::findString( const char s[], const char sym[] ) {
+int16_t Symbolic_Machine::findSymbolString( const char s[], const char sym[] ) {
   const char* p = sym;
   int16_t cnt = 0;
   while ( *p != '\0' && strcasecmp( s, p ) != 0 ) {

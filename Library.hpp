@@ -42,6 +42,8 @@ class Library {
   char* label( int16_t slot );
   uint64_t code( int16_t idx );
   int64_t code( const char label[] );
+  int16_t findCode( const int16_t* c );
+
 
   protected:
   Library& printHexWord( Stream* stream, int16_t v, bool last = false );

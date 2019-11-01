@@ -54,7 +54,7 @@ const char* Symbolic_Machine::loadString( const char* s ) {
 // Returns the index of a symbol string in any of the banks
 // If the argument string looks like a number return that number
 
-int16_t Symbolic_Machine::findSymbol( const char s[] ) {
+int16_t Symbolic_Machine::findSymbol( const char s[], int16_t def /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
@@ -63,8 +63,8 @@ int16_t Symbolic_Machine::findSymbol( const char s[] ) {
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
   }
-  Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
-  return 0;
+  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
+  return def;
 }
 
 // Returns the n-th symbol in a bank or a NULL pointer if it does not exist

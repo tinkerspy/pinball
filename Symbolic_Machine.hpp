@@ -28,7 +28,7 @@ class Symbolic_Machine: public Machine {
   Symbolic_Machine& linkSymbols( symbolic_machine_table* sym );
   const char* loadString( const char* s );
   int16_t findString( const char s[], const char sym[] );
-  int16_t findSymbol( const char s[] );
+  int16_t findSymbol( const char s[], int16_t def = 0 );
   const char* findSymbol( int16_t idx, int8_t bank = 0 );
   int16_t countSymbols( int8_t bank = 0 );
  

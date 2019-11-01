@@ -35,16 +35,12 @@ void cmd_callback( int idx, int v, int up ) {
           if ( playfield.exists( n + 1 ) == 1 ) {
             Atm_device* dev = &playfield.device( n + 1 );
             uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
-            int16_t fw_idx = 0;
             if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
-              for ( int16_t fw = 0; fw < lib.count(); fw++ ) {
-                if ( lib.codePtr( fw ) == dev->script ) fw_idx = fw;
-              }
               cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\n", cnt, 
                 dev->sleep() ? "SLEEPING" : "RUNNING ", 
                 n + 1, 
                 n > io.numberOfSwitches() ? 'L' : 'P', 
-                lib.label( fw_idx ),
+                lib.label( lib.findCode( dev->script ) ),
                 playfield.findSymbol( dev->switchGroup(), 1 ) );
               map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
               cnt++;
@@ -72,12 +68,19 @@ void cmd_callback( int idx, int v, int up ) {
         cmd[idx].stream->println(); 
       }
       return;
-    case CMD_HD:
-      lib.hexdump( cmd[idx].stream, cmd[idx].arg( 1 ) );
-      cmd[idx].stream->println(); 
+    case CMD_HD: // Hexdump firmware by firmware or device label
+      {
+        int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ), -1 ) ;
+        if ( sw > -1 ) {
+          lib.hexdump( cmd[idx].stream, lib.findCode( playfield.device( sw ).script ) );      
+        } else {
+          lib.hexdump( cmd[idx].stream, cmd[idx].arg( 1 ) );      
+        }
+        cmd[idx].stream->println(); 
+      }
       return;
     case CMD_STATS:
-      cmd[idx].stream->printf( "Uptime: %02d:%02d:%02d (h:m:s)\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
+      cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
       cmd[idx].stream->printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
       cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
       cmd[idx].stream->printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
@@ -253,7 +256,7 @@ void dumpSymbols( int16_t d, int16_t bank = -1 ) {
 
 void setup() {
   delay( 1000 );
-  Serial.println( "Singularity OS\ninit IO" );
+  Serial.println( "Singularity Shell\ninit IO" );
   delay( 100 );
 
   Serial1.begin( 9600 );

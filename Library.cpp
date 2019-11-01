@@ -209,6 +209,14 @@ uint64_t Library::code( int16_t idx ) {
   return cp.pack;
 }
 
+int16_t Library::findCode( const int16_t* c ) {
+          int16_t fw_idx = 0;
+          for ( int16_t fw = 0; fw < count(); fw++ ) {
+            if ( codePtr( fw ) == c ) fw_idx = fw;
+          }
+          return fw_idx;
+}          
+
 int64_t Library::code( const char label[] ) {
   return code( index( label ) );
 }

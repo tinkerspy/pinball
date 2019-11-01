@@ -30,13 +30,22 @@ void cmd_callback( int idx, int v, int up ) {
         uint8_t map[32];
         uint8_t cnt = 0;
         memset( map, 0, sizeof( map ) );
+        cmd[idx].stream->printf( "## State    Sw#             Bytecode               Device\n" ); 
         for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
           if ( playfield.exists( n + 1 ) == 1 ) {
             Atm_device* dev = &playfield.device( n + 1 );
             uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
+            int16_t fw_idx = 0;
             if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
-              cmd[idx].stream->printf( "%02d %s %02d%c %s\n", cnt, 
-                dev->sleep() ? "SLEEPING" : "RUNNING ", n + 1, n > io.numberOfSwitches() ? 'L' : 'P', playfield.findSymbol( dev->switchGroup(), 1 ) );
+              for ( int16_t fw = 0; fw < lib.count(); fw++ ) {
+                if ( lib.codePtr( fw ) == dev->script ) fw_idx = fw;
+              }
+              cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\n", cnt, 
+                dev->sleep() ? "SLEEPING" : "RUNNING ", 
+                n + 1, 
+                n > io.numberOfSwitches() ? 'L' : 'P', 
+                lib.label( fw_idx ),
+                playfield.findSymbol( dev->switchGroup(), 1 ) );
               map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 
               cnt++;
             }
@@ -48,7 +57,7 @@ void cmd_callback( int idx, int v, int up ) {
     case CMD_LL: // List library entries
       {  
         for ( int16_t i = 0; i < lib.count(); i++ ) {
-          cmd[idx].stream->printf( "%d: %s\n", i, lib.label( i ) );
+          cmd[idx].stream->printf( "%02d: %s\n", i, lib.label( i ) );
         }
         cmd[idx].stream->println(); 
       }
@@ -73,6 +82,8 @@ void cmd_callback( int idx, int v, int up ) {
       cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
       cmd[idx].stream->printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
       cmd[idx].stream->printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
+      cmd[idx].stream->printf( "Devices: ??\n" );
+      cmd[idx].stream->printf( "Firmware: %d\n", lib.count() );
       cmd[idx].stream->printf( "Free RAM: %d\n", FreeRam() );
       cmd[idx].stream->println();
       return;
@@ -277,45 +288,45 @@ void setup() {
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); delay( 100 );
 
-  lib.import( "bumper", bumper_symbin, bumper_hexbin );
-  lib.import( "dual_target", dual_target_symbin, dual_target_hexbin );
-  lib.import( "game", game_symbin, game_hexbin );
-  lib.import( "counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
-  lib.import( "ledbank", ledbank_symbin, ledbank_hexbin );
-  lib.import( "switchbank", switchbank_symbin, switchbank_hexbin );
-  lib.import( "scalar", scalar_symbin, scalar_hexbin );
-  lib.import( "dual_kicker", kicker_symbin, kicker_hexbin  );
-  lib.import( "dual_combo", dual_combo_symbin, dual_combo_hexbin );
-  lib.import( "dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
-  lib.import( "tictactoe", tictactoe_symbin, tictactoe_hexbin );
+  lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
+  lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
+  lib.import( "std_game", game_symbin, game_hexbin );
+  lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
+  lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
+  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
+  lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
+  lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
+  lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
+  lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
+  lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
   Serial.println( "init devices" ); delay( 100 );
 
-  playfield.device( "chimes", "led_chime_grp", lib.code( "ledbank" ) );
-  playfield.device( "counter", "led_counter0_grp", lib.code( "counter_em4d1w" ) );
-  playfield.device( "counter1", "led_counter1_grp", lib.code( "counter_em4d1w" ) );
-  playfield.device( "counter2", "led_counter2_grp", lib.code( "counter_em4d1w" ) );
-  playfield.device( "counter3", "led_counter3_grp", lib.code( "counter_em4d1w" ) );
-  playfield.device( "bumper_a", "led_bumper_a_grp", lib.code( "bumper" ) );
-  playfield.device( "bumper_b", "led_bumper_b_grp", lib.code( "bumper" ) );
-  playfield.device( "bumper_c", "led_bumper_c_grp", lib.code( "bumper" ) );
-  playfield.device( "oxo", "led_oxo_grp", lib.code( "tictactoe" ) );
-  playfield.device( "multilane", "led_none_grp", lib.code( "switchbank" ) ); 
-  playfield.device( "dual_target", "led_target_grp", lib.code( "dual_target" ) );
-  playfield.device( "kicker", "led_kicker_grp", lib.code( "dual_kicker" ) );
-  playfield.device( "uplane", "led_uplane_grp", lib.code( "dual_combo" ) ); 
-  playfield.device( "slingshot", "led_slingshot_grp", lib.code( "dual_kicker" ) );
-  playfield.device( "lower", "led_none_grp", lib.code( "switchbank" ) ); 
-  playfield.device( "flipper", "led_flipper_grp", lib.code( "dual_flipper" ) ); 
-  playfield.device( "again", "led_again_grp", lib.code( "ledbank" ) );
-  playfield.device( "save_gate", "coil_save_gate", lib.code( "ledbank" ) );
-  playfield.device( "feeder", "coil_feeder", lib.code( "ledbank" ) );
-  playfield.device( "game_over", "led_game_over", lib.code( "ledbank" ) );  
-  playfield.device( "players", "led_players_grp", lib.code( "scalar" ) );
-  playfield.device( "playerup", "led_playerup_grp", lib.code( "scalar" ) );
-  playfield.device( "ballup", "led_ballup_grp", lib.code( "scalar" ) );
-  playfield.device( "gi", "coil_gi", lib.code( "ledbank" ), 1 ); // default on
-  playfield.device( "frontbtn", "led_game_grp", lib.code( "game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
+  playfield.device( "chimes", "led_chime_grp", lib.code( "std_ledbank" ) );
+  playfield.device( "counter", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
+  playfield.device( "counter1", "led_counter1_grp", lib.code( "std_counter_em4d1w" ) );
+  playfield.device( "counter2", "led_counter2_grp", lib.code( "std_counter_em4d1w" ) );
+  playfield.device( "counter3", "led_counter3_grp", lib.code( "std_counter_em4d1w" ) );
+  playfield.device( "bumper_a", "led_bumper_a_grp", lib.code( "std_bumper" ) );
+  playfield.device( "bumper_b", "led_bumper_b_grp", lib.code( "std_bumper" ) );
+  playfield.device( "bumper_c", "led_bumper_c_grp", lib.code( "std_bumper" ) );
+  playfield.device( "oxo", "led_oxo_grp", lib.code( "std_tictactoe" ) );
+  playfield.device( "multilane", "led_none_grp", lib.code( "std_switchbank" ) ); 
+  playfield.device( "dual_target", "led_target_grp", lib.code( "std_dual_target" ) );
+  playfield.device( "kicker", "led_kicker_grp", lib.code( "std_dual_kicker" ) );
+  playfield.device( "uplane", "led_uplane_grp", lib.code( "std_dual_combo" ) ); 
+  playfield.device( "slingshot", "led_slingshot_grp", lib.code( "std_dual_kicker" ) );
+  playfield.device( "lower", "led_none_grp", lib.code( "std_switchbank" ) ); 
+  playfield.device( "flipper", "led_flipper_grp", lib.code( "std_dual_flipper" ) ); 
+  playfield.device( "again", "led_again_grp", lib.code( "std_ledbank" ) );
+  playfield.device( "save_gate", "coil_save_gate", lib.code( "std_ledbank" ) );
+  playfield.device( "feeder", "coil_feeder", lib.code( "std_ledbank" ) );
+  playfield.device( "game_over", "led_game_over", lib.code( "std_ledbank" ) );  
+  playfield.device( "players", "led_players_grp", lib.code( "std_scalar" ) );
+  playfield.device( "playerup", "led_playerup_grp", lib.code( "std_scalar" ) );
+  playfield.device( "ballup", "led_ballup_grp", lib.code( "std_scalar" ) );
+  playfield.device( "gi", "coil_gi", lib.code( "std_ledbank" ), 1 ); // default on
+  playfield.device( "frontbtn", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
   
   Serial.println( "chain devices" ); delay( 100 );
 
@@ -381,10 +392,9 @@ void setup() {
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
   playfield.link( "lower", "out_score3", "counter", "pt500" );
   playfield.link( "lower", "out_score4", "counter", "pt1000" );             // 4 outlane
-
+  playfield.link( "lower", "out_press5", playfield, "pf_ready" );
   playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
-  playfield.link( "lower", "out_press5", playfield, "pf_ready" );
   playfield.link( "frontbtn", "out_init", playfield, "pf_init" );
   playfield.link( "frontbtn", "out_enable", playfield, "pf_enable" );
 

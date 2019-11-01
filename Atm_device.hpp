@@ -69,7 +69,7 @@ class Atm_device: public Symbolic_Machine {
   Atm_device& linkSymbols( symbolic_machine_table* sym );
 
   static const uint32_t SELECT_ALL = 0xFFFFFFFF;
-  Atm_device* next;
+  const int16_t* script;
 
  protected:
   enum { ENT_NOTIFY, ENT_RESUME }; // ACTIONS
@@ -90,7 +90,6 @@ class Atm_device: public Symbolic_Machine {
   Atm_switch_matrix *playfield;
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
-  const int16_t* script;
   uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
   atm_timer_millis timer;
@@ -101,4 +100,6 @@ class Atm_device: public Symbolic_Machine {
   Stream* tc_stream;
   uint8_t trace_code = 0;
   int16_t switch_group = 0;
+  Atm_device* next;
+
 };

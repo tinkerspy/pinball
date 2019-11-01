@@ -381,15 +381,12 @@ void setup() {
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
   playfield.link( "lower", "out_score3", "counter", "pt500" );
   playfield.link( "lower", "out_score4", "counter", "pt1000" );             // 4 outlane
-  playfield.device( "lower" ).onEvent( playfield.device( "lower" ).findSymbol( "out_press5" ), playfield, playfield.findSymbol( "pf_ready" ) ); // 5 ball_exit
+
   playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
-  playfield.device( "frontbtn" ).onEvent( playfield.device( "frontbtn" ).findSymbol( "out_init" ), playfield, playfield.findSymbol( "pf_init" ) );  
-  playfield.device( "frontbtn" ).onEvent( playfield.device( "frontbtn" ).findSymbol( "out_enable" ), playfield, playfield.findSymbol( "pf_enable" ) );
-
-  //playfield.link( "lower", "out_press5", playfield, "pf_ready" );
-  //playfield.link( "frontbtn", "out_init", playfield, "pf_init" );
-  //playfield.link( "frontbtn", "out_enable", playfield, "pf_enable" );
+  playfield.link( "lower", "out_press5", playfield, "pf_ready" );
+  playfield.link( "frontbtn", "out_init", playfield, "pf_init" );
+  playfield.link( "frontbtn", "out_enable", playfield, "pf_enable" );
 
   playfield.link( "frontbtn", "out_counter_reset", "counter", "reset" );
   playfield.link( "frontbtn", "out_ball_zero", "ballup", "zero" );

@@ -276,6 +276,10 @@ Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[],
   return device( findSymbol( src_str ) ).onEvent( out_str, dest_str, in_str );  
 }
 
+Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], Symbolic_Machine& dest, const char in_str[] ) {
+  return device( src_str ).onEvent( device( src_str ).findSymbol( out_str ), dest, dest.findSymbol( in_str ) );
+}
+
 bool Atm_switch_matrix::ready() {
   return state() == READY;
 }

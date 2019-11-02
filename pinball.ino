@@ -6,6 +6,8 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
+// FIXME De primary bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! 
+
 using namespace standard_firmware;
 using namespace custom_firmware; 
 
@@ -280,13 +282,26 @@ void setup() {
     .show();
 
   Serial.println( "init leds" ); delay( 100 );
-  leds.begin( io, led_groups )
-    .loadSymbols( led_symbols );
-  
+  leds.begin( io ).loadSymbols( led_symbols, led_group_list  );
+/*
+  int16_t ledno = leds.findSymbol( "led_counter1_grp", -1 );
+  Serial.printf( "List group members for %d, count=%d\n", ledno, leds.count( ledno ) );
+  for ( int16_t i = 0; i < leds.count( ledno ); i++ ) {
+    Serial.printf( "%d: %d \n", i, leds.index( ledno, i ) );
+  }
+*/
+
+
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, switch_groups, LED_EXTRA ) // TODO LED_EXTRA moet hier weg: separation of concerns!!!
-    .loadSymbols( switch_symbols );
+  playfield.begin( io, leds, leds.findSymbol( "led_extra" ) ); // TODO LED_EXTRA moet hier weg: separation of concerns!!!
+  Serial.println( "init playfield switches" ); delay( 1000 );
+
+  // Crash after this...
   
+  playfield.loadSymbols( switch_symbols, switch_group_list );
+
+  Serial.println( "led profiles" ); delay( 1000 );
+
   leds.profile( "led_kicker_l"     ,    0,   0,   0, 127 );
   leds.profile( "led_kicker_r"     ,    0,   0,   0, 127 );
   leds.profile( "led_target_grp"   ,    0,   0,   0, 127 );
@@ -307,9 +322,9 @@ void setup() {
   leds.profile( "coil_kicker_r"    , 1000,  95,  30,   0 );
   leds.profile( "coil_kicker_l"    , 1000,  95,  30,   0 );
   leds.profile( "coil_save_gate"   ,    0,   0,   0, 255 );
-  leds.profile( "bumper_a"         ,    0, 255,  40,   0 );
-  leds.profile( "bumper_b"         ,    0, 255,  40,   0 );
-  leds.profile( "bumper_c"         ,    0, 255,  40,   0 );
+  leds.profile( "coil_bumper_a"    ,    0, 255,  40,   0 );
+  leds.profile( "coil_bumper_b"    ,    0, 255,  40,   0 );
+  leds.profile( "coil_bumper_c"    ,    0, 255,  40,   0 );
   leds.profile( "coil_feeder"      ,    0, 127,  30,   0 );
   leds.profile( "coil_counter_grp" ,    0, 127,  20,   0 );
   leds.profile( "vled_counter0"    ,    0,   0,   0, 127 );
@@ -321,6 +336,8 @@ void setup() {
   leds.profile( "vled_6"           ,    0,   0,   0, 127 );
   leds.profile( "vled_7"           ,    0,   0,   0, 127 );
   
+  Serial.println( "switch profiles" ); delay( 1000 );
+
   playfield.profile( "switches"       ,   200,    0,    0,    0 );  // Default for switches
   playfield.profile( "multilane"      ,   200,  200,    0,    0 );
   playfield.profile( "sling_l"        ,     5,    0, 2000,    0 );  // Slingshots

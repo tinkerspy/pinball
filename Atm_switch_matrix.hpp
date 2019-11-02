@@ -31,7 +31,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
   enum { IDLE, WAIT, SCAN, DISABLED, READY, INIT }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, EVT_INIT, ELSE }; // EVENTS
   Atm_switch_matrix( void ) : Symbolic_Machine() {};
-  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition = NULL, int16_t status_led = -1 );
+  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t status_led = -1 );
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
   Atm_switch_matrix& traceSwitches( Stream & stream, uint8_t bitmap = 1 );
@@ -59,7 +59,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
 
   Atm_led_matrix* leds( void );
   int16_t numberOfGroups( void );
-  Atm_switch_matrix& loadSymbols( const char s[] );
+  Atm_switch_matrix& loadSymbols( const char switches[], const char groups[] );
   int64_t* codePack( int16_t idx );
 
   switch_record prof[MAX_SWITCHES + 1 ];

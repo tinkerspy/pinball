@@ -1,6 +1,6 @@
 #include "Atm_switch_matrix.hpp"
 
-Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t* group_definition, int16_t status_led ) {
+Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t status_led ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY, EVT_INIT,    ELSE */
@@ -20,17 +20,19 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   memset( prof, 0, sizeof( prof ) ); 
   timer.set( STARTUP_DELAY_MS );
   numOfSwitches = io.numberOfSwitches();  
-  numOfGroups = 0;  
-  if ( group_definition ) {
-    group_def = parseGroups( group_definition );
-  }
   pleds->off( status_led );
-  loadSymbols( event_symbols );
+  Symbolic_Machine::loadSymbols( event_symbols );
   return *this;          
 }
 
-Atm_switch_matrix& Atm_switch_matrix::loadSymbols( const char s[] ) {
-  Symbolic_Machine::loadSymbols( s );
+Atm_switch_matrix& Atm_switch_matrix::loadSymbols( const char switches[], const char groups[] ) {
+  Symbolic_Machine::loadSymbols( switches );
+  numOfGroups = countSymbols( 0 ) - numOfSwitches;
+  int16_t data_size = loadIntList( symbols, groups, NULL, numOfGroups, numOfSwitches + 1 );
+  int16_t* pdata = (int16_t *) malloc( data_size * 2 );
+  memset( pdata, 0, data_size * 2 );
+  data_size = loadIntList( symbols, groups, pdata, numOfGroups, numOfSwitches + 1 );
+  group_def = pdata;
   return *this;
 }
 

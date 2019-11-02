@@ -37,7 +37,7 @@ class Atm_led_matrix: public Symbolic_Machine {
   enum { PROFILE_COIL, PROFILE_LED }; // Standard profiles
   
   Atm_led_matrix( void ) : Symbolic_Machine() {};
-  Atm_led_matrix& begin( IO &io, int16_t* group_definition );
+  Atm_led_matrix& begin( IO &io );
   Atm_led_matrix& trace( Stream & stream );
   Atm_led_matrix& trace();
   Atm_led_matrix& trigger( int event );
@@ -62,6 +62,7 @@ class Atm_led_matrix: public Symbolic_Machine {
   Atm_led_matrix& dump( Stream& stream );
   Atm_led_matrix& dump_meta( Stream& stream );
   Atm_led_matrix& loadSymbols( const char s[] );
+  Atm_led_matrix& loadSymbols( const char leds[], const char groups[] );
 
 protected:
   int16_t* parseGroups( int16_t* group_def );

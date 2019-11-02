@@ -1,6 +1,6 @@
 #include "Atm_led_matrix.hpp"
 
-Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
+Atm_led_matrix& Atm_led_matrix::begin( IO &io ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -18,16 +18,19 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io, int16_t* group_definition ) {
   io.show();
   last_milli = millis();
   numOfGroups = 0;  
-  if ( group_definition ) 
-    group_def = parseGroups( group_definition );
   return *this;
 }
 
-Atm_led_matrix& Atm_led_matrix::loadSymbols( const char s[] ) {
-  Symbolic_Machine::loadSymbols( s );
+Atm_led_matrix& Atm_led_matrix::loadSymbols( const char leds[], const char groups[] ) {
+  Symbolic_Machine::loadSymbols( leds );
+  numOfGroups = countSymbols( 0 ) - io->numberOfLeds();
+  int16_t data_size = loadIntList( symbols, groups, NULL, numOfGroups, io->numberOfLeds() );
+  int16_t* pdata = (int16_t *) malloc( data_size * 2 );
+  memset( pdata, 0, data_size * 2 );
+  data_size = loadIntList( symbols, groups, pdata, numOfGroups, io->numberOfLeds() );
+  group_def = pdata;
   return *this;
 }
-
 
 int Atm_led_matrix::event( int id ) {
   switch ( id ) {
@@ -139,7 +142,6 @@ Atm_led_matrix& Atm_led_matrix::readProfiles(  char label, const int16_t* profil
 int16_t Atm_led_matrix::numberOfGroups( void ) {
   return numOfGroups;
 }
-
 
 Atm_led_matrix& Atm_led_matrix::set( int16_t ledno, uint32_t c ) {
   if ( ledno > -1 ) {

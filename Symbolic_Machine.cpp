@@ -119,7 +119,6 @@ const char* Symbolic_Machine::loadSymbolString( const char* s ) {
 
 int16_t Symbolic_Machine::findSymbol( const char s[], int16_t def /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
-  Serial.printf( "SM::findSymbol %s\n", s );
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
   if ( strlen( s ) == 1 ) return s[0];

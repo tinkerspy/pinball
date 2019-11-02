@@ -58,23 +58,11 @@ int16_t Library::compile( const char label[], const char src[] ) {
     *psym = sym;
     cpunfold( buf, src );
   }
-
-  Serial.printf( "count: %d\n", countSymbols( lib_cnt, SYM_INPUT ) );
   int16_t data_size = loadIntList( lib[lib_cnt].symbols, src, NULL, countSymbols( lib_cnt, SYM_INPUT ), 0 );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );
   memset( pdata, 0, data_size * 2 );
-  Serial.printf( "Size %s %d\n", label, data_size );
   loadIntList( lib[lib_cnt].symbols, src, pdata, countSymbols( lib_cnt, SYM_INPUT ) );
   lib[lib_cnt].code = pdata;
-  for ( int16_t b = 0; b < 4; b++ ) {
-    for ( int16_t i = 0; i < countSymbols( lib_cnt, b ); i++ ) {      
-        Serial.printf( "%d %d %s -> %d\n", b, i, findSymbol( lib_cnt, i, b ), findSymbol( lib_cnt, findSymbol( lib_cnt, i, b ) ) );      
-    }
-  }
-  for ( int16_t i = 0; i < data_size; i++ ) {
-    Serial.printf( "%d: %d\n", i, pdata[i] );
-  }
-
   return lib_cnt++;
 }
 
@@ -208,7 +196,6 @@ int16_t Library::index( const char label[] ) {
 int16_t Library::findSymbol( int16_t slot, const char s[] ) {
   symbolic_machine_table* p = lib[slot].symbols;
   find_error = 0;
-  Serial.printf( "Library::findSymbol %s\n", s );
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
   if ( strlen( s ) == 1 ) return s[0];
@@ -274,38 +261,3 @@ int16_t Library::count() {
 char* Library::label( int16_t slot ) {
   return lib[slot].label;
 }
-
-
-/*
-
-const char bumper_bytecode[] = R""""(
-init, press, release, turn_on, turn_off
-out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
-arg_coil, arg_led
-
-init
-P, -1, -1, 0                   
-L, -1, -1, arg_coil     
-L, -1, -1, arg_led      
-
-press
-H, -1, -1, arg_coil     
-T, -1, -1, out_score
-J, arg_led, 0, 2     
-T, -1, -1, out_score_lit
-J, -1, -1, -1
-T, -1, -1, out_score_unlit
-
-turn_on
-H, -1, -1, arg_led
-T, -1, -1, out_light_on
-
-turn_off
-L, -1, -1, arg_led
-T, -1, -1, out_light_off
- 
-)"""";
-
-
-
- */

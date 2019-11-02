@@ -1,5 +1,7 @@
 #pragma once
 
+// Note that all symbols must be longer than 1 character (or they'll be confused with opcodes)
+
 const char switch_symbols[] = 
   "null_sw, target_b, port_3x, port_3o, port_2x, port_2o, port_1x, port_1o, target_a, kicker_l, uplane_l," 
   "bumper_a, bumper_c, kicker_r, bumper_b, uplane_r, target_c, outlane, inlane_l, sling_l, sling_r," 

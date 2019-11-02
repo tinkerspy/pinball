@@ -289,7 +289,7 @@ void setup() {
     .loadSymbols( switch_symbols )
     .readProfiles( 'S', profiles );
 
-  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
+  
 
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); delay( 100 );
@@ -305,6 +305,11 @@ void setup() {
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
+
+  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
+  playfield.compile( dual_flipper_bytecode, 
+  lib.countSymbols( lib.index( "std_dual_flipper" ) ), 0 );
+
 
   Serial.println( "init devices" ); delay( 100 );
 

@@ -1,65 +1,63 @@
 #include "Symbolic_Machine.hpp"
 
 
-#include "HexDump.h"
-
-int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size, int16_t offset /* = 0 */ ) {
-  char buf[2048];
+int16_t Symbolic_Machine::loadTable( const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
+  char buf[1024];
   char *token;
-  Serial.println( src ); delay( 1000 );
-  const char* code_start = src;
-  int16_t wordcnt = dict_size;
-  while ( strlen( src ) > 0 ) {
-    char* ptr = strchr( src, ';' );
-    strncpy( buf, src, ptr - src );
-    buf[ptr - src] = '\0';
-    Serial.printf( "Section %s\n", buf );
-    src += ptr - src + 1;
-    int16_t rescnt = 0;
-    token = strtok( buf, sep );
-    while( token != NULL ) {
-      Serial.printf( "PASS 1: %s\n", token );
-      token = strtok(NULL, sep );
-      rescnt++;
-    }
-    if ( rescnt == 1 ) { // A label
-      wordcnt += 2; 
-    } else { 
-      wordcnt += rescnt; 
+  const char separator[6] = ", \n\t\r";
+  int16_t* pcode = dst + dict_size;
+  if ( dst != NULL ) {
+    for ( int16_t i = 0; i < dict_size; i++ ) {
+      dst[i] = dict_size;
     }
   }
-  wordcnt += 2;
-  Serial.printf( "%d words\n", wordcnt );
-
-  int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
-  memset( pcode, 0, wordcnt * 2 );
-  
-  int16_t* data_ptr = pcode;
-
-  src = code_start;
-  int16_t* porigin = pcode; 
-  pcode += dict_size;
   while ( strlen( src ) > 0 ) {
-    char* ptr = strchr( src, ';' );
-    strncpy( buf, src, ptr - src );
-    buf[ptr - src] = '\0';
-    src += ptr - src + 1;
-    token = strtok( buf, sep );
+    char* end_of_record = strchr( src, ';' );
+    if ( end_of_record == NULL ) break;
+    strncpy( buf, src, end_of_record - src );
+    buf[end_of_record - src] = '\0';
+    src += end_of_record - src + 1;
+    token = strtok( buf, separator );
     int16_t i = findSymbol( token, -1 ); 
-    Serial.printf( "Section %s = %d\n", token, i - offset );
-    porigin[i - offset] = ( pcode - porigin );
-    while( token != NULL ) {
-      int16_t i = findSymbol( token, -1 ); 
-      if ( strlen( token ) > 1 && i == -1 ) Serial.printf( "Compile error: token '%s' not found\n", token );
-      *pcode++ = i;
-      Serial.printf( "%s = %d\n", token, i );
-      token = strtok(NULL, sep );
+    if ( dst == NULL ) {
+      pcode++;
+    } else {
+      *pcode++ = -1; 
+      dst[i - dict_offset] = ( pcode - dst );
     }
+    token = strtok(NULL, separator );
+    while( token != NULL ) {
+      int16_t i = findSymbol( token, -32768 ); 
+      if ( strlen( token ) > 1 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\n", token );
+      if ( dst == NULL ) {
+        pcode++;
+      } else {
+        *pcode++ = i;        
+      }
+      token = strtok(NULL, separator );
+    }
+   }
+  if ( dst == NULL ) {
+    pcode += 2;
+  } else {
+    *pcode++ = -1; 
+    *pcode++ = -1;     
   }
-  *pcode++ = -1;
-  *pcode++ = -1;
-  HexDump( Serial, (uint8_t*) porigin, ( pcode - porigin ) * 2 );
-  return data_ptr;
+  return pcode - dst;
+}
+
+
+int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
+  int16_t data_size = loadTable( src, NULL, dict_size, dict_offset );
+  int16_t* pdata = (int16_t *) malloc( data_size * 2 );
+  memset( pdata, 0, data_size * 2 );
+  loadTable( src, pdata, dict_size, dict_offset );
+  /*
+  for ( int16_t i = 0; i < data_size; i++ ) {
+    Serial.printf( "%d: %d\n", i, pdata[i] );
+  }
+  */
+  return pdata;
 }
 
 

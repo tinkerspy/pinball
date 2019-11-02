@@ -558,10 +558,10 @@ enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRE
 enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
 
 const char dual_flipper_bytecode[] = R""""(
-init, press_l, release_l, press_r, release_r;
-;
+init, press_l, release_l, press_r, release_r
+
 arg_coil_l, arg_coil_r;
-;
+
 
 init
 P, -1, -1, 0

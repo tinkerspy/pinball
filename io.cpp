@@ -403,12 +403,14 @@ int16_t IO::throttle( int16_t code ) {
 
 int16_t IO::separate( int16_t code ) {
   if ( code > 0 ) {
-    if ( profile[code].separate_millis != 0 ) {
+    if ( profile[code].separate_millis > 0 ) {
       if ( millis() - last_press < profile[code].separate_millis ) {
         return 0;
       }      
-      last_press = millis();
     }    
+    if ( profile[code].separate_millis >= 0 ) { // Switches with negative values are not counted
+      last_press = millis();
+    }
   }
   return code;
 }

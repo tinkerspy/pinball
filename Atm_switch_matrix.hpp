@@ -52,6 +52,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
   Atm_device& device( const char dev_str[], const char led_group_str[], int64_t code_pack,
         int16_t r0 = 0, int16_t r1 = 0, int16_t r2 = 0, int16_t r3 = 0, int16_t r4 = 0, int16_t r5 = 0, int16_t r6 = 0, int16_t r7 = 0 );
   Atm_switch_matrix& profile( int16_t n, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks );
+  Atm_switch_matrix& profile( const char* switch_group_str, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks  );
   Atm_switch_matrix& readProfiles( char label, const int16_t* profile_def );
   Atm_device& link( const char src_str[], const char out_str[], const char dest_str[], const char in_str[] );
   Atm_device& link( const char src_str[], const char out_str[], Symbolic_Machine& dest, const char in_str[] );

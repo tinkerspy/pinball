@@ -135,6 +135,10 @@ Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_ticks, i
   return *this;
 }
 
+Atm_switch_matrix& Atm_switch_matrix::profile( const char* switch_group_str, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks  ) {
+  return profile( findSymbol( switch_group_str ), press_ticks, release_ticks, throttle_ticks, separate_ticks );
+}
+
 Atm_switch_matrix& Atm_switch_matrix::readProfiles(  char label, const int16_t* profile_def ) {
   const int16_t* p = profile_def;
   while ( p[0] != -1 ) {

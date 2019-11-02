@@ -183,6 +183,10 @@ Atm_led_matrix& Atm_led_matrix::profile( int16_t ledno, uint16_t T0, uint32_t L1
   return *this;
 }
 
+Atm_led_matrix& Atm_led_matrix::profile( const char* led_group_str, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 /* = 0 */  ) {
+  return profile( findSymbol( led_group_str ), T0, L1, T1, L2 );
+}
+
 Atm_led_matrix& Atm_led_matrix::on( int ledno, bool no_update /* = false */  ) {
   if ( ledno > -1 ) {
     if ( ledno >= numOfLeds ) {

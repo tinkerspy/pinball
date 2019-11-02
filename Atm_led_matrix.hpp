@@ -51,6 +51,7 @@ class Atm_led_matrix: public Symbolic_Machine {
   Atm_led_matrix& set( int16_t ledno, uint32_t c ); 
   Atm_led_matrix& readProfiles(  char label, const int16_t* profile_def );
   Atm_led_matrix& profile( int16_t ledno, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
+  Atm_led_matrix& profile( const char* led_group_str, uint16_t T0, uint32_t L1, uint16_t T1, uint32_t L2 = 0  );
 
   int active( int ledno );
   int16_t count( int16_t ledno, int8_t led_active = -1 );

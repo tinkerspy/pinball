@@ -281,15 +281,77 @@ void setup() {
 
   Serial.println( "init leds" ); delay( 100 );
   leds.begin( io, led_groups )
-    .loadSymbols( led_symbols )
-    .readProfiles( 'L', profiles );
+    .loadSymbols( led_symbols );
   
   Serial.println( "init playfield" ); delay( 1000 );
   playfield.begin( io, leds, switch_groups, LED_EXTRA ) // TODO LED_EXTRA moet hier weg: separation of concerns!!!
-    .loadSymbols( switch_symbols )
-    .readProfiles( 'S', profiles );
-
+    .loadSymbols( switch_symbols );
   
+  leds.profile( "led_kicker_l"     ,    0,   0,   0, 127 );
+  leds.profile( "led_kicker_r"     ,    0,   0,   0, 127 );
+  leds.profile( "led_target_grp"   ,    0,   0,   0, 127 );
+  leds.profile( "led_uplane_grp"   ,    0,   0,   0, 127 );
+  leds.profile( "led_bumper_a"     ,    0,   0,   0, 127 );
+  leds.profile( "led_bumper_b"     ,    0,   0,   0, 127 );
+  leds.profile( "led_bumper_c"     ,    0,   0,   0, 127 );
+  leds.profile( "led_again0"       ,    0,   0,   0, 127 );
+  leds.profile( "led_triple_bonus" ,    0,   0,   0, 127 );
+  leds.profile( "led_extra"        ,    0,   0,   0, 127 );
+  leds.profile( "led_headbox_grp"  ,    0,   0,   0, 255 );
+  leds.profile( "led_oxo_grp"      ,    0,   0,   0, 127 );
+  leds.profile( "coil_gi"          ,    0,   0,   0, 255 );
+  leds.profile( "coil_sling_r"     ,    0, 255,  30,   0 );
+  leds.profile( "coil_sling_l"     ,    0, 255,  30,   0 );
+  leds.profile( "coil_flipper_l"   ,    0,   0,   0, 255 );
+  leds.profile( "coil_flipper_r"   ,    0,   0,   0, 255 );
+  leds.profile( "coil_kicker_r"    , 1000,  95,  30,   0 );
+  leds.profile( "coil_kicker_l"    , 1000,  95,  30,   0 );
+  leds.profile( "coil_save_gate"   ,    0,   0,   0, 255 );
+  leds.profile( "bumper_a"         ,    0, 255,  40,   0 );
+  leds.profile( "bumper_b"         ,    0, 255,  40,   0 );
+  leds.profile( "bumper_c"         ,    0, 255,  40,   0 );
+  leds.profile( "coil_feeder"      ,    0, 127,  30,   0 );
+  leds.profile( "coil_counter_grp" ,    0, 127,  20,   0 );
+  leds.profile( "vled_counter0"    ,    0,   0,   0, 127 );
+  leds.profile( "vled_counter1"    ,    0,   0,   0, 127 );
+  leds.profile( "vled_counter2"    ,    0,   0,   0, 127 );
+  leds.profile( "vled_counter3"    ,    0,   0,   0, 127 );
+  leds.profile( "vled_collecting"  ,    0,   0,   0, 127 );
+  leds.profile( "vled_5"           ,    0,   0,   0, 127 );
+  leds.profile( "vled_6"           ,    0,   0,   0, 127 );
+  leds.profile( "vled_7"           ,    0,   0,   0, 127 );
+  
+  playfield.profile( "switches"       ,   200,    0,    0,    0 );  // Default for switches
+  playfield.profile( "multilane"      ,   200,  200,    0,    0 );
+  playfield.profile( "sling_l"        ,     5,    0, 2000,    0 );  // Slingshots
+  playfield.profile( "sling_r"        ,     5,    0, 2000,    0 );
+  playfield.profile( "bumper_a"       ,     0,    0, 2000,    0 );  // Bumpers
+  playfield.profile( "bumper_b"       ,     0,    0, 2000,    0 );
+  playfield.profile( "bumper_c"       ,     0,    0, 2000,    0 );
+  playfield.profile( "flipper"        ,     0,   10,    0,    0 );  // Flippers
+  playfield.profile( "counter"        ,     0,  200,    0,    0 );  // Counter sensors
+  playfield.profile( "counter1"       ,     0,  200,    0,    0 );
+  playfield.profile( "counter2"       ,     0,  200,    0,    0 );
+  playfield.profile( "counter3"       ,     0,  200,    0,    0 );
+  playfield.profile( "port_3x"        ,     5,    0, 5000,    0 );
+  playfield.profile( "port_3o"        ,     5,    0, 5000,    0 );
+  playfield.profile( "port_2x"        ,     5,    0, 5000,    0 );
+  playfield.profile( "port_2o"        ,     5,    0, 5000,    0 );
+  playfield.profile( "port_1x"        ,     5,    0, 5000,    0 );
+  playfield.profile( "port_1o"        ,     5,    0, 5000,    0 );
+  playfield.profile( "uplane_l"       ,     5,    0, 5000,    0 );
+  playfield.profile( "uplane_r"       ,     5,    0, 5000,    0 );
+  playfield.profile( "outlane"        ,     5,    0, 5000,    0 );
+  playfield.profile( "inlane_l"       ,     5,    0, 5000,    0 );
+  playfield.profile( "inlane_r"       ,     5,    0, 5000,    0 );
+  playfield.profile( "ball_enter"     ,     5,    0, 5000,    0 );
+  playfield.profile( "rollover"       ,     1,    0, 5000,    0 );
+  playfield.profile( "target_a"       ,     2,    0,    0,    0 );
+  playfield.profile( "target_b"       ,     2,    0,    0,    0 );
+  playfield.profile( "target_c"       ,     2,    0,    0,    0 );
+  playfield.profile( "ball_exit"      ,    50,    0, 5000,    0 );
+  playfield.profile( "ball_enter"     ,   200,    0,    0,    0 );
+  playfield.profile( "frontbtn"       ,     0,   50, 5000,    0 );
 
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); delay( 100 );
@@ -307,7 +369,8 @@ void setup() {
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
   playfield.compileList( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
-  lib.compile( "cust_dual_flipper", dual_flipper_bytecode );
+  leds.compileList( led_group_list, leds.countSymbols( 0 ) - io.numberOfLeds(), io.numberOfLeds() );
+//  lib.compile( "cust_dual_flipper", dual_flipper_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 

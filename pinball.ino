@@ -306,10 +306,8 @@ void setup() {
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
-  playfield.compile( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
-  playfield.compile( dual_flipper_bytecode, 
-  lib.countSymbols( lib.index( "std_dual_flipper" ) ), 0 );
-
+  playfield.compileList( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
+  lib.compile( "cust_dual_flipper", dual_flipper_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 

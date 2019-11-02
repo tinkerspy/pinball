@@ -1,7 +1,6 @@
 #include "Symbolic_Machine.hpp"
 
-
-int16_t Symbolic_Machine::loadTable( const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
+int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
   char buf[1024];
   char *token;
   const char separator[6] = ", \n\t\r";
@@ -18,17 +17,19 @@ int16_t Symbolic_Machine::loadTable( const char src[], int16_t dst[], int16_t di
     buf[end_of_record - src] = '\0';
     src += end_of_record - src + 1;
     token = strtok( buf, separator );
-    int16_t i = findSymbol( token, -1 ); 
+    int16_t i = findSymbol( symbols, token, -1 ); 
     if ( dst == NULL ) {
+      pcode++;
       pcode++;
     } else {
       *pcode++ = -1; 
+      *pcode++ = i;
       dst[i - dict_offset] = ( pcode - dst );
     }
     token = strtok(NULL, separator );
     while( token != NULL ) {
-      int16_t i = findSymbol( token, -32768 ); 
-      if ( strlen( token ) > 1 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\n", token );
+      int16_t i = findSymbol( symbols, token, -32768 ); 
+      if ( strlen( token ) > 0 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\n", token );
       if ( dst == NULL ) {
         pcode++;
       } else {
@@ -47,11 +48,11 @@ int16_t Symbolic_Machine::loadTable( const char src[], int16_t dst[], int16_t di
 }
 
 
-int16_t* Symbolic_Machine::compile( const char src[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
-  int16_t data_size = loadTable( src, NULL, dict_size, dict_offset );
+int16_t* Symbolic_Machine::compileList( const char src[], int16_t dict_size, int16_t dict_offset /* = 0 */ ) {
+  int16_t data_size = loadIntList( symbols, src, NULL, dict_size, dict_offset );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );
   memset( pdata, 0, data_size * 2 );
-  loadTable( src, pdata, dict_size, dict_offset );
+  loadIntList( symbols, src, pdata, dict_size, dict_offset );
   /*
   for ( int16_t i = 0; i < data_size; i++ ) {
     Serial.printf( "%d: %d\n", i, pdata[i] );
@@ -114,11 +115,28 @@ const char* Symbolic_Machine::loadSymbolString( const char* s ) {
 
 // Returns the index of a symbol string in any of the banks
 // If the argument string looks like a number return that number
+// If the argument string is a single character return its ascii value
 
 int16_t Symbolic_Machine::findSymbol( const char s[], int16_t def /* = 0 */ ) {
   symbolic_machine_table* p = symbols;
+  Serial.printf( "SM::findSymbol %s\n", s );
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
+  if ( strlen( s ) == 1 ) return s[0];
+  while ( p != NULL ) {
+    int16_t i = findSymbolString( s, p->s );
+    if ( i >= 0 ) return i;
+    p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
+  }
+  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
+  return def;
+}
+
+int16_t Symbolic_Machine::findSymbol( const symbolic_machine_table* symbols, const char s[], int16_t def /* = 0 */ ) {
+  const symbolic_machine_table* p = symbols;
+  if ( strlen( s ) == 0 ) return 0;
+  if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
+  if ( strlen( s ) == 1 ) return s[0];
   while ( p != NULL ) {
     int16_t i = findSymbolString( s, p->s );
     if ( i >= 0 ) return i;

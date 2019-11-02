@@ -19,13 +19,12 @@ union lib_code_pack {
     uint64_t pack;
 };
 
-class Library {
+class Library: public Symbolic_Machine {
 
   public:
   enum{ SYM_INPUT, SYM_OUTPUT, SYM_ARG, SYM_REG };
   int16_t compile( const char label[], const char src[] );
   const char* cpunfold( char buf[], const char src[] );
-  int16_t findString( const char s[], const char sym[] );
   int16_t findSymbol( int16_t slot, const char s[] );
   const char* findSymbol( int16_t slot, int16_t idx, int8_t bank = 0 );
   int16_t findSymbol( const char label[], const char s[] );
@@ -41,11 +40,12 @@ class Library {
   int16_t count();
   char* label( int16_t slot );
   uint64_t code( int16_t idx );
-  int64_t code( const char label[] );
+  uint64_t code( const char label[] );
   int16_t findCode( const int16_t* c );
 
-
   protected:
+  int event( int id ); 
+  void action( int id ); 
   Library& printHexWord( Stream* stream, int16_t v, bool last = false );
   library_record lib[MAX_LIBRARY_ENTRIES];
   int16_t lib_cnt = 0;

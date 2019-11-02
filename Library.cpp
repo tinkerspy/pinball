@@ -1,5 +1,8 @@
 #include "Library.hpp"
 
+int Library::event( int id ) { return 0; }; 
+void Library::action( int id ) {};
+
 const char* Library::cpunfold( char buf[], const char src[] ) {
   const char* ps = src;
   char* pb = buf;
@@ -50,76 +53,28 @@ int16_t Library::compile( const char label[], const char src[] ) {
       token = strtok(NULL, sep );
     }
     *p = '\0';  
-    // TODO: Use relative offset instead of absolute pointers to make symbol tables relocatable & storable in flash
     symbolic_machine_table** psym = &(lib[lib_cnt].symbols);
     while ( *psym != NULL ) psym = &(*psym)->next;
     *psym = sym;
     cpunfold( buf, src );
   }
 
-  const char* code_start = src;
-  int16_t wordcnt = countSymbols( lib_cnt, SYM_INPUT );
-  while ( strlen( src ) > 0 ) {
-    char* ptr = strchr( src, '\n' );
-    strncpy( buf, src, ptr - src );
-    buf[ptr - src] = '\0';
-    src += ptr - src + 1;
-    int16_t rescnt = 0;
-    token = strtok( buf, sep );
-    while( token != NULL ) {
-      token = strtok(NULL, sep );
-      rescnt++;
-    }
-    if ( rescnt == 1 ) { // A label
-      wordcnt += 2; 
-    } else if ( rescnt == 4 ) { // A code line
-      wordcnt += 4; 
+  Serial.printf( "count: %d\n", countSymbols( lib_cnt, SYM_INPUT ) );
+  int16_t data_size = loadIntList( lib[lib_cnt].symbols, src, NULL, countSymbols( lib_cnt, SYM_INPUT ), 0 );
+  int16_t* pdata = (int16_t *) malloc( data_size * 2 );
+  memset( pdata, 0, data_size * 2 );
+  Serial.printf( "Size %s %d\n", label, data_size );
+  loadIntList( lib[lib_cnt].symbols, src, pdata, countSymbols( lib_cnt, SYM_INPUT ) );
+  lib[lib_cnt].code = pdata;
+  for ( int16_t b = 0; b < 4; b++ ) {
+    for ( int16_t i = 0; i < countSymbols( lib_cnt, b ); i++ ) {      
+        Serial.printf( "%d %d %s -> %d\n", b, i, findSymbol( lib_cnt, i, b ), findSymbol( lib_cnt, findSymbol( lib_cnt, i, b ) ) );      
     }
   }
-  wordcnt += 2;
-
-  int16_t* pcode = (int16_t *) malloc( wordcnt * 2 );
-  memset( pcode, 0, wordcnt * 2 );
-  
-  lib[lib_cnt].code = pcode;
-
-  src = code_start;
-  int16_t* porigin = pcode; 
-  pcode += countSymbols( lib_cnt, SYM_INPUT );
-  while ( strlen( src ) > 0 ) {
-    char* ptr = strchr( src, '\n' );
-    strncpy( buf, src, ptr - src );
-    buf[ptr - src] = '\0';
-    src += ptr - src + 1;
-    int16_t rescnt = 0;
-    int16_t res[4];
-    int16_t opcode = 0;
-    token = strtok( buf, sep );
-    while( token != NULL ) {
-      if ( rescnt == 0 && strlen( token ) == 1 ) {
-        opcode = token[0]; 
-      }
-      res[rescnt] = findSymbol( lib_cnt, token ); 
-      if ( strlen( token ) > 1 && find_error ) Serial.printf( "Compile error: token '%s' not found\n", token );
-      //Serial.printf( "%s = %d\n", token, res[rescnt] ); 
-      token = strtok(NULL, sep );
-      rescnt++;
-    }
-    if ( rescnt == 1 ) { // A label
-      *pcode++ = -1;
-      *pcode++ = res[0];
-      porigin[res[0]] = ( pcode - porigin );
-      //Serial.printf( "-1\n%d -> offset %d\n", res[0], (pcode - porigin) );
-    } else if ( rescnt == 4 ) { // A code line
-      *pcode++ = opcode;
-      *pcode++ = res[1];
-      *pcode++ = res[2];
-      *pcode++ = res[3];
-      //Serial.printf( "%c, %d, %d, %d\n", opcode, res[1], res[2], res[3] );
-    }
+  for ( int16_t i = 0; i < data_size; i++ ) {
+    Serial.printf( "%d: %d\n", i, pdata[i] );
   }
-  *pcode++ = -1;
-  *pcode++ = -1;
+
   return lib_cnt++;
 }
 
@@ -202,6 +157,14 @@ Library& Library::hexdump(  Stream* stream, const char label[] ) {
   return *this;
 }
 
+int16_t Library::findCode( const int16_t* c ) {
+  int16_t fw_idx = 0;
+  for ( int16_t fw = 0; fw < count(); fw++ ) {
+    if ( codePtr( fw ) == c ) fw_idx = fw;
+  }
+  return fw_idx;
+}          
+
 uint64_t Library::code( int16_t idx ) {
   lib_code_pack cp;
   cp.code = lib[idx].code;
@@ -209,15 +172,7 @@ uint64_t Library::code( int16_t idx ) {
   return cp.pack;
 }
 
-int16_t Library::findCode( const int16_t* c ) {
-          int16_t fw_idx = 0;
-          for ( int16_t fw = 0; fw < count(); fw++ ) {
-            if ( codePtr( fw ) == c ) fw_idx = fw;
-          }
-          return fw_idx;
-}          
-
-int64_t Library::code( const char label[] ) {
+uint64_t Library::code( const char label[] ) {
   return code( index( label ) );
 }
 
@@ -253,10 +208,12 @@ int16_t Library::index( const char label[] ) {
 int16_t Library::findSymbol( int16_t slot, const char s[] ) {
   symbolic_machine_table* p = lib[slot].symbols;
   find_error = 0;
+  Serial.printf( "Library::findSymbol %s\n", s );
   if ( strlen( s ) == 0 ) return 0;
   if ( isdigit( s[0] ) || ( s[0] == '-' && isdigit( s[1] ) ) ) return atoi( s );   
+  if ( strlen( s ) == 1 ) return s[0];
   while ( p != NULL ) {
-    int16_t i = findString( s, p->s );
+    int16_t i = findSymbolString( s, p->s );
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table) + p->offset ) : p->next;
   }
@@ -308,19 +265,6 @@ int16_t Library::countSymbols( int16_t slot, int8_t bank /* = 0 */ ) {
     scnt++;
   }
   return scnt;
-}
-
-// Find a string in a char array of null terminated strings (terminated by an empty string -- double \0 )
-// Returns string index or -1 if not found
-
-int16_t Library::findString( const char s[], const char sym[] ) {
-  const char* p = sym;
-  int16_t cnt = 0;
-  while ( *p != '\0' && strcasecmp( s, p ) != 0 ) {
-    p += strlen( p ) + 1;    
-    cnt++;
-  }
-  return *p == '\0' ? -1 : cnt;
 }
 
 int16_t Library::count() {

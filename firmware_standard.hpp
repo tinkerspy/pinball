@@ -560,7 +560,7 @@ enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R };
 const char dual_flipper_bytecode[] = R""""(
 init, press_l, release_l, press_r, release_r
 
-arg_coil_l, arg_coil_r;
+arg_coil_l, arg_coil_r
 
 
 init

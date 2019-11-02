@@ -408,7 +408,8 @@ int16_t IO::separate( int16_t code ) {
         return 0;
       }      
     }    
-    if ( profile[code].separate_millis >= 0 ) { // Switches with negative values are not counted
+    // Switches with negative values are not counted
+    if ( profile[code].separate_millis >= 0 ) { 
       last_press = millis();
     }
   }

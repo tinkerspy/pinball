@@ -38,6 +38,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
   Atm_switch_matrix& traceSwitches( Stream* stream, uint8_t bitmap = 1 );
   Atm_switch_matrix& trigger( int event );
   int16_t index( int16_t swno, int16_t n );
+  int16_t count( int16_t swno );
   int16_t exists( int16_t n );
   int state( void );
   bool isPressed( int16_t n );
@@ -59,7 +60,8 @@ class Atm_switch_matrix: public Symbolic_Machine {
 
   Atm_led_matrix* leds( void );
   int16_t numberOfGroups( void );
-  Atm_switch_matrix& loadSymbols( const char switches[], const char groups[] );
+  Atm_switch_matrix& loadSymbols( const char switches[] );
+  Atm_switch_matrix& loadGroups( const char groups[] );
   int64_t* codePack( int16_t idx );
 
   switch_record prof[MAX_SWITCHES + 1 ];

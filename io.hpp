@@ -10,10 +10,6 @@
 #define MAX_LEDS_PER_STRIP 256
 #define IO_TICK_MS 100UL
 
-// Specify a switch or led number to trace activity for
-#undef TRACE_SWITCH 
-#undef TRACE_LED 
-
 #ifdef CORE_TEENSY
   #define IOREAD( _pin ) digitalReadFast( _pin )
   #define IOWRITE( _pin, _value ) digitalWriteFast( _pin, _value )

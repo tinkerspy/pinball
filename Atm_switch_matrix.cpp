@@ -25,13 +25,17 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   return *this;          
 }
 
-Atm_switch_matrix& Atm_switch_matrix::loadSymbols( const char switches[], const char groups[] ) {
+Atm_switch_matrix& Atm_switch_matrix::loadSymbols( const char switches[] ) {
   Symbolic_Machine::loadSymbols( switches );
-  numOfGroups = countSymbols( 0 ) - numOfSwitches;
+  return *this;
+}
+
+Atm_switch_matrix& Atm_switch_matrix::loadGroups( const char groups[] ) {
+  numOfGroups = countSymbols( 1 ) - numOfSwitches;
   int16_t data_size = loadIntList( symbols, groups, NULL, numOfGroups, numOfSwitches + 1 );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );
   memset( pdata, 0, data_size * 2 );
-  data_size = loadIntList( symbols, groups, pdata, numOfGroups, numOfSwitches + 1 );
+  loadIntList( symbols, groups, pdata, numOfGroups, numOfSwitches + 1 );
   group_def = pdata;
   return *this;
 }
@@ -118,6 +122,22 @@ int16_t Atm_switch_matrix::index( int16_t swno, int16_t n ) {
     }
   }
   return -1;  
+}
+
+int16_t Atm_switch_matrix::count( int16_t swno ) {
+  int16_t cnt = 0;
+  if ( swno > -1 ) {
+    if ( swno < numOfSwitches ) {
+      return 1;
+    } else {
+      int16_t p = group_def[swno - numOfSwitches - 1];
+      while ( p != -1 && group_def[p] != -1 ) {
+        cnt++;
+        p++;
+      }
+    }
+  }
+  return cnt;  
 }
 
 Atm_switch_matrix& Atm_switch_matrix::profile( int16_t n, int16_t press_ticks, int16_t release_ticks, int16_t throttle_ticks, int16_t separate_ticks  ) {

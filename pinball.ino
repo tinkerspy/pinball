@@ -6,7 +6,10 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
-// FIXME De primary bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! 
+// FIXME De 'force primary' bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! 
+// De bytecode tables gaan er vanuit dat ongedefinieerde handles op '0' staan, de list tables zetten daarin een link naar de eerste -1... Oplossen, verangen door Y???
+
+// Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
 
 using namespace standard_firmware;
 using namespace custom_firmware; 
@@ -246,12 +249,11 @@ void cmd_callback( int idx, int v, int up ) {
   }
 } 
 
-void dumpSymbols( int16_t d, int16_t bank = -1 ) {
-  Atm_device* dev = &playfield.device( d );
-  for ( int16_t b = 0; b < 4; b++ ) {
-    for ( int16_t i = 0; i < dev->countSymbols( b ); i++ ) {
+void dumpSymbols( Symbolic_Machine* machine, int16_t bank = -1 ) {
+  for ( int16_t b = 0; b < 8; b++ ) {
+    for ( int16_t i = 0; i < machine->countSymbols( b ); i++ ) {
       if ( bank == -1 || bank == b ) {
-        Serial.printf( "%d %d %s -> %d\n", b, i, dev->findSymbol( i, b ), dev->findSymbol( dev->findSymbol( i, b ) ) );
+        Serial.printf( "%d %d %s -> %d\n", b, i, machine->findSymbol( i, b ), machine->findSymbol( machine->findSymbol( i, b ) ) );
       }
     }
   }
@@ -277,28 +279,24 @@ void setup() {
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
     .addStrip( new IO_Adafruit_NeoPixel( 12, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet with 8 virtual leds added 
     .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
-    .invert( BALL_ENTER )
     .retrigger()
     .show();
 
   Serial.println( "init leds" ); delay( 100 );
-  leds.begin( io ).loadSymbols( led_symbols, led_group_list  );
-/*
-  int16_t ledno = leds.findSymbol( "led_counter1_grp", -1 );
-  Serial.printf( "List group members for %d, count=%d\n", ledno, leds.count( ledno ) );
-  for ( int16_t i = 0; i < leds.count( ledno ); i++ ) {
-    Serial.printf( "%d: %d \n", i, leds.index( ledno, i ) );
-  }
-*/
-
+  leds.begin( io )
+    .loadSymbols( led_symbols )
+    .loadGroups( led_group_list  );
 
   Serial.println( "init playfield" ); delay( 1000 );
-  playfield.begin( io, leds, leds.findSymbol( "led_extra" ) ); // TODO LED_EXTRA moet hier weg: separation of concerns!!!
+  playfield.begin( io, leds, leds.findSymbol( "led_extra" ) ) // TODO LED_EXTRA moet hier weg: separation of concerns!!!
+    .loadSymbols( switch_symbols )
+    .loadGroups( switch_group_list );
+    
   Serial.println( "init playfield switches" ); delay( 1000 );
-
-  // Crash after this...
   
-  playfield.loadSymbols( switch_symbols, switch_group_list );
+  //dumpSymbols( &playfield ); // ERROR: returns one bank too many... why??? (devices seem fine)
+
+  io.invert( playfield.findSymbol( "ball_enter" ) );
 
   Serial.println( "led profiles" ); delay( 1000 );
 
@@ -340,8 +338,8 @@ void setup() {
 
   playfield.profile( "switches"       ,   200,    0,    0,    0 );  // Default for switches
   playfield.profile( "multilane"      ,   200,  200,    0,    0 );
-  playfield.profile( "sling_l"        ,     5,    0, 2000,    0 );  // Slingshots
-  playfield.profile( "sling_r"        ,     5,    0, 2000,    0 );
+  playfield.profile( "sling_l"        ,     5,    0, 5000,    0 );  // Slingshots
+  playfield.profile( "sling_r"        ,     5,    0, 5000,    0 );
   playfield.profile( "bumper_a"       ,     0,    0, 2000,    0 );  // Bumpers
   playfield.profile( "bumper_b"       ,     0,    0, 2000,    0 );
   playfield.profile( "bumper_c"       ,     0,    0, 2000,    0 );
@@ -384,10 +382,6 @@ void setup() {
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
-
-  playfield.compileList( switch_group_list, playfield.countSymbols( 1 ) - io.numberOfSwitches(), io.numberOfSwitches() + 1 );
-  leds.compileList( led_group_list, leds.countSymbols( 0 ) - io.numberOfLeds(), io.numberOfLeds() );
-//  lib.compile( "cust_dual_flipper", dual_flipper_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 

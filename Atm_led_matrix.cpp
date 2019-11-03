@@ -21,8 +21,12 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io ) {
   return *this;
 }
 
-Atm_led_matrix& Atm_led_matrix::loadSymbols( const char leds[], const char groups[] ) {
+Atm_led_matrix& Atm_led_matrix::loadSymbols( const char leds[] ) {
   Symbolic_Machine::loadSymbols( leds );
+  return *this;
+}
+
+Atm_led_matrix& Atm_led_matrix::loadGroups( const char groups[] ) {
   numOfGroups = countSymbols( 0 ) - io->numberOfLeds();
   int16_t data_size = loadIntList( symbols, groups, NULL, numOfGroups, io->numberOfLeds() );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );

@@ -23,48 +23,48 @@ reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
 reg_ball, reg_ball_cntr
 
 press
-R, -1, -1, reg_ball_cntr
->,  0, -1, 0
-R, -1, -1, reg_no_of_players
-=,  6,  0, 2
-R, -1, -1, reg_max_players
-=,  6, -1, 0
-R, -1, -1, reg_no_of_players
-=,  5,  0, 2
-R, -1, -1, reg_max_players
-=,  5, -1, 0
-R, -1, -1, reg_no_of_players
-=,  4,  0, 2
-R, -1, -1, reg_max_players
-=,  4, -1, 0
-R, -1, -1, reg_no_of_players
-=,  3,  0, 2
-R, -1, -1, reg_max_players
-=,  3, -1, 0
-R, -1, -1, reg_no_of_players
-=,  2,  0, 2
-R, -1, -1, reg_max_players
-=,  2, -1, 0
-R, -1, -1, reg_no_of_players
-=,  1,  0, 2
-R, -1, -1, reg_max_players
-=,  1, -1, 0
-R, -1, -1, reg_no_of_players
-T, -1, -1, out_players_adv
-I, -1, -1, 1
+R, -1, -1, reg_ball_cntr,
+>,  0, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  6,  0, 2,
+R, -1, -1, reg_max_players,
+=,  6, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  5,  0, 2,
+R, -1, -1, reg_max_players,
+=,  5, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  4,  0, 2,
+R, -1, -1, reg_max_players,
+=,  4, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  3,  0, 2,
+R, -1, -1, reg_max_players,
+=,  3, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  2,  0, 2,
+R, -1, -1, reg_max_players,
+=,  2, -1, 0,
+R, -1, -1, reg_no_of_players,
+=,  1,  0, 2,
+R, -1, -1, reg_max_players,
+=,  1, -1, 0,
+R, -1, -1, reg_no_of_players,
+T, -1, -1, out_players_adv,
+I, -1, -1, 1;
 
 init
-0, -1,  0, -1
-P, -1, -1, 1
-T, -1, -1, out_init
-Y, -1, -1, 100
-R, -1, -1, 0
-D, -1, -1, reg_no_of_balls
-R, -1, -1, 1
-D, -1, -1, reg_max_players
-R, -1, -1, 0
-Z, -1, -1, 0
-A, -1, -1, sub_loop
+0, -1,  0, -1,
+P, -1, -1, 1,
+T, -1, -1, out_init,
+Y, -1, -1, 100,
+R, -1, -1, 0,
+D, -1, -1, reg_no_of_balls,
+R, -1, -1, 1,
+D, -1, -1, reg_max_players,
+R, -1, -1, 0,
+Z, -1, -1, 0,
+A, -1, -1, sub_loop;
 
 sub_loop
 T, -1, -1, out_over
@@ -83,7 +83,7 @@ R, -1, -1, reg_no_of_balls
 D, -1, -1, reg_ball
 T, -1, -1, out_player_zero
 S, -1, -1, sub_ball_loop
-A, -1, -1, sub_loop
+A, -1, -1, sub_loop;
 
 sub_ball_loop
 R, -1, -1, reg_no_of_players
@@ -96,7 +96,7 @@ R, -1, -1, reg_ball
 I, -1, -1, -1
 =,  0, -1, 0
 T, -1, -1, out_ball_adv
-A, -1, -1, sub_ball_loop
+A, -1, -1, sub_ball_loop;
 
 sub_player_loop
 S, -1, -1, sub_core
@@ -105,7 +105,7 @@ R, -1, -1, reg_player
 I, -1, -1, -1
 =,  0, -1, 0
 T, -1, -1, out_player_adv
-A, -1, -1, sub_player_loop
+A, -1, -1, sub_player_loop;
 
 sub_core
 Y, -1, -1, 500
@@ -127,12 +127,12 @@ R, -1, -1, reg_ball_cntr
 I, -1, -1, 1
 =,  1,  0, -1
 R, -1, -1, reg_no_of_players
-D, -1, -1, reg_player
+D, -1, -1, reg_player;
 
 sub_wait_players
 R, -1, -1, reg_no_of_players
 Y, -1, -1, 10
-A,  0, sub_wait_players, -1
+A,  0, sub_wait_players, -1;
 
 sub_wait_reset
 Y, -1, -1, 100
@@ -141,15 +141,15 @@ J, arg_counter1, -3, 0
 J, arg_counter2, -4, 0
 J, arg_counter3, -5, 0
 J, arg_counter4, -6, 0
-J, arg_counter5, -7, 0
+J, arg_counter5, -7, 0;
 
 sub_wait_playing
 Y, -1, -1, 100
-J, arg_enabled, -2, -1
+J, arg_enabled, -2, -1;
 
 sub_wait_collecting
 Y, -1, -1, 100
-J, arg_collecting, -2, -1
+J, arg_collecting, -2, -1;
 )"""";
 
 const char game_symbin[] = { 

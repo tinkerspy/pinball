@@ -63,18 +63,18 @@ void setup() {
     .loadSymbols( led_symbols )
     .loadGroups( led_group_list  );
 
-  Serial.println( "init playfield" ); delay( 1000 );
+  Serial.println( "init playfield" ); delay( 100 );
   playfield.begin( io, leds, leds.findSymbol( "led_extra" ) ) // TODO LED_EXTRA moet hier weg: separation of concerns!!!
     .loadSymbols( switch_symbols )
     .loadGroups( switch_group_list );
     
-  Serial.println( "init playfield switches" ); delay( 1000 );
+  Serial.println( "init playfield switches" ); delay( 100 );
   
   //dumpSymbols( &playfield ); // ERROR: returns one bank too many... why??? (devices seem fine)
 
   io.invert( playfield.findSymbol( "ball_enter" ) );
 
-  Serial.println( "led profiles" ); delay( 1000 );
+  Serial.println( "led profiles" ); delay( 100 );
 
   leds.profile( "led_kicker_l"     ,    0,   0,   0, 127 );
   leds.profile( "led_kicker_r"     ,    0,   0,   0, 127 );
@@ -158,6 +158,8 @@ void setup() {
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
+
+  //lib.compile( "std_game", game_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 

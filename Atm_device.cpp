@@ -396,6 +396,10 @@ void Atm_device::run_code( uint8_t active_core ) {
           return;
         }
       }
+      //if ( active_core == 0 ) { 
+      //  timer.set( 0 ); // This should multitask things... (but it doesn't work as planned): check 'tc counter' 'tr counter reset' -> core exit!
+      //  return;
+      //}
     }
   }
 }

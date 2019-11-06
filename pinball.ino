@@ -110,7 +110,7 @@ void setup() {
   leds.profile( "vled_6"           ,    0,   0,   0, 127 );
   leds.profile( "vled_7"           ,    0,   0,   0, 127 );
   
-  Serial.println( "switch profiles" ); delay( 1000 );
+  Serial.println( "switch profiles" ); delay( 100 );
 
   playfield.profile( "switches"       ,   200,    0,    0,    0 );  // Default for switches
   playfield.profile( "multilane"      ,   200,  200,    0,    0 );

@@ -57,7 +57,7 @@ Z, -1, -1, 0
 S, -1, -1, off
 R, -1, -1, reg_default
 =,  0,  1, 0
-S, -1, -1, on
+S, -1, -1, on;
 
 on
 Z, -1, -1, 1
@@ -68,7 +68,7 @@ H, -1, -1, arg_led3
 H, -1, -1, arg_led4
 H, -1, -1, arg_led5
 H, -1, -1, arg_led6
-H, -1, -1, arg_led7
+H, -1, -1, arg_led7;
 
 off
 Z, -1, -1, 0
@@ -79,73 +79,73 @@ L, -1, -1, arg_led3
 L, -1, -1, arg_led4
 L, -1, -1, arg_led5
 L, -1, -1, arg_led6
-L, -1, -1, arg_led7
+L, -1, -1, arg_led7;
 
 on0
 Z, -1, -1, 1
 H, -1, -1, arg_led0
-T, -1, -1, out_on0
+T, -1, -1, out_on0;
 
 off0
 Z, -1, -1, 0
 L, -1, -1, arg_led0
-T, -1, -1, out_off0
+T, -1, -1, out_off0;
 
 on1
 H, -1, -1, arg_led1
-T, -1, -1, out_on1
+T, -1, -1, out_on1;
 
 off1
 L, -1, -1, arg_led1
-T, -1, -1, out_off1
+T, -1, -1, out_off1;
 
 on2
 H, -1, -1, arg_led2
-T, -1, -1, out_on2
+T, -1, -1, out_on2;
 
 off2
 L, -1, -1, arg_led2
-T, -1, -1, out_off2
+T, -1, -1, out_off2;
 
 on3
 H, -1, -1, arg_led3
-T, -1, -1, out_on3
+T, -1, -1, out_on3;
 
 off3
 L, -1, -1, arg_led3
-T, -1, -1, out_off3
+T, -1, -1, out_off3;
 
 on4
 H, -1, -1, arg_led4
-T, -1, -1, out_on4
+T, -1, -1, out_on4;
 
 off4
 L, -1, -1, arg_led4
-T, -1, -1, out_off4
+T, -1, -1, out_off4;
 
 on5
 H, -1, -1, arg_led5
-T, -1, -1, out_on5
+T, -1, -1, out_on5;
 
 off5
 L, -1, -1, arg_led5
-T, -1, -1, out_off5
+T, -1, -1, out_off5;
 
 on6
 H, -1, -1, arg_led6
-T, -1, -1, out_on6
+T, -1, -1, out_on6;
 
 off6
 L, -1, -1, arg_led6
-T, -1, -1, out_off6
+T, -1, -1, out_off6;
 
 on7
 H, -1, -1, arg_led7
-T, -1, -1, out_on7
+T, -1, -1, out_on7;
 
 off7
 L, -1, -1, arg_led7
-T, -1, -1, out_off7
+T, -1, -1, out_off7;
 
 )"""";
 
@@ -208,10 +208,10 @@ arg_coil_l, arg_coil_r, arg_led_l, arg_led_r
 init
 P, -1, -1, 0
 L, -1, -1, arg_led_l
-L, -1, -1, arg_led_r
+L, -1, -1, arg_led_r;
 
 persist
-P, -1, -1, 1
+P, -1, -1, 1;
 
 press_l
 H, -1, -1, arg_coil_l
@@ -222,7 +222,7 @@ T, -1, -1, out_score_lit
 T, -1, -1, out_press_lit
 J, -1, -1, -1
 T, -1, -1, out_score_unlit
-T, -1, -1, out_press_unlit
+T, -1, -1, out_press_unlit;
 
 press_r
 H, -1, -1, arg_coil_r
@@ -233,15 +233,15 @@ T, -1, -1, out_score_lit
 T, -1, -1, out_press_lit
 J, -1, -1, -1
 T, -1, -1, out_score_unlit
-T, -1, -1, out_press_unlit
+T, -1, -1, out_press_unlit;
 
 on
 H, -1, -1, arg_led_l
-H, -1, -1, arg_led_r
+H, -1, -1, arg_led_r;
 
 off
 L, -1, -1, arg_led_l
-L, -1, -1, arg_led_r
+L, -1, -1, arg_led_r;
 
 )"""";
 
@@ -288,47 +288,47 @@ out_score0, out_score1, out_score2, out_score3, out_score4, out_score5, out_scor
 
 
 init
-P, -1, -1, 0
+P, -1, -1, 0;
 
 press0
 T, -1, -1, out_press0
 T, -1, -1, out_score
-T, -1, -1, out_score0
+T, -1, -1, out_score0;
 
 press1
 T, -1, -1, out_press1
 T, -1, -1, out_score
-T, -1, -1, out_score1
+T, -1, -1, out_score1;
 
 press2
 T, -1, -1, out_press2
 T, -1, -1, out_score
-T, -1, -1, out_score2
+T, -1, -1, out_score2;
 
 press3
 T, -1, -1, out_press3
 T, -1, -1, out_score
-T, -1, -1, out_score3
+T, -1, -1, out_score3;
 
 press4
 T, -1, -1, out_press4
 T, -1, -1, out_score
-T, -1, -1, out_score4
+T, -1, -1, out_score4;
 
 press5
 T, -1, -1, out_press5
 T, -1, -1, out_score
-T, -1, -1, out_score5
+T, -1, -1, out_score5;
 
 press6
 T, -1, -1, out_press6
 T, -1, -1, out_score
-T, -1, -1, out_score6
+T, -1, -1, out_score6;
 
 press7
 T, -1, -1, out_press7
 T, -1, -1, out_score
-T, -1, -1, out_score7
+T, -1, -1, out_score7;
 
 )"""";
 
@@ -372,7 +372,7 @@ arg_led0, arg_led1
 
 init
 P, -1, -1, 0
-S, -1, -1, off
+S, -1, -1, off;
 
 press0
 T, -1, -1, out_score
@@ -383,7 +383,7 @@ T, -1, -1, out_score_lit
 J, -1, -1, -1
 T, -1, -1, out_press_unlit
 T, -1, -1, out_press0_unlit
-T, -1, -1, out_score_unlit
+T, -1, -1, out_score_unlit;
 
 press1
 T, -1, -1, out_score
@@ -394,15 +394,15 @@ T, -1, -1, out_score_lit
 J, -1, -1, -1
 T, -1, -1, out_press_unlit
 T, -1, -1, out_press1_unlit
-T, -1, -1, out_score_unlit
+T, -1, -1, out_score_unlit;
 
 on
 H, -1, -1, arg_led0
-H, -1, -1, arg_led1
+H, -1, -1, arg_led1;
 
 off
 L, -1, -1, arg_led0
-L, -1, -1, arg_led1
+L, -1, -1, arg_led1;
 
 )"""";
 
@@ -446,7 +446,7 @@ arg_coil, arg_led
 init
 P, -1, -1, 0                   
 L, -1, -1, arg_coil     
-L, -1, -1, arg_led      
+L, -1, -1, arg_led;      
 
 press
 H, -1, -1, arg_coil     
@@ -454,15 +454,15 @@ T, -1, -1, out_score
 J, arg_led, 0, 2     
 T, -1, -1, out_score_lit
 J, -1, -1, -1
-T, -1, -1, out_score_unlit
+T, -1, -1, out_score_unlit;
 
 turn_on
 H, -1, -1, arg_led
-T, -1, -1, out_light_on
+T, -1, -1, out_light_on;
 
 turn_off
 L, -1, -1, arg_led
-T, -1, -1, out_light_off
+T, -1, -1, out_light_off;
  
 )"""";
 
@@ -502,7 +502,7 @@ arg_led0, arg_led1
 
 init
 P, -1, -1, 0
-S, -1, -1, clear
+S, -1, -1, clear;
 
 press0
 T, -1, -1, out_score
@@ -510,7 +510,7 @@ J, arg_led0, -1, 0
 H, -1, -1, arg_led0
 T, -1, -1, out_led0_on
 J, arg_led1, 0, -1
-T, -1, -1, out_all_on
+T, -1, -1, out_all_on;
  
 press1
 T, -1, -1, out_score
@@ -518,14 +518,14 @@ J, arg_led1, -1, 0
 H, -1, -1, arg_led1
 T, -1, -1, out_led1_on
 J, arg_led0, 0, -1
-T, -1, -1, out_all_on
+T, -1, -1, out_all_on;
 
 clear
 L, -1, -1, arg_led0
 L, -1, -1, arg_led1
 T, -1, -1, out_led0_off
 T, -1, -1, out_led1_off
-T, -1, -1, out_all_off
+T, -1, -1, out_all_off;
 
 )"""";
 
@@ -620,7 +620,7 @@ P, -1, -1, 1
 X,  1, -1, -1
 R, -1, -1, reg_block
 Z, -1, -1, 0
-S, -1, -1, zero
+S, -1, -1, zero;
 
 zero
 H, -1, -1, arg_led0
@@ -629,7 +629,7 @@ L, -1, -1, arg_led2
 L, -1, -1, arg_led3
 L, -1, -1, arg_led4
 R, -1, -1, reg_block
-Z, -1, -1, 0
+Z, -1, -1, 0;
 
 advance
 R, -1, -1, reg_block
@@ -646,43 +646,43 @@ J, arg_led2, 0, 2
 S, -1, -1, sel3
 J, -1, -1, -1
 J, arg_led3, 0, -1
-S, -1, -1, sel4
+S, -1, -1, sel4;
 
 freeze
 R, -1, -1, reg_block
-Z, -1, -1, 1
+Z, -1, -1, 1;
 
 sel0
 Z, -1, -1, 0
 S, -1, -1, sub_clear
-H, -1, -1, arg_led0
+H, -1, -1, arg_led0;
 
 sel1
 Z, -1, -1, 1
 S, -1, -1, sub_clear
-H, -1, -1, arg_led1
+H, -1, -1, arg_led1;
 
 sel2
 Z, -1, -1, 2
 S, -1, -1, sub_clear
-H, -1, -1, arg_led2
+H, -1, -1, arg_led2;
 
 sel3
 Z, -1, -1, 3
 S, -1, -1, sub_clear
-H, -1, -1, arg_led3
+H, -1, -1, arg_led3;
 
 sel4
 Z, -1, -1, 4
 S, -1, -1, sub_clear
-H, -1, -1, arg_led4
+H, -1, -1, arg_led4;
 
 sub_clear
 L, -1, -1, arg_led0
 L, -1, -1, arg_led1
 L, -1, -1, arg_led2
 L, -1, -1, arg_led3
-L, -1, -1, arg_led4
+L, -1, -1, arg_led4;
 
 )"""";
 
@@ -742,22 +742,22 @@ out_digit1, out_digit2, out_digit3
 arg_10k, arg_1k, arg_100, arg_10, arg_up, arg_dirty 
 reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait
 
-init
+init,
 P, -1, -1, 1
 X,  1,  0, -1
 H, -1, -1, arg_dirty
-Z, -1, -1, 1
+Z, -1, -1, 1;
 
 press
 R, -1, -1, reg_sensor
-Z, -1, -1, 1
+Z, -1, -1, 1;
 
 release
 R, -1, -1, reg_sensor
-Z, -1, -1, 0
+Z, -1, -1, 0;
 
 reset
-0, -1,  0, -1
+Y, -2, -1,-1
 =,  0, -1, 0
 S, -1, -1, sub_move_start
 S, -1, -1, sub_pos1
@@ -771,7 +771,7 @@ Z, -1, -1, 0
 R, -1, -1, reg_1k
 Z, -1, -1, 0
 R, -1, -1, reg_10k
-Z, -1, -1, 0
+Z, -1, -1, 0;
 
 sub_move_start
 R, -1, -1, reg_sensor
@@ -782,7 +782,7 @@ Y, -1, -1, 120
 H, -1, -1, arg_1k
 Y, -1, -1, 120
 =, 0,  0, -1
-A, -1, -1, sub_move_start
+A, -1, -1, sub_move_start;
 
 sub_pos1
 R, -1, -1, reg_sensor
@@ -798,7 +798,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos1
 A, -1, -1, sub_pos2_23
 A, -1, -1, sub_pos2_13
-A, -1, -1, sub_pos2_12
+A, -1, -1, sub_pos2_12;
 
 sub_pos2_23
 R, -1, -1, reg_sensor
@@ -814,7 +814,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_3
 H, -1, -1, arg_10
 Y, -1, -1, 120
-A, -1, -1, sub_pos3_2
+A, -1, -1, sub_pos3_2;
 
 sub_pos2_13
 R, -1, -1, reg_sensor
@@ -830,7 +830,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_3
 H, -1, -1, arg_10
 Y, -1, -1, 120
-A, -1, -1, sub_pos3_1
+A, -1, -1, sub_pos3_1;
 
 sub_pos2_12
 R, -1, -1, reg_sensor
@@ -846,7 +846,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_2
 H, -1, -1, arg_100
 Y, -1, -1, 120
-A, -1, -1, sub_pos3_1
+A, -1, -1, sub_pos3_1;
 
 sub_pos3_1
 R, -1, -1, reg_sensor
@@ -856,7 +856,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_1
 S, -1, -1, sub_reel0
 H, -1, -1, arg_1k
-Y, -1, -1, 120
+Y, -1, -1, 120;
 
 sub_pos3_2
 R, -1, -1, reg_sensor
@@ -866,7 +866,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_2
 S, -1, -1, sub_reel0
 H, -1, -1, arg_100
-Y, -1, -1, 120
+Y, -1, -1, 120;
 
 sub_pos3_3
 R, -1, -1, reg_sensor
@@ -876,41 +876,41 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_3
 S, -1, -1, sub_reel0
 H, -1, -1, arg_10
-Y, -1, -1, 120
+Y, -1, -1, 120;
 
 sub_reel0
 R, -1, -1, reg_sensor
 =,  1,  0, -1
 H, -1, -1, arg_10k
 Y, -1, -1, 120
-A, -1, -1, sub_reel0
+A, -1, -1, sub_reel0;
 
 pt10
-0, -1,  0, -1
+Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
 T, -1, -1, out_digit3
-S, -1, -1, sub_pulse_10
+S, -1, -1, sub_pulse_10;
 
 pt100
-0, -1,  0, -1
+Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
 T, -1, -1, out_digit2
-S, -1, -1, sub_pulse_100
+S, -1, -1, sub_pulse_100;
 
 pt1000
-0, -1,  0, -1
+Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1,  1
 H, -1, -1, arg_dirty
 T, -1, -1, out_digit1
-S, -1, -1, sub_pulse_1k
+S, -1, -1, sub_pulse_1k;
 
 pt500
-0, -1,  0, -1
+Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
@@ -923,10 +923,10 @@ S, -1, -1, sub_pulse_100
 T, -1, -1, out_digit2
 S, -1, -1, sub_pulse_100
 T, -1, -1, out_digit2
-S, -1, -1, sub_pulse_100
+S, -1, -1, sub_pulse_100;
 
 pt5000
-0, -1,  0, -1
+Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
@@ -939,7 +939,7 @@ S, -1, -1, sub_pulse_1k
 T, -1, -1, out_digit1
 S, -1, -1, sub_pulse_1k
 T, -1, -1, out_digit1
-S, -1, -1, sub_pulse_1k
+S, -1, -1, sub_pulse_1k;
 
 sub_pulse_10
 R, -1, -1, reg_10
@@ -949,7 +949,7 @@ I, -1, -1, 1
 Y, -1, -1, 120
 J, -1, -1, -1
 Z, -1, -1, 0
-S, -1, -1, sub_pulse_100
+S, -1, -1, sub_pulse_100;
 
 sub_pulse_100
 R, -1, -1, reg_100
@@ -959,7 +959,7 @@ I, -1, -1, 1
 Y, -1, -1, 120
 J, -1, -1, -1
 Z, -1, -1, 0
-S, -1, -1, sub_pulse_1k
+S, -1, -1, sub_pulse_1k;
 
 sub_pulse_1k
 R, -1, -1, reg_1k
@@ -969,13 +969,13 @@ I, -1, -1, 1
 Y, -1, -1, 120
 J, -1, -1, -1
 Z, -1, -1, 0
-S, -1, -1, sub_pulse_10k
+S, -1, -1, sub_pulse_10k;
 
 sub_pulse_10k
 R, -1, -1, reg_10k
 H, -1, -1, arg_10k
 I, -1, -1, 1
-Y, -1, -1, 120
+Y, -1, -1, 120;
 
 )"""";
 

@@ -61,7 +61,7 @@ int16_t Library::compile( const char label[], const char src[] ) {
   int16_t data_size = loadIntList( lib[lib_cnt].symbols, src, NULL, countSymbols( lib_cnt, SYM_INPUT ), 0 );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );
   memset( pdata, 0, data_size * 2 );
-  loadIntList( lib[lib_cnt].symbols, src, pdata, countSymbols( lib_cnt, SYM_INPUT ) );
+  loadIntList( lib[lib_cnt].symbols, src, pdata, countSymbols( lib_cnt, SYM_INPUT ), 0, true );
   lib[lib_cnt].code = pdata;
   return lib_cnt++;
 }

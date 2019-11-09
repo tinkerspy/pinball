@@ -287,7 +287,7 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }            
             break;
-          case '0':  // Prim (perhaps use 'Y', -1, -1, -1 for this: negative yield terminates thread on secondary core)
+          case '0':  // Prim DEPRECATED: use 'Y', -2, -1, -1 for this (drop as soon as binaries are refreshed)
             selected_action = ( active_core == 0 ? action_t : action_f );
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
@@ -365,6 +365,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
             if ( core[active_core].yield_enabled ) {
+              if ( selector == -2 ) break;
               if ( selected_action >= 0 ) { // negative time values have no yield effect but do trip the core check
                 timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
                 sleep( 0 );

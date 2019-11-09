@@ -6,8 +6,8 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
-// FIXME De 'force primary' bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! 
-// De bytecode tables gaan er vanuit dat ongedefinieerde handles op '0' staan, de list tables zetten daarin een link naar de eerste -1... Oplossen, verangen door Y???
+// FIXME De 'force primary' bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! Oplossen, verangen door Y???
+// De bytecode tables gaan er vanuit dat ongedefinieerde handles op '0' staan, de list tables zetten daarin een link naar de eerste -1... 
 
 // Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
 
@@ -149,17 +149,19 @@ void setup() {
 
   lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
   lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
-  lib.import( "std_game", game_symbin, game_hexbin );
-  lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
+  //lib.import( "std_game", game_symbin, game_hexbin );
+  //lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
   lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
-  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
+  //lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
   lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
-  //lib.compile( "std_game", game_bytecode );
+  lib.compile( "std_game", game_bytecode );
+  lib.compile( "std_switchbank", switchbank_bytecode );
+  lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 

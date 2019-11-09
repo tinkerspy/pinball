@@ -23,47 +23,47 @@ reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
 reg_ball, reg_ball_cntr
 
 press
-R, -1, -1, reg_ball_cntr,
->,  0, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  6,  0, 2,
-R, -1, -1, reg_max_players,
-=,  6, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  5,  0, 2,
-R, -1, -1, reg_max_players,
-=,  5, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  4,  0, 2,
-R, -1, -1, reg_max_players,
-=,  4, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  3,  0, 2,
-R, -1, -1, reg_max_players,
-=,  3, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  2,  0, 2,
-R, -1, -1, reg_max_players,
-=,  2, -1, 0,
-R, -1, -1, reg_no_of_players,
-=,  1,  0, 2,
-R, -1, -1, reg_max_players,
-=,  1, -1, 0,
-R, -1, -1, reg_no_of_players,
-T, -1, -1, out_players_adv,
+R, -1, -1, reg_ball_cntr
+>,  0, -1, 0
+R, -1, -1, reg_no_of_players
+=,  6,  0, 2
+R, -1, -1, reg_max_players
+=,  6, -1, 0
+R, -1, -1, reg_no_of_players
+=,  5,  0, 2
+R, -1, -1, reg_max_players
+=,  5, -1, 0
+R, -1, -1, reg_no_of_players
+=,  4,  0, 2
+R, -1, -1, reg_max_players
+=,  4, -1, 0
+R, -1, -1, reg_no_of_players
+=,  3,  0, 2
+R, -1, -1, reg_max_players
+=,  3, -1, 0
+R, -1, -1, reg_no_of_players
+=,  2,  0, 2
+R, -1, -1, reg_max_players
+=,  2, -1, 0
+R, -1, -1, reg_no_of_players
+=,  1,  0, 2
+R, -1, -1, reg_max_players
+=,  1, -1, 0
+R, -1, -1, reg_no_of_players
+T, -1, -1, out_players_adv
 I, -1, -1, 1;
 
 init
-0, -1,  0, -1,
-P, -1, -1, 1,
-T, -1, -1, out_init,
-Y, -1, -1, 100,
-R, -1, -1, 0,
-D, -1, -1, reg_no_of_balls,
-R, -1, -1, 1,
-D, -1, -1, reg_max_players,
-R, -1, -1, 0,
-Z, -1, -1, 0,
+Y, -2, -1,-1
+P, -1, -1, 1
+T, -1, -1, out_init
+Y, -1, -1, 100
+R, -1, -1, 0
+D, -1, -1, reg_no_of_balls
+R, -1, -1, 1
+D, -1, -1, reg_max_players
+R, -1, -1, 0
+Z, -1, -1, 0
 A, -1, -1, sub_loop;
 
 sub_loop
@@ -298,7 +298,7 @@ arg_9a, arg_9b, arg_9c, arg_x, arg_o, arg_triple, arg_collect
 init
 P, -1, -1, 1
 L, -1, -1, arg_collect
-S, -1, -1, sub_clear
+S, -1, -1, sub_clear;
 
 oxo_1o
 J, arg_1a, -1, 0
@@ -308,7 +308,7 @@ H, -1, -1, arg_1c
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_147
 S, -1, -1, sub_match_159
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_1x
 J, arg_1a, -1, 0
@@ -317,7 +317,7 @@ H, -1, -1, arg_1b
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_147
 S, -1, -1, sub_match_159
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_2o
 J, arg_2a, -1, 0
@@ -326,7 +326,7 @@ H, -1, -1, arg_2a
 H, -1, -1, arg_2c
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_258
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_2x
 J, arg_2a, -1, 0
@@ -334,7 +334,7 @@ J, arg_2b, -1, 0
 H, -1, -1, arg_2b
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_258
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_3o
 J, arg_3a, -1, 0
@@ -344,7 +344,7 @@ H, -1, -1, arg_3c
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_369
 S, -1, -1, sub_match_357
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_3x
 J, arg_3a, -1, 0
@@ -353,7 +353,7 @@ H, -1, -1, arg_3b
 S, -1, -1, sub_match_123
 S, -1, -1, sub_match_369
 S, -1, -1, sub_match_357
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_4
 J, arg_4a, -1, 0
@@ -362,7 +362,7 @@ H, arg_x, arg_4b, arg_4a
 H, arg_x, arg_4b, arg_4c
 S, -1, -1, sub_match_147
 S, -1, -1, sub_match_456
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_5
 J, arg_5a, -1, 0
@@ -373,7 +373,7 @@ S, -1, -1, sub_match_159
 S, -1, -1, sub_match_258
 S, -1, -1, sub_match_357
 S, -1, -1, sub_match_456
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_6
 J, arg_6a, -1, 0
@@ -382,7 +382,7 @@ H, arg_x, arg_6b, arg_6a
 H, arg_x, arg_6b, arg_6c
 S, -1, -1, sub_match_369
 S, -1, -1, sub_match_456
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_7
 J, arg_7a, -1, 0
@@ -392,7 +392,7 @@ H, arg_x, arg_7b, arg_7c
 S, -1, -1, sub_match_789
 S, -1, -1, sub_match_147
 S, -1, -1, sub_match_357
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_8
 J, arg_8a, -1, 0
@@ -401,7 +401,7 @@ H, arg_x, arg_8b, arg_8a
 H, arg_x, arg_8b, arg_8c
 S, -1, -1, sub_match_258
 S, -1, -1, sub_match_789
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 oxo_9
 J, arg_9a, -1, 0
@@ -411,7 +411,7 @@ H, arg_x, arg_9b, arg_9c
 S, -1, -1, sub_match_159
 S, -1, -1, sub_match_369
 S, -1, -1, sub_match_789
-S, -1, -1, sub_match_all
+S, -1, -1, sub_match_all;
 
 toggle
 J, arg_x, 0, 3
@@ -419,13 +419,13 @@ L, -1, -1, arg_x
 H, -1, -1, arg_o
 J, -1, -1, -1
 L, -1, -1, arg_o
-H, -1, -1, arg_x
+H, -1, -1, arg_x;
 
 single
-L, -1, -1, arg_triple
+L, -1, -1, arg_triple;
 
 triple
-H, -1, -1, arg_triple
+H, -1, -1, arg_triple;
 
 collect
 H, -1, -1, arg_collect
@@ -436,7 +436,7 @@ S, -1, -1, sub_collect
 Y, -1, -1, 1000
 S, -1, -1, sub_collect
 Z, -1, -1, 0
-L, -1, -1, arg_collect
+L, -1, -1, arg_collect;
 
 sub_match_123
 J, arg_1a, 0,  2
@@ -445,7 +445,7 @@ J, arg_3a, 3, -1
 J, arg_1b, 0, -1
 J, arg_2b, 0, -1
 J, arg_3b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_456
 J, arg_4a, 0,  2
@@ -454,7 +454,7 @@ J, arg_6a, 3, -1
 J, arg_4b, 0, -1
 J, arg_5b, 0, -1
 J, arg_6b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_789
 J, arg_7a, 0,  2
@@ -463,7 +463,7 @@ J, arg_9a, 3, -1
 J, arg_7b, 0, -1
 J, arg_8b, 0, -1
 J, arg_9b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_147
 J, arg_1a, 0,  2
@@ -472,7 +472,7 @@ J, arg_7a, 3, -1
 J, arg_1b, 0, -1
 J, arg_4b, 0, -1
 J, arg_7b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_258
 J, arg_2a, 0,  2
@@ -481,7 +481,7 @@ J, arg_8a, 3, -1
 J, arg_2b, 0, -1
 J, arg_5b, 0, -1
 J, arg_8b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_369
 J, arg_3a, 0,  2
@@ -490,7 +490,7 @@ J, arg_9a, 3, -1
 J, arg_3b, 0, -1
 J, arg_6b, 0, -1
 J, arg_9b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_159
 J, arg_1a, 0,  2
@@ -499,7 +499,7 @@ J, arg_9a, 3, -1
 J, arg_1b, 0, -1
 J, arg_5b, 0, -1
 J, arg_9b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_357
 J, arg_3a, 0,  2
@@ -508,7 +508,7 @@ J, arg_7a, 3, -1
 J, arg_3b, 0, -1
 J, arg_5b, 0, -1
 J, arg_7b, 0, -1
-T, -1, -1, out_win_row
+T, -1, -1, out_win_row;
 
 sub_match_all
 T, -1, -1, out_score
@@ -531,7 +531,7 @@ I, arg_6b, 1, 0
 I, arg_7b, 1, 0
 I, arg_8b, 1, 0
 I, arg_9b, 1, 0
-T, 9, out_win_all, -1
+T, 9, out_win_all, -1;
 
 sub_clear
 L, -1, -1, arg_1a
@@ -563,7 +563,7 @@ L, -1, -1, arg_9b
 L, -1, -1, arg_9c
 L, -1, -1, arg_x
 H, -1, -1, arg_o
-L, -1, -1, arg_triple
+L, -1, -1, arg_triple;
 
 sub_collect
 J, arg_1a, 0, 4
@@ -673,7 +673,7 @@ H, -1, -1, arg_9a
 H, -1, -1, arg_9c
 Y, -1, -1, 500
 L, -1, -1, arg_9a
-L, -1, -1, arg_9c
+L, -1, -1, arg_9c;
 
 )"""";
 

@@ -28,14 +28,6 @@ namespace standard_firmware {
  *   8 leds (or coils) that can be turned on/off (or pulsed) 
  */
 
-enum {   IN_LBANK_INIT, IN_LBANK_ON0, IN_LBANK_OFF0, IN_LBANK_ON1, IN_LBANK_OFF1, IN_LBANK_ON2, IN_LBANK_OFF2, 
-          IN_LBANK_ON3, IN_LBANK_OFF3, IN_LBANK_ON4, IN_LBANK_OFF4, IN_LBANK_ON5, IN_LBANK_OFF5, IN_LBANK_ON6, 
-          IN_LBANK_OFF6, IN_LBANK_ON7, IN_LBANK_OFF7, IN_LBANK_ON, IN_LBANK_OFF  };
-enum { ARG_LBANK_LED0, ARG_LBANK_LED1, ARG_LBANK_LED2, ARG_LBANK_LED3, ARG_LBANK_LED4, ARG_LBANK_LED5, ARG_LBANK_LED6, ARG_LBANK_LED7 };
-enum { OUT_LBANK_ON0, OUT_LBANK_ON1, OUT_LBANK_ON2, OUT_LBANK_ON3, OUT_LBANK_ON4, OUT_LBANK_ON5, OUT_LBANK_ON6, OUT_LBANK_ON7, 
-        OUT_LBANK_OFF0, OUT_LBANK_OFF1, OUT_LBANK_OFF2, OUT_LBANK_OFF3, OUT_LBANK_OFF4, OUT_LBANK_OFF5, OUT_LBANK_OFF6, OUT_LBANK_OFF7 }; 
-enum { REG_LBANK_STATE, REG_LBANK_DEFAULT };
-
 const char ledbank_bytecode[] = R""""(
 init, on0, off0, on1, off1, on2, off2,\
 on3, off3, on4, off4, on5, off5, on6,\
@@ -195,10 +187,6 @@ const uint16_t ledbank_hexbin[] = {
  *   could work for slingshots as well
  */
 
-enum { IN_KICKER_INIT, IN_KICKER_PRESS_L, IN_KICKER_RELEASE_L, IN_KICKER_PRESS_R, IN_KICKER_RELEASE_R, IN_KICKER_ON, IN_KICKER_OFF, IN_KICKER_PERSIST };
-enum { OUT_KICKER_SCORE_LIT, OUT_KICKER_SCORE_UNLIT, OUT_KICKER_SCORE, OUT_KICKER_PRESS_LIT, OUT_KICKER_PRESS_UNLIT, OUT_KICKER_PRESS };
-enum { ARG_KICKER_COIL_L, ARG_KICKER_COIL_R, ARG_KICKER_LED_L, ARG_KICKER_LED_R };
-
 const char dual_kicker_bytecode[] = R""""(
 init, press_l, release_l, press_r, release_r, on, off, persist
 out_score_lit, out_score_unlit, out_score, out_press_lit, out_press_unlit, out_press  
@@ -272,12 +260,6 @@ const uint16_t kicker_hexbin[] = {
  * Description: 
  *   Basic 8-way switchbank device without leds
  */
-
-enum { IN_SBANK_INIT, IN_SBANK_PRESS0, IN_SBANK_RELEASE0, IN_SBANK_PRESS1, IN_SBANK_RELEASE1, IN_SBANK_PRESS2, IN_SBANK_RELEASE2, // Inputs
-        IN_SBANK_PRESS3, IN_SBANK_RELEASE3, IN_SBANK_PRESS4, IN_SBANK_RELEASE4, IN_SBANK_PRESS5, IN_SBANK_RELEASE5, 
-        IN_SBANK_PRESS6, IN_SBANK_RELEASE6, IN_SBANK_PRESS7, IN_SBANK_RELEASE7 };
-enum { OUT_SBANK_SCORE, OUT_SBANK_PRESS0, OUT_SBANK_PRESS1, OUT_SBANK_PRESS2, OUT_SBANK_PRESS3, OUT_SBANK_PRESS4, OUT_SBANK_PRESS5, OUT_SBANK_PRESS6, OUT_SBANK_PRESS7, 
-        OUT_SBANK_SCORE0, OUT_SBANK_SCORE1, OUT_SBANK_SCORE2, OUT_SBANK_SCORE3, OUT_SBANK_SCORE4, OUT_SBANK_SCORE5, OUT_SBANK_SCORE6, OUT_SBANK_SCORE7 }; // Outputs
 
 const char switchbank_bytecode[] = R""""(
 init, press0, release0, press1, release1, press2, release2,\
@@ -360,10 +342,6 @@ const uint16_t switchbank_hexbin[] = {
  *   Dual lane device with leds (both lanes share the same function)
  */
 
-enum { IN_COMBO_INIT, IN_COMBO_PRESS0, IN_COMBO_RELEASE0, IN_COMBO_PRESS1, IN_COMBO_RELEASE1, IN_COMBO_ON, IN_COMBO_OFF };
-enum { OUT_COMBO_SCORE, OUT_COMBO_SCORE_LIT, OUT_COMBO_SCORE_UNLIT, OUT_COMBO_PRESS_LIT, OUT_COMBO_PRESS_UNLIT, OUT_COMBO_PRESS0_LIT, OUT_COMBO_PRESS0_UNLIT, OUT_COMBO_PRESS1_LIT, OUT_COMBO_PRESS1_UNLIT };
-enum { ARG_COMBO_LED0, ARG_COMBO_LED1 };
-
 const char dual_combo_bytecode[] = R""""(
 init, press0, release0, press1, release1, on, off
 out_score, out_score_lit, out_score_unlit, out_press_lit, out_press_unlit, out_press0_lit, out_press0_unlit, out_press1_lit, out_press1_unlit
@@ -433,10 +411,6 @@ const uint16_t dual_combo_hexbin[] = {
  *   Single bumper device with led & coil
  */
 
-enum { IN_BUMPER_INIT, IN_BUMPER_PRESS, IN_BUMPER_RELEASE, IN_BUMPER_LIGHT_ON, IN_BUMPER_LIGHT_OFF }; // Inputs
-enum { OUT_BUMPER_SCORE, OUT_BUMPER_SCORE_LIT, OUT_BUMPER_SCORE_UNLIT, OUT_BUMPER_LIGHT_ON, OUT_BUMPER_LIGHT_OFF }; // Outputs
-enum { ARG_BUMPER_COIL, ARG_BUMPER_LED }; // Arguments (leds)
-
 const char bumper_bytecode[] = R""""(
 init, press, release, turn_on, turn_off
 out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
@@ -489,10 +463,6 @@ const char bumper_symbin[] = {
  * Description: 
  *   Dual target device
  */
-
-enum { IN_TARGET_INIT, IN_TARGET_PRESS0, IN_TARGET_RELEASE0, IN_TARGET_PRESS1, IN_TARGET_RELEASE1, IN_TARGET_CLEAR };
-enum { OUT_TARGET_LED0_ON, OUT_TARGET_LED1_ON, OUT_TARGET_LED0_OFF, OUT_TARGET_LED1_OFF, OUT_TARGET_ALL_ON, OUT_TARGET_ALL_OFF, OUT_TARGET_SCORE };
-enum { ARG_TARGET_LED0, ARG_TARGET_LED1 };
 
 const char dual_target_bytecode[] = R""""(
 init, press0, release0, press1, release1, clear
@@ -554,9 +524,6 @@ const char dual_target_symbin[] = {
  *   Dual flipper device)
  */
 
-enum { IN_FLIPPER_INIT, IN_FLIPPER_PRESS_L, IN_FLIPPER_RELEASE_L, IN_FLIPPER_PRESS_R, IN_FLIPPER_RELEASE_R };
-enum { ARG_FLIPPER_COIL_L, ARG_FLIPPER_COIL_R }; 
-
 const char dual_flipper_bytecode[] = R""""(
 init, press_l, release_l, press_r, release_r
 
@@ -604,10 +571,6 @@ const uint16_t dual_flipper_hexbin[] = {
  *   Advances until ARG_BACKTOP led is lit
  *   or until IN_SCALAR_FREEZE is called
  */
-
-enum { IN_SCALAR_INIT, IN_SCALAR_ZERO, IN_SCALAR_ADVANCE, IN_SCALAR_FREEZE, IN_SCALAR_SEL0, IN_SCALAR_SEL1, IN_SCALAR_SEL2, IN_SCALAR_SEL3, IN_SCALAR_SEL4, SUB_SCALAR_CLEAR };
-enum { ARG_LED0, ARG_LED1, ARG_LED2, ARG_LED3, ARG_LED4, ARG_BACKSTOP }; 
-enum { REG_SCALAR_STATE, REG_SCALAR_BLOCK, REG_SCALAR };
 
 const char scalar_bytecode[] = R""""(
 init, zero, advance, freeze, sel0, sel1, sel2, sel3, sel4, sub_clear
@@ -722,16 +685,6 @@ const uint16_t scalar_hexbin[] = {
  * Description: 
  *   4 digit electromechanical counter device with 1 sensor wire
  */
-
-enum { IN_CTR_INIT, IN_CTR_PRESS, IN_CTR_RELEASE, IN_CTR_RESET,
-  IN_CTR_PT10, IN_CTR_PT100, IN_CTR_PT1000, IN_CTR_PT500, IN_CTR_PT5000,
-  SUB_CTR_PULSE_10, SUB_CTR_PULSE_100, SUB_CTR_PULSE_1K, SUB_CTR_PULSE_10K,
-  SUB_CTR_MOVE_START, SUB_CTR_SOLVE_POS1, SUB_CTR_SOLVE_POS2_12, SUB_CTR_SOLVE_POS2_13, SUB_CTR_SOLVE_POS2_23, 
-  SUB_CTR_SOLVE_POS3_1, SUB_CTR_SOLVE_POS3_2, SUB_CTR_SOLVE_POS3_3, SUB_CTR_SOLVE_REEL0,
-};
-enum { ARG_CTR_10K, ARG_CTR_1K, ARG_CTR_100, ARG_CTR_10, ARG_CTR_UP, ARG_CTR_DIRTY }; 
-enum { OUT_CTR_DIGIT1, OUT_CTR_DIGIT2, OUT_CTR_DIGIT3 };
-enum { REG_CTR_STATE, REG_CTR_SENSOR, REG_CTR_10K, REG_CTR_1K, REG_CTR_100, REG_CTR_10, REG_CTR_WAIT };
 
 const char counter_em4d1w_bytecode[] = R""""(
 init, press, release, reset, pt10, pt100, pt1000, pt500, pt5000, \

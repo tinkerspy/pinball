@@ -303,6 +303,8 @@ Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[],
 }
 
 Atm_device& Atm_switch_matrix::link( const char src_str[], const char out_str[], Symbolic_Machine& dest, const char in_str[] ) {
+  //Serial.printf( "playfield link: output %d to input %d (%s)\n", 
+  //  device( src_str ).findSymbol( out_str ), dest.findSymbol( in_str ), in_str );
   return device( src_str ).onEvent( device( src_str ).findSymbol( out_str ), dest, dest.findSymbol( in_str ) );
 }
 
@@ -315,6 +317,7 @@ bool Atm_switch_matrix::ready() {
  */
 
 Atm_switch_matrix& Atm_switch_matrix::trigger( int event ) {
+  //Serial.printf( "Playfield trigger %d\n", event );
   Symbolic_Machine::trigger( event );
   return *this;
 }

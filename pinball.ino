@@ -152,7 +152,7 @@ void setup() {
   //lib.import( "std_game", game_symbin, game_hexbin );
   //lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
   lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
-  //lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
+  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
   lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
@@ -160,7 +160,7 @@ void setup() {
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
   lib.compile( "std_game", game_bytecode );
-  lib.compile( "std_switchbank", switchbank_bytecode );
+  //lib.compile( "std_switchbank", switchbank_bytecode );
   lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
@@ -273,7 +273,7 @@ void setup() {
   playfield.link( "game", "out_players_adv", "players", "advance" );
   playfield.link( "game", "out_over", "game_over", "on" );
 
-  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST );
+//  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME
   
   Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f Bytes free\n\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024, (float)( FreeRam() ) );

@@ -58,7 +58,7 @@ init
 Y, -2, -1,-1                    // Primary core only
 P, -1, -1, 1                    // Persistent
 T, -1, -1, out_init             
-Y, -1, -1, 100                
+Y, -1, -1, 101                
 R, -1, -1, 0
 D, -1, -1, reg_no_of_balls
 R, -1, -1, 1
@@ -75,7 +75,7 @@ R, -1, -1, reg_no_of_players
 Z, -1, -1, 0
 E, press_start, 0, 0                  // Clear press event
 S, -1, -1, sub_wait_players     // Wait for a front button press to start game
-Y, -1, -1, 100
+Y, -1, -1, 102
 T, -1, -1, out_init
 T, -1, -1, out_players_zero
 T, -1, -1, out_ball_zero
@@ -91,9 +91,9 @@ sub_ball_loop
 R, -1, -1, reg_no_of_players
 D, -1, -1, reg_player
 T, -1, -1, out_player_zero
-Y, -1, -1, 10
+Y, -1, -1, 11
 S, -1, -1, sub_player_loop
-Y, -1, -1, 10
+Y, -1, -1, 12
 R, -1, -1, reg_ball
 I, -1, -1, -1
 =,  0, -1, 0
@@ -114,18 +114,18 @@ Y, -1, -1, 500
 R, -1, -1, reg_ball
 T,  1,  out_3bonus, -1
 T, -1, -1, out_init
-Y, -1, -1, 100
+Y, -1, -1, 103
 T, -1, -1, out_kickoff
 Y, -1, -1, 1000
 T, -1, -1, out_enable
 Y, -1, -1, 100
 E, press_exit, 0, 0                // Clear press event
 S, -1, -1, sub_wait_playing
-Y, -1, -1, 100
+Y, -1, -1, 104
 T, -1, -1, out_collect
-Y, -1, -1, 100
+Y, -1, -1, 105
 S, -1, -1, sub_wait_collecting
-Y, -1, -1, 100
+Y, -1, -1, 106
 R, -1, -1, reg_ball_cntr
 I, -1, -1, 1
 =,  1,  0, -1
@@ -134,14 +134,14 @@ D, -1, -1, reg_player;
 
 sub_wait_players
 R, -1, -1, reg_no_of_players
-Y, -1, -1, 10
+Y, -1, -1, 13
 E, press_start, 0, 2                      // On event set no of players to 1
 Z, -1, -1, 1
 J, -1, -1, -1                       // and exit sub
 A, -1, -1, sub_wait_players;        // else keep looping
 
 sub_wait_reset
-Y, -1, -1, 102
+Y, -1, -1, 107
 E, press_start, 0, 1                      // On event increment no of players
 S, -1, -1, sub_press_start
 J, arg_counter0, -4, 0
@@ -153,13 +153,13 @@ J, arg_counter5, -9, 0;
 
 sub_wait_playing                    // Central game loop: process ball_exit & frontbtn press
 R, -1, -1, reg_no_of_players
-Y, -1, -1, 101
+Y, -1, -1, 108
 E, press_start, 0, 1                      // On event set no of players to 1
 S, -1, -1, sub_press_start
-J, arg_enabled, -2, -1;
+J, arg_enabled, -4, -1;
 
 sub_wait_collecting
-Y, -1, -1, 103
+Y, -1, -1, 109
 J, arg_collecting, -2, -1;
 )"""";
 
@@ -214,17 +214,6 @@ const uint16_t game_hexbin[] = {
 };
 
 
-enum { IN_GAME_INIT, IN_GAME_PRESS, IN_GAME_RELEASE, SUB_GAME_WAIT_PLAYERS, SUB_GAME_WAIT_RESET, SUB_GAME_LOOP,
-         SUB_GAME_BALL_LOOP, SUB_GAME_PLAYER_LOOP, SUB_GAME_CORE, SUB_GAME_WAIT_PLAYING, SUB_GAME_WAIT_COLLECTING }; 
-enum { OUT_GAME_INIT, OUT_GAME_ENABLE, OUT_GAME_COUNTER_RESET, OUT_GAME_PLAYERS_ZERO, OUT_GAME_BALL_ZERO, OUT_GAME_PLAYER_ZERO, 
-        OUT_GAME_BALL_ADV, OUT_GAME_PLAYER_ADV, OUT_GAME_3BONUS, OUT_GAME_COLLECT, OUT_GAME_KICKOFF, 
-        OUT_GAME_OVER, OUT_GAME_PLAYERS_ADV }; 
-enum { ARG_GAME_ENABLED, ARG_GAME_COLLECTING, ARG_GAME_AGAIN, ARG_GAME_COUNTER0, ARG_GAME_COUNTER1, 
-        ARG_GAME_COUNTER2, ARG_GAME_COUNTER3, ARG_GAME_COUNTER4, ARG_GAME_COUNTER5 };
-enum { REG_GAME_STATE, REG_GAME_MAX_PLAYERS, REG_GAME_NO_OF_PLAYERS, REG_GAME_PLAYER, REG_GAME_NO_OF_BALLS, 
-         REG_GAME_BALL, REG_GAME_BALL_CNTR };
-
-
 enum { IN_ANI_INIT, IN_ANI_CYCLE };
 enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 
 
@@ -267,34 +256,6 @@ int16_t animation_firmware[] = {
 
 
 // Williams OXO tic-tac-toe game
-
-enum { // Inputs & Subs
-  IN_OXO_INIT,
-  IN_OXO_1O, IN_OXO_1X, IN_OXO_2O, IN_OXO_2X, IN_OXO_3O, IN_OXO_3X,             
-  IN_OXO_4, IN_OXO_5, IN_OXO_6, IN_OXO_7, IN_OXO_8, IN_OXO_9, 
-  IN_OXO_TOGGLE, IN_OXO_COLLECT, IN_OXO_SINGLE, IN_OXO_TRIPLE,
-  SUB_OXO_COLLECT, 
-  SUB_OXO_MATCH_123, SUB_OXO_MATCH_456, SUB_OXO_MATCH_789,
-  SUB_OXO_MATCH_147, SUB_OXO_MATCH_258, SUB_OXO_MATCH_369,
-  SUB_OXO_MATCH_159, SUB_OXO_MATCH_357, 
-  SUB_OXO_MATCH_ALL,
-  SUB_OXO_CLEAR,
-};
-
-enum { OUT_OXO_SCORE, OUT_OXO_WIN_ROW, OUT_OXO_WIN_ALL, OUT_OXO_COLLECT }; // Outputs
-
-enum { // Arguments (leds)
-  ARG_OXO_1A, ARG_OXO_1B, ARG_OXO_1C, 
-  ARG_OXO_2A, ARG_OXO_2B, ARG_OXO_2C,
-  ARG_OXO_3A, ARG_OXO_3B, ARG_OXO_3C,
-  ARG_OXO_4A, ARG_OXO_4B, ARG_OXO_4C,
-  ARG_OXO_5A, ARG_OXO_5B, ARG_OXO_5C,
-  ARG_OXO_6A, ARG_OXO_6B, ARG_OXO_6C,
-  ARG_OXO_7A, ARG_OXO_7B, ARG_OXO_7C,
-  ARG_OXO_8A, ARG_OXO_8B, ARG_OXO_8C,
-  ARG_OXO_9A, ARG_OXO_9B, ARG_OXO_9C,
-  ARG_OXO_X, ARG_OXO_O, ARG_OXO_TRIPLE, ARG_OXO_COLLECT,
-};
 
 const char tictactoe_bytecode[] = R""""(
 init, oxo_1o, oxo_1x, oxo_2o, oxo_2x, oxo_3o, oxo_3x, oxo_4, oxo_5, oxo_6, oxo_7, oxo_8, oxo_9,\

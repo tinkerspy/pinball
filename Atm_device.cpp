@@ -210,6 +210,7 @@ void Atm_device::led_off( int16_t led_group, int16_t selector ) {
 
 void Atm_device::start_code( int16_t e ) {
   //Serial.printf( "%d %X Start code %d\n", millis(), (long)(this), e );
+  //Serial.printf( "%d > -1 && %d < %d && %d > 0\n", e, e, numberOfInputs, script[e] );
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
     uint8_t active_core = core[0].ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
     core[active_core].reg_ptr = 0;
@@ -363,6 +364,7 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;           
           case 'E': // Jump on event 
             selected_action = event_map & ( 1 << selector ) ? action_t : action_f; // Check event
+            //Serial.printf( "Event %d: state %d -> %d\n", selector, event_map & ( 1 << selector ), selected_action );   
             event_map &= ~( 1 << selector ); // Clear event
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          

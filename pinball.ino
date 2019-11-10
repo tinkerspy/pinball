@@ -189,7 +189,7 @@ void setup() {
   playfield.device( "playerup", "led_playerup_grp", lib.code( "std_scalar" ) );
   playfield.device( "ballup", "led_ballup_grp", lib.code( "std_scalar" ) );
   playfield.device( "gi", "coil_gi", lib.code( "std_ledbank" ), 1 ); // default on
-  playfield.device( "frontbtn", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
+  playfield.device( "game", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
   
   Serial.println( "chain devices" ); delay( 100 );
 
@@ -258,20 +258,20 @@ void setup() {
   playfield.link( "lower", "out_press5", playfield, "pf_ready" );
   playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
-  playfield.link( "frontbtn", "out_init", playfield, "pf_init" );
-  playfield.link( "frontbtn", "out_enable", playfield, "pf_enable" );
+  playfield.link( "game", "out_init", playfield, "pf_init" );
+  playfield.link( "game", "out_enable", playfield, "pf_enable" );
 
-  playfield.link( "frontbtn", "out_counter_reset", "counter", "reset" );
-  playfield.link( "frontbtn", "out_ball_zero", "ballup", "zero" );
-  playfield.link( "frontbtn", "out_player_zero", "playerup", "zero" );
-  playfield.link( "frontbtn", "out_ball_adv", "ballup", "advance" );
-  playfield.link( "frontbtn", "out_player_adv", "playerup", "advance" );
-  playfield.link( "frontbtn", "out_3bonus", "oxo", "triple" );
-  playfield.link( "frontbtn", "out_collect", "oxo", "collect" );
-  playfield.link( "frontbtn", "out_kickoff", "feeder", "on" );
-  playfield.link( "frontbtn", "out_players_zero", "players", "zero" );
-  playfield.link( "frontbtn", "out_players_adv", "players", "advance" );
-  playfield.link( "frontbtn", "out_over", "game_over", "on" );
+  playfield.link( "game", "out_counter_reset", "counter", "reset" );
+  playfield.link( "game", "out_ball_zero", "ballup", "zero" );
+  playfield.link( "game", "out_player_zero", "playerup", "zero" );
+  playfield.link( "game", "out_ball_adv", "ballup", "advance" );
+  playfield.link( "game", "out_player_adv", "playerup", "advance" );
+  playfield.link( "game", "out_3bonus", "oxo", "triple" );
+  playfield.link( "game", "out_collect", "oxo", "collect" );
+  playfield.link( "game", "out_kickoff", "feeder", "on" );
+  playfield.link( "game", "out_players_zero", "players", "zero" );
+  playfield.link( "game", "out_players_adv", "players", "advance" );
+  playfield.link( "game", "out_over", "game_over", "on" );
 
   playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST );
   

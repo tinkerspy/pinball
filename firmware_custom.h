@@ -12,8 +12,8 @@
 namespace custom_firmware {
 
 const char game_bytecode[] = R""""(
-init, press, release, sub_wait_players, sub_wait_reset, sub_loop, \
-sub_ball_loop, sub_player_loop, sub_core, sub_wait_playing, sub_wait_collecting
+init, press_start, release_start, press_exit, release_exit, sub_wait_players, sub_wait_reset, sub_loop, \
+sub_ball_loop, sub_player_loop, sub_core, sub_wait_playing, sub_wait_collecting, sub_press_start
 out_init, out_enable, out_counter_reset, out_players_zero, out_ball_zero,\
 out_player_zero, out_ball_adv, out_player_adv, out_3bonus, out_collect,\
 out_kickoff, out_over, out_players_adv
@@ -22,12 +22,13 @@ arg_counter2, arg_counter3, arg_counter4, arg_counter5
 reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
 reg_ball, reg_ball_cntr
 
-press
-R, -1, -1, reg_ball_cntr
+
+sub_press_start
+R, -1, -1, reg_ball_cntr       // Exit if we're already in play
 >,  0, -1, 0
-R, -1, -1, reg_no_of_players
+R, -1, -1, reg_no_of_players   // Exit 
 =,  6,  0, 2
-R, -1, -1, reg_max_players
+R, -1, -1, reg_max_players 
 =,  6, -1, 0
 R, -1, -1, reg_no_of_players
 =,  5,  0, 2
@@ -54,10 +55,10 @@ T, -1, -1, out_players_adv
 I, -1, -1, 1;
 
 init
-Y, -2, -1,-1
-P, -1, -1, 1
-T, -1, -1, out_init
-Y, -1, -1, 100
+Y, -2, -1,-1                    // Primary core only
+P, -1, -1, 1                    // Persistent
+T, -1, -1, out_init             
+Y, -1, -1, 100                
 R, -1, -1, 0
 D, -1, -1, reg_no_of_balls
 R, -1, -1, 1
@@ -72,7 +73,8 @@ R, -1, -1, reg_ball_cntr
 Z, -1, -1, 0
 R, -1, -1, reg_no_of_players
 Z, -1, -1, 0
-S, -1, -1, sub_wait_players
+E, press_start, 0, 0                  // Clear press event
+S, -1, -1, sub_wait_players     // Wait for a front button press to start game
 Y, -1, -1, 100
 T, -1, -1, out_init
 T, -1, -1, out_players_zero
@@ -117,6 +119,7 @@ T, -1, -1, out_kickoff
 Y, -1, -1, 1000
 T, -1, -1, out_enable
 Y, -1, -1, 100
+E, press_exit, 0, 0                // Clear press event
 S, -1, -1, sub_wait_playing
 Y, -1, -1, 100
 T, -1, -1, out_collect
@@ -132,23 +135,31 @@ D, -1, -1, reg_player;
 sub_wait_players
 R, -1, -1, reg_no_of_players
 Y, -1, -1, 10
-A,  0, sub_wait_players, -1;
+E, press_start, 0, 2                      // On event set no of players to 1
+Z, -1, -1, 1
+J, -1, -1, -1                       // and exit sub
+A, -1, -1, sub_wait_players;        // else keep looping
 
 sub_wait_reset
-Y, -1, -1, 100
-J, arg_counter0, -2, 0
-J, arg_counter1, -3, 0
-J, arg_counter2, -4, 0
-J, arg_counter3, -5, 0
-J, arg_counter4, -6, 0
-J, arg_counter5, -7, 0;
+Y, -1, -1, 102
+E, press_start, 0, 1                      // On event increment no of players
+S, -1, -1, sub_press_start
+J, arg_counter0, -4, 0
+J, arg_counter1, -5, 0
+J, arg_counter2, -6, 0
+J, arg_counter3, -7, 0
+J, arg_counter4, -8, 0
+J, arg_counter5, -9, 0;
 
-sub_wait_playing
-Y, -1, -1, 100
+sub_wait_playing                    // Central game loop: process ball_exit & frontbtn press
+R, -1, -1, reg_no_of_players
+Y, -1, -1, 101
+E, press_start, 0, 1                      // On event set no of players to 1
+S, -1, -1, sub_press_start
 J, arg_enabled, -2, -1;
 
 sub_wait_collecting
-Y, -1, -1, 100
+Y, -1, -1, 103
 J, arg_collecting, -2, -1;
 )"""";
 

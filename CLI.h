@@ -190,6 +190,8 @@ void cmd_callback( int idx, int v, int up ) {
             Machine* machine = dev->outputPtr( i );
             if ( machine == &playfield ) {
               cmd[idx].stream->printf( "Out[%02d] %20s  %s::%s\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
+            } else if ( machine == NULL ) {
+              cmd[idx].stream->printf( "Out[%02d] %20s\n", i, dev->findSymbol( i, 1 ) );                            
             } else {
               Atm_device* dest = ( Atm_device* ) machine;
               const char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );

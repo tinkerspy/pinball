@@ -1,5 +1,16 @@
 #include "Symbolic_Machine.hpp"
 
+void Symbolic_Machine::clearComments( char s[] ) {
+  char* p = s;
+  bool comment = 0;
+  while ( *p != '\0' ) {
+     if ( *p == '/' ) comment = 1;
+     if ( *p == '\n' ) comment = 0;
+     if ( comment ) *p = ' ';
+     p++; 
+  }
+}
+
 int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */, bool sparse_jumptable /* = false */ ) {
   char buf[1024];
   char *token;
@@ -15,6 +26,18 @@ int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, co
     if ( end_of_record == NULL ) break;
     strncpy( buf, src, end_of_record - src );
     buf[end_of_record - src] = '\0';
+/*
+    Serial.print( ">>" );
+    Serial.print( buf );
+    Serial.println( "<<" );
+    */
+    clearComments( buf );
+    /*
+    Serial.print( ">>" );
+    Serial.print( buf );
+    Serial.println( "<<" );
+    if ( sparse_jumptable ) delay( 100000000 ); // FIXME!!!
+    */
     src += end_of_record - src + 1;
     token = strtok( buf, separator );
     int16_t i = findSymbol( symbols, token, -1 ); 

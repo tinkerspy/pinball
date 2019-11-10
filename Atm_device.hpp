@@ -95,11 +95,11 @@ class Atm_device: public Symbolic_Machine {
   atm_timer_millis timer;
   bool enabled;
   core_state core[2];
-  uint32_t switches; 
   uint32_t xctr;
   Stream* tc_stream;
   uint8_t trace_code = 0;
   int16_t switch_group = 0;
   Atm_device* next;
+  uint64_t event_map;
 
 };

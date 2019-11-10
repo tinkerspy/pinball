@@ -38,7 +38,7 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_grou
   core[0].ptr = 0;
   core[1].ptr = 0;
   xctr = 0;
-  switches = 0;
+  event_map = 0;
   if ( device_script != NULL ) {
     set_led( led_group );
     set_script( device_script );
@@ -361,6 +361,17 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( trace_code ) 
               tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
+          case 'E': // Jump on event 
+            selected_action = event_map & ( 1 << selector ) ? action_t : action_f; // Check event
+            event_map &= ~( 1 << selector ); // Clear event
+            if ( selected_action  != -1 ) {
+              core[active_core].ptr += selected_action * 4;          
+            } else {
+              if ( trace_code ) 
+                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
+              core[active_core].ptr = 0;
+            }                      
+            break;           
           case 'Y': // Yield (negative selector value uses register!)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
@@ -417,15 +428,8 @@ Atm_device& Atm_device::trigger( int event ) {
   }
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( this->enabled ) {
-      if ( event > 0 and event < 65 ) {
-        int16_t sw = event - 1; // sw = 0..63
-        if ( ( sw & 1 ) == 0 ) { // Press if bit 0 is not set
-          switches |= ( 1 << ( sw >> 1 ) );  // Switch press -> set switch bit
-        } else {
-          switches &= ~( 1 << ( sw >> 1 ) ); // Switch release -> clear switch bit
-        }
-      }
-      start_code( event );
+      event_map |= ( 1 << event );  // set event bit
+      start_code( event ); // FIXME: Only if no code is currently running!
     }
   }
   return *this;
@@ -438,15 +442,8 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   }
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( sel & 1 ) {
-      if ( event > 0 and event < 65 ) {
-        int16_t sw = event - 1; // sw = 0..63
-        if ( ( sw & 1 ) == 0 ) { // Press if bit 0 is not set
-          switches |= ( 1 << ( sw >> 1 ) );  // Switch press -> set switch bit
-        } else {
-          switches &= ~( 1 << ( sw >> 1 ) ); // Switch release -> clear switch bit
-        }
-      }
-      start_code( event );
+      event_map |= ( 1 << event );  // set event bit
+      start_code( event ); // FIXME: Only if no code is currently running!
     }
   }
   return *this;

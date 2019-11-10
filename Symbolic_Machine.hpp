@@ -36,6 +36,7 @@ class Symbolic_Machine: public Machine {
   int16_t loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset = 0, bool sparse_jumptable = false );
 
  protected:
+  void clearComments( char s[] );
   symbolic_machine_table* symbols;
   const char null_str[2] = "";
   const char sep[3] = ", ";

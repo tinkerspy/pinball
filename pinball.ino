@@ -152,7 +152,7 @@ void setup() {
   //lib.import( "std_game", game_symbin, game_hexbin );
   //lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
   lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
-  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
+  //lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
   lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
@@ -160,7 +160,7 @@ void setup() {
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
 
   lib.compile( "std_game", game_bytecode );
-  //lib.compile( "std_switchbank", switchbank_bytecode );
+  lib.compile( "std_switchbank", switchbank_bytecode );
   lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
@@ -255,8 +255,7 @@ void setup() {
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
   playfield.link( "lower", "out_score3", "counter", "pt500" );
   playfield.link( "lower", "out_score4", "counter", "pt1000" );             // 4 outlane
-  playfield.link( "lower", "out_press5", playfield, "pf_ready" );
-  playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
+  playfield.link( "lower", "out_press5", "dual_target", "clear" );          // 5 ball_enter 
   
   playfield.link( "game", "out_init", playfield, "pf_init" );
   playfield.link( "game", "out_enable", playfield, "pf_enable" );
@@ -272,6 +271,7 @@ void setup() {
   playfield.link( "game", "out_players_zero", "players", "zero" );
   playfield.link( "game", "out_players_adv", "players", "advance" );
   playfield.link( "game", "out_over", "game_over", "on" );
+  playfield.link( "game", "out_disable", playfield, "pf_ready" );
 
 //  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME
   

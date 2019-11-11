@@ -37,6 +37,7 @@ out_off0, out_off1, out_off2, out_off3, out_off4, out_off5, out_off6, out_off7
 arg_led0, arg_led1, arg_led2, arg_led3, arg_led4, arg_led5, arg_led6, arg_led7
 reg_state, reg_default
 
+
 init
 P, -1, -1, 1
 X,  1,  0, 4
@@ -192,6 +193,7 @@ init, press_l, release_l, press_r, release_r, on, off, persist
 out_score_lit, out_score_unlit, out_score, out_press_lit, out_press_unlit, out_press  
 arg_coil_l, arg_coil_r, arg_led_l, arg_led_r
 
+
  
 init
 P, -1, -1, 0
@@ -267,6 +269,7 @@ press3, release3, press4, release4, press5, release5,\
 press6, release6, press7, release7
 out_score, out_press0, out_press1, out_press2, out_press3, out_press4, out_press5, out_press6, out_press7,\
 out_score0, out_score1, out_score2, out_score3, out_score4, out_score5, out_score6, out_score7
+
 
 
 init
@@ -348,6 +351,7 @@ out_score, out_score_lit, out_score_unlit, out_press_lit, out_press_unlit, out_p
 arg_led0, arg_led1
 
 
+
 init
 P, -1, -1, 0
 S, -1, -1, off;
@@ -417,6 +421,7 @@ out_score, out_score_lit, out_score_unlit, out_light_on, out_light_off
 arg_coil, arg_led
 
 
+
 init
 P, -1, -1, 0                   
 L, -1, -1, arg_coil     
@@ -468,6 +473,7 @@ const char dual_target_bytecode[] = R""""(
 init, press0, release0, press1, release1, clear
 out_led0_on, out_led1_on, out_led0_off, out_led1_off, out_all_on, out_all_off, out_score
 arg_led0, arg_led1
+
 
 
 init
@@ -577,6 +583,7 @@ init, zero, advance, freeze, sel0, sel1, sel2, sel3, sel4, sub_clear
 
 arg_led0, arg_led1, arg_led2, arg_led3, arg_led4, arg_backstop
 reg_state, reg_block, reg_scalar
+
 
 init
 P, -1, -1, 1
@@ -694,6 +701,7 @@ sub_pos3_1, sub_pos3_2, sub_pos3_3, sub_reel0
 out_digit1, out_digit2, out_digit3
 arg_10k, arg_1k, arg_100, arg_10, arg_up, arg_dirty 
 reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait
+
 
 init,
 P, -1, -1, 1

@@ -58,7 +58,7 @@ const char led_group_list[] = R""""(
   led_players_grp, led_play1, led_play2, led_play3, led_play4, led_play4, led_play4;
   led_playerup_grp, led_up1, led_up2, led_up3, led_up4, led_up4, led_up4;
   led_ballup_grp, led_ball1, led_ball2, led_ball3, led_ball4, led_ball5, led_ball5;
-  led_game_grp, led_extra, vled_collecting, led_again0, vled_counter0, vled_counter1, vled_counter2, vled_counter3;
+  led_game_grp, vled_collecting, led_again0, vled_counter0, vled_counter1, vled_counter2, vled_counter3;
   led_none_grp;
 )"""";
   

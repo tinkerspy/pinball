@@ -224,7 +224,44 @@ void Atm_device::start_code( int16_t e ) {
   }
 }
 
+void Atm_device::decompile( uint16_t ip, char* s ) {
+  int16_t opcode = script[ip];
+  int16_t selector = script[ip+1];
+  int16_t action_t = script[ip+2];
+  int16_t action_f = script[ip+3];
+  const char* me = playfield->findSymbol( switchGroup(), 1 );
+  int16_t entry = 0;
+  int16_t offset = 0;
+  for ( int16_t i = 0; i < countSymbols( 0 ); i++ ) {
+    if ( script[i] <= ip && script[i] > script[entry] ) {
+      entry = i;
+      offset = script[i];
+    }
+  }
+  ip -= offset;
+  
+  switch ( opcode ) {
+    case 'J':
+      sprintf( s, "%s::%s[%03d]: %c %s ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2 ), action_t, action_f );
+      break;
+    case 'E':
+      sprintf( s, "%s::%s[%03d]: %c %s ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 0 ), action_t, action_f );
+      break;
+    case 'R':
+      sprintf( s, "%s::%s[%03d]: %c %s ? %s : %s\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2 ), findSymbol( action_t, 3 ), findSymbol( action_f, 3 ) );
+      break;
+    default:
+      sprintf( s, "%s::%s[%03d]: %c %d ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        selector, action_t, action_f );
+      break;      
+  }
+}
+
 void Atm_device::run_code( uint8_t active_core ) {
+  char buf[80];
   if ( core[active_core].ptr > 0 ) {
     while ( true ) {
       int16_t opcode = script[core[active_core].ptr++];
@@ -233,8 +270,10 @@ void Atm_device::run_code( uint8_t active_core ) {
       int16_t action_f = script[core[active_core].ptr++];
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
-        if ( trace_code ) 
-          tc_stream->printf( "run_code %d:%03d: %c %d ? %d : %d\n", active_core, core[active_core].ptr - 4, ( opcode > -1 ? opcode : '#' ), selector, action_t, action_f );
+        if ( trace_code ) { 
+          decompile( core[active_core].ptr - 4, buf );
+          tc_stream->print( buf );
+        }
         switch ( opcode ) {
           case 'J': // JmpL
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
@@ -247,8 +286,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             }            
             break;
           case 'A': // JmpLA jump absolute on register equal
-            if ( trace_code ) 
-              tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
               core[active_core].ptr = script[selected_action];          
@@ -257,6 +294,15 @@ void Atm_device::run_code( uint8_t active_core ) {
                 tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
+            break;
+          case 'Q': // Quote (FIXME: only in response to tm command)
+            if ( selector == -1 ) {
+              Serial.printf( "%d MSG %s %s\n", millis(), 
+                playfield->findSymbol( switchGroup(), 1 ), findSymbol( action_f, 4 ) );
+            } else {
+              Serial.printf( "%d MSG %s %s: %d\n", millis(), 
+                playfield->findSymbol( switchGroup(), 1 ), findSymbol( action_f, 4 ), registers[selector] );              
+            }
             break;
           case '=': // JmpRE
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
@@ -359,8 +405,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'R': // Reg
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
-            if ( trace_code ) 
-              tc_stream->printf( "run_code %d:%03d: reg %d, %d, %d, %d, %d, %d\n", active_core, core[active_core].ptr - 4, registers[0], registers[1], registers[2], registers[3], registers[4], registers[5]  );
             break;           
           case 'E': // Jump on event 
             selected_action = event_map & ( 1 << selector ) ? action_t : action_f; // Check event
@@ -382,8 +426,6 @@ void Atm_device::run_code( uint8_t active_core ) {
               if ( selected_action >= 0 ) { // negative time values have no yield effect but do trip the core check
                 timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
                 sleep( 0 );
-                if ( trace_code ) 
-                  tc_stream->printf( "run_code %d:%03d: yield %d ms\n", active_core, core[active_core].ptr - 4, selected_action );
               }
             } else {
               if ( trace_code ) 

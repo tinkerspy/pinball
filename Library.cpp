@@ -34,7 +34,7 @@ int16_t Library::compile( const char label[], const char src[] ) {
     if ( strlen( buf ) == 0 ) src = newsrc + 1; 
   } while ( strlen( buf ) == 0 ); 
   
-  for ( int i = 0; i < 4; i++ ) {
+  for ( int i = 0; i < 5; i++ ) {
     uint16_t len = 0;
     token = strtok( buf, sep );
     while( token != NULL ) {

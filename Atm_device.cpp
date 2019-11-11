@@ -242,19 +242,27 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   
   switch ( opcode ) {
     case 'J':
-      sprintf( s, "%s::%s[%03d]: %c %s ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+      sprintf( s, "%d %s::%s[%03d]: %c %s ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2 ), action_t, action_f );
       break;
+    case 'T':
+      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2 ), findSymbol( action_t, 1 ), findSymbol( action_f, 1 ) );
+      break;
     case 'E':
-      sprintf( s, "%s::%s[%03d]: %c %s ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+      sprintf( s, "%d %s::%s[%03d]: %c %s ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 0 ), action_t, action_f );
       break;
     case 'R':
-      sprintf( s, "%s::%s[%03d]: %c %s ? %s : %s\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2 ), findSymbol( action_t, 3 ), findSymbol( action_f, 3 ) );
       break;
+    case 'S':
+      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2 ), findSymbol( action_t, 0 ), findSymbol( action_f, 0 ) );
+      break;
     default:
-      sprintf( s, "%s::%s[%03d]: %c %d ? %d : %d\n", me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+      sprintf( s, "%d %s::%s[%03d]: %c %d ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         selector, action_t, action_f );
       break;      
   }
@@ -280,8 +288,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -290,8 +296,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr = script[selected_action];          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -309,8 +313,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -319,8 +321,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -329,8 +329,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;
@@ -339,26 +337,14 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: core exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break; 
-          case 'U':  // Resume (only from secondary core)
-            if ( active_core == 1 ) {
-              sleep( 0 );
-              timer.set( 0 ); // Cut timer short
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: core resume\n", active_core, core[active_core].ptr - 4 );
-            }
-            break;                       
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: xctr exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }            
             break;            
@@ -413,8 +399,6 @@ void Atm_device::run_code( uint8_t active_core ) {
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
-              if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: jump exit\n", active_core, core[active_core].ptr - 4 );
               core[active_core].ptr = 0;
             }                      
             break;           
@@ -443,12 +427,8 @@ void Atm_device::run_code( uint8_t active_core ) {
       }        
       if ( core[active_core].ptr == 0 ) {
         if ( core[active_core].stack_ptr > 0 ) {
-          if ( trace_code ) 
-            tc_stream->printf( "run_code %d:%03d: Return to %d\n", active_core, core[active_core].ptr, core[active_core].stack[core[active_core].stack_ptr-1] );
           core[active_core].ptr = core[active_core].stack[--core[active_core].stack_ptr];
         } else {
-          if ( trace_code ) 
-            tc_stream->printf( "run_code %d:%03d: regular exit\n", active_core, core[active_core].ptr );
           return;
         }
       }

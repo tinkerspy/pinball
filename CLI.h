@@ -106,12 +106,12 @@ void cmd_callback( int idx, int v, int up ) {
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
           int16_t e = dev->findSymbol( cmd[idx].arg( 2 ) );
+          cmd[idx].stream->printf( "Trigger: device %d -> %d (%d)\n", sw, e, sel );
           if ( sel ) {
             dev->trigger( e, sel ); 
           } else {
             dev->trigger( e );             
           }
-          cmd[idx].stream->printf( "Trigger: device %d -> %d (%d)\n", sw, e, sel );
         } else {
           cmd[idx].stream->printf( "Trigger: device %d not found\n", sw );
         }

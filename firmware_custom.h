@@ -12,7 +12,7 @@
 namespace custom_firmware {
 
 const char game_bytecode[] = R""""(
-init, press_start, release_start, press_exit, release_exit, sub_wait_players, sub_wait_reset, sub_loop, \
+init, press_start, release_start, ball_exit, sub_wait_players, sub_wait_reset, sub_loop, \
 sub_ball_loop, sub_player_loop, sub_core, sub_wait_playing, sub_wait_collecting, sub_press_start
 out_init, out_enable, out_counter_reset, out_players_zero, out_ball_zero,\
 out_player_zero, out_ball_adv, out_player_adv, out_3bonus, out_collect,\
@@ -91,7 +91,7 @@ S, -1, -1, sub_ball_loop
 A, -1, -1, sub_loop;
 
 sub_ball_loop
-Q, -1, -1, msg_ball_loop
+Q, reg_ball, -1, msg_ball_loop
 R, -1, -1, reg_no_of_players
 D, -1, -1, reg_player
 T, -1, -1, out_player_zero
@@ -105,7 +105,7 @@ T, -1, -1, out_ball_adv
 A, -1, -1, sub_ball_loop;
 
 sub_player_loop
-Q, -1, -1, msg_player_loop
+Q, reg_player, -1, msg_player_loop
 S, -1, -1, sub_core
 J, arg_again, -2, 0
 R, -1, -1, reg_player
@@ -124,7 +124,7 @@ T, -1, -1, out_kickoff
 Y, -1, -1, 1000
 T, -1, -1, out_enable
 Y, -1, -1, 100
-E, press_exit, 0, 0                // Clear press_exit event
+E, ball_exit, 0, 0                // Clear press_exit event
 S, -1, -1, sub_wait_playing
 T, -1, -1, out_disable
 Y, -1, -1, 104
@@ -163,7 +163,7 @@ R, -1, -1, reg_no_of_players
 Y, -1, -1, 1008
 E, press_start, 0, 1                      // On event set no of players to 1
 S, -1, -1, sub_press_start
-E, press_exit, -1, -4;
+E, ball_exit, -1, -4;
 
 sub_wait_collecting
 Y, -1, -1, 109

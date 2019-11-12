@@ -17,10 +17,10 @@ const char switch_group_list[] = R""""(
   flipper, flipper_l, flipper_r;
   uplane, uplane_l, uplane_r;
   slingshot, sling_l, sling_r;
-  lower, target_c, inlane_l, inlane_r, rollover, outlane, ball_enter;
+  lower, target_c, inlane_l, inlane_r, rollover, outlane, ball_exit, ball_enter;
   switches, 
     target_b, port_3x, port_3o, port_2x, port_2o, port_1x, port_1o, target_a, kicker_l, uplane_l, bumper_a, bumper_c, kicker_r, 
     bumper_b, uplane_r, target_c, outlane, inlane_l, sling_l, sling_r, rollover, inlane_r, ball_enter, ball_exit, tilt_pend, tilt_ramp, 
     switch213, flipper_l, flipper_r, switch216, switch217, frontbtn, counter2, counter, switch313, switch314, switch315, switch316, counter1, counter3;
-  game, frontbtn, ball_exit;
+  game, frontbtn;
 )"""";

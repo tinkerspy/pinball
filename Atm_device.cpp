@@ -234,8 +234,7 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   int16_t offset = 0;
   for ( int16_t i = 0; i < countSymbols( 0 ); i++ ) {
     // Klopt niet
-    // tc game
-    // press game; press game
+    // tc game; press game; press game
     // Hij detecteert 'init' i.p.v. 'sub_press_start' (omdat subs niet op volgorde staan!)
     if ( script[i] <= ip && script[i] > script[entry] ) {
       entry = i;
@@ -409,9 +408,9 @@ void Atm_device::run_code( uint8_t active_core ) {
             core[active_core].reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
             break;           
           case 'E': // Jump on event 
-            selected_action = event_map & ( 1 << selector ) ? action_t : action_f; // Check event
+            selected_action = event_map & ( 1UL << selector ) ? action_t : action_f; // Check event
             //Serial.printf( "Event %d: state %d -> %d\n", selector, event_map & ( 1 << selector ), selected_action );   
-            event_map &= ~( 1 << selector ); // Clear event
+            event_map &= ~( 1UL << selector ); // Clear event
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
@@ -468,7 +467,7 @@ Atm_device& Atm_device::trigger( int event ) {
   }
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( this->enabled ) {
-      event_map |= ( 1 << event );  // set event bit
+      event_map |= ( 1UL << event );  // set event bit
       start_code( event ); // FIXME: Only if no code is currently running!
     }
   }
@@ -482,7 +481,7 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   }
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( sel & 1 ) {
-      event_map |= ( 1 << event );  // set event bit
+      event_map |= ( 1UL << event );  // set event bit
       start_code( event ); // FIXME: Only if no code is currently running!
     }
   }

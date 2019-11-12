@@ -101,6 +101,6 @@ class Atm_device: public Symbolic_Machine {
   uint8_t trace_code = 0;
   int16_t switch_group = 0;
   Atm_device* next;
-  uint64_t event_map;
+  uint32_t event_map;
 
 };

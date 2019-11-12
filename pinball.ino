@@ -255,7 +255,8 @@ void setup() {
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
   playfield.link( "lower", "out_score3", "counter", "pt500" );
   playfield.link( "lower", "out_score4", "counter", "pt1000" );             // 4 outlane
-  playfield.link( "lower", "out_press5", "dual_target", "clear" );          // 5 ball_enter 
+  playfield.link( "lower", "out_press5", "game", "ball_exit" );             // 5 ball_exit 
+  playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
   playfield.link( "game", "out_init", playfield, "pf_init" );
   playfield.link( "game", "out_enable", playfield, "pf_enable" );

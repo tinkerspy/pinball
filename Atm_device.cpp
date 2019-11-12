@@ -233,36 +233,52 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   int16_t entry = 0;
   int16_t offset = 0;
   for ( int16_t i = 0; i < countSymbols( 0 ); i++ ) {
+    // Klopt niet
+    // tc game
+    // press game; press game
+    // Hij detecteert 'init' i.p.v. 'sub_press_start' (omdat subs niet op volgorde staan!)
     if ( script[i] <= ip && script[i] > script[entry] ) {
       entry = i;
       offset = script[i];
     }
   }
-  ip -= offset;
-  
+  ip -= offset;  
   switch ( opcode ) {
     case 'J':
-      sprintf( s, "%d %s::%s[%03d]: %c %s ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
-        findSymbol( selector, 2 ), action_t, action_f );
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), action_t, action_f );
+      break;
+    case 'H':
+    case 'L':
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), findSymbol( action_t, 2, "-1" ), findSymbol( action_f, 2, "-1" ) );
       break;
     case 'T':
-      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
-        findSymbol( selector, 2 ), findSymbol( action_t, 1 ), findSymbol( action_f, 1 ) );
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), findSymbol( action_t, 1, "-1" ), findSymbol( action_f, 1, "-1" ) );
       break;
     case 'E':
-      sprintf( s, "%d %s::%s[%03d]: %c %s ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
-        findSymbol( selector, 0 ), action_t, action_f );
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 0, "-1" ), action_t, action_f );
       break;
     case 'R':
-      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
-        findSymbol( selector, 2 ), findSymbol( action_t, 3 ), findSymbol( action_f, 3 ) );
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), findSymbol( action_t, 3, "-1" ), findSymbol( action_f, 3, "-1" ) );
       break;
     case 'S':
-      sprintf( s, "%d %s::%s[%03d]: %c %s ? %s : %s\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
-        findSymbol( selector, 2 ), findSymbol( action_t, 0 ), findSymbol( action_f, 0 ) );
+    case 'A':
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), findSymbol( action_t, 0, "-1" ), findSymbol( action_f, 0, "-1" ) );
       break;
     default:
-      sprintf( s, "%d %s::%s[%03d]: %c %d ? %d : %d\n", millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+      sprintf( s, "%lu %s::%s[%03d]: %c %d ? %d : %d\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         selector, action_t, action_f );
       break;      
   }

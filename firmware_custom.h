@@ -74,10 +74,10 @@ R, -1, -1, reg_ball_cntr
 Z, -1, -1, 0
 R, -1, -1, reg_no_of_players
 Z, -1, -1, 0
-E, press_start, 0, 0                  // Clear press event
+E, press_start, 0, 0            // Clear press event
 Q, -1, -1, msg_wait_start
 S, -1, -1, sub_wait_players     // Wait for a front button press to start game
-Y, -1, -1, 102
+W, -1, -1, 102
 Q, -1, -1, msg_init
 T, -1, -1, out_init
 T, -1, -1, out_players_zero
@@ -95,9 +95,9 @@ Q, reg_ball, -1, msg_ball_loop
 R, -1, -1, reg_no_of_players
 D, -1, -1, reg_player
 T, -1, -1, out_player_zero
-Y, -1, -1, 11
+W, -1, -1, 11
 S, -1, -1, sub_player_loop
-Y, -1, -1, 12
+W, -1, -1, 12
 R, -1, -1, reg_ball
 I, -1, -1, -1
 =,  0, -1, 0
@@ -115,23 +115,23 @@ T, -1, -1, out_player_adv
 A, -1, -1, sub_player_loop;
 
 sub_core
-Y, -1, -1, 500
+W, -1, -1, 500
 R, -1, -1, reg_ball
 T,  1,  out_3bonus, -1
 T, -1, -1, out_init
-Y, -1, -1, 103
+W, -1, -1, 103
 T, -1, -1, out_kickoff
-Y, -1, -1, 1000
+W, -1, -1, 1000
 T, -1, -1, out_enable
-Y, -1, -1, 100
+W, -1, -1, 100
 E, ball_exit, 0, 0                // Clear press_exit event
 S, -1, -1, sub_wait_playing
 T, -1, -1, out_disable
-Y, -1, -1, 104
+W, -1, -1, 104
 T, -1, -1, out_collect
-Y, -1, -1, 105
+W, -1, -1, 105
 S, -1, -1, sub_wait_collecting
-Y, -1, -1, 106
+W, -1, -1, 106
 R, -1, -1, reg_ball_cntr
 I, -1, -1, 1
 =,  1,  0, -1
@@ -140,16 +140,16 @@ D, -1, -1, reg_player;
 
 sub_wait_players
 R, -1, -1, reg_no_of_players
-Y, -1, -1, 13
-E, press_start, 0, 2                      // On event set no of players to 1
+W, -1, -1, 0
+E, press_start, 0, 2                // On event set no of players to 1
 Z, -1, -1, 1
 J, -1, -1, -1                       // and exit sub
 A, -1, -1, sub_wait_players;        // else keep looping
 
-sub_wait_reset
+sub_wait_reset                      // busy loop: waiting for counter reset to finish
 Q, reg_max_players, -1, msg_counter_reset
-Y, -1, -1, 107
-E, press_start, 0, 1                      // On event increment no of players
+W, -1, -1, 107
+E, press_start, 0, 1                // On event increment no of players
 S, -1, -1, sub_press_start
 J, arg_counter0, -4, 0
 J, arg_counter1, -5, 0
@@ -160,13 +160,13 @@ J, arg_counter5, -9, 0;
 
 sub_wait_playing                    // Central game loop: process ball_exit & frontbtn press
 R, -1, -1, reg_no_of_players
-Y, -1, -1, 1008
-E, press_start, 0, 1                      // On event set no of players to 1
+W, -1, -1, 0
+E, press_start, 0, 1                // On event set no of players to 1
 S, -1, -1, sub_press_start
 E, ball_exit, -1, -4;
 
 sub_wait_collecting
-Y, -1, -1, 109
+W, -1, -1, 109
 J, arg_collecting, -2, -1;
 )"""";
 

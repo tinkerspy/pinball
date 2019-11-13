@@ -417,11 +417,12 @@ void Atm_device::run_code( uint8_t active_core ) {
               core[active_core].ptr = 0;
             }                      
             break;           
+          case 'W':
           case 'Y': // Yield (negative selector value uses register!)
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             selected_action = selected_action > 0 ? selected_action : registers[abs(selected_action)];
             if ( core[active_core].yield_enabled ) {
-              if ( selector == -2 ) break;
+              if ( selector == -2 ) break; // deprecated
               if ( selected_action >= 0 ) { // negative time values have no yield effect but do trip the core check
                 timer.set( selected_action == 0 ? ATM_TIMER_OFF : selected_action ); // Zero timer means wait forever
                 sleep( 0 );
@@ -469,6 +470,7 @@ Atm_device& Atm_device::trigger( int event ) {
     if ( this->enabled ) {
       event_map |= ( 1UL << event );  // set event bit
       start_code( event ); // FIXME: Only if no code is currently running!
+      if ( core[0].ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
     }
   }
   return *this;
@@ -483,6 +485,17 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
     if ( sel & 1 ) {
       event_map |= ( 1UL << event );  // set event bit
       start_code( event ); // FIXME: Only if no code is currently running!
+      if ( core[0].ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
+/*
+      if ( code_ptr == 0 ) {
+        start_code( event );
+      } else {
+        if ( timer.value == ATM_TIMER_OFF ) {
+          timer.set( 0 );
+          sleep( 0 ); // no sleep in 'Y' handler if delay == 0
+        }
+      }
+*/            
     }
   }
   return *this;

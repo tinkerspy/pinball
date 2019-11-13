@@ -694,7 +694,7 @@ const uint16_t scalar_hexbin[] = {
  */
 
 const char counter_em4d1w_bytecode[] = R""""(
-init, press, release, reset, pt10, pt100, pt1000, pt500, pt5000, \
+init, sensor_hi, sensor_lo, reset, pt10, pt100, pt1000, pt500, pt5000, \
 sub_pulse_10, sub_pulse_100, sub_pulse_1k, sub_pulse_10k, sub_move_start, \
 sub_pos1, sub_pos2_12, sub_pos2_13, sub_pos2_23, \
 sub_pos3_1, sub_pos3_2, sub_pos3_3, sub_reel0
@@ -709,11 +709,11 @@ X,  1,  0, -1
 H, -1, -1, arg_dirty
 Z, -1, -1, 1;
 
-press
+sensor_hi
 R, -1, -1, reg_sensor
 Z, -1, -1, 1;
 
-release
+sensor_lo
 R, -1, -1, reg_sensor
 Z, -1, -1, 0;
 

@@ -100,7 +100,7 @@ void setup() {
   leds.profile( "coil_bumper_b"    ,    0, 255,  40,   0 );
   leds.profile( "coil_bumper_c"    ,    0, 255,  40,   0 );
   leds.profile( "coil_feeder"      ,    0, 127,  30,   0 );
-  leds.profile( "coil_counter_grp" ,    0, 127,  20,   0 );
+  leds.profile( "coil_counter_grp" ,    0, 180,  20,   0 );
   leds.profile( "vled_counter0"    ,    0,   0,   0, 127 );
   leds.profile( "vled_counter1"    ,    0,   0,   0, 127 );
   leds.profile( "vled_counter2"    ,    0,   0,   0, 127 );
@@ -193,7 +193,7 @@ void setup() {
   
   Serial.println( "chain devices" ); delay( 100 );
 
-  playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" );
+  //playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); // FIXME!!!
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 

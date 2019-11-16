@@ -85,6 +85,7 @@ class Atm_device: public Symbolic_Machine {
   void led_on( int16_t led_group, int16_t selector );
   void led_off( int16_t led_group, int16_t selector );
   void decompile( uint16_t ip, char* s );
+  Atm_device& update_switch( int event );
 
   uint32_t trigger_flags; 
   Atm_led_matrix *leds;
@@ -101,6 +102,6 @@ class Atm_device: public Symbolic_Machine {
   uint8_t trace_code = 0;
   int16_t switch_group = 0;
   Atm_device* next;
-  uint32_t event_map;
+  uint32_t event_map, switch_map;
 
 };

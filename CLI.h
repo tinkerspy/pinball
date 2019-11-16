@@ -2,8 +2,8 @@
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_PS, CMD_LL, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
-const char cmdlist[] = "ps ll lo hd stats ts tc tr press release init info reboot";
+enum { CMD_PS, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
+const char cmdlist[] = "ps ll l lo hd stats ts tc tr press release init info reboot";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -48,6 +48,14 @@ void cmd_callback( int idx, int v, int up ) {
             cmd[idx].stream->printf( "Led %d: %s %s\n", i, leds.findSymbol( i ), leds.active( i ) ? "ON" : "OFF" );
           } 
         }
+        cmd[idx].stream->println(); 
+      }
+      return;
+    case CMD_L: // Toggle led (or group)
+      {  
+        int16_t ledno = leds.findSymbol( cmd[idx].arg( 1 ), -1 ) ;
+        leds.on( ledno );
+        cmd[idx].stream->printf( "Led %d: %s %s\n", ledno, leds.findSymbol( ledno ), leds.active( ledno ) ? "ON" : "OFF" );
         cmd[idx].stream->println(); 
       }
       return;

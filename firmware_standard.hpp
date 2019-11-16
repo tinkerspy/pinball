@@ -694,7 +694,7 @@ const uint16_t scalar_hexbin[] = {
  */
 
 const char counter_em4d1w_bytecode[] = R""""(
-init, sensor_press, sensor_release, reset, pt10, pt100, pt1000, pt500, pt5000, \
+init, sensor, sensor_release, reset, pt10, pt100, pt1000, pt500, pt5000, \
 sub_pulse_10, sub_pulse_100, sub_pulse_1k, sub_pulse_10k, sub_move_start, \
 sub_pos1, sub_pos2_12, sub_pos2_13, sub_pos2_23, \
 sub_pos3_1, sub_pos3_2, sub_pos3_3, sub_reel0
@@ -709,19 +709,10 @@ X,  1,  0, -1
 H, -1, -1, arg_dirty
 Z, -1, -1, 1;
 
-sensor_press
-R, -1, -1, reg_sensor
-Z, -1, -1, 1;
-
-sensor_release
-R, -1, -1, reg_sensor
-Z, -1, -1, 0;
-
 reset
 Y, -2, -1,-1
 =,  0, -1, 0
 S, -1, -1, sub_move_start
-/!, -1, -1, -1 // FIXME EXIT!!!
 S, -1, -1, sub_pos1
 R, -1, -1, reg_state
 Z, -1, -1, 0
@@ -736,46 +727,37 @@ R, -1, -1, reg_10k
 Z, -1, -1, 0;
 
 sub_move_start
-R, -1, -1, reg_sensor
-K, sensor_press, -1, 0
-/=, 0,  0, -1
+K, sensor, -1, 0
 H, -1, -1, arg_10k
 Y, -1, -1, 120
-K, sensor_press, -1, 0
-/=, 0,  0, -1
+K, sensor, -1, 0
 H, -1, -1, arg_1k
 Y, -1, -1, 120
-K, sensor_press, -1, 0
-/=, 0,  0, -1
+K, sensor, -1, 0
 A, -1, -1, sub_move_start;
 
 sub_pos1
-R, -1, -1, reg_sensor
 H, -1, -1, arg_1k
 Y, -1, -1, 120
-/=,  1,  0, 7
-K, sensor_press, 0, 7
+K, sensor, 0, 7
 H, -1, -1, arg_100
 Y, -1, -1, 120
-/=, 1,  0, 5
-K, sensor_press, 0, 5
+K, sensor, 0, 5
 H, -1, -1, arg_10
 Y, -1, -1, 120
-/=, 1,  0, 3
-K, sensor_press, 0, 3
+K, sensor, 0, 3
 A, -1, -1, sub_pos1
 A, -1, -1, sub_pos2_23
 A, -1, -1, sub_pos2_13
 A, -1, -1, sub_pos2_12;
 
 sub_pos2_23
-R, -1, -1, reg_sensor
 H, -1, -1, arg_100
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 H, -1, -1, arg_10
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 A, -1, -1, sub_pos2_23
 H, -1, -1, arg_100
 Y, -1, -1, 120
@@ -785,13 +767,12 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_2;
 
 sub_pos2_13
-R, -1, -1, reg_sensor
 H, -1, -1, arg_10k
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 H, -1, -1, arg_10
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 A, -1, -1, sub_pos2_13
 H, -1, -1, arg_1k
 Y, -1, -1, 120
@@ -801,13 +782,12 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_1;
 
 sub_pos2_12
-R, -1, -1, reg_sensor
 H, -1, -1, arg_10k
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 H, -1, -1, arg_100
 Y, -1, -1, 120
-=,  0,  0, 4
+K, sensor, 4, 0
 A, -1, -1, sub_pos2_12
 H, -1, -1, arg_1k
 Y, -1, -1, 120
@@ -817,8 +797,7 @@ Y, -1, -1, 120
 A, -1, -1, sub_pos3_1;
 
 sub_pos3_1
-R, -1, -1, reg_sensor
-=,  0,  0, 3
+K, sensor, 3, 0
 H, -1, -1, arg_1k
 Y, -1, -1, 120
 A, -1, -1, sub_pos3_1
@@ -827,8 +806,7 @@ H, -1, -1, arg_1k
 Y, -1, -1, 120;
 
 sub_pos3_2
-R, -1, -1, reg_sensor
-=,  0,  0, 3
+K, sensor, 3, 0
 H, -1, -1, arg_100
 Y, -1, -1, 120
 A, -1, -1, sub_pos3_2
@@ -837,8 +815,7 @@ H, -1, -1, arg_100
 Y, -1, -1, 120;
 
 sub_pos3_3
-R, -1, -1, reg_sensor
-=,  0,  0, 3
+K, sensor, 3, 0
 H, -1, -1, arg_10
 Y, -1, -1, 120
 A, -1, -1, sub_pos3_3
@@ -847,8 +824,7 @@ H, -1, -1, arg_10
 Y, -1, -1, 120;
 
 sub_reel0
-R, -1, -1, reg_sensor
-=,  1,  0, -1
+K, sensor, 0, -1
 H, -1, -1, arg_10k
 Y, -1, -1, 120
 A, -1, -1, sub_reel0;

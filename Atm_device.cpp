@@ -422,10 +422,10 @@ void Atm_device::run_code( uint8_t active_core ) {
           case 'K': // Jump on key (switch) state 
             selector--; // Switches start at zero
             selector >>= 1; // And have 1 bit per press/release pair
-            Serial.printf( "Request map %X & sw %X, reg1=%d\n", switch_map, ( 1UL << selector ), registers[1] );
+            //Serial.printf( "Request map %X & sw %X, reg1=%d\n", switch_map, ( 1UL << selector ), registers[1] );
             selected_action = switch_map & ( 1UL << selector ) ? action_t : action_f; // Check event
-            Serial.printf( "%d Key %d: state %d -> action %d\n", 
-              millis(), selector, switch_map & ( 1UL << selector ), selected_action );   
+            //Serial.printf( "%d Key %d: state %d -> action %d\n", 
+            //  millis(), selector, switch_map & ( 1UL << selector ), selected_action );   
             if ( selected_action  != -1 ) {
               core[active_core].ptr += selected_action * 4;          
             } else {
@@ -477,10 +477,10 @@ Atm_device& Atm_device::update_switch( int event ) {
     int16_t sw = event - 1; // sw = 0..31
     if ( ( sw & 1UL ) == 0 ) { // Press if bit 0 is not set
       switch_map |= ( 1UL << ( sw >> 1 ) );  // Switch press -> set switch bit
-      Serial.printf( "%d Set switch %d on, map=%08X\n", millis(), sw >> 1, switch_map );
+      //Serial.printf( "%d Set switch %d on, map=%08X\n", millis(), sw >> 1, switch_map );
     } else {
       switch_map &= ~( 1UL << ( sw >> 1 ) ); // Switch release -> clear switch bit
-      Serial.printf( "%d Set switch %d off, map=%08X\n", millis(), sw >> 1, switch_map );
+      //Serial.printf( "%d Set switch %d off, map=%08X\n", millis(), sw >> 1, switch_map );
     }
   }
   return *this;

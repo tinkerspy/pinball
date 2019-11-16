@@ -193,7 +193,7 @@ void setup() {
   
   Serial.println( "chain devices" ); delay( 100 );
 
-  //playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); // FIXME!!!
+  playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); 
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 

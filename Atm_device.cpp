@@ -285,6 +285,24 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   }
 }
 
+Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* = 0 */ ) {
+  char buf[128];
+  int16_t p = script[event];
+  if ( clean ) {
+    stream->println( findSymbol( event, 0 ) );
+  }
+  while ( script[p] != -1 ) {
+    decompile( p, buf );
+    if ( clean ) {
+      stream->print( strstr( buf, "]: " ) + 3 );
+    } else {
+      stream->print( buf );      
+    }
+    p += 4;
+  }
+  return *this;
+}
+
 void Atm_device::run_code( uint8_t active_core ) {
   char buf[80];
   if ( core[active_core].ptr > 0 ) {

@@ -6,9 +6,6 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
-// FIXME De 'force primary' bytecode '0' is incompatible met de loadIntList() routine . (wordt gezien als een literal integer)! Oplossen, verangen door Y???
-// De bytecode tables gaan er vanuit dat ongedefinieerde handles op '0' staan, de list tables zetten daarin een link naar de eerste -1... 
-
 // Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
 
 using namespace standard_firmware;

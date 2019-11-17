@@ -515,7 +515,7 @@ Atm_device& Atm_device::trigger( int event ) {
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( this->enabled ) {
       update_switch( event );
-      start_code( event ); // FIXME: Only if no code is currently running!
+      if ( code_ptr == 0 ) start_code( event ); // FIXME: Only if no code is currently running!
       if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
     }
   }
@@ -530,7 +530,7 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   if ( event == 0 || playfield->enabled() || input_persistence ) {
     if ( sel & 1 ) {
       update_switch( event );
-      start_code( event ); // FIXME: Only if no code is currently running!
+      if ( code_ptr == 0 ) start_code( event ); // FIXME: Only if no code is currently running!
       if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
 /*
       if ( code_ptr == 0 ) {

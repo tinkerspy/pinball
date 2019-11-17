@@ -35,8 +35,8 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_grou
   registers[6] = r6;
   registers[7] = r7;
   timer.set( ATM_TIMER_OFF );
-  core[0].ptr = 0;
-  core[1].ptr = 0;
+  core[0].code_ptr = 0;
+  core[1].code_ptr = 0;
   xctr = 0;
   event_map = 0;
   switch_map = 0;
@@ -213,13 +213,13 @@ void Atm_device::start_code( int16_t e ) {
   //Serial.printf( "%d %X Start code %d\n", millis(), (long)(this), e );
   //Serial.printf( "%d > -1 && %d < %d && %d > 0\n", e, e, numberOfInputs, script[e] );
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
-    uint8_t active_core = core[0].ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
+    uint8_t active_core = core[0].code_ptr == 0 ? 0 : 1; // When the primary core is active we take the secundary
     core[active_core].reg_ptr = 0;
     core[active_core].stack_ptr = 0;
-    core[active_core].ptr = script[e];
+    core[active_core].code_ptr = script[e];
     core[active_core].yield_enabled = ( active_core == 0 );
     if ( trace_code ) 
-      tc_stream->printf( "run_code event %03d called for %d -> %d%03d\n", e, switch_group, active_core, core[active_core].ptr );
+      tc_stream->printf( "run_code event %03d called for %d -> %d%03d\n", e, switch_group, active_core, core[active_core].code_ptr );
     xctr++;
     run_code( active_core );      
   }
@@ -318,33 +318,33 @@ Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* =
 
 void Atm_device::run_code( uint8_t active_core ) {
   char buf[80];
-  if ( core[active_core].ptr > 0 ) {
+  if ( core[active_core].code_ptr > 0 ) {
     while ( true ) {
-      int16_t opcode = script[core[active_core].ptr++];
-      int16_t selector = script[core[active_core].ptr++];
-      int16_t action_t = script[core[active_core].ptr++];
-      int16_t action_f = script[core[active_core].ptr++];
+      int16_t opcode = script[core[active_core].code_ptr++];
+      int16_t selector = script[core[active_core].code_ptr++];
+      int16_t action_t = script[core[active_core].code_ptr++];
+      int16_t action_f = script[core[active_core].code_ptr++];
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
         if ( trace_code ) { 
-          decompile( core[active_core].ptr - 4, buf );
+          decompile( core[active_core].code_ptr - 4, buf );
           tc_stream->print( buf );
         }
         switch ( opcode ) {
           case 'J': // JmpL
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;
           case 'A': // JmpLA jump absolute on register equal
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
-              core[active_core].ptr = script[selected_action];          
+              core[active_core].code_ptr = script[selected_action];          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;
           case 'Q': // Quote (FIXME: only in response to tm command)
@@ -359,46 +359,46 @@ void Atm_device::run_code( uint8_t active_core ) {
           case '=': // JmpRE
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] == selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;
           case '<': // JmpRL
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] < selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;
           case '>': // JmpRG
             selected_action = ( selector >= 0 && registers[core[active_core].reg_ptr] > selector ) ? action_t : action_f;
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;
           case '0':  // Prim DEPRECATED: use 'Y', -2, -1, -1 for this (drop as soon as binaries are refreshed)
             selected_action = ( active_core == 0 ? action_t : action_f );
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break; 
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }            
             break;            
           case '!': // Stop script!
             core[active_core].stack_ptr = 0;
-            core[active_core].ptr = 0;
+            core[active_core].code_ptr = 0;
             break;
           case 'H': // LedOn
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
@@ -410,8 +410,8 @@ void Atm_device::run_code( uint8_t active_core ) {
             break;
           case 'S': // GoSub
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            core[active_core].stack[core[active_core].stack_ptr++] = core[active_core].ptr;          
-            core[active_core].ptr = script[selected_action];
+            core[active_core].stack[core[active_core].stack_ptr++] = core[active_core].code_ptr;          
+            core[active_core].code_ptr = script[selected_action];
             break;
           case 'I': // Inc
             selected_action = led_active( led_group, selector ) ? action_t : action_f;
@@ -445,9 +445,9 @@ void Atm_device::run_code( uint8_t active_core ) {
             //Serial.printf( "Event %d: state %d -> %d\n", selector, event_map & ( 1 << selector ), selected_action );   
             event_map &= ~( 1UL << selector ); // Clear event
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }                      
             break;           
           case 'K': // Jump on key (switch) state 
@@ -458,9 +458,9 @@ void Atm_device::run_code( uint8_t active_core ) {
             //Serial.printf( "%d Key %d: state %d -> action %d\n", 
             //  millis(), selector, switch_map & ( 1UL << selector ), selected_action );   
             if ( selected_action  != -1 ) {
-              core[active_core].ptr += selected_action * 4;          
+              core[active_core].code_ptr += selected_action * 4;          
             } else {
-              core[active_core].ptr = 0;
+              core[active_core].code_ptr = 0;
             }                      
             break;           
           case 'W':
@@ -475,21 +475,21 @@ void Atm_device::run_code( uint8_t active_core ) {
               }
             } else {
               if ( trace_code ) 
-                tc_stream->printf( "run_code %d:%03d: FATAL: secondary core cannot yield at %d, terminating thread\n", active_core, core[active_core].ptr - 4 );
+                tc_stream->printf( "run_code %d:%03d: FATAL: secondary core cannot yield at %d, terminating thread\n", active_core, core[active_core].code_ptr - 4 );
               return;
             }
             return;           
           default:
             if ( trace_code ) 
-              tc_stream->printf( "run_code %d:%03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", active_core, core[active_core].ptr - 4, opcode );
+              tc_stream->printf( "run_code %d:%03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", active_core, core[active_core].code_ptr - 4, opcode );
             return;
         }
       } else {
-        core[active_core].ptr = 0;
+        core[active_core].code_ptr = 0;
       }        
-      if ( core[active_core].ptr == 0 ) {
+      if ( core[active_core].code_ptr == 0 ) {
         if ( core[active_core].stack_ptr > 0 ) {
-          core[active_core].ptr = core[active_core].stack[--core[active_core].stack_ptr];
+          core[active_core].code_ptr = core[active_core].stack[--core[active_core].stack_ptr];
         } else {
           return;
         }
@@ -531,7 +531,7 @@ Atm_device& Atm_device::trigger( int event ) {
     if ( this->enabled ) {
       update_switch( event );
       start_code( event ); // FIXME: Only if no code is currently running!
-      if ( core[0].ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
+      if ( core[0].code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
     }
   }
   return *this;
@@ -546,7 +546,7 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
     if ( sel & 1 ) {
       update_switch( event );
       start_code( event ); // FIXME: Only if no code is currently running!
-      if ( core[0].ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
+      if ( core[0].code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
 /*
       if ( code_ptr == 0 ) {
         start_code( event );

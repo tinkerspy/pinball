@@ -13,7 +13,7 @@
 #define DYNAMIC_ELEMENTS
 
 struct core_state {
-  int16_t ptr;
+  int16_t code_ptr;
   uint8_t reg_ptr;
   uint8_t stack_ptr;
   int16_t stack[STACK_SIZE];  
@@ -104,5 +104,9 @@ class Atm_device: public Symbolic_Machine {
   int16_t switch_group = 0;
   Atm_device* next;
   uint32_t event_map, switch_map;
+  int16_t code_ptr;
+  uint8_t reg_ptr;
+  uint8_t stack_ptr;
+  int16_t stack[STACK_SIZE];  
 
 };

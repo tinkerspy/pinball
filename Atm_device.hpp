@@ -79,7 +79,7 @@ class Atm_device: public Symbolic_Machine {
   int event( int id ); 
   void action( int id ); 
   void start_code( int16_t e );
-  void run_code( uint8_t active_core );
+  void run_code( void );
   int16_t parse_code( const int16_t* device_script );
   int16_t led_index( int16_t led_group, int16_t selector );
   bool led_active( int16_t led_group, int16_t selector );

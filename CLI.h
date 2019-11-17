@@ -142,13 +142,15 @@ void cmd_callback( int idx, int v, int up ) {
     case CMD_DDC:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
+        cmd[idx].stream->printf( "// Device code: %s\n", cmd[idx].arg( 1 ) );
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
           for ( int16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
             dev->dumpCode( cmd[idx].stream, i, true );            
           }
+          cmd[idx].stream->println();
         } else {
-          cmd[idx].stream->printf( "Dump code: device %d not found\n", sw );
+          cmd[idx].stream->printf( "Dump device code: device %d not found\n", sw );
         }
       }
       return;    

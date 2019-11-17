@@ -2,8 +2,9 @@
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
-enum { CMD_PS, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
-const char cmdlist[] = "ps ll l lo hd stats ts tc tr dc dcc press release init info reboot";
+enum { CMD_PS, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
+        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
+const char cmdlist[] = "ps ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -133,6 +134,19 @@ void cmd_callback( int idx, int v, int up ) {
           Atm_device* dev = &( playfield.device( sw ) );
           int16_t e = dev->findSymbol( cmd[idx].arg( 2 ) );
           dev->dumpCode( cmd[idx].stream, e, v == CMD_DCC );
+        } else {
+          cmd[idx].stream->printf( "Dump code: device %d not found\n", sw );
+        }
+      }
+      return;    
+    case CMD_DDC:
+      {
+        int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
+        if ( playfield.exists( sw ) ) {
+          Atm_device* dev = &( playfield.device( sw ) );
+          for ( int16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
+            dev->dumpCode( cmd[idx].stream, i, true );            
+          }
         } else {
           cmd[idx].stream->printf( "Dump code: device %d not found\n", sw );
         }

@@ -271,6 +271,16 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 3, "-1" ), findSymbol( action_f, 3, "-1" ) );
       break;
+    case 'Q':
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 3, "-1" ), findSymbol( action_t, 4, "-1" ), findSymbol( action_f, 4, "-1" ) );
+      break;
+    case 'D':
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+        millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
+        findSymbol( selector, 2, "-1" ), findSymbol( action_t, 3, "-1" ), findSymbol( action_f, 3, "-1" ) );
+      break;
     case 'S':
     case 'A':
       sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
@@ -288,17 +298,20 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
 Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* = 0 */ ) {
   char buf[128];
   int16_t p = script[event];
-  if ( clean ) {
-    stream->println( findSymbol( event, 0 ) );
-  }
-  while ( script[p] != -1 ) {
-    decompile( p, buf );
+  if ( p > 0 ) {
+    stream->println();
     if ( clean ) {
-      stream->print( strstr( buf, "]: " ) + 3 );
-    } else {
-      stream->print( buf );      
+      stream->println( findSymbol( event, 0 ) );
     }
-    p += 4;
+    while ( script[p] != -1 ) {
+      decompile( p, buf );
+      if ( clean ) {
+        stream->print( strstr( buf, "]: " ) + 3 );
+      } else {
+        stream->print( buf );      
+      }
+      p += 4;
+    }
   }
   return *this;
 }

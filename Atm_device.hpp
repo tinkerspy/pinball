@@ -12,14 +12,6 @@
 #define STACK_SIZE 16
 #define DYNAMIC_ELEMENTS
 
-struct core_state {
-  int16_t code_ptr;
-  uint8_t reg_ptr;
-  uint8_t stack_ptr;
-  int16_t stack[STACK_SIZE];  
-  bool yield_enabled;
-};
-
 namespace instruction_set {
 
   enum { JmpL = 'J', JmpLA = 'A', JmpRE = 'C', Prim = '0', LedOn = 'H', LedOff = 'L', GoSub = 'S', Inc = 'I', Dec = 'D', Trig = 'T', Pers = 'P', Reg = 'R', Yield = 'Y' };
@@ -97,7 +89,6 @@ class Atm_device: public Symbolic_Machine {
   int16_t numberOfInputs;
   atm_timer_millis timer;
   bool enabled;
-  core_state core[2];
   uint32_t xctr;
   Stream* tc_stream;
   uint8_t trace_code = 0;

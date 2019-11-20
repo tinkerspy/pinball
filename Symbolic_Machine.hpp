@@ -34,6 +34,7 @@ class Symbolic_Machine: public Machine {
   int16_t countSymbols( int8_t bank = 0 );
   int16_t* compileList( const char src[], int16_t dict_size, int16_t dict_offset = 0  );
   int16_t loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset = 0, bool sparse_jumptable = false );
+  enum { SYM_INPUTS, SYM_OUTPUTS, SYM_ARGS, SYM_REGS, SYM_COMMENTS };
 
  protected:
   void clearComments( char s[] );

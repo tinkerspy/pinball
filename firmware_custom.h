@@ -56,7 +56,6 @@ I, -1, -1, 1
 Q, reg_no_of_players, -1, msg_add_player;
 
 init
-Y, -2, -1,-1                    // Primary core only
 P, -1, -1, 1                    // Persistent
 T, -1, -1, out_init             
 Y, -1, -1, 101                

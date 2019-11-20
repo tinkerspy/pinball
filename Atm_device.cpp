@@ -127,6 +127,17 @@ Atm_device& Atm_device::dump( Stream & stream, int16_t offset /* = 0 */ ) {
   return *this;
 }
 
+uint8_t Atm_device::sleep( int8_t v /* = -1 */ ) { // 0 running, 1 sleeping, 2 waiting
+  if ( v > -1 ) {
+    return Machine::sleep( v );
+  }
+  if ( Machine::sleep() ) {
+    return code_ptr == 0 ? 1 : 2;    
+  } else {
+    return 0;
+  }
+}
+
 /* Add C++ code for each internally handled event (input) 
  * The code must return 1 to trigger the event
  */
@@ -227,6 +238,7 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   int16_t selector = script[ip+1];
   int16_t action_t = script[ip+2];
   int16_t action_f = script[ip+3];
+  int16_t abs_ip = ip;
   const char* me = playfield->findSymbol( switchGroup(), 1 );
   int16_t entry = 0;
   int16_t offset = 0;
@@ -242,54 +254,56 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
   ip -= offset;  
   switch ( opcode ) {
     case 'J':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), action_t, action_f );
       break;
     case 'H':
     case 'L':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 2, "-1" ), findSymbol( action_f, 2, "-1" ) );
       break;
     case 'T':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 1, "-1" ), findSymbol( action_f, 1, "-1" ) );
       break;
     case 'E':
     case 'K':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %d : %d", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 0, "-1" ), action_t, action_f );
       break;
     case 'R':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 3, "-1" ), findSymbol( action_f, 3, "-1" ) );
       break;
     case 'Q':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 3, "-1" ), findSymbol( action_t, 4, "-1" ), findSymbol( action_f, 4, "-1" ) );
       break;
     case 'D':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 3, "-1" ), findSymbol( action_f, 3, "-1" ) );
       break;
     case 'S':
     case 'A':
-      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %s ? %s : %s", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         findSymbol( selector, 2, "-1" ), findSymbol( action_t, 0, "-1" ), findSymbol( action_f, 0, "-1" ) );
       break;
     default:
-      sprintf( s, "%lu %s::%s[%03d]: %c %d ? %d : %d\n", 
+      sprintf( s, "%lu %s::%s[%03d]: %c %d ? %d : %d", 
         millis(), me, findSymbol( entry, 0 ), ip >> 2, opcode, 
         selector, action_t, action_f );
       break;      
   }
+  if ( script[abs_ip+4] == -1 ) strcat( s, ";" );
+  if ( code_ptr == abs_ip + 4 ) strcat( s, " // <<<" );    
 }
 
 Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* = 0 */ ) {
@@ -303,9 +317,9 @@ Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* =
     while ( script[p] != -1 ) {
       decompile( p, buf );
       if ( clean ) {
-        stream->print( strstr( buf, "]: " ) + 3 );
+        stream->println( strstr( buf, "]: " ) + 3 );
       } else {
-        stream->print( buf );      
+        stream->println( buf );      
       }
       p += 4;
     }
@@ -325,7 +339,7 @@ void Atm_device::run_code() {
       if ( opcode > -1 ) {
         if ( trace_code ) { 
           decompile( code_ptr - 4, buf );
-          tc_stream->print( buf );
+          tc_stream->println( buf );
         }
         switch ( opcode ) {
           case 'J': // JmpL
@@ -379,6 +393,10 @@ void Atm_device::run_code() {
             break;
           case '0':  // Prim DEPRECATED: use 'Y', -2, -1, -1 for this (drop as soon as binaries are refreshed)
             break; 
+          case 'O': 
+            pinMode( selector, OUTPUT );
+            digitalWrite( selector, action_f > 0 );
+            break; 
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
             if ( selected_action  != -1 ) {
@@ -388,7 +406,6 @@ void Atm_device::run_code() {
             }            
             break;            
           case '!': // Stop script!
-            stack_ptr = 0;
             code_ptr = 0;
             break;
           case 'H': // LedOn

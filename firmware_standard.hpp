@@ -710,7 +710,6 @@ H, -1, -1, arg_dirty
 Z, -1, -1, 1;
 
 reset
-Y, -2, -1,-1
 =,  0, -1, 0
 S, -1, -1, sub_move_start
 S, -1, -1, sub_pos1
@@ -830,7 +829,6 @@ Y, -1, -1, 120
 A, -1, -1, sub_reel0;
 
 pt10
-Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
@@ -838,7 +836,6 @@ T, -1, -1, out_digit3
 S, -1, -1, sub_pulse_10;
 
 pt100
-Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
@@ -846,7 +843,6 @@ T, -1, -1, out_digit2
 S, -1, -1, sub_pulse_100;
 
 pt1000
-Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1,  1
 H, -1, -1, arg_dirty
@@ -854,7 +850,6 @@ T, -1, -1, out_digit1
 S, -1, -1, sub_pulse_1k;
 
 pt500
-Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty
@@ -870,7 +865,6 @@ T, -1, -1, out_digit2
 S, -1, -1, sub_pulse_100;
 
 pt5000
-Y, -2, -1,-1
 J, arg_up, 0, -1
 I, -1, -1, 1
 H, -1, -1, arg_dirty

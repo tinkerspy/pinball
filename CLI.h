@@ -2,8 +2,11 @@
 char cmd_buffer[80];
 Atm_my_command cmd[2]; 
 
+const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
+
 enum { CMD_PS, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
+
 const char cmdlist[] = "ps ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot";
 
 void cmd_callback( int idx, int v, int up ) {
@@ -20,7 +23,7 @@ void cmd_callback( int idx, int v, int up ) {
             uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
             if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
               cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\n", cnt, 
-                dev->sleep() ? "SLEEPING" : "RUNNING ", 
+                runstate_str[dev->sleep()], 
                 n + 1, 
                 n > io.numberOfSwitches() ? 'L' : 'P', 
                 playfield.findSymbol( dev->switchGroup(), 1 ),
@@ -198,7 +201,8 @@ void cmd_callback( int idx, int v, int up ) {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
-          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s] %s\n", sw, playfield.findSymbol( sw, 1 ), dev, dev->sleep() ? "SLEEPING" : "RUNNING", lib.label( lib.findCode( dev->script ) ) );
+          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s] %s\n", 
+                sw, playfield.findSymbol( sw, 1 ), dev, runstate_str[dev->sleep()], lib.label( lib.findCode( dev->script ) ) );
           for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
           cmd[idx].stream->println();
           for ( uint16_t in = 0; in < dev->countSymbols( 0 ); in++ ) {

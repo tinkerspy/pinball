@@ -196,7 +196,7 @@ void setup() {
 
   Serial.println( "link devices" ); delay( 100 );
 
-  playfield.link( "counter","out_digit1", "chimes", "on0" );
+  playfield.link( "counter", "out_digit1", "chimes", "on0" );
   playfield.link( "counter", "out_digit2", "chimes", "on1" );
   playfield.link( "counter", "out_digit3", "chimes", "on2" );
   

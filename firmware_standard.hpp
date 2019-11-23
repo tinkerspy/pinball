@@ -702,7 +702,7 @@ sub_pos3_1, sub_pos3_2, sub_pos3_3, sub_reel0
 out_digit1, out_digit2, out_digit3
 arg_10k, arg_1k, arg_100, arg_10, arg_up, arg_dirty 
 reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait, reg_timeout
-
+msg_reset, msg_timeout
 
 init,
 P, -1, -1, 1
@@ -712,6 +712,7 @@ Z, -1, -1, 1;
 
 reset
 =,  0, -1, 0
+Q, -1, -1, msg_reset
 R, -1, -1, reg_timeout
 Z, -1, -1, 60
 S, -1, -1, sub_move_start
@@ -883,6 +884,9 @@ W, -1, -1, 120
 I, -1, -1, -1
 >,  0, -1, 0
 L, -1, -1, arg_dirty
+Q, -1, -1, msg_timeout
+R, -1, -1, reg_state
+Z, -1, -1, 0
 !, -1, -1, -1;
 
 sub_pulse1
@@ -891,6 +895,9 @@ W, -1, -1, 120
 I, -1, -1, -1
 >,  0, -1, 0
 L, -1, -1, arg_dirty
+Q, -1, -1, msg_timeout
+R, -1, -1, reg_state
+Z, -1, -1, 0
 !, -1, -1, -1;
 
 sub_pulse2
@@ -899,6 +906,9 @@ W, -1, -1, 120
 I, -1, -1, -1
 >,  0, -1, 0
 L, -1, -1, arg_dirty
+Q, -1, -1, msg_timeout
+R, -1, -1, reg_state
+Z, -1, -1, 0
 !, -1, -1, -1;
 
 sub_pulse3
@@ -907,6 +917,9 @@ W, -1, -1, 120
 I, -1, -1, -1
 >,  0, -1, 0
 L, -1, -1, arg_dirty
+Q, -1, -1, msg_timeout
+R, -1, -1, reg_state
+Z, -1, -1, 0
 !, -1, -1, -1;
 
 sub_pulse_10

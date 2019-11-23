@@ -696,11 +696,12 @@ const uint16_t scalar_hexbin[] = {
 const char counter_em4d1w_bytecode[] = R""""(
 init, sensor, sensor_release, reset, pt10, pt100, pt1000, pt500, pt5000, \
 sub_pulse_10, sub_pulse_100, sub_pulse_1k, sub_pulse_10k, sub_move_start, \
+sub_pulse0, sub_pulse1, sub_pulse2, sub_pulse3, \
 sub_pos1, sub_pos2_12, sub_pos2_13, sub_pos2_23, \
 sub_pos3_1, sub_pos3_2, sub_pos3_3, sub_reel0
 out_digit1, out_digit2, out_digit3
 arg_10k, arg_1k, arg_100, arg_10, arg_up, arg_dirty 
-reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait
+reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait, reg_timeout
 
 
 init,
@@ -711,6 +712,8 @@ Z, -1, -1, 1;
 
 reset
 =,  0, -1, 0
+R, -1, -1, reg_timeout
+Z, -1, -1, 60
 S, -1, -1, sub_move_start
 S, -1, -1, sub_pos1
 R, -1, -1, reg_state
@@ -727,23 +730,18 @@ Z, -1, -1, 0;
 
 sub_move_start
 K, sensor, -1, 0
-H, -1, -1, arg_10k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse0
 K, sensor, -1, 0
-H, -1, -1, arg_1k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse1
 K, sensor, -1, 0
 A, -1, -1, sub_move_start;
 
 sub_pos1
-H, -1, -1, arg_1k
-Y, -1, -1, 120
-K, sensor, 0, 7
-H, -1, -1, arg_100
-Y, -1, -1, 120
+S, -1, -1, sub_pulse1
 K, sensor, 0, 5
-H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse2
+K, sensor, 0, 4
+S, -1, -1, sub_pulse3
 K, sensor, 0, 3
 A, -1, -1, sub_pos1
 A, -1, -1, sub_pos2_23
@@ -751,81 +749,81 @@ A, -1, -1, sub_pos2_13
 A, -1, -1, sub_pos2_12;
 
 sub_pos2_23
-H, -1, -1, arg_100
-Y, -1, -1, 120
+H, -1, -1, arg_100  // TODO Remove redundant 'H' opcodes (and recalculate jumps)!!!!!
+S, -1, -1, sub_pulse2
 K, sensor, 4, 0
 H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse3
 K, sensor, 4, 0
 A, -1, -1, sub_pos2_23
 H, -1, -1, arg_100
-Y, -1, -1, 120
+S, -1, -1, sub_pulse2
 A, -1, -1, sub_pos3_3
 H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse3
 A, -1, -1, sub_pos3_2;
 
 sub_pos2_13
 H, -1, -1, arg_10k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse0
 K, sensor, 4, 0
 H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse3
 K, sensor, 4, 0
 A, -1, -1, sub_pos2_13
 H, -1, -1, arg_1k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse1
 A, -1, -1, sub_pos3_3
 H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse3
 A, -1, -1, sub_pos3_1;
 
 sub_pos2_12
 H, -1, -1, arg_10k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse0
 K, sensor, 4, 0
 H, -1, -1, arg_100
-Y, -1, -1, 120
+S, -1, -1, sub_pulse2
 K, sensor, 4, 0
 A, -1, -1, sub_pos2_12
 H, -1, -1, arg_1k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse1
 A, -1, -1, sub_pos3_2
 H, -1, -1, arg_100
-Y, -1, -1, 120
+S, -1, -1, sub_pulse2
 A, -1, -1, sub_pos3_1;
 
 sub_pos3_1
 K, sensor, 3, 0
 H, -1, -1, arg_1k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse1
 A, -1, -1, sub_pos3_1
 S, -1, -1, sub_reel0
 H, -1, -1, arg_1k
-Y, -1, -1, 120;
+S, -1, -1, sub_pulse1;
 
 sub_pos3_2
 K, sensor, 3, 0
 H, -1, -1, arg_100
-Y, -1, -1, 120
+S, -1, -1, sub_pulse2
 A, -1, -1, sub_pos3_2
 S, -1, -1, sub_reel0
 H, -1, -1, arg_100
-Y, -1, -1, 120;
+S, -1, -1, sub_pulse2;
 
 sub_pos3_3
 K, sensor, 3, 0
 H, -1, -1, arg_10
-Y, -1, -1, 120
+S, -1, -1, sub_pulse3
 A, -1, -1, sub_pos3_3
 S, -1, -1, sub_reel0
 H, -1, -1, arg_10
-Y, -1, -1, 120;
+S, -1, -1, sub_pulse3;
 
 sub_reel0
 K, sensor, 0, -1
 H, -1, -1, arg_10k
-Y, -1, -1, 120
+S, -1, -1, sub_pulse0
 A, -1, -1, sub_reel0;
 
 pt10
@@ -878,6 +876,38 @@ T, -1, -1, out_digit1
 S, -1, -1, sub_pulse_1k
 T, -1, -1, out_digit1
 S, -1, -1, sub_pulse_1k;
+
+sub_pulse0
+H, -1, -1, arg_10k
+W, -1, -1, 120
+I, -1, -1, -1
+>,  0, -1, 0
+L, -1, -1, arg_dirty
+!, -1, -1, -1;
+
+sub_pulse1
+H, -1, -1, arg_1k
+W, -1, -1, 120
+I, -1, -1, -1
+>,  0, -1, 0
+L, -1, -1, arg_dirty
+!, -1, -1, -1;
+
+sub_pulse2
+H, -1, -1, arg_100
+W, -1, -1, 120
+I, -1, -1, -1
+>,  0, -1, 0
+L, -1, -1, arg_dirty
+!, -1, -1, -1;
+
+sub_pulse3
+H, -1, -1, arg_10
+W, -1, -1, 120
+I, -1, -1, -1
+>,  0, -1, 0
+L, -1, -1, arg_dirty
+!, -1, -1, -1;
 
 sub_pulse_10
 R, -1, -1, reg_10

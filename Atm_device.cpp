@@ -233,7 +233,7 @@ void Atm_device::start_code( int16_t e ) {
   }
 }
 
-void Atm_device::decompile( uint16_t ip, char* s ) {
+void Atm_device::decompile( uint16_t ip, char* s, bool hide_ptr /* = 0 */ ) {
   int16_t opcode = script[ip];
   int16_t selector = script[ip+1];
   int16_t action_t = script[ip+2];
@@ -303,7 +303,7 @@ void Atm_device::decompile( uint16_t ip, char* s ) {
       break;      
   }
   if ( script[abs_ip+4] == -1 ) strcat( s, ";" );
-  if ( code_ptr == abs_ip + 4 ) strcat( s, " // <<<" );    
+  if ( code_ptr == abs_ip + 4 && !hide_ptr) strcat( s, " // <<<" );    
 }
 
 Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* = 0 */ ) {
@@ -315,7 +315,7 @@ Atm_device& Atm_device::dumpCode( Stream* stream, uint8_t event, bool clean /* =
       stream->println( findSymbol( event, 0 ) );
     }
     while ( script[p] != -1 ) {
-      decompile( p, buf );
+      decompile( p, buf, clean );
       if ( clean ) {
         stream->println( strstr( buf, "]: " ) + 3 );
       } else {
@@ -338,7 +338,7 @@ void Atm_device::run_code() {
       int16_t selected_action = 0;
       if ( opcode > -1 ) {
         if ( trace_code ) { 
-          decompile( code_ptr - 4, buf );
+          decompile( code_ptr - 4, buf, true );
           tc_stream->println( buf );
         }
         switch ( opcode ) {
@@ -407,6 +407,7 @@ void Atm_device::run_code() {
             break;            
           case '!': // Stop script!
             code_ptr = 0;
+            stack_ptr = 0;
             break;
           case 'H': // LedOn
             selected_action = led_active( led_group, selector ) ? action_t : action_f;

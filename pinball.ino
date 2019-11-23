@@ -6,6 +6,8 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
+// Bug: info counter3
+
 // Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
 
 using namespace standard_firmware;
@@ -13,7 +15,6 @@ using namespace custom_firmware;
 
 #define NUMBER_OF_BALLS 3
 #define NUMBER_OF_PLAYERS 4
-
 
 IO io;
 Atm_led_matrix leds; 

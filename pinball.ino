@@ -117,7 +117,7 @@ void setup() {
   playfield.profile( "bumper_b"       ,     0,    0, 2000,    0 );
   playfield.profile( "bumper_c"       ,     0,    0, 2000,    0 );
   playfield.profile( "flipper"        ,     0,   10,    0,    0 );  // Flippers
-  playfield.profile( "counter"        ,     0,  200,    0,    0 );  // Counter sensors
+  playfield.profile( "counter0"       ,     0,  200,    0,    0 );  // Counter sensors
   playfield.profile( "counter1"       ,     0,  200,    0,    0 );
   playfield.profile( "counter2"       ,     0,  200,    0,    0 );
   playfield.profile( "counter3"       ,     0,  200,    0,    0 );
@@ -163,7 +163,7 @@ void setup() {
   Serial.println( "init devices" ); delay( 100 );
 
   playfield.device( "chimes", "led_chime_grp", lib.code( "std_ledbank" ) );
-  playfield.device( "counter", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
+  playfield.device( "counter0", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
   playfield.device( "counter1", "led_counter1_grp", lib.code( "std_counter_em4d1w" ) );
   playfield.device( "counter2", "led_counter2_grp", lib.code( "std_counter_em4d1w" ) );
   playfield.device( "counter3", "led_counter3_grp", lib.code( "std_counter_em4d1w" ) );
@@ -190,19 +190,19 @@ void setup() {
   
   Serial.println( "chain devices" ); delay( 100 );
 
-  playfield.device( "counter" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); 
+  playfield.device( "counter0" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); 
 
   automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 
   Serial.println( "link devices" ); delay( 100 );
 
-  playfield.link( "counter", "out_digit1", "chimes", "on0" );
-  playfield.link( "counter", "out_digit2", "chimes", "on1" );
-  playfield.link( "counter", "out_digit3", "chimes", "on2" );
+  playfield.link( "counter0", "out_digit1", "chimes", "on0" ); // link() propagates through chain
+  playfield.link( "counter0", "out_digit2", "chimes", "on1" );
+  playfield.link( "counter0", "out_digit3", "chimes", "on2" );
   
   playfield.link( "oxo", "out_win_row", "kicker", "on" );
   playfield.link( "oxo", "out_win_all", "uplane", "on" );
-  playfield.link( "oxo", "out_collect", "counter", "pt1000" );
+  playfield.link( "oxo", "out_collect", "counter0", "pt1000" );
    
   playfield.link( "multilane", "out_press0", "oxo", "oxo_1o" ); 
   playfield.link( "multilane", "out_press1", "oxo", "oxo_1x" );
@@ -210,16 +210,16 @@ void setup() {
   playfield.link( "multilane", "out_press3", "oxo", "oxo_2x" );
   playfield.link( "multilane", "out_press4", "oxo", "oxo_3o" ); 
   playfield.link( "multilane", "out_press5", "oxo", "oxo_3x" );
-  playfield.link( "multilane", "out_score", "counter", "pt1000" );
+  playfield.link( "multilane", "out_score", "counter0", "pt1000" );
 
-  playfield.link( "bumper_a", "out_score_lit", "counter", "pt100" );
-  playfield.link( "bumper_a", "out_score_unlit", "counter", "pt10" );  
+  playfield.link( "bumper_a", "out_score_lit", "counter0", "pt100" );
+  playfield.link( "bumper_a", "out_score_unlit", "counter0", "pt10" );  
   
-  playfield.link( "bumper_b", "out_score_lit", "counter", "pt100" );
-  playfield.link( "bumper_b", "out_score_unlit", "counter", "pt10" );  
+  playfield.link( "bumper_b", "out_score_lit", "counter0", "pt100" );
+  playfield.link( "bumper_b", "out_score_unlit", "counter0", "pt10" );  
     
-  playfield.link( "bumper_c", "out_score_lit", "counter", "pt1000" );
-  playfield.link( "bumper_c", "out_score_unlit", "counter", "pt100" );  
+  playfield.link( "bumper_c", "out_score_lit", "counter0", "pt1000" );
+  playfield.link( "bumper_c", "out_score_unlit", "counter0", "pt100" );  
   playfield.link( "bumper_c", "out_light_on", "save_gate", "on" );
   playfield.link( "bumper_c", "out_light_off", "save_gate", "off" );
 
@@ -229,36 +229,36 @@ void setup() {
   playfield.link( "dual_target", "out_led1_off", "bumper_b", "turn_off" );
   playfield.link( "dual_target", "out_all_on", "bumper_c", "turn_on" );  
   playfield.link( "dual_target", "out_all_off", "bumper_c", "turn_off" );
-  playfield.link( "dual_target", "out_score", "counter", "pt1000" );
+  playfield.link( "dual_target", "out_score", "counter0", "pt1000" );
   
   playfield.link( "kicker", "out_press_lit", "again", "on" );
-  playfield.link( "kicker", "out_score_lit", "counter", "pt5000" );
-  playfield.link( "kicker", "out_score_unlit", "counter", "pt500" );
+  playfield.link( "kicker", "out_score_lit", "counter0", "pt5000" );
+  playfield.link( "kicker", "out_score_unlit", "counter0", "pt500" );
   
-  playfield.link( "uplane", "out_score", "counter", "pt1000" );
+  playfield.link( "uplane", "out_score", "counter0", "pt1000" );
   playfield.link( "uplane", "out_press_lit", "again", "on" );
   playfield.link( "uplane", "out_press0_unlit", "oxo", "oxo_4" );
   playfield.link( "uplane", "out_press1_unlit", "oxo", "oxo_6" );
 
-  playfield.link( "slingshot", "out_score", "counter", "pt10" );
+  playfield.link( "slingshot", "out_score", "counter0", "pt10" );
   playfield.link( "slingshot", "out_press", "oxo", "toggle" );    
 
   playfield.link( "lower", "out_press0", "oxo", "oxo_5" );                  // 0 target_c
-  playfield.link( "lower", "out_score0", "counter", "pt500" );  
+  playfield.link( "lower", "out_score0", "counter0", "pt500" );  
   playfield.link( "lower", "out_press1", "oxo", "oxo_7" );                  // 1 inlane_l
-  playfield.link( "lower", "out_score1", "counter", "pt1000" );
+  playfield.link( "lower", "out_score1", "counter0", "pt1000" );
   playfield.link( "lower", "out_press2", "oxo", "oxo_9" );                  // 2 inlane_r
-  playfield.link( "lower", "out_score2", "counter", "pt1000" );
+  playfield.link( "lower", "out_score2", "counter0", "pt1000" );
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
-  playfield.link( "lower", "out_score3", "counter", "pt500" );
-  playfield.link( "lower", "out_score4", "counter", "pt1000" );             // 4 outlane
+  playfield.link( "lower", "out_score3", "counter0", "pt500" );
+  playfield.link( "lower", "out_score4", "counter0", "pt1000" );             // 4 outlane
   playfield.link( "lower", "out_press5", "game", "ball_exit" );             // 5 ball_exit 
   playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
   playfield.link( "game", "out_init", playfield, "pf_init" );
   playfield.link( "game", "out_enable", playfield, "pf_enable" );
 
-  playfield.link( "game", "out_counter_reset", "counter", "reset" );
+  playfield.link( "game", "out_counter_reset", "counter0", "reset" );
   playfield.link( "game", "out_ball_zero", "ballup", "zero" );
   playfield.link( "game", "out_player_zero", "playerup", "zero" );
   playfield.link( "game", "out_ball_adv", "ballup", "advance" );

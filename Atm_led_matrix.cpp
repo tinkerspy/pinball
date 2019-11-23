@@ -332,7 +332,7 @@ Atm_led_matrix& Atm_led_matrix::update() {
 
 Atm_led_matrix& Atm_led_matrix::trace( Stream & stream ) {
   Symbolic_Machine::setTrace( &stream, atm_serial_debug::trace,
-                     "APA102\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
+                     "LED_MATRIX\0EVT_DONE\0EVT_RUN\0EVT_UPDATE\0EVT_MILLI\0ELSE\0IDLE\0WAITING\0RUNNING\0UPDATING" );
   Serial.printf( "%d Tracing enabled %s@%X\n", millis(), symbols, (long)(this) );
   return *this;
 }

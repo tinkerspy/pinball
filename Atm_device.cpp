@@ -406,8 +406,7 @@ void Atm_device::run_code() {
             }            
             break;            
           case '!': // Stop script!
-            code_ptr = 0;
-            stack_ptr = 0;
+            stack_ptr = code_ptr = 0;
             break;
           case 'H': // LedOn
             selected_action = led_active( led_group, selector ) ? action_t : action_f;

@@ -160,6 +160,7 @@ void setup() {
   lib.compile( "std_game", game_bytecode );
   lib.compile( "std_switchbank", switchbank_bytecode );
   lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
+  lib.compile( "std_animation", animation_bytecode );
 
   Serial.println( "init devices" ); delay( 100 );
 
@@ -188,6 +189,7 @@ void setup() {
   playfield.device( "ballup", "led_ballup_grp", lib.code( "std_scalar" ) );
   playfield.device( "gi", "coil_gi", lib.code( "std_ledbank" ), 1 ); // default on
   playfield.device( "game", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
+  playfield.device( "animation", "led_oxo_ani_grp", lib.code( "std_animation" ) );
   
   Serial.println( "chain devices" ); delay( 100 );
 

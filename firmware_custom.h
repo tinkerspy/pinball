@@ -23,6 +23,8 @@ reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
 reg_ball, reg_ball_cntr
 msg_init, msg_wait_start, msg_ball_loop, msg_player_loop, msg_counter_reset, msg_add_player
 
+
+// TODO tilt!
 sub_press_start
 R, -1, -1, reg_ball_cntr       // Exit if we're already in play
 >,  0, -1, 0
@@ -58,7 +60,7 @@ Q, reg_no_of_players, -1, msg_add_player;
 init
 P, -1, -1, 1                    // Persistent
 T, -1, -1, out_init             
-Y, -1, -1, 101                
+Y, -1, -1, 100                
 R, -1, -1, 0
 D, -1, -1, reg_no_of_balls
 R, -1, -1, 1
@@ -76,7 +78,7 @@ Z, -1, -1, 0
 E, press_start, 0, 0            // Clear press event
 Q, -1, -1, msg_wait_start
 S, -1, -1, sub_wait_players     // Wait for a front button press to start game
-W, -1, -1, 102
+W, -1, -1, 100
 Q, -1, -1, msg_init
 T, -1, -1, out_init
 T, -1, -1, out_players_zero
@@ -118,7 +120,7 @@ W, -1, -1, 500
 R, -1, -1, reg_ball
 T,  1,  out_3bonus, -1
 T, -1, -1, out_init
-W, -1, -1, 103
+W, -1, -1, 100
 T, -1, -1, out_kickoff
 W, -1, -1, 1000
 T, -1, -1, out_enable
@@ -126,11 +128,11 @@ W, -1, -1, 100
 E, ball_exit, 0, 0                // Clear press_exit event
 S, -1, -1, sub_wait_playing
 T, -1, -1, out_disable
-W, -1, -1, 104
+W, -1, -1, 100
 T, -1, -1, out_collect
-W, -1, -1, 105
+W, -1, -1, 100
 S, -1, -1, sub_wait_collecting
-W, -1, -1, 106
+W, -1, -1, 100
 R, -1, -1, reg_ball_cntr
 I, -1, -1, 1
 =,  1,  0, -1
@@ -147,7 +149,7 @@ A, -1, -1, sub_wait_players;        // else keep looping
 
 sub_wait_reset                      // busy loop: waiting for counter reset to finish
 Q, reg_max_players, -1, msg_counter_reset
-W, -1, -1, 107
+W, -1, -1, 100
 E, press_start, 0, 1                // On event increment no of players
 S, -1, -1, sub_press_start
 J, arg_counter0, -4, 0
@@ -165,7 +167,7 @@ S, -1, -1, sub_press_start
 E, ball_exit, -1, -4;
 
 sub_wait_collecting
-W, -1, -1, 109
+W, -1, -1, 100
 J, arg_collecting, -2, -1;
 )"""";
 
@@ -219,47 +221,42 @@ const uint16_t game_hexbin[] = {
   0xFFFF
 };
 
+const char animation_bytecode[] = R""""(
+init, cycle
 
-enum { IN_ANI_INIT, IN_ANI_CYCLE };
-enum { ARG_LED0, ARG_LED1, ARG_LED2 }; 
+arg_led0, arg_led1, arg_led2
 
-int16_t animation_firmware[] = {
-  IN_ANI_INIT, 
-  IN_ANI_CYCLE,
-  -1,
 
-  IN_ANI_INIT,
-  'P', -1, -1, 1,  // Persistent
-  'H', -1, -1, ARG_LED0,
-  'L', -1, -1, ARG_LED1,
-  'L', -1, -1, ARG_LED2,
-  -1,
 
-  IN_ANI_CYCLE,
-  'L', -1, -1, ARG_LED0, 
-  'H', -1, -1, ARG_LED1, 
-  'Y', -1, -1, 0,
-  'L', -1, -1, ARG_LED1, 
-  'H', -1, -1, ARG_LED2, 
-  'Y', -1, -1, 0,
-  'L', -1, -1, ARG_LED2, 
-  'H', -1, -1, ARG_LED0, 
-  'Y', -1, -1, 0,
-  'L', -1, -1, ARG_LED0, 
-  'H', -1, -1, ARG_LED1, 
-  'Y', -1, -1, 0,
-  'L', -1, -1, ARG_LED1, 
-  'H', -1, -1, ARG_LED2, 
-  'Y', -1, -1, 0,
-  'L', -1, -1, ARG_LED2, 
-  'H', -1, -1, ARG_LED0, 
-  'Y', -1, -1, 0,
-  'A', -1, -1, IN_ANI_CYCLE,
-  -1,
+init
+P, -1, -1, 1  
+H, -1, -1, arg_led0
+L, -1, -1, arg_led1
+L, -1, -1, arg_led2
+A, -1, -1, cycle;
 
-  -1,
-};
+cycle
+L, -1, -1, arg_led0 
+H, -1, -1, arg_led1 
+W, -1, -1, 200
+L, -1, -1, arg_led1 
+H, -1, -1, arg_led2 
+W, -1, -1, 400
+L, -1, -1, arg_led2 
+H, -1, -1, arg_led0 
+W, -1, -1, 100
+L, -1, -1, arg_led0, 
+H, -1, -1, arg_led1 
+W, -1, -1, 350
+L, -1, -1, arg_led1 
+H, -1, -1, arg_led2 
+W, -1, -1, 550
+L, -1, -1, arg_led2 
+H, -1, -1, arg_led0 
+W, -1, -1, 300
+A, -1, -1, cycle;
 
+)"""";
 
 // Williams OXO tic-tac-toe game
 
@@ -409,9 +406,9 @@ collect
 H, -1, -1, arg_collect
 S, -1, -1, sub_collect
 J, arg_triple, 0, 4
-Y, -1, -1, 1000
+W, -1, -1, 500
 S, -1, -1, sub_collect
-Y, -1, -1, 1000
+W, -1, -1, 500
 S, -1, -1, sub_collect
 Z, -1, -1, 0
 L, -1, -1, arg_collect;
@@ -547,109 +544,109 @@ sub_collect
 J, arg_1a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_1b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_1b
 J, arg_1b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_1a
 H, -1, -1, arg_1c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_1a
 L, -1, -1, arg_1c
 J, arg_2a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_2b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_2b
 J, arg_2b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_2a
 H, -1, -1, arg_2c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_2a
 L, -1, -1, arg_2c
 J, arg_3a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_3b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_3b
 J, arg_3b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_3a
 H, -1, -1, arg_3c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_3a
 L, -1, -1, arg_3c
 J, arg_4a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_4b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_4b
 J, arg_4b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_4a
 H, -1, -1, arg_4c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_4a
 L, -1, -1, arg_4c
 J, arg_5a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_5b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_5b
 J, arg_5b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_5a
 H, -1, -1, arg_5c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_5a
 L, -1, -1, arg_5c
 J, arg_6a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_6b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_6b
 J, arg_6b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_6a
 H, -1, -1, arg_6c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_6a
 L, -1, -1, arg_6c
 J, arg_7a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_7b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_7b
 J, arg_7b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_7a
 H, -1, -1, arg_7c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_7a
 L, -1, -1, arg_7c
 J, arg_8a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_8b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_8b
 J, arg_8b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_8a
 H, -1, -1, arg_8c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_8a
 L, -1, -1, arg_8c
 J, arg_9a, 0, 4
 T, -1, -1, out_collect
 H, -1, -1, arg_9b
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_9b
 J, arg_9b, 0, 6
 T, -1, -1, out_collect
 H, -1, -1, arg_9a
 H, -1, -1, arg_9c
-Y, -1, -1, 500
+W, -1, -1, 500
 L, -1, -1, arg_9a
 L, -1, -1, arg_9c;
 

@@ -225,7 +225,7 @@ void cmd_callback( int idx, int v, int up ) {
                 }
               }     
             }            
-            Serial.println();        
+            cmd[idx].stream->println();        
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 1 ); i++ ) {
             Machine* machine = dev->outputPtr( i );

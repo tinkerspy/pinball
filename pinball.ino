@@ -34,9 +34,9 @@ void dumpSymbols( Symbolic_Machine* machine, int16_t bank = -1 ) {
 }
 
 void setup() {
-  delay( 1000 );
+  //delay( 1000 );
   Serial.println( "Singularity Shell\ninit IO" );
-  delay( 100 );
+  //delay( 100 );
 
   Serial1.begin( 9600 );
   cmd[0].begin( Serial, cmd_buffer, sizeof( cmd_buffer ) )
@@ -56,24 +56,25 @@ void setup() {
     .retrigger()
     .show();
 
-  Serial.println( "init leds" ); delay( 100 );
+  Serial.println( "init leds" ); //delay( 100 );
   leds.begin( io )
     .loadSymbols( led_symbols )
     .loadGroups( led_group_list  );
 
-  Serial.println( "init playfield" ); delay( 100 );
+  Serial.println( "init playfield" ); //delay( 100 );
   playfield.begin( io, leds, leds.findSymbol( "led_extra" ) ) // TODO LED_EXTRA moet hier weg: separation of concerns!!!
     .loadSymbols( switch_symbols )
     .loadGroups( switch_group_list );
     
-  Serial.println( "init playfield switches" ); delay( 100 );
+  Serial.println( "init playfield switches" ); //delay( 100 );
   
   //dumpSymbols( &playfield ); // ERROR: returns one bank too many... why??? (devices seem fine)
 
   io.invert( playfield.findSymbol( "ball_enter" ) );
 
-  Serial.println( "led profiles" ); delay( 100 );
+  Serial.println( "led profiles" ); //delay( 100 );
 
+  //                                   T0,  L1,  T1,  L2  
   leds.profile( "led_kicker_l"     ,    0,   0,   0, 127 );
   leds.profile( "led_kicker_r"     ,    0,   0,   0, 127 );
   leds.profile( "led_target_grp"   ,    0,   0,   0, 127 );
@@ -108,8 +109,8 @@ void setup() {
   leds.profile( "vled_6"           ,    0,   0,   0, 127 );
   leds.profile( "vled_7"           ,    0,   0,   0, 127 );
   
-  Serial.println( "switch profiles" ); delay( 100 );
-
+  Serial.println( "switch profiles" ); //delay( 100 );
+  //                                    press,  rel,  thr,  sep
   playfield.profile( "switches"       ,   200,    0,    0,    0 );  // Default for switches
   playfield.profile( "multilane"      ,   200,  200,    0,    0 );
   playfield.profile( "sling_l"        ,     5,    0, 5000,    0 );  // Slingshots
@@ -143,26 +144,29 @@ void setup() {
   playfield.profile( "frontbtn"       ,     0,   50, 5000,    0 );
 
   int32_t base_ram = FreeRam();
-  Serial.println( "import firmware from flash" ); delay( 100 );
+  Serial.println( "import firmware from flash" ); //delay( 100 );
 
   lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
   lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
   //lib.import( "std_game", game_symbin, game_hexbin );
   //lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
-  lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
+  //lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
   //lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
-  lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
+  //lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
+  //lib.import( "std_animation", animation_symbin, animation_hexbin );
 
   lib.compile( "std_game", game_bytecode );
   lib.compile( "std_switchbank", switchbank_bytecode );
   lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
   lib.compile( "std_animation", animation_bytecode );
+  lib.compile( "std_scalar", scalar_bytecode );
+  lib.compile( "std_ledbank", ledbank_bytecode );
 
-  Serial.println( "init devices" ); delay( 100 );
+  Serial.println( "init devices" ); //delay( 100 );
 
   playfield.device( "chimes", "led_chime_grp", lib.code( "std_ledbank" ) );
   playfield.device( "counter0", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
@@ -191,13 +195,13 @@ void setup() {
   playfield.device( "game", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
   playfield.device( "animation", "led_oxo_ani_grp", lib.code( "std_animation" ) );
   
-  Serial.println( "chain devices" ); delay( 100 );
+  Serial.println( "chain devices" ); //delay( 100 );
 
   playfield.device( "counter0" ).chain( "counter1" ).chain( "counter2" ).chain( "counter3" ); 
 
-  automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
+  //automaton.delay( 1000 ); // Visible reset indicator... (GI fades off/on)
 
-  Serial.println( "link devices" ); delay( 100 );
+  Serial.println( "link devices" ); //delay( 100 );
 
   playfield.link( "counter0", "out_digit1", "chimes", "on0" ); // link() propagates through chain
   playfield.link( "counter0", "out_digit2", "chimes", "on1" );
@@ -254,7 +258,7 @@ void setup() {
   playfield.link( "lower", "out_score2", "counter0", "pt1000" );
   playfield.link( "lower", "out_press3", "oxo", "oxo_8" );                  // 3 rollover
   playfield.link( "lower", "out_score3", "counter0", "pt500" );
-  playfield.link( "lower", "out_score4", "counter0", "pt1000" );             // 4 outlane
+  playfield.link( "lower", "out_score4", "counter0", "pt1000" );            // 4 outlane
   playfield.link( "lower", "out_press5", "game", "ball_exit" );             // 5 ball_exit 
   playfield.link( "lower", "out_press6", "dual_target", "clear" );          // 6 ball_enter 
   
@@ -273,6 +277,11 @@ void setup() {
   playfield.link( "game", "out_players_adv", "players", "advance" );
   playfield.link( "game", "out_over", "game_over", "on" );
   playfield.link( "game", "out_disable", playfield, "pf_ready" );
+
+  // End of game cleanup
+  playfield.link( "game_over", "out_on0", "save_gate", "off" );
+  playfield.link( "game_over", "out_on1", "flipper", "release_l" );
+  playfield.link( "game_over", "out_on2", "flipper", "release_r" );
 
 //  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME
   

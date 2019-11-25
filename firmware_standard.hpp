@@ -54,25 +54,25 @@ S, -1, -1, on;
 
 on
 Z, -1, -1, 1
-H, -1, -1, arg_led0
-H, -1, -1, arg_led1
-H, -1, -1, arg_led2
-H, -1, -1, arg_led3
-H, -1, -1, arg_led4
-H, -1, -1, arg_led5
-H, -1, -1, arg_led6
-H, -1, -1, arg_led7;
+S, -1, -1, on0
+S, -1, -1, on1
+S, -1, -1, on2
+S, -1, -1, on3
+S, -1, -1, on4
+S, -1, -1, on5
+S, -1, -1, on6
+S, -1, -1, on7;
 
 off
 Z, -1, -1, 0
-L, -1, -1, arg_led0
-L, -1, -1, arg_led1
-L, -1, -1, arg_led2
-L, -1, -1, arg_led3
-L, -1, -1, arg_led4
-L, -1, -1, arg_led5
-L, -1, -1, arg_led6
-L, -1, -1, arg_led7;
+S, -1, -1, off0
+S, -1, -1, off1
+S, -1, -1, off2
+S, -1, -1, off3
+S, -1, -1, off4
+S, -1, -1, off5
+S, -1, -1, off6
+S, -1, -1, off7;
 
 on0
 Z, -1, -1, 1
@@ -574,23 +574,21 @@ const uint16_t dual_flipper_hexbin[] = {
  * Led arguments: LED0, LED1, LED2, LED3, LED4, BACKSTOP
  * Description: 
  *   Led position indicator with 5 places (0..4), used for # of players, # of ball, # of player up
- *   Advances until ARG_BACKTOP led is lit
- *   or until IN_SCALAR_FREEZE is called
+ *   Advances until arg_backstop led is lit
+ *   or until freeze is called
  */
 
 const char scalar_bytecode[] = R""""(
 init, zero, advance, freeze, sel0, sel1, sel2, sel3, sel4, sub_clear
-
+out_sel0, out_sel1, out_sel2, out_sel3, out_sel4
 arg_led0, arg_led1, arg_led2, arg_led3, arg_led4, arg_backstop
-reg_state, reg_block, reg_scalar
+reg_state, reg_freeze, reg_scalar
 
 
 init
 P, -1, -1, 1
-X,  1, -1, -1
-R, -1, -1, reg_block
-Z, -1, -1, 0
-S, -1, -1, zero;
+X,  1,  0, -1
+A, -1, -1, zero;
 
 zero
 H, -1, -1, arg_led0
@@ -598,11 +596,11 @@ L, -1, -1, arg_led1
 L, -1, -1, arg_led2
 L, -1, -1, arg_led3
 L, -1, -1, arg_led4
-R, -1, -1, reg_block
+R, -1, -1, reg_freeze
 Z, -1, -1, 0;
 
 advance
-R, -1, -1, reg_block
+R, -1, -1, reg_freeze
 =, 1, -1, 0
 J, arg_backstop, -1, 0
 R, -1, -1, reg_state
@@ -619,33 +617,38 @@ J, arg_led3, 0, -1
 S, -1, -1, sel4;
 
 freeze
-R, -1, -1, reg_block
+R, -1, -1, reg_freeze
 Z, -1, -1, 1;
 
 sel0
 Z, -1, -1, 0
 S, -1, -1, sub_clear
-H, -1, -1, arg_led0;
+H, -1, -1, arg_led0
+T, -1, -1, out_sel0;
 
 sel1
 Z, -1, -1, 1
 S, -1, -1, sub_clear
-H, -1, -1, arg_led1;
+H, -1, -1, arg_led1
+T, -1, -1, out_sel1;
 
 sel2
 Z, -1, -1, 2
 S, -1, -1, sub_clear
-H, -1, -1, arg_led2;
+H, -1, -1, arg_led2
+T, -1, -1, out_sel2;
 
 sel3
 Z, -1, -1, 3
 S, -1, -1, sub_clear
-H, -1, -1, arg_led3;
+H, -1, -1, arg_led3
+T, -1, -1, out_sel3;
 
 sel4
 Z, -1, -1, 4
 S, -1, -1, sub_clear
-H, -1, -1, arg_led4;
+H, -1, -1, arg_led4
+T, -1, -1, out_sel4;
 
 sub_clear
 L, -1, -1, arg_led0

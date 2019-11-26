@@ -4,10 +4,10 @@ Atm_my_command cmd[2];
 
 const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
-enum { CMD_PS, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
+enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
 
-const char cmdlist[] = "ps ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot";
+const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
@@ -36,6 +36,9 @@ void cmd_callback( int idx, int v, int up ) {
         }
         cmd[idx].stream->println(); 
       }
+      return;
+    case CMD_PF:  
+      playfield.trigger( playfield.findSymbol( cmd[idx].arg( 1 ), 0 ) ); // PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT
       return;
     case CMD_LL: // List library entries
       {  

@@ -149,10 +149,10 @@ void setup() {
   lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
   lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
   //lib.import( "std_game", game_symbin, game_hexbin );
-  //lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
-  //lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
-  //lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
-  //lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
+  lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
+  lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
+  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
+  lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
@@ -160,11 +160,11 @@ void setup() {
   //lib.import( "std_animation", animation_symbin, animation_hexbin );
 
   lib.compile( "std_game", game_bytecode );
-  lib.compile( "std_switchbank", switchbank_bytecode );
-  lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
+  //lib.compile( "std_switchbank", switchbank_bytecode );
+  //lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
   lib.compile( "std_animation", animation_bytecode );
-  lib.compile( "std_scalar", scalar_bytecode );
-  lib.compile( "std_ledbank", ledbank_bytecode );
+  //lib.compile( "std_scalar", scalar_bytecode );
+  //lib.compile( "std_ledbank", ledbank_bytecode );
 
   Serial.println( "init devices" ); //delay( 100 );
 

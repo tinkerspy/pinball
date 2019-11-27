@@ -26,6 +26,7 @@ const char* Library::cpunfold( char buf[], const char src[] ) {
 int16_t Library::compile( const char label[], const char src[] ) {
   char buf[2048];
   char *token;
+  lib[lib_cnt].location = 'R';
   strcpy( lib[lib_cnt].label, label );
   lib[lib_cnt].label[strlen(label)] = '\0';
   lib[lib_cnt].symbols = NULL;
@@ -67,6 +68,7 @@ int16_t Library::compile( const char label[], const char src[] ) {
 }
 
 int16_t Library::import( const char label[], const char symbols[], const uint16_t code[] ) {
+  lib[lib_cnt].location = 'F';
   strcpy( lib[lib_cnt].label, label );
   lib[lib_cnt].label[strlen(label)] = '\0';
   lib[lib_cnt].symbols = (symbolic_machine_table*) symbols;
@@ -88,7 +90,7 @@ Library& Library::hexdump( Stream* stream, int16_t slot ) {
   uint8_t last = 0;
   if ( slot == -1 ) return *this;
   stream->printf( "const char %s_symbin[] = {\n", label( slot ) );
-  for ( int16_t b = 0; b < 4; b++ ) {
+  for ( int16_t b = 0; b < 5; b++ ) {
     if ( countSymbols( slot, b ) > 0 ) {
       last = b;
     }
@@ -256,6 +258,10 @@ int16_t Library::countSymbols( int16_t slot, int8_t bank /* = 0 */ ) {
 
 int16_t Library::count() {
   return lib_cnt;
+}
+
+char Library::location( int16_t slot ) {
+  return lib[slot].location;
 }
 
 char* Library::label( int16_t slot ) {

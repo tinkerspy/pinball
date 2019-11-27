@@ -7,6 +7,7 @@
  
 struct library_record {
   char label[MAX_LABEL_SIZE + 1];
+  char location;
   symbolic_machine_table* symbols;
   int16_t* code;    
 };
@@ -39,6 +40,7 @@ class Library: public Symbolic_Machine {
   int16_t import( const char label[], const char symbols[], const uint16_t code[] );
   int16_t count();
   char* label( int16_t slot );
+  char location( int16_t slot );
   uint64_t code( int16_t idx );
   uint64_t code( const char label[] );
   int16_t findCode( const int16_t* c );

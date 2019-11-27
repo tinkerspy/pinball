@@ -43,7 +43,7 @@ void cmd_callback( int idx, int v, int up ) {
     case CMD_LL: // List library entries
       {  
         for ( int16_t i = 0; i < lib.count(); i++ ) {
-          cmd[idx].stream->printf( "%02d: %s\n", i, lib.label( i ) );
+          cmd[idx].stream->printf( "%02d: %s %s\n", i, lib.location( i ) == 'R' ? "RAM  " : "FLASH", lib.label( i ) );
         }
         cmd[idx].stream->println(); 
       }

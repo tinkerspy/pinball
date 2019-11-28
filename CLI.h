@@ -5,12 +5,29 @@ Atm_my_command cmd[2];
 const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
-        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT };
+        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_DEVICE, CMD_CHAIN };
 
-const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot";
+const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link device chain";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
+    case CMD_CHAIN:
+      {
+        Atm_device* dev = &playfield.device( cmd[idx].arg( 1 ) );
+        dev->chain( cmd[idx].arg( 2 ) );
+      }
+      return;
+    case CMD_DEVICE:
+      playfield.device( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), lib.code( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ), atoi( cmd[idx].arg( 6 ) ), atoi( cmd[idx].arg( 7 ) ), atoi( cmd[idx].arg( 8 ) ) );    
+      return;
+    case CMD_LINK:
+      if ( strcasecmp( cmd[idx].arg( 3 ), "playfield" ) == 0 ) {
+        playfield.link( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), playfield, cmd[idx].arg( 4 ) );
+      } else {
+        playfield.link( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );          
+      }
+      cmd[idx].stream->printf( "link %s %s %s %s\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );
+      return;
     case CMD_PS:  
       {           
         uint8_t map[32];

@@ -167,7 +167,7 @@ void setup() {
   //lib.compile( "std_ledbank", ledbank_bytecode );
 
   Serial.println( "init devices" ); //delay( 100 );
-
+/*
   playfield.device( "chimes", "led_chime_grp", lib.code( "std_ledbank" ) );
   playfield.device( "counter0", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
   playfield.device( "counter1", "led_counter1_grp", lib.code( "std_counter_em4d1w" ) );
@@ -194,6 +194,104 @@ void setup() {
   playfield.device( "gi", "coil_gi", lib.code( "std_ledbank" ), 1 ); // default on
   playfield.device( "game", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
   playfield.device( "animation", "led_oxo_ani_grp", lib.code( "std_animation" ) );
+
+device chimes led_chime_grp std_ledbank  
+device counter0 led_counter0_grp std_counter_em4d1w  
+device counter1 led_counter1_grp std_counter_em4d1w  
+device counter2 led_counter2_grp std_counter_em4d1w  
+device counter3 led_counter3_grp std_counter_em4d1w  
+device bumper_a led_bumper_a_grp std_bumper  
+device bumper_b led_bumper_b_grp std_bumper  
+device bumper_c led_bumper_c_grp std_bumper  
+device oxo led_oxo_grp std_tictactoe  
+device multilane led_none_grp std_switchbank   
+device dual_target led_target_grp std_dual_target  
+device kicker led_kicker_grp std_dual_kicker  
+device uplane led_uplane_grp std_dual_combo   
+device slingshot led_slingshot_grp std_dual_kicker  
+device lower led_none_grp std_switchbank   
+device flipper led_flipper_grp std_dual_flipper   
+device again led_again_grp std_ledbank  
+device save_gate coil_save_gate std_ledbank  
+device feeder coil_feeder std_ledbank  
+device game_over led_game_over std_ledbank    
+device players led_players_grp std_scalar  
+device playerup led_playerup_grp std_scalar  
+device ballup led_ballup_grp std_scalar  
+device gi coil_gi std_ledbank 1
+device game led_game_grp std_game 3 4 
+device animation led_oxo_ani_grp std_animation  
+
+chain counter0 counter1
+chain counter1 counter2
+chain counter2 counter3
+
+link counter0 out_digit1 chimes on0  
+link counter0 out_digit2 chimes on1 
+link counter0 out_digit3 chimes on2 
+link oxo out_win_row kicker on 
+link oxo out_win_all uplane on 
+link oxo out_collect counter0 pt1000 
+link multilane out_press0 oxo oxo_1o  
+link multilane out_press1 oxo oxo_1x 
+link multilane out_press2 oxo oxo_2o 
+link multilane out_press3 oxo oxo_2x 
+link multilane out_press4 oxo oxo_3o  
+link multilane out_press5 oxo oxo_3x 
+link multilane out_score counter0 pt1000 
+link bumper_a out_score_lit counter0 pt100 
+link bumper_a out_score_unlit counter0 pt10   
+link bumper_b out_score_lit counter0 pt100 
+link bumper_b out_score_unlit counter0 pt10   
+link bumper_c out_score_lit counter0 pt1000 
+link bumper_c out_score_unlit counter0 pt100   
+link bumper_c out_light_on save_gate on 
+link bumper_c out_light_off save_gate off 
+link dual_target out_led0_on bumper_a turn_on 
+link dual_target out_led0_off bumper_a turn_off 
+link dual_target out_led1_on bumper_b turn_on 
+link dual_target out_led1_off bumper_b turn_off 
+link dual_target out_all_on bumper_c turn_on   
+link dual_target out_all_off bumper_c turn_off 
+link dual_target out_score counter0 pt1000 
+link kicker out_press_lit again on 
+link kicker out_score_lit counter0 pt5000 
+link kicker out_score_unlit counter0 pt500 
+link uplane out_score counter0 pt1000 
+link uplane out_press_lit again on 
+link uplane out_press0_unlit oxo oxo_4 
+link uplane out_press1_unlit oxo oxo_6 
+link slingshot out_score counter0 pt10 
+link slingshot out_press oxo toggle     
+link lower out_press0 oxo oxo_5
+link lower out_score0 counter0 pt500   
+link lower out_press1 oxo oxo_7
+link lower out_score1 counter0 pt1000 
+link lower out_press2 oxo oxo_9
+link lower out_score2 counter0 pt1000 
+link lower out_press3 oxo oxo_8
+link lower out_score3 counter0 pt500 
+link lower out_score4 counter0 pt1000
+link lower out_press5 game ball_exit
+link lower out_press6 dual_target clear           
+link game out_init playfield pf_init 
+link game out_enable playfield pf_enable 
+link game out_counter_reset counter0 reset 
+link game out_ball_zero ballup zero 
+link game out_player_zero playerup zero 
+link game out_ball_adv ballup advance 
+link game out_player_adv playerup advance 
+link game out_3bonus oxo triple 
+link game out_collect oxo collect 
+link game out_kickoff feeder on 
+link game out_players_zero players zero 
+link game out_players_adv players advance 
+link game out_over game_over on 
+link game out_disable playfield pf_ready 
+link game_over out_on0 save_gate off 
+link game_over out_on1 flipper release_l 
+link game_over out_on2 flipper release_r 
+
   
   Serial.println( "chain devices" ); //delay( 100 );
 
@@ -282,6 +380,8 @@ void setup() {
   playfield.link( "game_over", "out_on0", "save_gate", "off" );
   playfield.link( "game_over", "out_on1", "flipper", "release_l" );
   playfield.link( "game_over", "out_on2", "flipper", "release_r" );
+
+   */
 
 //  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME
   

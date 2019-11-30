@@ -60,7 +60,7 @@ Q, reg_no_of_players, -1, msg_add_player;
 init
 P, -1, -1, 1                    // Persistent
 T, -1, -1, out_init             
-Y, -1, -1, 100                
+W, -1, -1, 100                
 R, -1, -1, 0
 D, -1, -1, reg_no_of_balls
 R, -1, -1, 1

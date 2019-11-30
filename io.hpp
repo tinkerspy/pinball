@@ -55,7 +55,7 @@ class IO {
     uint8_t node_ptr = 0;   // Max 8 matrix nodes within an IO string
     uint8_t switch_ptr = 0; // Max 8 wwitches connected to a matrix node 
     uint8_t switch_max = MATRIX_SWITCHES;
-    uint8_t switch_map = 0;
+//    uint8_t switch_map = 0;
     uint32_t last_read_time = 0;
     uint8_t last_strip = 0;
     uint8_t selected = 0; 
@@ -63,7 +63,7 @@ class IO {
     logical_led led[NUM_IOPORTS * MAX_LEDS_PER_STRIP];
     int16_t led_dirty[NUM_IOPORTS];
     uint16_t led_cnt = 0;
-    uint16_t switch_cnt = 0;
+    uint16_t switch_node_cnt = 0;
     int16_t log_last_pixel = -1;        
     uint8_t soll[MATRIX_NODES][MATRIX_SWITCHES];
     uint8_t sub[MATRIX_NODES][MATRIX_SWITCHES];

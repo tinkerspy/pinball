@@ -91,13 +91,13 @@ int16_t Atm_device::reg( uint8_t r ) {
 }
 
 Atm_device& Atm_device::chain( Atm_device& next ) {
-  //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
+  //Serial.printf( "dev %x: set next to %x\r\n", (long)(this), (long)&next ); 
   this->next = &next;  
   return next;
 }
 
 Atm_device& Atm_device::chain( int16_t sw ) {
-  //Serial.printf( "dev %x: set next to %x\n", (long)(this), (long)&next ); 
+  //Serial.printf( "dev %x: set next to %x\r\n", (long)(this), (long)&next ); 
   Atm_device& dev = playfield->device( sw );
   this->next = &dev;  
   return dev;
@@ -167,7 +167,7 @@ void Atm_device::action( int id ) {
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
           if ( playfield->enabled() || output_persistence ) {
-            //Serial.printf( "%X Outgoing trigger: %d\n", (long)(this), i );
+            //Serial.printf( "%X Outgoing trigger: %d\r\n", (long)(this), i );
             push( connectors, ON_EVENT, i, i, 0 );
           }
         }
@@ -192,9 +192,9 @@ int16_t Atm_device::led_index( int16_t led_group, int16_t selector ) {
   int16_t n = leds->index( led_group, selector );
   if ( callback_trace ) { 
     if ( n != -1 ) { 
-      stream_trace->printf( "Atm_device led arg #%d maps to physical led %d\n", selector, n );
+      stream_trace->printf( "Atm_device led arg #%d maps to physical led %d\r\n", selector, n );
     } else { 
-      stream_trace->printf( "Atm_device led arg #%d not used\n", selector );    
+      stream_trace->printf( "Atm_device led arg #%d not used\r\n", selector );    
     }
   }
   return n;  
@@ -220,14 +220,14 @@ void Atm_device::led_off( int16_t led_group, int16_t selector ) {
 }
 
 void Atm_device::start_code( int16_t e ) {
-  //Serial.printf( "%d %X Start code %d\n", millis(), (long)(this), e );
-  //Serial.printf( "%d > -1 && %d < %d && %d > 0\n", e, e, numberOfInputs, script[e] );
+  //Serial.printf( "%d %X Start code %d\r\n", millis(), (long)(this), e );
+  //Serial.printf( "%d > -1 && %d < %d && %d > 0\r\n", e, e, numberOfInputs, script[e] );
   if ( e > -1 && e < numberOfInputs && script[e] > 0 ) { 
     reg_ptr = 0;
     stack_ptr = 0;
     code_ptr = script[e];
     if ( trace_code ) 
-      tc_stream->printf( "run_code event %03d called for %d -> %03d\n", e, switch_group, code_ptr );
+      tc_stream->printf( "run_code event %03d called for %d -> %03d\r\n", e, switch_group, code_ptr );
     xctr++;
     run_code();      
   }
@@ -360,10 +360,10 @@ void Atm_device::run_code() {
             break;
           case 'Q': // Quote (FIXME: only in response to tm command)
             if ( selector == -1 ) {
-              Serial.printf( "%d MSG %s %s\n", millis(), 
+              Serial.printf( "%d MSG %s %s\r\n", millis(), 
                 playfield->findSymbol( switchGroup(), 1 ), findSymbol( action_f, 4 ) );
             } else {
-              Serial.printf( "%d MSG %s %s: %d\n", millis(), 
+              Serial.printf( "%d MSG %s %s: %d\r\n", millis(), 
                 playfield->findSymbol( switchGroup(), 1 ), findSymbol( action_f, 4 ), registers[selector] );              
             }
             break;
@@ -450,7 +450,7 @@ void Atm_device::run_code() {
             break;           
           case 'E': // Jump on event 
             selected_action = event_map & ( 1UL << selector ) ? action_t : action_f; // Check event
-            //Serial.printf( "Event %d: state %d -> %d\n", selector, event_map & ( 1 << selector ), selected_action );   
+            //Serial.printf( "Event %d: state %d -> %d\r\n", selector, event_map & ( 1 << selector ), selected_action );   
             event_map &= ~( 1UL << selector ); // Clear event
             if ( selected_action  != -1 ) {
               code_ptr += selected_action * 4;          
@@ -461,9 +461,9 @@ void Atm_device::run_code() {
           case 'K': // Jump on key (switch) state 
             selector--; // Switches start at zero
             selector >>= 1; // And have 1 bit per press/release pair
-            //Serial.printf( "Request map %X & sw %X, reg1=%d\n", switch_map, ( 1UL << selector ), registers[1] );
+            //Serial.printf( "Request map %X & sw %X, reg1=%d\r\n", switch_map, ( 1UL << selector ), registers[1] );
             selected_action = switch_map & ( 1UL << selector ) ? action_t : action_f; // Check event
-            //Serial.printf( "%d Key %d: state %d -> action %d\n", 
+            //Serial.printf( "%d Key %d: state %d -> action %d\r\n", 
             //  millis(), selector, switch_map & ( 1UL << selector ), selected_action );   
             if ( selected_action  != -1 ) {
               code_ptr += selected_action * 4;          
@@ -483,7 +483,7 @@ void Atm_device::run_code() {
             return;           
           default:
             if ( trace_code ) 
-              tc_stream->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\n", code_ptr - 4, opcode );
+              tc_stream->printf( "run_code %03d: abort, illegal opcode '%c', script out of sync? (missing comma?)\r\n", code_ptr - 4, opcode );
             return;
         }
       } else {
@@ -510,10 +510,10 @@ Atm_device& Atm_device::update_switch( int event ) {
     int16_t sw = event - 1; // sw = 0..31
     if ( ( sw & 1UL ) == 0 ) { // Press if bit 0 is not set
       switch_map |= ( 1UL << ( sw >> 1 ) );  // Switch press -> set switch bit
-      //Serial.printf( "%d Set switch %d on, map=%08X\n", millis(), sw >> 1, switch_map );
+      //Serial.printf( "%d Set switch %d on, map=%08X\r\n", millis(), sw >> 1, switch_map );
     } else {
       switch_map &= ~( 1UL << ( sw >> 1 ) ); // Switch release -> clear switch bit
-      //Serial.printf( "%d Set switch %d off, map=%08X\n", millis(), sw >> 1, switch_map );
+      //Serial.printf( "%d Set switch %d off, map=%08X\r\n", millis(), sw >> 1, switch_map );
     }
   }
   return *this;
@@ -524,9 +524,9 @@ Atm_device& Atm_device::update_switch( int event ) {
  */
 
 Atm_device& Atm_device::trigger( int event ) {
-  //Serial.printf( "%x trigger %d\n", (long)(this), event );
+  //Serial.printf( "%x trigger %d\r\n", (long)(this), event );
   if ( next ) {
-    //Serial.printf( "%x next %x\n", (long)(this), (long)next );
+    //Serial.printf( "%x next %x\r\n", (long)(this), (long)next );
     next->trigger( event );
   }
   if ( event == 0 || playfield->enabled() || input_persistence ) {
@@ -540,7 +540,7 @@ Atm_device& Atm_device::trigger( int event ) {
 }
 
 Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
-  //Serial.printf( "%x trigger2 %d\n", (long)(this), event );
+  //Serial.printf( "%x trigger2 %d\r\n", (long)(this), event );
   if ( next && sel > 1 ) {
     next->trigger( event, sel >> 1 );
   }
@@ -637,7 +637,7 @@ Atm_device& Atm_device::onEvent( const char sub_str[], const char sw_str[], cons
   int sw = playfield->findSymbol( sw_str );
   int event = playfield->device( sw ).findSymbol( event_str );
   if ( next ) next->onEvent( sub, playfield->device( sw ), event );    
-  //Serial.printf( "%s -> %s:%s --- %d -> %d:%d\n", sub_str, sw_str, event_str, sub, sw, event );
+  //Serial.printf( "%s -> %s:%s --- %d -> %d:%d\r\n", sub_str, sw_str, event_str, sub, sw, event );
   if ( enabled ) onPush( connectors, ON_EVENT, sub, 8, 0, playfield->device( sw ), event );
   return *this;
 }
@@ -659,7 +659,7 @@ Atm_device& Atm_device::trace( Stream & stream ) {
 }
 
 Atm_device& Atm_device::trace( void ) {
-  Serial.printf( "%d Tracing disabled %s@%X\n", millis(), symbols, (long)(this) );
+  Serial.printf( "%d Tracing disabled %s@%X\r\n", millis(), symbols, (long)(this) );
   Machine::setTrace( NULL, NULL, "" );
   return *this;
 }

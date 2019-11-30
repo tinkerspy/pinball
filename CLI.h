@@ -1,45 +1,78 @@
 
-char cmd_buffer[80];
+char cmd_buffer[1024];
 Atm_my_command cmd[2]; 
 
 const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
-        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_DEVICE, CMD_CHAIN };
+        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_DEVICE, CMD_CHAIN, CMD_PROFILE, CMD_IO, CMD_ECHO, CMD_FC };
 
-const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link device chain";
+const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link device chain profile io echo fc";
 
 void cmd_callback( int idx, int v, int up ) {
   switch ( v ) {
+    //    io.addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
+
+    case CMD_IO:
+      {
+//        io.addStrip( new IO_Adafruit_NeoPixel( atoi( cmd[idx].arg( 2 ), pin_date, atoi( cmd[idx].arg( 3 ) );
+        Serial.printf( "IO added interface: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );        
+      }
+      break;
+    case CMD_ECHO:
+      {
+        if ( strcmp( cmd[idx].arg(1), "" ) != 0 ) cmd[idx].echo( strcasecmp( cmd[idx].arg(1), "ON" ) == 0 ? 1 : atoi( cmd[idx].arg( 1 ) ) );
+        cmd[idx].stream->printf( "ECHO is %s\r\n", cmd[idx].echo() ? "ON" : "OFF" );
+      }
+      break;
+    case CMD_FC:
+      {
+        if ( strcmp( cmd[idx].arg(1), "" ) != 0 ) cmd[idx].fc( strcasecmp( cmd[idx].arg(1), "ON" ) == 0 ? 1 : atoi( cmd[idx].arg( 1 ) ) );
+        cmd[idx].stream->printf( "FLOW CONTROL is %s\r\n", cmd[idx].fc() ? "ON" : "OFF" );
+      }
+      break;
+    case CMD_PROFILE:
+      {
+        if ( leds.findSymbol( cmd[idx].arg( 1 ), -1 ) >= 0 ) {
+          cmd[idx].stream->printf( "Led %s profile: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );
+          leds.profile( cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );
+        } else {          
+          cmd[idx].stream->printf( "Switch %s profile: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );
+          playfield.profile( cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );
+        }
+      }
+      break;
     case CMD_CHAIN:
       {
         Atm_device* dev = &playfield.device( cmd[idx].arg( 1 ) );
         dev->chain( cmd[idx].arg( 2 ) );
+        cmd[idx].stream->printf( "\rChained device %s to %s\r\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ) );
       }
-      return;
+      break;
     case CMD_DEVICE:
       playfield.device( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), lib.code( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ), atoi( cmd[idx].arg( 6 ) ), atoi( cmd[idx].arg( 7 ) ), atoi( cmd[idx].arg( 8 ) ) );    
-      return;
+        cmd[idx].stream->printf( "\rCreated device %s::%s (%s)\r\n", cmd[idx].arg( 3 ), cmd[idx].arg( 1 ), cmd[idx].arg( 2 ) );
+      break;
     case CMD_LINK:
       if ( strcasecmp( cmd[idx].arg( 3 ), "playfield" ) == 0 ) {
         playfield.link( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), playfield, cmd[idx].arg( 4 ) );
       } else {
         playfield.link( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );          
       }
-      cmd[idx].stream->printf( "link %s %s %s %s\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );
-      return;
+      cmd[idx].stream->printf( "\rLinked device %s::%s -> %s::%s\r\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );
+      break;
     case CMD_PS:  
       {           
         uint8_t map[32];
         uint8_t cnt = 0;
         memset( map, 0, sizeof( map ) );
-        cmd[idx].stream->printf( "## State    Sw#               Device             Bytecode\n" ); 
+        cmd[idx].stream->printf( "## State    Sw#               Device             Bytecode\r\n" ); 
         for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
           if ( playfield.exists( n + 1 ) == 1 ) {
             Atm_device* dev = &playfield.device( n + 1 );
             uint8_t addr = ( (uint32_t)dev & 0xFFFF ) >> 8;
             if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
-              cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\n", cnt, 
+              cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\r\n", cnt, 
                 runstate_str[dev->sleep()], 
                 n + 1, 
                 n > io.numberOfSwitches() ? 'L' : 'P', 
@@ -53,36 +86,36 @@ void cmd_callback( int idx, int v, int up ) {
         }
         cmd[idx].stream->println(); 
       }
-      return;
+      break;
     case CMD_PF:  
       playfield.trigger( playfield.findSymbol( cmd[idx].arg( 1 ), 0 ) ); // PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT
-      return;
+      break;
     case CMD_LL: // List library entries
       {  
         for ( int16_t i = 0; i < lib.count(); i++ ) {
-          cmd[idx].stream->printf( "%02d: %s %s\n", i, lib.location( i ) == 'R' ? "RAM  " : "FLASH", lib.label( i ) );
+          cmd[idx].stream->printf( "%02d: %s %s\r\n", i, lib.location( i ) == 'R' ? "RAM  " : "FLASH", lib.label( i ) );
         }
         cmd[idx].stream->println(); 
       }
-      return;
+      break;
     case CMD_LO: // List leds that are active
       {  
         for ( int16_t i = 0; i < io.numberOfLeds(); i++ ) {
           if ( leds.active( i ) ) {
-            cmd[idx].stream->printf( "Led %d: %s %s\n", i, leds.findSymbol( i ), leds.active( i ) ? "ON" : "OFF" );
+            cmd[idx].stream->printf( "Led %d: %s %s\r\n", i, leds.findSymbol( i ), leds.active( i ) ? "ON" : "OFF" );
           } 
         }
         cmd[idx].stream->println(); 
       }
-      return;
+      break;
     case CMD_L: // Toggle led (or group)
       {  
         int16_t ledno = leds.findSymbol( cmd[idx].arg( 1 ), -1 ) ;
         leds.on( ledno );
-        cmd[idx].stream->printf( "Led %d: %s %s\n", ledno, leds.findSymbol( ledno ), leds.active( ledno ) ? "ON" : "OFF" );
+        cmd[idx].stream->printf( "Led %d: %s %s\r\n", ledno, leds.findSymbol( ledno ), leds.active( ledno ) ? "ON" : "OFF" );
         cmd[idx].stream->println(); 
       }
-      return;
+      break;
     case CMD_HD: // Hexdump firmware by firmware or device label
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ), -1 ) ;
@@ -93,22 +126,22 @@ void cmd_callback( int idx, int v, int up ) {
         }
         cmd[idx].stream->println(); 
       }
-      return;
+      break;
     case CMD_STATS:
-      cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
-      cmd[idx].stream->printf( "Physical leds: %d (0..%d)\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
-      cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
-      cmd[idx].stream->printf( "Physical switches: %d (1..%d)\n", io.numberOfSwitches(), io.numberOfSwitches() );
-      cmd[idx].stream->printf( "Logical switches: %d (%d..%d)\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
-      cmd[idx].stream->printf( "Devices: ??\n" );
-      cmd[idx].stream->printf( "Firmware: %d\n", lib.count() );
-      cmd[idx].stream->printf( "Free RAM: %d\n", FreeRam() );
+      cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\r\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
+      cmd[idx].stream->printf( "Physical leds: %d (0..%d)\r\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
+      cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\r\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
+      cmd[idx].stream->printf( "Physical switches: %d (1..%d)\r\n", io.numberOfSwitches(), io.numberOfSwitches() );
+      cmd[idx].stream->printf( "Logical switches: %d (%d..%d)\r\n", playfield.numberOfGroups(), io.numberOfSwitches() + 1, io.numberOfSwitches() + playfield.numberOfGroups() );
+      cmd[idx].stream->printf( "Devices: ??\r\n" );
+      cmd[idx].stream->printf( "Firmware: %d\r\n", lib.count() );
+      cmd[idx].stream->printf( "Free RAM: %d\r\n", FreeRam() );
       cmd[idx].stream->println();
-      return;
+      break;
     case CMD_TS:
       playfield.traceSwitches( *cmd[idx].stream, atoi( cmd[idx].arg( 1 ) ) );
-      cmd[idx].stream->printf( "Trace switches: %d\n", atoi( cmd[idx].arg( 1 ) ) );
-      return;    
+      cmd[idx].stream->printf( "Trace switches: %d\r\n", atoi( cmd[idx].arg( 1 ) ) );
+      break;    
     case CMD_TC:
       { 
         if ( strlen( cmd[idx].arg( 1 ) ) == 0 ) {
@@ -117,20 +150,20 @@ void cmd_callback( int idx, int v, int up ) {
               playfield.device( n + 1 ).traceCode( *cmd[idx].stream, 0 );
             }
           }          
-          cmd[idx].stream->println( "Tracing interrupted\n" );
-          return;
+          cmd[idx].stream->println( "Tracing interrupted\r\n" );
+          break;
         }
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t mode = atoi( cmd[idx].arg( 2 ) );
         if ( strlen( cmd[idx].arg( 2 ) ) == 0 ) mode = 1;
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).traceCode( *cmd[idx].stream, mode ); 
-          cmd[idx].stream->printf( "Trace code: device %d -> %d\n", sw, mode );
+          cmd[idx].stream->printf( "Trace code: device %d -> %d\r\n", sw, mode );
         } else {
-          cmd[idx].stream->printf( "Trace code: device %d not found\n", sw );
+          cmd[idx].stream->printf( "Trace code: device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_TR:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
@@ -138,17 +171,17 @@ void cmd_callback( int idx, int v, int up ) {
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
           int16_t e = dev->findSymbol( cmd[idx].arg( 2 ) );
-          cmd[idx].stream->printf( "Trigger: device %d -> %d (%d)\n", sw, e, sel );
+          cmd[idx].stream->printf( "Trigger: device %d -> %d (%d)\r\n", sw, e, sel );
           if ( sel ) {
             dev->trigger( e, sel ); 
           } else {
             dev->trigger( e );             
           }
         } else {
-          cmd[idx].stream->printf( "Trigger: device %d not found\n", sw );
+          cmd[idx].stream->printf( "Trigger: device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_DC:
     case CMD_DCC:
       {
@@ -158,14 +191,14 @@ void cmd_callback( int idx, int v, int up ) {
           int16_t e = dev->findSymbol( cmd[idx].arg( 2 ) );
           dev->dumpCode( cmd[idx].stream, e, v == CMD_DCC );
         } else {
-          cmd[idx].stream->printf( "Dump code: device %d not found\n", sw );
+          cmd[idx].stream->printf( "Dump code: device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_DDC:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
-        cmd[idx].stream->printf( "// Device code: %s\n", cmd[idx].arg( 1 ) );
+        cmd[idx].stream->printf( "// Device code: %s\r\n", cmd[idx].arg( 1 ) );
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
           for ( int16_t i = 0; i < dev->countSymbols( 0 ); i++ ) {
@@ -173,55 +206,55 @@ void cmd_callback( int idx, int v, int up ) {
           }
           cmd[idx].stream->println();
         } else {
-          cmd[idx].stream->printf( "Dump device code: device %d not found\n", sw );
+          cmd[idx].stream->printf( "Dump device code: device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_PRESS:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ) + 1, 1 ); 
-          cmd[idx].stream->printf( "Press device %d, switch %d -> event %d\n", sw, n, ( n * 2 ) + 1 );
+          cmd[idx].stream->printf( "Press device %d, switch %d -> event %d\r\n", sw, n, ( n * 2 ) + 1 );
         } else {
-          cmd[idx].stream->printf( "Press device %d not found\n", sw );
+          cmd[idx].stream->printf( "Press device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_RELEASE:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ) + 2, 1 ); 
-          cmd[idx].stream->printf( "Release device %d -> switch %d, event %d\n", sw, n, ( n * 2 ) + 2 );
+          cmd[idx].stream->printf( "Release device %d -> switch %d, event %d\r\n", sw, n, ( n * 2 ) + 2 );
         } else {
-          cmd[idx].stream->printf( "Release device %d not found\n", sw );
+          cmd[idx].stream->printf( "Release device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_INIT:
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
         if ( playfield.exists( sw ) ) {
           playfield.device( sw ).trigger( ( n * 2 ), 1 ); 
-          cmd[idx].stream->printf( "Init device %d -> %d\n", sw, n );
+          cmd[idx].stream->printf( "Init device %d -> %d\r\n", sw, n );
         } else {
-          cmd[idx].stream->printf( "Init device %d not found\n", sw );
+          cmd[idx].stream->printf( "Init device %d not found\r\n", sw );
         }
       }
-      return;    
+      break;    
     case CMD_REBOOT:
       _reboot_Teensyduino_();
-      return;
+      break;
     case CMD_INFO: // TODO show firmware label & running/sleeping state & device next in chain...
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {
           Atm_device* dev = &( playfield.device( sw ) );
-          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s] %s\n", 
+          cmd[idx].stream->printf( "Device info for %d: %s [%X:%s] %s\r\n", 
                 sw, playfield.findSymbol( sw, 1 ), dev, runstate_str[dev->sleep()], lib.label( lib.findCode( dev->script ) ) );
           for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
           cmd[idx].stream->println();
@@ -250,9 +283,9 @@ void cmd_callback( int idx, int v, int up ) {
           for ( uint16_t i = 0; i < dev->countSymbols( 1 ); i++ ) {
             Machine* machine = dev->outputPtr( i );
             if ( machine == &playfield ) {
-              cmd[idx].stream->printf( "Out[%02d] %20s  %s::%s\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
+              cmd[idx].stream->printf( "Out[%02d] %20s  %s::%s\r\n", i, dev->findSymbol( i, 1 ), "playfield", playfield.findSymbol( dev->outputEvent( i ), 0 ) );              
             } else if ( machine == NULL ) {
-              cmd[idx].stream->printf( "Out[%02d] %20s\n", i, dev->findSymbol( i, 1 ) );                            
+              cmd[idx].stream->printf( "Out[%02d] %20s\r\n", i, dev->findSymbol( i, 1 ) );                            
             } else {
               Atm_device* dest = ( Atm_device* ) machine;
               const char* dest_dev_str = playfield.findSymbol( dest->switchGroup(), 1 );
@@ -272,19 +305,19 @@ void cmd_callback( int idx, int v, int up ) {
           for ( uint16_t i = 0; i < dev->countSymbols( 2 ); i++ ) {
             const char* arg_str = leds.findSymbol( leds.index( dev->ledGroup(), i ) );
             if ( arg_str[0] == '\0' ) {
-              cmd[idx].stream->printf( "Arg[%02d] %20s\n", i, dev->findSymbol( i, 2 ) );
+              cmd[idx].stream->printf( "Arg[%02d] %20s\r\n", i, dev->findSymbol( i, 2 ) );
             } else {
-              cmd[idx].stream->printf( "Arg[%02d] %20s  %s %s\n", i, dev->findSymbol( i, 2 ), leds.findSymbol( leds.index( dev->ledGroup(), i ) ), leds.active( leds.index( dev->ledGroup(), i ) ) ? "ON" : "OFF" );              
+              cmd[idx].stream->printf( "Arg[%02d] %20s  %s %s\r\n", i, dev->findSymbol( i, 2 ), leds.findSymbol( leds.index( dev->ledGroup(), i ) ), leds.active( leds.index( dev->ledGroup(), i ) ) ? "ON" : "OFF" );              
             }
           }
           for ( uint16_t i = 0; i < dev->countSymbols( 3 ); i++ ) {
-            cmd[idx].stream->printf( "Reg[%02d] %20s  %d\n", i, dev->findSymbol( i, 3 ), dev->reg( i ) );
+            cmd[idx].stream->printf( "Reg[%02d] %20s  %d\r\n", i, dev->findSymbol( i, 3 ), dev->reg( i ) );
           }
         } else {
-          cmd[idx].stream->printf( "Init device %d not found\n", sw );
+          cmd[idx].stream->printf( "Init device %d not found\r\n", sw );
         }
       }
       cmd[idx].stream->println();
-      return;    
+      break;    
   }
 } 

@@ -27,7 +27,7 @@ void dumpSymbols( Symbolic_Machine* machine, int16_t bank = -1 ) {
   for ( int16_t b = 0; b < 8; b++ ) {
     for ( int16_t i = 0; i < machine->countSymbols( b ); i++ ) {
       if ( bank == -1 || bank == b ) {
-        Serial.printf( "%d %d %s -> %d\n", b, i, machine->findSymbol( i, b ), machine->findSymbol( machine->findSymbol( i, b ) ) );
+        Serial.printf( "%d %d %s -> %d\r\n", b, i, machine->findSymbol( i, b ), machine->findSymbol( machine->findSymbol( i, b ) ) );
       }
     }
   }
@@ -35,17 +35,20 @@ void dumpSymbols( Symbolic_Machine* machine, int16_t bank = -1 ) {
 
 void setup() {
   //delay( 1000 );
-  Serial.println( "Singularity Shell\ninit IO" );
+  Serial.println( "Singularity Shell\r\ninit IO" );
   //delay( 100 );
 
   Serial1.begin( 9600 );
   cmd[0].begin( Serial, cmd_buffer, sizeof( cmd_buffer ) )
     .list( cmdlist )
+    .echo( true )
     .onCommand( cmd_callback, 0 );
     
   cmd[1].begin( Serial1, cmd_buffer, sizeof( cmd_buffer ) )
     .list( cmdlist )
+    .echo( true )
     .onCommand( cmd_callback, 1 );
+    
   Serial1.println( "Singularity OS" );
 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
@@ -168,6 +171,8 @@ void setup() {
 
   Serial.println( "init devices" ); //delay( 100 );
 /*
+ * 
+ * 
   playfield.device( "chimes", "led_chime_grp", lib.code( "std_ledbank" ) );
   playfield.device( "counter0", "led_counter0_grp", lib.code( "std_counter_em4d1w" ) );
   playfield.device( "counter1", "led_counter1_grp", lib.code( "std_counter_em4d1w" ) );
@@ -194,6 +199,72 @@ void setup() {
   playfield.device( "gi", "coil_gi", lib.code( "std_ledbank" ), 1 ); // default on
   playfield.device( "game", "led_game_grp", lib.code( "std_game" ), NUMBER_OF_BALLS, NUMBER_OF_PLAYERS );
   playfield.device( "animation", "led_oxo_ani_grp", lib.code( "std_animation" ) );
+
+
+led_kicker_l 0 0 0 127 
+led_kicker_r 0 0 0 127 
+led_target_grp 0 0 0 127 
+led_uplane_grp 0 0 0 127 
+led_bumper_a 0 0 0 127 
+led_bumper_b 0 0 0 127 
+led_bumper_c 0 0 0 127 
+led_again0 0 0 0 127 
+led_triple_bonus 0 0 0 127 
+led_extra 0 0 0 127 
+led_headbox_grp 0 0 0 255 
+led_oxo_grp 0 0 0 127 
+coil_gi 0 0 0 255 
+coil_sling_r 0 255 30 0 
+coil_sling_l 0 255 30 0 
+coil_flipper_l 0 0 0 255 
+coil_flipper_r 0 0 0 255 
+coil_kicker_r 1000 95 30 0 
+coil_kicker_l 1000 95 30 0 
+coil_save_gate 0 0 0 255 
+coil_bumper_a 0 255 40 0 
+coil_bumper_b 0 255 40 0 
+coil_bumper_c 0 255 40 0 
+coil_feeder 0 127 30 0 
+coil_counter_grp 0 180 20 0 
+vled_counter0 0 0 0 127 
+vled_counter1 0 0 0 127 
+vled_counter2 0 0 0 127 
+vled_counter3 0 0 0 127 
+vled_collecting 0 0 0 127 
+vled_5 0 0 0 127 
+vled_6 0 0 0 127 
+vled_7 0 0 0 127 
+switches 200 0 0 0 
+multilane 200 200 0 0 
+sling_l 5 0 5000 0 
+sling_r 5 0 5000 0 
+bumper_a 0 0 2000 0 
+bumper_b 0 0 2000 0 
+bumper_c 0 0 2000 0 
+flipper 0 10 0 0 
+counter0 0 200 0 0 
+counter1 0 200 0 0 
+counter2 0 200 0 0 
+counter3 0 200 0 0 
+port_3x 5 0 5000 0 
+port_3o 5 0 5000 0 
+port_2x 5 0 5000 0 
+port_2o 5 0 5000 0 
+port_1x 5 0 5000 0 
+port_1o 5 0 5000 0 
+uplane_l 5 0 5000 0 
+uplane_r 5 0 5000 0 
+outlane 5 0 5000 0 
+inlane_l 5 0 5000 0 
+inlane_r 5 0 5000 0 
+ball_enter 5 0 5000 0 
+rollover 1 0 5000 0 
+target_a 2 0 0 0 
+target_b 2 0 0 0 
+target_c 2 0 0 0 
+ball_exit 50 0 5000 0 
+ball_enter 200 0 0 0 
+frontbtn 0 50 5000 0 
 
 device chimes led_chime_grp std_ledbank  
 device counter0 led_counter0_grp std_counter_em4d1w  
@@ -385,7 +456,7 @@ link game_over out_on2 flipper release_r
 
 //  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME
   
-  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f Bytes free\n\n", 
+  Serial.printf( "%.2f KBytes available, %.2f KBytes used for devices, %.2f Bytes free\r\n\r\n", 
         (float) base_ram / 1024, (float)( base_ram - FreeRam() ) / 1024, (float)( FreeRam() ) );
 
 }

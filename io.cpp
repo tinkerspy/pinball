@@ -92,7 +92,7 @@ uint16_t IO::numberOfLeds( void ) {
 }
 
 uint16_t IO::numberOfSwitches( void ) {
-  return switch_cnt * 8;
+  return switch_node_cnt * 8;
 }
 
 uint32_t IO::Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
@@ -130,14 +130,16 @@ IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) 
   row_map[2] = row_map[1] + r2;
   row_map[3] = row_map[2] + r3;
   row_map[4] = row_map[3] + r4;
+  /*
   switch_map = 0;
   if ( r1 ) switch_map |= 0B00000001;
   if ( r2 ) switch_map |= 0B00000010;
   if ( r3 ) switch_map |= 0B00000100;
   if ( r4 ) switch_map |= 0B00001000;
   if ( r5 ) switch_map |= 0B00010000;
+  */
   node_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
-  switch_cnt = r1 + r2 + r3 + r4 + r5;
+  switch_node_cnt = r1 + r2 + r3 + r4 + r5;
   return *this;
 }
 
@@ -223,7 +225,7 @@ IO& IO::readMatrix( uint8_t mx_depth, uint8_t mx_width, bool init /* = false */ 
 
 uint16_t IO::decimal_encode( uint8_t bus, uint8_t row, uint8_t col ) {
   uint16_t code = col + row * MATRIX_SWITCHES + row_map[bus] * MATRIX_NODES + 1;
-  return ( code <= switch_cnt * 8 ) ? code : 0; // Zou niet nodig moeten zijn...
+  return ( code <= switch_node_cnt * 8 ) ? code : 0; // Zou niet nodig moeten zijn...
 }
 
 uint16_t IO::isPressed( int16_t code ) {
@@ -245,7 +247,7 @@ int16_t IO::scan_raw() {
     uint8_t subscriptions = sub[node_ptr][switch_ptr];
     if ( changes || subscriptions ) {
       while ( io_ptr < NUM_IOPORTS ) {
-        if ( changes & ( 1 << io_ptr ) & switch_map ) { // Send changes
+        if ( changes & ( 1 << io_ptr ) ) { // & switch_map ) { // Send changes
           if ( ( 1 << io_ptr ) & soll_normalized ) { // it's a press
             ist[node_ptr][switch_ptr] |= ( 1 << io_ptr );
             io_ptr++; // Skip next scan() call         

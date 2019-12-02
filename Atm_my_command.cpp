@@ -22,7 +22,7 @@ Atm_my_command& Atm_my_command::begin( Stream& stream, char buffer[], int size )
   this->buffer = buffer;
   bufsize = size;
   bufptr = 0;
-  separatorChar = " ;";
+  separatorChar = " ";
   lastch = '\0';
   remote_echo = 0;
   flow_control = 0;
@@ -34,7 +34,7 @@ int Atm_my_command::event( int id ) {
     case EVT_INPUT:
       return stream->available();
     case EVT_EOL:
-      return buffer[bufptr - 1] == '\n' || buffer[bufptr - 1] == '\r' || buffer[bufptr - 1] == ';' || bufptr >= bufsize;
+      return buffer[bufptr - 1] == '\n' || buffer[bufptr - 1] == '\r' || bufptr >= bufsize; //  || buffer[bufptr - 1] == ';'
   }
   return 0;
 }

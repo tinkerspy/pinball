@@ -30,6 +30,7 @@ Atm_led_matrix& Atm_led_matrix::loadGroups( const char groups[] ) {
   numOfGroups = countSymbols( 0 ) - io->numberOfLeds();
   int16_t data_size = loadIntList( symbols, groups, NULL, numOfGroups, io->numberOfLeds() );
   int16_t* pdata = (int16_t *) malloc( data_size * 2 );
+  if ( pdata == NULL ) Serial.println( "Atm_led_matrix::loadGroups: malloc failed" );
   memset( pdata, 0, data_size * 2 );
   data_size = loadIntList( symbols, groups, pdata, numOfGroups, io->numberOfLeds() );
   group_def = pdata;

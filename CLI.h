@@ -1,22 +1,106 @@
 
-char cmd_buffer[1024];
+char cmd_buffer[2][256];
 Atm_my_command cmd[2]; 
+char accumulator[3600]; // shared between serial devices!
+char accu_mode = 0;
 
 const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
-        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_DEVICE, CMD_CHAIN, CMD_PROFILE, CMD_IO, CMD_ECHO, CMD_FC };
+        CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_INVERT, CMD_DEVICE, CMD_CHAIN, 
+        CMD_PROFILE, CMD_IO, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL };
 
-const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link device chain profile io echo fc";
+const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link invert "
+                        "device chain profile io echo fc leds switches ledgroups switchgroups ds dl";
+
+void trim(char * s) {
+    char * p = s;
+    int l = strlen(p);
+    while(!isalnum(p[l - 1])) p[--l] = 0;
+    while(* p && !isalnum(* p)) ++p, --l;
+    memmove(s, p, l + 1);
+}   
+
+void dumpSymbols( Symbolic_Machine* machine, int16_t bank = -1 ) {
+  for ( int16_t b = 0; b < 8; b++ ) {
+    for ( int16_t i = 0; i < machine->countSymbols( b ); i++ ) {
+      if ( bank == -1 || bank == b ) {
+        Serial.printf( "%d %d %s -> %d\r\n", b, i, machine->findSymbol( i, b ), machine->findSymbol( machine->findSymbol( i, b ) ) );
+      }
+    }
+  }
+}
 
 void cmd_callback( int idx, int v, int up ) {
+  if ( accu_mode != 0 ) {
+    uint8_t arg_idx = 0;
+    while ( strlen( cmd[idx].arg( arg_idx ) ) > 0 ) {
+      if ( strchr( cmd[idx].arg( arg_idx ), '"' ) != NULL ) {
+        strcat( accumulator, cmd[idx].arg( arg_idx ) );
+        trim( accumulator );
+        strcat( accumulator, ";" );
+        Serial.printf( "FINAL: >>%s<<\r\n", accumulator ); // call whatever function we're in
+        switch ( accu_mode ) {
+          case CMD_LEDS:
+            leds.loadSymbols( accumulator );
+            break;
+          case CMD_SWITCHES:
+            playfield.loadSymbols( accumulator );
+            break;
+          case CMD_LEDGROUPS:
+            leds.loadGroups( accumulator );
+            break;
+          case CMD_SWITCHGROUPS:
+            playfield.loadGroups( accumulator );
+            break;
+        }
+        accu_mode = 0;
+        return;        
+      }
+      strcat( accumulator, cmd[idx].arg( arg_idx ) );
+      strcat( accumulator, " " );
+      arg_idx++;
+    }
+  //  Serial.printf( "ACCU: >>%s<<\r\n", accumulator );
+    return;
+  }
   switch ( v ) {
     //    io.addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
-
+    case CMD_DS:
+      dumpSymbols( &playfield, 1 );
+      break;
+    case CMD_DL:
+      dumpSymbols( &leds, 0 );
+      break;
+    case CMD_LEDS:
+    case CMD_SWITCHES:
+    case CMD_LEDGROUPS:
+    case CMD_SWITCHGROUPS:
+      {
+        accumulator[0] = '\0';
+        accu_mode = v; 
+        uint8_t arg_idx = 0 ;
+        while ( strlen( cmd[idx].arg( arg_idx ) ) > 0 ) {
+          if ( strchr( cmd[idx].arg( arg_idx ), '"' ) != NULL ) {
+            accumulator[0] = '\0';
+          }
+          strcat( accumulator, cmd[idx].arg( arg_idx ) );
+          strcat( accumulator, " " );
+//          Serial.printf( "ACCU: >>%s<<\r\n", accumulator );
+          arg_idx++;
+        }
+      }
+      break;
     case CMD_IO:
       {
 //        io.addStrip( new IO_Adafruit_NeoPixel( atoi( cmd[idx].arg( 2 ), pin_date, atoi( cmd[idx].arg( 3 ) );
         Serial.printf( "IO added interface: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );        
+      }
+      break;
+    case CMD_INVERT:
+      {
+        io.invert( playfield.findSymbol( cmd[idx].arg( 1 ) ) );
+        Serial.printf( "Inverted switch: %s\r\n", cmd[idx].arg( 1 ) );        
       }
       break;
     case CMD_ECHO:

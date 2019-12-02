@@ -14,7 +14,7 @@ void Symbolic_Machine::clearComments( char s[] ) {
 int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */, bool sparse_jumptable /* = false */ ) {
   char buf[1024];
   char *token;
-  const char separator[6] = ", \n\t\r";
+  const char separator[] = ", \n\t\r";
   int16_t* pcode = dst + dict_size;
   if ( dst != NULL ) {
     for ( int16_t i = 0; i < dict_size; i++ ) {
@@ -40,11 +40,12 @@ int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, co
     */
     src += end_of_record - src + 1;
     token = strtok( buf, separator );
-    int16_t i = findSymbol( symbols, token, -1 ); 
+    int16_t i = findSymbol( symbols, token, -32768 ); 
+    if ( strlen( token ) > 0 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\r\n", token );
     if ( dst == NULL ) {
       pcode++;
       pcode++;
-    } else {
+    } else {  
       *pcode++ = -1; 
       *pcode++ = i;
       dst[i - dict_offset] = ( pcode - dst );
@@ -52,7 +53,7 @@ int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, co
     token = strtok(NULL, separator );
     while( token != NULL ) {
       int16_t i = findSymbol( symbols, token, -32768 ); 
-      if ( strlen( token ) > 0 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\n", token );
+      if ( strlen( token ) > 0 && i == -32768 ) Serial.printf( "Compile error: token '%s' not found\r\n", token );
       if ( dst == NULL ) {
         pcode++;
       } else {
@@ -60,7 +61,7 @@ int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, co
       }
       token = strtok(NULL, separator );
     }
-   }
+  }
   if ( dst == NULL ) {
     pcode += 2;
   } else {
@@ -105,7 +106,7 @@ Symbolic_Machine& Symbolic_Machine::linkSymbols( symbolic_machine_table* sym ) {
 
 const char* Symbolic_Machine::loadSymbolString( const char* s ) { 
   char buf[2048];
-  char sep[] = " ,";
+  char sep[] = " ,;";
   char* b = buf;
   int16_t char_cnt = 0;
   while ( *s != '\0' && *s != '\n' ) {
@@ -150,7 +151,7 @@ int16_t Symbolic_Machine::findSymbol( const char s[], int16_t def /* = 0 */ ) {
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
   }
-  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
+  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\r\n", s );
   return def;
 }
 
@@ -164,7 +165,7 @@ int16_t Symbolic_Machine::findSymbol( const symbolic_machine_table* symbols, con
     if ( i >= 0 ) return i;
     p = p->offset > 0 ? (symbolic_machine_table *) ( (char*) p + sizeof( symbolic_machine_table ) + p->offset ) : p->next;
   }
-  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\n", s );
+  if ( def == 0 ) Serial.printf( "ERROR: Symbolic::findSymbol( %s ) failed\r\n", s );
   return def;
 }
 

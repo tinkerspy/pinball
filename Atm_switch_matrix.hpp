@@ -31,7 +31,7 @@ class Atm_switch_matrix: public Symbolic_Machine {
   enum { IDLE, WAIT, SCAN, DISABLED, READY, INIT }; 
   enum { EVT_DISABLE, EVT_ENABLE, EVT_TIMER, EVT_READY, EVT_INIT, ELSE }; // EVENTS
   Atm_switch_matrix( void ) : Symbolic_Machine() {};
-  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds, int16_t status_led = -1 );
+  Atm_switch_matrix& begin( IO& io, Atm_led_matrix& leds );
   Atm_switch_matrix& trace( Stream & stream );
   Atm_switch_matrix& trace( void );
   Atm_switch_matrix& traceSwitches( Stream & stream, uint8_t bitmap = 1 );
@@ -83,7 +83,6 @@ class Atm_switch_matrix: public Symbolic_Machine {
   atm_timer_millis timer;
   bool pf_enabled = false;
   IO *io;
-  int16_t status_led;
   uint8_t trace_switches = 0;
   Stream* ts_stream;
 };

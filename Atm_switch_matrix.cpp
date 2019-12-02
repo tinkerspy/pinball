@@ -1,6 +1,6 @@
 #include "Atm_switch_matrix.hpp"
 
-Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16_t status_led ) {
+Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY, EVT_INIT,    ELSE */
@@ -16,11 +16,9 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds, int16
   Symbolic_Machine::begin( state_table, ELSE );
   this->io = &io;
   this->pleds = &leds;
-  this->status_led = status_led;
   memset( prof, 0, sizeof( prof ) ); 
   timer.set( STARTUP_DELAY_MS );
   numOfSwitches = io.numberOfSwitches();  
-  pleds->off( status_led );
   Symbolic_Machine::loadSymbols( event_symbols );
   return *this;          
 }
@@ -58,22 +56,18 @@ int Atm_switch_matrix::event( int id ) {
 void Atm_switch_matrix::action( int id ) {
   switch ( id ) {
     case ENT_SCAN:
-      pleds->on( status_led );
       pf_enabled = true;
       scan_matrix();
       return;
     case ENT_DISABLED:
-      pleds->off( status_led );
       pf_enabled = false;
       scan_matrix();
       return;
     case ENT_READY:
-      pleds->off( status_led );
       pf_enabled = false;
       scan_matrix();
       return;
     case ENT_INIT:
-      pleds->off( status_led );
       for ( int16_t n = 0; n < numOfSwitches + numOfGroups; n++ ) {
         if ( prof[n+1].device != NULL ) {
           prof[n+1].device->trigger( 0 ); 

@@ -8,11 +8,11 @@ public:
   IO_Adafruit_NeoPixel( uint16_t n, uint8_t p=6, neoPixelType t=NEO_GRB + NEO_KHZ800 ) : Adafruit_NeoPixel( n, p, t ){};
 
   static uint16_t str2rgb( const char s[] ) {
-    if ( strcasecmp( s, "NEO_RBG " ) == 0 ) return NEO_RBG; 
-    if ( strcasecmp( s, "NEO_GRB " ) == 0 ) return NEO_GRB; 
-    if ( strcasecmp( s, "NEO_GBR " ) == 0 ) return NEO_GBR; 
-    if ( strcasecmp( s, "NEO_BRG " ) == 0 ) return NEO_BRG; 
-    if ( strcasecmp( s, "NEO_BGR " ) == 0 ) return NEO_BGR; 
+    if ( strcasecmp( s, "NEO_RBG" ) == 0 ) return NEO_RBG; 
+    if ( strcasecmp( s, "NEO_GRB" ) == 0 ) return NEO_GRB; 
+    if ( strcasecmp( s, "NEO_GBR" ) == 0 ) return NEO_GBR; 
+    if ( strcasecmp( s, "NEO_BRG" ) == 0 ) return NEO_BRG; 
+    if ( strcasecmp( s, "NEO_BGR" ) == 0 ) return NEO_BGR; 
     if ( strcasecmp( s, "NEO_WRGB" ) == 0 ) return NEO_WRGB; 
     if ( strcasecmp( s, "NEO_WRBG" ) == 0 ) return NEO_WRBG; 
     if ( strcasecmp( s, "NEO_WGRB" ) == 0 ) return NEO_WGRB; 

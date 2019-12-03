@@ -41,6 +41,8 @@ void setup() {
     
   Serial1.println( "Singularity OS" );
 
+  uint16_t neo_mode = IO_Adafruit_NeoPixel::str2rgb( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2freq( "neo_khz800" ); 
+  Serial.printf( "NEO_MODE %X == %X\r\n", neo_mode, NEO_GRBW + NEO_KHZ800 );
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
@@ -53,8 +55,8 @@ void setup() {
   leds.begin( io );
 
   Serial.println( "init playfield" ); //delay( 100 );
-  playfield.begin( io, leds ); // TODO LED_EXTRA moet hier weg: separation of concerns!!!
-    
+  playfield.begin( io, leds );
+     
   Serial.println( "init playfield switches" ); //delay( 100 );
   
   int32_t base_ram = FreeRam();

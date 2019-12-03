@@ -2,16 +2,16 @@
 char cmd_buffer[2][256];
 Atm_my_command cmd[2]; 
 char accumulator[3600]; // shared between serial devices!
-char accu_mode = 0;
+char accu_mode = 0; 
 
 const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_INVERT, CMD_DEVICE, CMD_CHAIN, 
-        CMD_PROFILE, CMD_IO, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL };
+        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL };
 
 const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link invert "
-                        "device chain profile io echo fc leds switches ledgroups switchgroups ds dl";
+                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl";
 
 void trim(char * s) {
     char * p = s;
@@ -39,7 +39,7 @@ void cmd_callback( int idx, int v, int up ) {
         strcat( accumulator, cmd[idx].arg( arg_idx ) );
         trim( accumulator );
         strcat( accumulator, ";" );
-        Serial.printf( "FINAL: >>%s<<\r\n", accumulator ); // call whatever function we're in
+        //Serial.printf( "FINAL: >>%s<<\r\n", accumulator ); // call whatever function we're in
         switch ( accu_mode ) {
           case CMD_LEDS:
             leds.loadSymbols( accumulator );
@@ -91,7 +91,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;
-    case CMD_IO:
+    case CMD_ATTACH:  // attach 0 3 53 NEO_GRBW NEO_KHZ800
       {
 //        io.addStrip( new IO_Adafruit_NeoPixel( atoi( cmd[idx].arg( 2 ), pin_date, atoi( cmd[idx].arg( 3 ) );
         Serial.printf( "IO added interface: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );        

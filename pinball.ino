@@ -10,11 +10,12 @@
 
 // Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
 
-using namespace standard_firmware;
-using namespace custom_firmware; 
-
+#define PRELOAD_CONFIG
 #define NUMBER_OF_BALLS 3
 #define NUMBER_OF_PLAYERS 4
+
+using namespace standard_firmware;
+using namespace custom_firmware; 
 
 IO io;
 Atm_led_matrix leds; 
@@ -41,8 +42,7 @@ void setup() {
     
   Serial1.println( "Singularity OS" );
 
-  uint16_t neo_mode = IO_Adafruit_NeoPixel::str2rgb( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2freq( "neo_khz800" ); 
-  Serial.printf( "NEO_MODE %X == %X\r\n", neo_mode, NEO_GRBW + NEO_KHZ800 );
+  uint16_t neo_mode = IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ); 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
     .switchMap( 3, 1, 1 )
     .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
@@ -81,6 +81,10 @@ void setup() {
   //lib.compile( "std_animation", animation_bytecode );
   //lib.compile( "std_scalar", scalar_bytecode );
   //lib.compile( "std_ledbank", ledbank_bytecode );
+
+#ifdef PRELOAD_CONFIG
+  #include "load_config.h"
+#endif
 
 //  playfield.device( "kicker" ).trigger( IN_KICKER_PERSIST ); FIXME SOMEHOW!
   

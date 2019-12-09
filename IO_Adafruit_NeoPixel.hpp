@@ -5,9 +5,20 @@
 class IO_Adafruit_NeoPixel : public Adafruit_NeoPixel {
 
 public:
+
+struct t_neo_symbol { /* TODO two-way symbol lookup table */
+  char symbol[20];
+  uint16_t v;
+} symbol[4] = { /* Commands must be entered lowercase */
+  { "NEO_RBG", NEO_RBG },
+  { "NEO_GRB", NEO_GRB },
+  { "NEO_GBR", NEO_GBR },
+  { "", 0 },
+};
+
   IO_Adafruit_NeoPixel( uint16_t n, uint8_t p=6, neoPixelType t=NEO_GRB + NEO_KHZ800 ) : Adafruit_NeoPixel( n, p, t ){};
 
-  static uint16_t str2rgb( const char s[] ) {
+  static uint16_t str2int( const char s[] ) {
     if ( strcasecmp( s, "NEO_RBG" ) == 0 ) return NEO_RBG; 
     if ( strcasecmp( s, "NEO_GRB" ) == 0 ) return NEO_GRB; 
     if ( strcasecmp( s, "NEO_GBR" ) == 0 ) return NEO_GBR; 
@@ -37,10 +48,6 @@ public:
     if ( strcasecmp( s, "NEO_BRGW" ) == 0 ) return NEO_BRGW; 
     if ( strcasecmp( s, "NEO_BGWR" ) == 0 ) return NEO_BGWR; 
     if ( strcasecmp( s, "NEO_BGRW" ) == 0 ) return NEO_BGRW; 
-    return 0;  
-  }
-
-  static uint16_t str2freq( const char s[] ) {
     if ( strcasecmp( s, "NEO_KHZ800" ) == 0 ) return NEO_KHZ800;
     if ( strcasecmp( s, "NEO_KHZ400" ) == 0 ) return NEO_KHZ400;
     return 0;  

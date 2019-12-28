@@ -8,10 +8,10 @@ const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_INVERT, CMD_DEVICE, CMD_CHAIN, 
-        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL, CMD_DSG };
+        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL, CMD_DSG, CMD_DLG };
 
 const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link invert "
-                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl dsg";
+                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl dsg dlg";
 
 void trim(char * s) {
     char * p = s;
@@ -65,16 +65,31 @@ void cmd_callback( int idx, int v, int up ) {
     return;
   }
   switch ( v ) {
-    case CMD_DS:
+    case CMD_DS: // Dump switches
       dumpSymbols( &playfield, 1 );
       break;
-    case CMD_DSG:
-      cmd[idx].stream->printf( "%d cnt=%d\r\n", atoi( cmd[idx].arg( 1 ) ), playfield.count( atoi( cmd[idx].arg( 1 ) ) ) );
+    case CMD_DSG: // Dump switch group
+      {
+        int sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
+        cmd[idx].stream->printf( "Switch group %d: %d switches\r\n", sw, playfield.count( sw ) );
+        for ( int i = 0; i < playfield.count( sw ); i++ ) {
+          cmd[idx].stream->printf( "%d: %s\r\n", playfield.index( sw, i ), playfield.findSymbol( playfield.index( sw, i ),1 ) );
+        }
+      }
       break;
-    case CMD_DL:
+    case CMD_DL: // Dump leds
       dumpSymbols( &leds, 0 );
       break;
-    case CMD_LEDS:
+    case CMD_DLG: // Dump led group
+      {
+        int sw = leds.findSymbol( cmd[idx].arg( 1 ) );
+        cmd[idx].stream->printf( "Led group %d: %d leds\r\n", sw, leds.count( sw ) );
+        for ( int i = 0; i < leds.count( sw ); i++ ) {
+          cmd[idx].stream->printf( "%d: %s %s\r\n", leds.index( sw, i ), leds.findSymbol( leds.index( sw, i ) ), leds.active( leds.index( sw, i ) ) ? "ON" : ""  );
+        }
+      }
+      break;
+    case CMD_LEDS: // Start reading leds/switches/ledgroups/switchgroups
     case CMD_SWITCHES:
     case CMD_LEDGROUPS:
     case CMD_SWITCHGROUPS:
@@ -95,7 +110,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;
-    case CMD_ATTACH:  // attach 0 3 53 NEO_GRBW NEO_KHZ800
+    case CMD_ATTACH:  // Attach to IO interface: attach 0 3 53 NEO_GRBW NEO_KHZ800
       {
         uint16_t neo_mode1 = IO_Adafruit_NeoPixel::str2int( cmd[idx].arg( 4 ) );
         uint16_t neo_mode2 = IO_Adafruit_NeoPixel::str2int( cmd[idx].arg( 5 ) );
@@ -103,25 +118,25 @@ void cmd_callback( int idx, int v, int up ) {
         cmd[idx].stream->printf( "IO added interface: %d, %d, %d, 0x%X | 0x%X\r\n", atoi( cmd[idx].arg( 1 ) ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), neo_mode1, neo_mode2 );        
       }
       break;
-    case CMD_INVERT:
+    case CMD_INVERT: // Invert switch action
       {
         io.invert( playfield.findSymbol( cmd[idx].arg( 1 ) ) );
         cmd[idx].stream->printf( "Inverted switch: %s\r\n", cmd[idx].arg( 1 ) );        
       }
       break;
-    case CMD_ECHO:
+    case CMD_ECHO: // Turn terminal echo on/off
       {
         if ( strcmp( cmd[idx].arg(1), "" ) != 0 ) cmd[idx].echo( strcasecmp( cmd[idx].arg(1), "ON" ) == 0 ? 1 : atoi( cmd[idx].arg( 1 ) ) );
         cmd[idx].stream->printf( "ECHO is %s\r\n", cmd[idx].echo() ? "ON" : "OFF" );
       }
       break;
-    case CMD_FC:
+    case CMD_FC: // Turn terminal software flow control on/off
       {
         if ( strcmp( cmd[idx].arg(1), "" ) != 0 ) cmd[idx].fc( strcasecmp( cmd[idx].arg(1), "ON" ) == 0 ? 1 : atoi( cmd[idx].arg( 1 ) ) );
         cmd[idx].stream->printf( "FLOW CONTROL is %s\r\n", cmd[idx].fc() ? "ON" : "OFF" );
       }
       break;
-    case CMD_PROFILE:
+    case CMD_PROFILE: // Configure profile for led or switch
       {
         if ( leds.findSymbol( cmd[idx].arg( 1 ), -1 ) >= 0 ) {
           cmd[idx].stream->printf( "Led %s profile: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );
@@ -132,18 +147,18 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;
-    case CMD_CHAIN:
+    case CMD_CHAIN: // Chain two devices together
       {
         Atm_device* dev = &playfield.device( cmd[idx].arg( 1 ) );
         dev->chain( cmd[idx].arg( 2 ) );
         cmd[idx].stream->printf( "\rChained device %s to %s\r\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ) );
       }
       break;
-    case CMD_DEVICE:
+    case CMD_DEVICE: // Instantiate a playfield device
       playfield.device( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), lib.code( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ), atoi( cmd[idx].arg( 6 ) ), atoi( cmd[idx].arg( 7 ) ), atoi( cmd[idx].arg( 8 ) ) );    
         cmd[idx].stream->printf( "\rCreated device %s::%s (%s)\r\n", cmd[idx].arg( 3 ), cmd[idx].arg( 1 ), cmd[idx].arg( 2 ) );
       break;
-    case CMD_LINK:
+    case CMD_LINK: // Link one device's output to another's input
       if ( strcasecmp( cmd[idx].arg( 3 ), "playfield" ) == 0 ) {
         playfield.link( cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), playfield, cmd[idx].arg( 4 ) );
       } else {
@@ -151,7 +166,7 @@ void cmd_callback( int idx, int v, int up ) {
       }
       cmd[idx].stream->printf( "\rLinked device %s::%s -> %s::%s\r\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );
       break;
-    case CMD_PS:  
+    case CMD_PS: // Display a list of processes
       {           
         uint8_t map[32];
         uint8_t cnt = 0;
@@ -177,10 +192,10 @@ void cmd_callback( int idx, int v, int up ) {
         cmd[idx].stream->println(); 
       }
       break;
-    case CMD_PF:  
-      playfield.trigger( playfield.findSymbol( cmd[idx].arg( 1 ), 0 ) ); // PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT
+    case CMD_PF: // Trigger a playfield (meta) event: PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT
+      playfield.trigger( playfield.findSymbol( cmd[idx].arg( 1 ), 0 ) ); 
       break;
-    case CMD_LL: // List library entries
+    case CMD_LL: // List of firmware library entries
       {  
         for ( int16_t i = 0; i < lib.count(); i++ ) {
           cmd[idx].stream->printf( "%02d: %s %s\r\n", i, lib.location( i ) == 'R' ? "RAM  " : "FLASH", lib.label( i ) );
@@ -217,7 +232,7 @@ void cmd_callback( int idx, int v, int up ) {
         cmd[idx].stream->println(); 
       }
       break;
-    case CMD_STATS:
+    case CMD_STATS: // Global stats
       cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\r\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );     
       cmd[idx].stream->printf( "Physical leds: %d (0..%d)\r\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
       cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\r\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
@@ -228,11 +243,11 @@ void cmd_callback( int idx, int v, int up ) {
       cmd[idx].stream->printf( "Free RAM: %d\r\n", FreeRam() );
       cmd[idx].stream->println();
       break;
-    case CMD_TS:
+    case CMD_TS: // Trace switches: TS 1, TS 2, TS 3 (press, release, both)
       playfield.traceSwitches( *cmd[idx].stream, atoi( cmd[idx].arg( 1 ) ) );
       cmd[idx].stream->printf( "Trace switches: %d\r\n", atoi( cmd[idx].arg( 1 ) ) );
       break;    
-    case CMD_TC:
+    case CMD_TC: // Trace code for a device
       { 
         if ( strlen( cmd[idx].arg( 1 ) ) == 0 ) {
           for ( int16_t n = io.numberOfSwitches() + playfield.numberOfGroups(); n > 0; n-- ) {
@@ -254,7 +269,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_TR:
+    case CMD_TR: // Trigger a device on specified input
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t sel = atoi( cmd[idx].arg( 3 ) );
@@ -272,8 +287,8 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_DC:
-    case CMD_DCC:
+    case CMD_DC: // Dump subroutine code  
+    case CMD_DCC: // Dump code clean
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         if ( playfield.exists( sw ) ) {
@@ -285,7 +300,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_DDC:
+    case CMD_DDC: // Dump device code
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         cmd[idx].stream->printf( "// Device code: %s\r\n", cmd[idx].arg( 1 ) );
@@ -300,7 +315,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_PRESS:
+    case CMD_PRESS: // Send a press event to device
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
@@ -312,7 +327,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_RELEASE:
+    case CMD_RELEASE: // Send a release event to a device
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
@@ -324,7 +339,7 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_INIT:
+    case CMD_INIT: // Send an init event to a device
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );
         int16_t n = atoi( cmd[idx].arg( 2 ) );
@@ -336,10 +351,10 @@ void cmd_callback( int idx, int v, int up ) {
         }
       }
       break;    
-    case CMD_REBOOT:
+    case CMD_REBOOT: // Reboot the system
       _reboot_Teensyduino_();
       break;
-    case CMD_INFO: // TODO show firmware label & running/sleeping state & device next in chain...
+    case CMD_INFO: // Display device info - TODO show firmware label & running/sleeping state & device next in chain...
       {
         int16_t sw = playfield.findSymbol( cmd[idx].arg( 1 ) );        
         if ( playfield.exists( sw ) ) {

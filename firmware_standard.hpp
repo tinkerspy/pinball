@@ -39,7 +39,6 @@ reg_state, reg_default
 
 
 init
-P, -1, -1, 1
 X,  1,  0, 4
 R, -1, -1, reg_state
 =,  0,  2, 0
@@ -189,19 +188,15 @@ const uint16_t ledbank_hexbin[] = {
  */
 
 const char dual_kicker_bytecode[] = R""""(
-init, press_l, release_l, press_r, release_r, on, off, persist
+init, press_l, release_l, press_r, release_r, on, off
 out_score_lit, out_score_unlit, out_score, out_press_lit, out_press_unlit, out_press  
 arg_coil_l, arg_coil_r, arg_led_l, arg_led_r
 
 
  
 init
-P, -1, -1, 0
 L, -1, -1, arg_led_l
 L, -1, -1, arg_led_r;
-
-persist
-P, -1, -1, 1;
 
 press_l
 H, -1, -1, arg_coil_l
@@ -271,9 +266,6 @@ out_score, out_press0, out_press1, out_press2, out_press3, out_press4, out_press
 out_score0, out_score1, out_score2, out_score3, out_score4, out_score5, out_score6, out_score7
 
 
-
-init
-P, -1, -1, 0;
 
 press0
 T, -1, -1, out_press0
@@ -353,7 +345,6 @@ arg_led0, arg_led1
 
 
 init
-P, -1, -1, 0
 S, -1, -1, off;
 
 press0
@@ -423,7 +414,6 @@ arg_coil, arg_led
 
 
 init
-P, -1, -1, 0                   
 L, -1, -1, arg_coil     
 L, -1, -1, arg_led;      
 
@@ -477,7 +467,6 @@ arg_led0, arg_led1
 
 
 init
-P, -1, -1, 0
 S, -1, -1, clear;
 
 press0
@@ -537,7 +526,6 @@ arg_coil_l, arg_coil_r
 
 
 init
-P, -1, -1, 0
 L, -1, -1, arg_coil_l
 L, -1, -1, arg_coil_r;
 
@@ -586,7 +574,6 @@ reg_state, reg_freeze, reg_scalar
 
 
 init
-P, -1, -1, 1
 X,  1,  0, -1
 A, -1, -1, zero;
 
@@ -710,7 +697,6 @@ reg_state, reg_sensor, reg_10k, reg_1k, reg_100, reg_10, reg_wait, reg_timeout
 msg_reset, msg_timeout
 
 init,
-P, -1, -1, 1
 X,  1,  0, -1
 H, -1, -1, arg_dirty
 Z, -1, -1, 1;

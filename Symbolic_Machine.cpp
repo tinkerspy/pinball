@@ -12,7 +12,7 @@ void Symbolic_Machine::clearComments( char s[] ) {
 }
 
 int16_t Symbolic_Machine::loadIntList( const symbolic_machine_table* symbols, const char src[], int16_t dst[], int16_t dict_size, int16_t dict_offset /* = 0 */, bool sparse_jumptable /* = false */ ) {
-  char buf[1024];
+  char buf[2048];
   char *token;
   const char separator[] = ", \n\t\r";
   int16_t* pcode = dst + dict_size;

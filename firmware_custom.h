@@ -58,7 +58,6 @@ I, -1, -1, 1
 Q, reg_no_of_players, -1, msg_add_player;
 
 init
-P, -1, -1, 1                    // Persistent
 T, -1, -1, out_init             
 W, -1, -1, 100                
 R, -1, -1, 0
@@ -239,7 +238,6 @@ reg_t0, reg_t1, reg_t2
 
 
 init
-P, -1, -1, 1  
 L, -1, -1, arg_led0
 L, -1, -1, arg_led1
 L, -1, -1, arg_led2
@@ -320,7 +318,6 @@ arg_9a, arg_9b, arg_9c, arg_x, arg_o, arg_triple, arg_collect
 
 
 init
-P, -1, -1, 1
 L, -1, -1, arg_collect
 S, -1, -1, sub_clear;
 

@@ -21,20 +21,20 @@ Singularity command shell
 Configuration:
   attach <id> <no-of-switchnodes> <number-of-pixels> <neo-mode> <neo_mode>
     Attach an IO interface (switch matrix + led strip)
-  switches "null_sw,sw1,sw2" // Multi-line string
-    Load list of switch symbols.
-  leds "led1,led2" // Multi-line string
-    Load list of led symbols
-  switchgroups "grp1,mem1,mem2;grp2,mem1,mem2; " // Multi-line string
-    Load list of switch groups
-  ledgroups "grp1,led1,led2;grp,led1,led2;" // Multi-line string
-    Load list of led groups
+  switches "null_sw,sw1,sw2" 
+    Load list of switch symbols (Takes a multi-line string)
+  leds "led1,led2" 
+    Load list of led symbols  (Takes a multi-line string)
+  switchgroups "grp1,mem1,mem2;grp2,mem1,mem2;" 
+    Load list of switch groups  (Takes a multi-line string)
+  ledgroups "grp1,led1,led2;grp,led1,led2;" 
+    Load list of led groups  (Takes a multi-line string)
   invert <switch-id>
     Invert a switch from normally open to normally closed
-  profile <led-id> <t0> <l1> <t1> <l2> // In milliseconds
-    Define a led profile
-  profile <switch-id> <press> <release> <throttle> <separate> // in 1/10 milliseconds
-    Define a switch profile
+  profile <led-id> <t0> <l1> <t1> <l2> 
+    Define a led profile (time is specified in milliseconds)
+  profile <switch-id> <press> <release> <throttle> <separate> 
+    Define a switch profile (time is specified in tenths of a millisecond)
   device <switch-id> <led-grp> <firmware-label>
     Create a playfield device
   chain <device-id> <device-id>
@@ -43,6 +43,20 @@ Configuration:
     Link one device's output to another's input
 
 Shell commands:  
+  ps
+    Display list of devices/processes
+  info <device-id> 
+    Display device information
+  tr <device-id> <input>
+    Trigger the specified device's input
+  press <device-id> <index>
+    Send a press event to the device (index default = 0)
+  release <device-id> <index>
+    Send a release event to the device (index default = 0)
+  init <device-id>
+    Send an init event to the device
+  reboot
+    Reboot the controller
   ds
     Dump switches
   dl
@@ -55,8 +69,6 @@ Shell commands:
     Turn terminal echo on/off
   fc <ON|OFF>  
     Turn software flow control on/off
-  ps
-    Display list of devices/processes
   pf
     Trigger playfield event (PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT)
   ll
@@ -65,30 +77,18 @@ Shell commands:
     List active leds
   l <led-id>
     Turn led on
-  hd <device-id>
-    Hexdump device firmware & symbol table
   stats
     Display controller stats
   tc <device-id>
     Trace code for device (enter 'tc' by itself to turn off)
-  tr <device-id> <input>
-    Trigger the specified device's input
   dc <device-id> <sub>
     Decompile subroutine bytecode
   dcc <device-id> <sub>
     Decompile subroutine bytecode (clean)
   ddc <device-id>
     Decompile device bytecode
-  press <device-id> <index>
-    Send a press event to the device (index default = 0)
-  release <device-id> <index>
-    Send a release event to the device (index default = 0)
-  init <device-id>
-    Send an init event to the device
-  reboot
-    Reboot the controller
-  info <device-id> 
-    Display device information
+  hd <device-id>
+    Hexdump device firmware & symbol table
   
 )"""";
 
@@ -262,7 +262,7 @@ void cmd_callback( int idx, int v, int up ) {
               cmd[idx].stream->printf( "%02d %s %02d%c %20s %20s\r\n", cnt, 
                 runstate_str[dev->sleep()], 
                 n + 1, 
-                n > io.numberOfSwitches() ? 'L' : 'P', 
+                n >= io.numberOfSwitches() ? 'L' : 'P', 
                 playfield.findSymbol( dev->switchGroup(), 1 ),
                 lib.label( lib.findCode( dev->script ) )
                 );

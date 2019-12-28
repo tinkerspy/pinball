@@ -391,11 +391,8 @@ void Atm_device::run_code() {
               code_ptr = 0;
             }            
             break;
-          case '0':  // Prim DEPRECATED: use 'Y', -2, -1, -1 for this (drop as soon as binaries are refreshed)
-            break; 
           case 'O': 
-            pinMode( selector, OUTPUT );
-            digitalWrite( selector, action_f > 0 );
+            pinMode( selector, OUTPUT );            digitalWrite( selector, action_f > 0 );
             break; 
           case 'X':  // Xctr
             selected_action = ( xctr == (uint16_t)selector ? action_t : action_f );
@@ -461,10 +458,7 @@ void Atm_device::run_code() {
           case 'K': // Jump on key (switch) state 
             selector--; // Switches start at zero
             selector >>= 1; // And have 1 bit per press/release pair
-            //Serial.printf( "Request map %X & sw %X, reg1=%d\r\n", switch_map, ( 1UL << selector ), registers[1] );
             selected_action = switch_map & ( 1UL << selector ) ? action_t : action_f; // Check event
-            //Serial.printf( "%d Key %d: state %d -> action %d\r\n", 
-            //  millis(), selector, switch_map & ( 1UL << selector ), selected_action );   
             if ( selected_action  != -1 ) {
               code_ptr += selected_action * 4;          
             } else {

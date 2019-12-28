@@ -40,15 +40,13 @@ void setup() {
     
   Serial1.println( "Singularity OS" );
 
-  uint16_t neo_mode = IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ); 
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate );
   
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); //delay( 100 );
-
+/*
   lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
   lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
-  lib.import( "std_game", game_symbin, game_hexbin );
   lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
   lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
   lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
@@ -56,10 +54,25 @@ void setup() {
   lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
   lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
   lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
+  
+  lib.import( "std_game", game_symbin, game_hexbin );
   lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
   lib.import( "std_animation", animation_symbin, animation_hexbin );
+*/
 
-  //lib.compile( "std_game", game_bytecode );
+  lib.compile( "std_bumper", bumper_bytecode );
+  lib.compile( "std_dual_target", dual_target_bytecode );
+  lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
+  lib.compile( "std_ledbank", ledbank_bytecode );
+  lib.compile( "std_switchbank", switchbank_bytecode );
+  lib.compile( "std_scalar", scalar_bytecode );
+  lib.compile( "std_dual_kicker", dual_kicker_bytecode  );
+  lib.compile( "std_dual_combo", dual_combo_bytecode );
+  lib.compile( "std_dual_flipper", dual_flipper_bytecode );
+
+  lib.compile( "std_game", game_bytecode );
+  lib.compile( "std_tictactoe", tictactoe_bytecode ); // phucked! it's just too big for loadintlist!!!
+  lib.compile( "std_animation", animation_bytecode );
 
 #ifdef PRELOAD_CONFIG
   #include "load_config.h"

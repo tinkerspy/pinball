@@ -20,8 +20,6 @@ Atm_device& Atm_device::begin( Atm_switch_matrix* playfield, int16_t switch_grou
   this->leds = playfield->leds();
   this->switch_group = switch_group;
   trigger_flags = 0;
-  input_persistence = 0; 
-  output_persistence = 0;
   next = NULL;
   enabled = true;
   memset( connectors, 0, sizeof( connectors ) ); // This is really needed!
@@ -166,10 +164,7 @@ void Atm_device::action( int id ) {
     case ENT_NOTIFY:
       for ( uint8_t i = 0; i < 16; i++ ) {
         if ( trigger_flags & ( 1 << i ) ) {
-          if ( playfield->enabled() || output_persistence ) {
-            //Serial.printf( "%X Outgoing trigger: %d\r\n", (long)(this), i );
-            push( connectors, ON_EVENT, i, i, 0 );
-          }
+          push( connectors, ON_EVENT, i, i, 0 );
         }
       }
       trigger_flags = 0;
@@ -437,10 +432,13 @@ void Atm_device::run_code() {
             } 
             sleep( 0 );
             break;
-          case 'P': // PersI/PersO - Input persistence / Output persistence (default off)
-            selected_action = led_active( led_group, selector ) ? action_t : action_f;
-            input_persistence = selected_action;
-            output_persistence = selected_action;
+          case 'P': // Jump on playfield enabled 
+            selected_action = playfield->enabled() ? action_t : action_f;
+            if ( selected_action  != -1 ) {
+              code_ptr += selected_action * 4;          
+            } else {
+              code_ptr = 0;
+            }            
             break;
           case 'R': // Reg
             reg_ptr = led_active( led_group, selector ) ? action_t : action_f;
@@ -523,12 +521,10 @@ Atm_device& Atm_device::trigger( int event ) {
     //Serial.printf( "%x next %x\r\n", (long)(this), (long)next );
     next->trigger( event );
   }
-  if ( event == 0 || playfield->enabled() || input_persistence ) {
-    if ( this->enabled ) {
-      update_switch( event );
-      if ( code_ptr == 0 ) start_code( event ); // FIXME: Only if no code is currently running!
-      if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
-    }
+  if ( this->enabled ) {
+    update_switch( event );
+    if ( code_ptr == 0 ) start_code( event ); // FIXME: Only if no code is currently running!
+    if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
   }
   return *this;
 }
@@ -538,11 +534,10 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
   if ( next && sel > 1 ) {
     next->trigger( event, sel >> 1 );
   }
-  if ( event == 0 || playfield->enabled() || input_persistence ) {
-    if ( sel & 1 ) {
-      update_switch( event );
-      if ( code_ptr == 0 ) start_code( event ); // FIXME: Only if no code is currently running!
-      if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
+  if ( sel & 1 ) {
+    update_switch( event );
+    if ( code_ptr == 0 ) start_code( event ); 
+    if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
 /*
       if ( code_ptr == 0 ) {
         start_code( event );
@@ -553,7 +548,6 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
         }
       }
 */            
-    }
   }
   return *this;
 }

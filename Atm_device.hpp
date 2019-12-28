@@ -86,7 +86,6 @@ class Atm_device: public Symbolic_Machine {
   Atm_switch_matrix *playfield;
   int16_t registers[MAX_REGISTERS];
   int16_t led_group = -1;
-  uint8_t input_persistence, output_persistence;
   int16_t numberOfInputs;
   atm_timer_millis timer;
   bool enabled;

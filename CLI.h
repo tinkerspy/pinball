@@ -8,10 +8,89 @@ const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_INVERT, CMD_DEVICE, CMD_CHAIN, 
-        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL, CMD_DSG, CMD_DLG };
+        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL, CMD_DSG, CMD_DLG, CMD_H };
 
 const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link invert "
-                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl dsg dlg";
+                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl dsg dlg h";
+
+
+const char help_message[] = R""""(
+Singularity command shell
+=========================
+
+Configuration:
+  attach <id> <no-of-switchnodes> <number-of-pixels> <neo-mode> <neo_mode>
+    Attach an IO interface (switch matrix + led strip)
+  switches "null_sw,sw1,sw2" // Multi-line string
+    Load list of switch symbols.
+  leds "led1,led2" // Multi-line string
+    Load list of led symbols
+  switchgroups "grp1,mem1,mem2;grp2,mem1,mem2; " // Multi-line string
+    Load list of switch groups
+  ledgroups "grp1,led1,led2;grp,led1,led2;" // Multi-line string
+    Load list of led groups
+  invert <switch-id>
+    Invert a switch from normally open to normally closed
+  profile <led-id> <t0> <l1> <t1> <l2> // In milliseconds
+    Define a led profile
+  profile <switch-id> <press> <release> <throttle> <separate> // in 1/10 milliseconds
+    Define a switch profile
+  device <switch-id> <led-grp> <firmware-label>
+    Create a playfield device
+  chain <device-id> <device-id>
+    Chain two playfield devices to each other
+  link <device-id> <output> <device-id> <input>
+    Link one device's output to another's input
+
+Shell commands:  
+  ds
+    Dump switches
+  dl
+    Dump leds
+  dsg <switch-id>
+    Dump switch group  
+  dlg <led-id>
+    Dump led group  
+  echo <ON|OFF>
+    Turn terminal echo on/off
+  fc <ON|OFF>  
+    Turn software flow control on/off
+  ps
+    Display list of devices/processes
+  pf
+    Trigger playfield event (PF_DISABLE, PF_ENABLE, PF_READY, PF_INIT)
+  ll
+    List firmware library contents 
+  lo 
+    List active leds
+  l <led-id>
+    Turn led on
+  hd <device-id>
+    Hexdump device firmware & symbol table
+  stats
+    Display controller stats
+  tc <device-id>
+    Trace code for device (enter 'tc' by itself to turn off)
+  tr <device-id> <input>
+    Trigger the specified device's input
+  dc <device-id> <sub>
+    Decompile subroutine bytecode
+  dcc <device-id> <sub>
+    Decompile subroutine bytecode (clean)
+  ddc <device-id>
+    Decompile device bytecode
+  press <device-id> <index>
+    Send a press event to the device (index default = 0)
+  release <device-id> <index>
+    Send a release event to the device (index default = 0)
+  init <device-id>
+    Send an init event to the device
+  reboot
+    Reboot the controller
+  info <device-id> 
+    Display device information
+  
+)"""";
 
 void trim(char * s) {
     char * p = s;
@@ -65,6 +144,9 @@ void cmd_callback( int idx, int v, int up ) {
     return;
   }
   switch ( v ) {
+    case CMD_H:
+      cmd[idx].stream->printf( "%s", help_message );
+      break;
     case CMD_DS: // Dump switches
       dumpSymbols( &playfield, 1 );
       break;

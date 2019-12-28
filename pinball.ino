@@ -6,8 +6,6 @@
 #include "firmware_custom.h"
 #include "freeram.hpp"
 
-// Bug: info counter3
-
 #define PRELOAD_CONFIG
 #define NUMBER_OF_BALLS 3
 #define NUMBER_OF_PLAYERS 4
@@ -67,6 +65,7 @@ void setup() {
   lib.compile( "std_switchbank", switchbank_bytecode );
   lib.compile( "std_scalar", scalar_bytecode );
   lib.compile( "std_dual_kicker", dual_kicker_bytecode  );
+  lib.compile( "std_dual_slingshot", dual_slingshot_bytecode  );
   lib.compile( "std_dual_combo", dual_combo_bytecode );
   lib.compile( "std_dual_flipper", dual_flipper_bytecode );
 

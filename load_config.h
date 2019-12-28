@@ -106,7 +106,7 @@
   playfield.device( "dual_target", "led_target_grp", lib.code( "std_dual_target" ) );
   playfield.device( "kicker", "led_kicker_grp", lib.code( "std_dual_kicker" ) );
   playfield.device( "uplane", "led_uplane_grp", lib.code( "std_dual_combo" ) ); 
-  playfield.device( "slingshot", "led_slingshot_grp", lib.code( "std_dual_kicker" ) );
+  playfield.device( "slingshot", "led_slingshot_grp", lib.code( "std_dual_slingshot" ) );
   playfield.device( "lower", "led_none_grp", lib.code( "std_switchbank" ) ); 
   playfield.device( "flipper", "led_flipper_grp", lib.code( "std_dual_flipper" ) ); 
   playfield.device( "again", "led_again_grp", lib.code( "std_ledbank" ) );

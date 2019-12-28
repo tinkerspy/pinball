@@ -250,6 +250,52 @@ const uint16_t kicker_hexbin[] = {
   0x004C, 0xFFFF, 0xFFFF, 0x0003, 0xFFFF, 0xFFFF
 };
 
+
+const char dual_slingshot_bytecode[] = R""""(
+init, press_l, release_l, press_r, release_r, on, off
+out_score_lit, out_score_unlit, out_score, out_press_lit, out_press_unlit, out_press  
+arg_coil_l, arg_coil_r, arg_led_l, arg_led_r
+
+
+ 
+init
+L, -1, -1, arg_led_l
+L, -1, -1, arg_led_r;
+
+press_l
+P, -1,  0, -1
+H, -1, -1, arg_coil_l
+T, -1, -1, out_press
+T, -1, -1, out_score
+J, arg_led_l, 0, 3
+T, -1, -1, out_score_lit
+T, -1, -1, out_press_lit
+J, -1, -1, -1
+T, -1, -1, out_score_unlit
+T, -1, -1, out_press_unlit;
+
+press_r
+P, -1,  0, -1
+H, -1, -1, arg_coil_r
+T, -1, -1, out_press
+T, -1, -1, out_score
+J, arg_led_r, 0, 3
+T, -1, -1, out_score_lit
+T, -1, -1, out_press_lit
+J, -1, -1, -1
+T, -1, -1, out_score_unlit
+T, -1, -1, out_press_unlit;
+
+on
+H, -1, -1, arg_led_l
+H, -1, -1, arg_led_r;
+
+off
+L, -1, -1, arg_led_l
+L, -1, -1, arg_led_r;
+
+)"""";
+
 /*
  * Firmware: switchbank_firmware
  * Maximum switches: 8
@@ -268,41 +314,49 @@ out_score0, out_score1, out_score2, out_score3, out_score4, out_score5, out_scor
 
 
 press0
+P, -1,  0, -1
 T, -1, -1, out_press0
 T, -1, -1, out_score
 T, -1, -1, out_score0;
 
 press1
+P, -1,  0, -1
 T, -1, -1, out_press1
 T, -1, -1, out_score
 T, -1, -1, out_score1;
 
 press2
+P, -1,  0, -1
 T, -1, -1, out_press2
 T, -1, -1, out_score
 T, -1, -1, out_score2;
 
 press3
+P, -1,  0, -1
 T, -1, -1, out_press3
 T, -1, -1, out_score
 T, -1, -1, out_score3;
 
 press4
+P, -1,  0, -1
 T, -1, -1, out_press4
 T, -1, -1, out_score
 T, -1, -1, out_score4;
 
 press5
+P, -1,  0, -1
 T, -1, -1, out_press5
 T, -1, -1, out_score
 T, -1, -1, out_score5;
 
 press6
+P, -1,  0, -1
 T, -1, -1, out_press6
 T, -1, -1, out_score
 T, -1, -1, out_score6;
 
 press7
+P, -1,  0, -1
 T, -1, -1, out_press7
 T, -1, -1, out_score
 T, -1, -1, out_score7;
@@ -348,6 +402,7 @@ init
 S, -1, -1, off;
 
 press0
+P, -1,  0, -1
 T, -1, -1, out_score // TODO: replace whole sub with: A, -1, -1, press1
 J, arg_led0, 0, 4
 T, -1, -1, out_press_lit
@@ -359,6 +414,7 @@ T, -1, -1, out_press0_unlit
 T, -1, -1, out_score_unlit;
 
 press1
+P, -1,  0, -1
 T, -1, -1, out_score
 J, arg_led0, 0, 4
 T, -1, -1, out_press_lit
@@ -418,6 +474,7 @@ L, -1, -1, arg_coil
 L, -1, -1, arg_led;      
 
 press
+P, -1,  0, -1
 H, -1, -1, arg_coil     
 T, -1, -1, out_score
 J, arg_led, 0, 2     
@@ -470,6 +527,7 @@ init
 S, -1, -1, clear;
 
 press0
+P, -1,  0, -1
 T, -1, -1, out_score
 J, arg_led0, -1, 0
 H, -1, -1, arg_led0
@@ -478,6 +536,7 @@ J, arg_led1, 0, -1
 T, -1, -1, out_all_on;
  
 press1
+P, -1,  0, -1
 T, -1, -1, out_score
 J, arg_led1, -1, 0
 H, -1, -1, arg_led1
@@ -530,12 +589,14 @@ L, -1, -1, arg_coil_l
 L, -1, -1, arg_coil_r;
 
 press_l
+P, -1,  0, -1
 H, -1, -1, arg_coil_l;
 
 release_l
 L, -1, -1, arg_coil_l;
 
 press_r
+P, -1,  0, -1
 H, -1, -1, arg_coil_r;
 
 release_r

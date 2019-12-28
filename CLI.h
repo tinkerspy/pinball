@@ -8,10 +8,10 @@ const char runstate_str[3][9] = { "RUNNING ", "SLEEPING", "WAITING " };
 
 enum { CMD_PS, CMD_PF, CMD_LL, CMD_L, CMD_LO, CMD_HD, CMD_STATS, CMD_TS, CMD_TC, CMD_TR, CMD_DC, CMD_DCC, 
         CMD_DDC, CMD_PRESS, CMD_RELEASE, CMD_INIT, CMD_INFO, CMD_REBOOT, CMD_LINK, CMD_INVERT, CMD_DEVICE, CMD_CHAIN, 
-        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL };
+        CMD_PROFILE, CMD_ATTACH, CMD_ECHO, CMD_FC, CMD_LEDS, CMD_SWITCHES, CMD_LEDGROUPS, CMD_SWITCHGROUPS, CMD_DS, CMD_DL, CMD_DSG };
 
 const char cmdlist[] = "ps pf ll l lo hd stats ts tc tr dc dcc ddc press release init info reboot link invert "
-                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl";
+                        "device chain profile attach echo fc leds switches ledgroups switchgroups ds dl dsg";
 
 void trim(char * s) {
     char * p = s;
@@ -65,9 +65,11 @@ void cmd_callback( int idx, int v, int up ) {
     return;
   }
   switch ( v ) {
-    //    io.addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
     case CMD_DS:
       dumpSymbols( &playfield, 1 );
+      break;
+    case CMD_DSG:
+      cmd[idx].stream->printf( "%d cnt=%d\r\n", atoi( cmd[idx].arg( 1 ) ), playfield.count( atoi( cmd[idx].arg( 1 ) ) ) );
       break;
     case CMD_DL:
       dumpSymbols( &leds, 0 );
@@ -77,6 +79,8 @@ void cmd_callback( int idx, int v, int up ) {
     case CMD_LEDGROUPS:
     case CMD_SWITCHGROUPS:
       {
+        leds.begin( io ); // Only 1st call is effective
+        playfield.begin( io, leds );
         accumulator[0] = '\0';
         accu_mode = v; 
         uint8_t arg_idx = 0 ;
@@ -93,14 +97,16 @@ void cmd_callback( int idx, int v, int up ) {
       break;
     case CMD_ATTACH:  // attach 0 3 53 NEO_GRBW NEO_KHZ800
       {
-//        io.addStrip( new IO_Adafruit_NeoPixel( atoi( cmd[idx].arg( 2 ), pin_date, atoi( cmd[idx].arg( 3 ) );
-        Serial.printf( "IO added interface: %d, %d, %d, %d\r\n", cmd[idx].arg( 1 ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), atoi( cmd[idx].arg( 4 ) ), atoi( cmd[idx].arg( 5 ) ) );        
+        uint16_t neo_mode1 = IO_Adafruit_NeoPixel::str2int( cmd[idx].arg( 4 ) );
+        uint16_t neo_mode2 = IO_Adafruit_NeoPixel::str2int( cmd[idx].arg( 5 ) );
+        io.attach( atoi( cmd[idx].arg( 1 ) ), atoi( cmd[idx].arg( 2 ) ), new IO_Adafruit_NeoPixel( atoi( cmd[idx].arg( 3 ) ), pin_data, neo_mode1 + neo_mode2 ) );
+        cmd[idx].stream->printf( "IO added interface: %d, %d, %d, 0x%X | 0x%X\r\n", atoi( cmd[idx].arg( 1 ) ), atoi( cmd[idx].arg( 2 ) ), atoi( cmd[idx].arg( 3 ) ), neo_mode1, neo_mode2 );        
       }
       break;
     case CMD_INVERT:
       {
         io.invert( playfield.findSymbol( cmd[idx].arg( 1 ) ) );
-        Serial.printf( "Inverted switch: %s\r\n", cmd[idx].arg( 1 ) );        
+        cmd[idx].stream->printf( "Inverted switch: %s\r\n", cmd[idx].arg( 1 ) );        
       }
       break;
     case CMD_ECHO:
@@ -212,7 +218,7 @@ void cmd_callback( int idx, int v, int up ) {
       }
       break;
     case CMD_STATS:
-      cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\r\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );
+      cmd[idx].stream->printf( "Runtime: %02d:%02d:%02d (h:m:s)\r\n", millis() / 3600000L, ( millis() / 60000L ) % 60, ( millis() / 1000L ) % 60 );     
       cmd[idx].stream->printf( "Physical leds: %d (0..%d)\r\n", io.numberOfLeds(), io.numberOfLeds() - 1 );
       cmd[idx].stream->printf( "Logical leds: %d (%d..%d)\r\n", leds.numberOfGroups(), io.numberOfLeds(), io.numberOfLeds() + leds.numberOfGroups() - 1 );
       cmd[idx].stream->printf( "Physical switches: %d (1..%d)\r\n", io.numberOfSwitches(), io.numberOfSwitches() );
@@ -343,7 +349,8 @@ void cmd_callback( int idx, int v, int up ) {
           for ( int i = 0; i < 80; i++ ) cmd[idx].stream->print( "=" );
           cmd[idx].stream->println();
           for ( uint16_t in = 0; in < dev->countSymbols( 0 ); in++ ) {
-            cmd[idx].stream->printf( "In[%02d]  %20s  %04X  %s", in, dev->findSymbol( in, 0 ), dev->handler( in ), playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( in + 1 ) >> 1 ) - 1 ), 1 ) );
+            cmd[idx].stream->printf( "In[%02d]  %20s  %04X  %s", in, dev->findSymbol( in, 0 ), dev->handler( in ), 
+              playfield.findSymbol( playfield.index( dev->switchGroup(), ( ( in + 1 ) >> 1 ) - 1 ), 1 ) );
             uint8_t map[32];
             uint8_t cnt = 0;
             memset( map, 0, sizeof( map ) );
@@ -354,7 +361,7 @@ void cmd_callback( int idx, int v, int up ) {
                 if ( ( map[addr >> 3] & ( 1 << ( addr & B111 ) ) ) == 0 ) {
                   for ( int16_t i = 0; i < d->countSymbols( 1 ); i++ ) {
                     if ( dev == d->outputPtr( i ) && in == d->outputEvent( i ) ) { 
-                      cmd[idx].stream->printf( "%s:%s ", playfield.findSymbol( d->switchGroup(), 1 ), d->findSymbol( i, 1 ) );
+                      cmd[idx].stream->printf( "%s::%s ", playfield.findSymbol( d->switchGroup(), 1 ), d->findSymbol( i, 1 ) );
                     }
                   }
                   map[addr >> 3] |= ( 1 << ( addr & B111 ) ); 

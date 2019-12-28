@@ -8,8 +8,6 @@
 
 // Bug: info counter3
 
-// Commands: attach, leds, switches, led_groups, switch_groups, invert, device, chain, link, firmware, load, save, autoload
-
 #define PRELOAD_CONFIG
 #define NUMBER_OF_BALLS 3
 #define NUMBER_OF_PLAYERS 4
@@ -43,21 +41,7 @@ void setup() {
   Serial1.println( "Singularity OS" );
 
   uint16_t neo_mode = IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ); 
-  io.begin( pin_clock, pin_latch, addr, shift_inputs, gate )
-    .switchMap( 3, 1, 1 )
-    .addStrip( new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 53 pixel SK6812 led strip on P1/playfield
-    .addStrip( new IO_Adafruit_NeoPixel( 12, pin_data, NEO_GRBW + NEO_KHZ800 ) ) //  4 pixel SK6812 led strip on P2/cabinet with 8 virtual leds added 
-    .addStrip( new IO_Adafruit_NeoPixel( 36, pin_data, NEO_GRBW + NEO_KHZ800 ) ) // 36 pixel SK6812 led strip on P3/headbox
-    .retrigger()
-    .show();
-
-  Serial.println( "init leds" ); //delay( 100 );
-  leds.begin( io );
-
-  Serial.println( "init playfield" ); //delay( 100 );
-  playfield.begin( io, leds );
-     
-  Serial.println( "init playfield switches" ); //delay( 100 );
+  io.begin( pin_clock, pin_latch, addr, shift_inputs, gate );
   
   int32_t base_ram = FreeRam();
   Serial.println( "import firmware from flash" ); //delay( 100 );
@@ -76,11 +60,6 @@ void setup() {
   lib.import( "std_animation", animation_symbin, animation_hexbin );
 
   //lib.compile( "std_game", game_bytecode );
-  //lib.compile( "std_switchbank", switchbank_bytecode );
-  //lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
-  //lib.compile( "std_animation", animation_bytecode );
-  //lib.compile( "std_scalar", scalar_bytecode );
-  //lib.compile( "std_ledbank", ledbank_bytecode );
 
 #ifdef PRELOAD_CONFIG
   #include "load_config.h"

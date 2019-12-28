@@ -1,6 +1,7 @@
 #include "Atm_led_matrix.hpp"
 
 Atm_led_matrix& Atm_led_matrix::begin( IO &io ) {
+  if ( initialized ) return *this; // idempotent
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                 ON_ENTER    ON_LOOP  ON_EXIT  EVT_DONE  EVT_RUN  EVT_UPDATE  EVT_MILLI,    ELSE */
@@ -18,6 +19,7 @@ Atm_led_matrix& Atm_led_matrix::begin( IO &io ) {
   io.show();
   last_milli = millis();
   numOfGroups = 0;  
+  initialized = 1;
   return *this;
 }
 

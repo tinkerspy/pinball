@@ -78,12 +78,14 @@ class IO {
     IO& select( int row, bool latch = false );
     switch_record profile[NUM_IOPORTS * MATRIX_NODES * MATRIX_SWITCHES + 1];
     uint32_t last_press;
+    unsigned char switchnodes[NUM_IOPORTS];
     
   public:
     IO& begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, uint8_t *gate );
     IO& range( uint8_t row_max, uint8_t col_max ); // obsolete?
     IO& addStrips( IO_Adafruit_NeoPixel strip[] );
     IO& addStrip( IO_Adafruit_NeoPixel *strip );
+    IO& attach( int16_t n, int16_t switchnodes, IO_Adafruit_NeoPixel *strip );
     IO& setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w );
     IO& switchMap( uint8_t r1, uint8_t r2 = 0, uint8_t r3 = 0, uint8_t r4 = 0, uint8_t r5 = 0 );
     static uint32_t Color( uint8_t r, uint8_t g, uint8_t b, uint8_t w = 0 ); 
@@ -105,5 +107,7 @@ class IO {
     IO& invert( uint8_t c1, uint8_t c2, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0 );
     IO& debounce( int16_t n, uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks );
     IO& debounce( uint16_t press_ticks, uint16_t release_ticks, uint16_t throttle_ticks, uint16_t separate_ticks );
+
+    IO& dump();
 
 };

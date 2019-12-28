@@ -21,6 +21,7 @@ IO& IO::begin( int pin_clock, int pin_latch, uint8_t *address, uint8_t *inputs, 
     pinMode( inputs[i], INPUT_MODE ); 
     pinMode( gate[i], OUTPUT ); 
     led_dirty[i] = -1;
+    switchnodes[i] = 0;
   }
   for ( int i = 0; i < 3; i++ )
     pinMode( address[i], OUTPUT ); 
@@ -64,6 +65,41 @@ IO& IO::addStrip( IO_Adafruit_NeoPixel *strip ) {
   led_dirty[last_strip] = strip->numPixels() - 1; // Force full strip update on next IO::show()
   last_strip++;
   return *this;
+}
+
+IO& IO::dump() { 
+  for ( uint8_t j = 0; j < NUM_IOPORTS; j++ ) {
+    Serial.printf( "IO %d %X num %d dirt %d map %d\r\n", j, led_strip[j], led_strip[j] == NULL ? 0 : led_strip[j]->numPixels(), led_dirty[j], row_map[j] );
+  }
+  Serial.printf( "NOS: %d, NOL: %d\r\n", numberOfSwitches(), numberOfLeds() );
+  Serial.printf( "switch_node_cnt: %d, node_max: %d\r\n", switch_node_cnt, node_max );
+  for ( uint16_t i = 0; i < numberOfLeds(); i++ ) {
+    Serial.printf( "LED %d: strip %d, led %d\r\n", i, led[i].strip, led[i].led );
+  }
+}
+
+
+// io.attach( 0, 3, new IO_Adafruit_NeoPixel( 53, pin_data, NEO_GRBW + NEO_KHZ800 ) );
+
+IO& IO::attach( int16_t n, int16_t switchnodes, IO_Adafruit_NeoPixel *strip ) { // TOTALLY UNTESTED!!!!
+  strip->begin();
+  strip->show();
+  led_strip[n] = strip;
+  led_dirty[n] = strip->numPixels() - 1;;
+  this->switchnodes[n] = switchnodes;
+  if ( n > last_strip + 1 ) last_strip = n + 1;
+  led_cnt = 0;
+  for ( uint8_t j = 0; j < NUM_IOPORTS; j++ ) {
+    if ( led_strip[j] != NULL ) { 
+      for ( uint8_t i = 0; i < led_strip[j]->numPixels(); i++ ) {
+        led[led_cnt].strip = j;
+        led[led_cnt].led = i;
+        led_cnt++;
+      }  
+    }
+  }
+  switchMap( this->switchnodes[0], this->switchnodes[1], this->switchnodes[2], this->switchnodes[3], this->switchnodes[4] );
+  return *this; 
 }
 
 IO& IO::setPixelColor( int16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w ) {
@@ -130,14 +166,6 @@ IO& IO::switchMap( uint8_t r1, uint8_t r2, uint8_t r3, uint8_t r4, uint8_t r5 ) 
   row_map[2] = row_map[1] + r2;
   row_map[3] = row_map[2] + r3;
   row_map[4] = row_map[3] + r4;
-  /*
-  switch_map = 0;
-  if ( r1 ) switch_map |= 0B00000001;
-  if ( r2 ) switch_map |= 0B00000010;
-  if ( r3 ) switch_map |= 0B00000100;
-  if ( r4 ) switch_map |= 0B00001000;
-  if ( r5 ) switch_map |= 0B00010000;
-  */
   node_max = max( max( max( max( r1, r2 ), r3 ), r4 ), r5 );  
   switch_node_cnt = r1 + r2 + r3 + r4 + r5;
   return *this;

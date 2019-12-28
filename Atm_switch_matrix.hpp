@@ -85,4 +85,5 @@ class Atm_switch_matrix: public Symbolic_Machine {
   IO *io;
   uint8_t trace_switches = 0;
   Stream* ts_stream;
+  uint8_t initialized = 0;
 };

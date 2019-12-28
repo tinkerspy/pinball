@@ -75,5 +75,6 @@ protected:
   uint8_t last_milli;
   IO *io;
   int16_t* group_def;
+  uint8_t initialized = 0;
   
 };

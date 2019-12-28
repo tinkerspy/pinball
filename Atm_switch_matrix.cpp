@@ -1,6 +1,7 @@
 #include "Atm_switch_matrix.hpp"
 
 Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds ) {
+  if ( initialized ) return *this; // idempotent
   // clang-format off
   const static state_t state_table[] PROGMEM = {
     /*                  ON_ENTER  ON_LOOP  ON_EXIT  EVT_DISABLE EVT_ENABLE  EVT_TIMER, EVT_READY, EVT_INIT,    ELSE */
@@ -20,6 +21,7 @@ Atm_switch_matrix& Atm_switch_matrix::begin( IO& io, Atm_led_matrix& leds ) {
   timer.set( STARTUP_DELAY_MS );
   numOfSwitches = io.numberOfSwitches();  
   Symbolic_Machine::loadSymbols( event_symbols );
+  initialized = 1;
   return *this;          
 }
 
@@ -103,7 +105,7 @@ int16_t* Atm_switch_matrix::parseGroups( int16_t* group_def ) {
 int16_t Atm_switch_matrix::index( int16_t swno, int16_t n ) {
   int16_t cnt = 0;
   if ( swno > -1 ) {
-    if ( swno < numOfSwitches ) {
+    if ( swno <= numOfSwitches ) {
       return n == 0 ? swno : -1;
     } else {
       int16_t p = group_def[swno - numOfSwitches - 1];
@@ -121,7 +123,7 @@ int16_t Atm_switch_matrix::index( int16_t swno, int16_t n ) {
 int16_t Atm_switch_matrix::count( int16_t swno ) {
   int16_t cnt = 0;
   if ( swno > -1 ) {
-    if ( swno < numOfSwitches ) {
+    if ( swno <= numOfSwitches ) {
       return 1;
     } else {
       int16_t p = group_def[swno - numOfSwitches - 1];

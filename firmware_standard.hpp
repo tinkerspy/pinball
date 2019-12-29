@@ -183,8 +183,8 @@ const uint16_t ledbank_hexbin[] = {
  * Maximum switches: 2
  * Led arguments: COIL_L, COIL_R, LED_L, LED_R
  * Description: 
- *   Dual kickers, same score & same kick, can be made persistent 
- *   could work for slingshots as well
+ *   Dual kickers, same score & same kick
+ *   With playfield disabled: kick-only
  */
 
 const char dual_kicker_bytecode[] = R""""(
@@ -200,6 +200,7 @@ L, -1, -1, arg_led_r;
 
 press_l
 H, -1, -1, arg_coil_l
+P, -1,  0, -1
 T, -1, -1, out_press
 T, -1, -1, out_score
 J, arg_led_l, 0, 3
@@ -211,6 +212,7 @@ T, -1, -1, out_press_unlit;
 
 press_r
 H, -1, -1, arg_coil_r
+P, -1,  0, -1
 T, -1, -1, out_press
 T, -1, -1, out_score
 J, arg_led_r, 0, 3
@@ -579,7 +581,7 @@ const char dual_target_symbin[] = {
  */
 
 const char dual_flipper_bytecode[] = R""""(
-init, press_l, release_l, press_r, release_r
+init, press_l, release_l, press_r, release_r, press_all, release_all 
 
 arg_coil_l, arg_coil_r
 
@@ -600,6 +602,15 @@ P, -1,  0, -1
 H, -1, -1, arg_coil_r;
 
 release_r
+L, -1, -1, arg_coil_r;
+
+press_all
+P, -1,  0, -1
+H, -1, -1, arg_coil_l
+H, -1, -1, arg_coil_r;
+
+release_all
+L, -1, -1, arg_coil_l
 L, -1, -1, arg_coil_r;
 
 )"""";

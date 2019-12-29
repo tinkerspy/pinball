@@ -200,7 +200,6 @@
   playfield.link( "game", "out_players_adv", "players", "advance" );
   playfield.link( "game", "out_over", "game_over", "on" );
   playfield.link( "game", "out_disable", playfield, "pf_ready" );
+  playfield.link( "game", "out_release", "flipper", "release_all" );
 
   playfield.link( "game_over", "out_on0", "save_gate", "off" );
-  playfield.link( "game_over", "out_on1", "flipper", "release_l" );
-  playfield.link( "game_over", "out_on2", "flipper", "release_r" );

@@ -16,7 +16,7 @@ init, press_start, release_start, ball_exit, sub_wait_players, sub_wait_reset, s
 sub_ball_loop, sub_player_loop, sub_core, sub_wait_playing, sub_wait_collecting, sub_press_start
 out_init, out_enable, out_counter_reset, out_players_zero, out_ball_zero,\
 out_player_zero, out_ball_adv, out_player_adv, out_3bonus, out_collect,\
-out_kickoff, out_over, out_players_adv, out_disable
+out_kickoff, out_over, out_players_adv, out_disable, out_release
 arg_collecting, arg_again, arg_counter0, arg_counter1,\
 arg_counter2, arg_counter3, arg_counter4, arg_counter5
 reg_state, reg_max_players, reg_no_of_players, reg_player, reg_no_of_balls,\
@@ -127,6 +127,7 @@ W, -1, -1, 100
 E, ball_exit, 0, 0                // Clear press_exit event
 S, -1, -1, sub_wait_playing
 T, -1, -1, out_disable
+T, -1, -1, out_release
 W, -1, -1, 100
 T, -1, -1, out_collect
 W, -1, -1, 100

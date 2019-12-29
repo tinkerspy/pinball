@@ -21,9 +21,8 @@ Library lib;
 #include "CLI.h"
 
 void setup() {
-  //delay( 1000 );
-  Serial.println( "Singularity Shell\r\ninit IO" );
   delay( 100 );
+  Serial.println( "Singularity Shell\r\ninit IO" );
 
   Serial1.begin( 9600 );
   cmd[0].begin( Serial, cmd_buffer[0], sizeof( cmd_buffer[0] ) )

@@ -538,16 +538,6 @@ Atm_device& Atm_device::trigger( int event, uint32_t sel ) {
     update_switch( event );
     if ( code_ptr == 0 ) start_code( event ); 
     if ( code_ptr > 0 && timer.value == ATM_TIMER_OFF ) { timer.set( 0 );  sleep( 0 ); }
-/*
-      if ( code_ptr == 0 ) {
-        start_code( event );
-      } else {
-        if ( timer.value == ATM_TIMER_OFF ) {
-          timer.set( 0 );
-          sleep( 0 ); // no sleep in 'Y' handler if delay == 0
-        }
-      }
-*/            
   }
   return *this;
 }

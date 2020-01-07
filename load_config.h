@@ -1,22 +1,18 @@
 
-
-  io
-    .attach( 0, 3, new IO_Adafruit_NeoPixel( 53, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) )
-    .attach( 1, 1, new IO_Adafruit_NeoPixel( 12, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) )
-    .attach( 2, 1, new IO_Adafruit_NeoPixel( 36, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) )
-    .retrigger()
-    .show();
+  io.attach( 0, 3, new IO_Adafruit_NeoPixel( 53, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) );
+  io.attach( 1, 1, new IO_Adafruit_NeoPixel( 12, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) );
+  io.attach( 2, 1, new IO_Adafruit_NeoPixel( 36, pin_data, IO_Adafruit_NeoPixel::str2int( "neo_grbw" ) + IO_Adafruit_NeoPixel::str2int( "neo_khz800" ) ) );
+  io.retrigger();
+  io.show();
 
   leds.begin( io );
   playfield.begin( io, leds );
 
-  leds
-    .loadSymbols( led_symbols )
-    .loadGroups( led_group_list  );
+  leds.loadSymbols( led_symbols );
+  leds.loadGroups( led_group_list  );
 
-  playfield
-	.loadSymbols( switch_symbols )
-    .loadGroups( switch_group_list );
+  playfield.loadSymbols( switch_symbols );
+  playfield.loadGroups( switch_group_list );
 
   io.invert( playfield.findSymbol( "ball_enter" ) );
 

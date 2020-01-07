@@ -7,6 +7,7 @@
 #include "freeram.hpp"
 
 #define PRELOAD_CONFIG
+#undef COMPILE_FW
 #define NUMBER_OF_BALLS 3
 #define NUMBER_OF_PLAYERS 4
 
@@ -40,23 +41,9 @@ void setup() {
   io.begin( pin_clock, pin_latch, addr, shift_inputs, gate );
   
   int32_t base_ram = FreeRam();
-  Serial.println( "import firmware from flash" ); //delay( 100 );
-/*
-  lib.import( "std_bumper", bumper_symbin, bumper_hexbin );
-  lib.import( "std_dual_target", dual_target_symbin, dual_target_hexbin );
-  lib.import( "std_counter_em4d1w", counter_em4d1w_symbin, counter_em4d1w_hexbin );
-  lib.import( "std_ledbank", ledbank_symbin, ledbank_hexbin );
-  lib.import( "std_switchbank", switchbank_symbin, switchbank_hexbin );
-  lib.import( "std_scalar", scalar_symbin, scalar_hexbin );
-  lib.import( "std_dual_kicker", kicker_symbin, kicker_hexbin  );
-  lib.import( "std_dual_combo", dual_combo_symbin, dual_combo_hexbin );
-  lib.import( "std_dual_flipper", dual_flipper_symbin, dual_flipper_hexbin );
-  
-  lib.import( "std_game", game_symbin, game_hexbin );
-  lib.import( "std_tictactoe", tictactoe_symbin, tictactoe_hexbin );
-  lib.import( "std_animation", animation_symbin, animation_hexbin );
-*/
 
+#ifdef COMPILE_FW
+  Serial.println( "compile firmware from flash" ); //delay( 100 );
   lib.compile( "std_bumper", bumper_bytecode );
   lib.compile( "std_dual_target", dual_target_bytecode );
   lib.compile( "std_counter_em4d1w", counter_em4d1w_bytecode );
@@ -71,6 +58,24 @@ void setup() {
   lib.compile( "std_game", game_bytecode );
   lib.compile( "std_tictactoe", tictactoe_bytecode ); // phucked! it's just too big for loadintlist!!!
   lib.compile( "std_animation", animation_bytecode );
+#else 
+  Serial.println( "import firmware from flash" ); //delay( 100 );
+  lib.import( "std_bumper", std_bumper_symbin, std_bumper_hexbin );
+  lib.import( "std_dual_target", std_dual_target_symbin, std_dual_target_hexbin );
+  lib.import( "std_counter_em4d1w", std_counter_em4d1w_symbin, std_counter_em4d1w_hexbin );
+  lib.import( "std_ledbank", std_ledbank_symbin, std_ledbank_hexbin );
+  lib.import( "std_switchbank", std_switchbank_symbin, std_switchbank_hexbin );
+  lib.import( "std_scalar", std_scalar_symbin, std_scalar_hexbin );
+  lib.import( "std_dual_kicker", std_dual_kicker_symbin, std_dual_kicker_hexbin  );
+  lib.import( "std_dual_slingshot", std_dual_slingshot_symbin, std_dual_slingshot_hexbin  );
+  lib.import( "std_dual_combo", std_dual_combo_symbin, std_dual_combo_hexbin );
+  lib.import( "std_dual_flipper", std_dual_flipper_symbin, std_dual_flipper_hexbin );
+  
+  lib.import( "std_game", std_game_symbin, std_game_hexbin );
+  lib.import( "std_tictactoe", std_tictactoe_symbin, std_tictactoe_hexbin );
+  lib.import( "std_animation", std_animation_symbin, std_animation_hexbin );
+#endif
+
 
 #ifdef PRELOAD_CONFIG
   #include "load_config.h"

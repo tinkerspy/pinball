@@ -38,7 +38,7 @@ Configuration:
   device <switch-id> <led-grp> <firmware-label>
     Create a playfield device
   chain <device-id> <device-id>
-    Chain two playfield devices to each other
+    Chain two playfield devices together
   link <device-id> <output> <device-id> <input>
     Link one device's output to another's input
 
@@ -248,7 +248,7 @@ void cmd_callback( int idx, int v, int up ) {
       }
       cmd[idx].stream->printf( "\rLinked device %s::%s -> %s::%s\r\n", cmd[idx].arg( 1 ), cmd[idx].arg( 2 ), cmd[idx].arg( 3 ), cmd[idx].arg( 4 ) );
       break;
-    case CMD_PS: // Display a list of processes
+    case CMD_PS: // Display a list of processes (there must be a better way, perhaps compare the switch with the dev->switchGroup() method)
       {           
         uint8_t map[32];
         uint8_t cnt = 0;
